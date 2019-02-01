@@ -1,2 +1,5 @@
 */target/*
 target/
+.metadata
+.classpath
+.settings
