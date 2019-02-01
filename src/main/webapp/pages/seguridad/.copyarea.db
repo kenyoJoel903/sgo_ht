@@ -1,0 +1,17 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\pages\seguridad
+2
+d
+10:usuario.jsp.keep|1|165c58babd8|3ee8|d139a155|db5becb1188d465aac984d2367092ece|0
+a:permiso.js|1|165c58bac51|f80|c6ec2e99|a688ec87c40f404fa7ece9e2b47aac54|0
+b:usuario.jsp|1|16779da18d4|3ef0|d318a2bb|e221a9f36e2a425f9fea2fc4b57b78d9|0
+10:autorizacion.jsp|1|165c58baca2|1ef8|45cdf6a0|1ad79343c2c043efa9cc009b629880f7|0
+c:bitacora.jsp|1|165c58baba8|1789|1cf165a9|9ef086ca8295444c83f0c883a9804c34|0
+12:cambioPassword.jsp|1|165c58bac79|17c3|932af4cb|dc12a92d08764144b950ba7418108057|0
+b:bitacora.js|1|165c58bacde|1155|9c6a8bab|c9bdd8a881d44751a26c842b95fc9fe0|0
+7:rol.jsp|1|165c58bad04|1c54|3bd41157|28c279defea04b7da7896a15639c15bc|0
+b:permiso.jsp|1|165c58bad04|1eab|577a69dc|94ecc780f534410285ccc04ad8f89c28|0
+f:autorizacion.js|1|165c58bacde|4dde|174bffc5|c2daf4b71a2f4b08afa5e0ff3d7f5baf|0
+11:cambioPassword.js|1|165c58bab3c|ec5|111fdd70|94205b979d2f42969734072a0982b2d1|0
+6:rol.js|1|165c58bac1f|1fb8|a4354e15|f1757081f8134eedb32521514f5096c6|0
+a:usuario.js|1|167c7316add|710c|bf268c6a|1dcd7adf053c4fe5b09d9f863f3e46ae|0

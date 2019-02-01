@@ -1,0 +1,22 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\java\sgo\utilidades
+2
+12
+13:Utilidades.java.bak|1|165c58c228b|4684|c44df6e|5e3e773b952e48dd993cb017318a0047|0
+11:package-info.java|1|165c58c218c|40|d9131181|c8faad327f94413e8955969c0999a074|0
+14:CabeceraReporte.java|1|165c58c220c|577|7cb9de5a|cd9e13a052f4471198fac4c0e355c82d|0
+11:MailNotifica.java|1|165c8cac079|6962|5e0a77b|7608d296e5544f9aabf853b9c0c23059|0
+f:Utilidades.java|1|16669b2a08b|4c64|c28ad984|7319293791ee43bd840db16c8acb250d|0
+18:JasperDataSourceMap.java|1|165c58c222e|609|14d0b74|7baa302a1fb24ea7888d51e999323f8f|0
+14:Reporteador.java.bak|1|165c58c2287|89d3|62ae333|3f6ac8001d7e45b78d2880f7dd08ab12|0
+e:Constante.java|1|16669b29f3e|f3c|37c3e452|d7b47f149d764bfa8e7c276ba12ed1e9|0
+17:ReporteLiquidacion.java|1|165c58c225f|7206|6d935334|36e5ba1ea1714d8bbe805e8ccb7c02cb|0
+13:BaseUtilidades.java|1|16669b29dcb|9abe|41bd31c6|5db058f332c24db1b4135272285a7f0f|0
+a:Campo.java|1|165c58c2184|6bd|5cb8411d|73971d00840c44218d396221a4ed8283|0
+10:Reporteador.java|1|165c58c21b7|9184|be3c5028|301babc48a104e478f7e1570d0ef07c8|0
+12:ConstanteMail.java|1|16779dc6e7d|2d3a|836502cb|31818514fdea48568a457c3ef9489928|0
+1f:CustomJsonDateDeserializer.java|1|165c58c2201|46|9715195c|e27eb2745a5f465c808a2a5832dfe556|0
+f:ObjectMail.java|1|16779dc6fe5|18ec|d33bd5fc|cbca2a1d064d43b2b3d9fc40d61f7e28|0
+c:Formula.java|1|165c58c21cd|9f1|880a27d1|f6156e431e7d40aeb2ca03131c9867b0|0
+f:ReporteGec.java|1|167665c8381|d2df|c6514393|a22dc3486e734932b468bbcf77a3c13b|0
+19:AbstractITextPdfView.java|1|165c58c21c9|9eb|d0585027|34154b1566f04e548897948f97a6cbed|0

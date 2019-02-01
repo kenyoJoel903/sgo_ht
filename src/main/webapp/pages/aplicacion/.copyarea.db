@@ -1,0 +1,25 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\pages\aplicacion
+2
+15
+12:modulo_descarga.js|1|165c58ba74f|27f63|7872a0c8|c2d8d4202b294102b03a6266b3263b43|0
+18:modulo_gestor_reporte.js|1|165c58ba807|61f7|a9ae4798|2e660707737b4dcebd382bc3433cb2bc|0
+17:modulo_planificacion.js|1|165c58ba721|ceef|805bffa9|0d302713b9534dbc8794414683db6c37|0
+6:sgo.js|1|165c58ba831|6c55|51fb26d4|7452e21a28244a5da5d7c466846170f0|0
+d:constantes.js|1|16669b20d50|18c1|1d849d92|3770a234f59143e0906f7a4add082c16|0
+14:modulo_cotizacion.js|1|16669b20fbe|6f21|5072b758|a3eeae9826714a209c74f8f04770f12d|0
+1a:modulo_programacion.js.bak|1|165c58ba79f|10c80|d1d189d2|90ed986de3fa455f931f0160bc5fb977|0
+16:modulo_usuario.js.keep|1|165c58ba831|a9f3|903d206d|63be86f43e0d490b8a78afdcd94009e9|0
+10:modulo_cierre.js|1|165c58ba831|9b34|c4453341|50472d144f5048508e412b02dcf1e407|0
+11:modulo_jornada.js|1|165c58ba7ce|d1dc|3e791ea9|939ae813584240d8bd01dfc8bded8572|0
+b:testing.jsp|1|165c58ba841|167|b8e97139|b43bf0c8eb4e4e76acf770c8c2b19a4a|0
+d:utilitario.js|1|165c58ba85a|4078|7d80da0a|566188ccd7494ae195496818920b0e8e|0
+e:modulo_base.js|1|165c58ba860|7dc9|29e1055a|373fa6802f24437585375b22618e700e|0
+16:modulo_programacion.js|1|165c58ba7d5|132c6|139b1a59|521b4efa2d5e4f81abf8ffeb73289145|0
+d:modulo_gec.js|1|165c58ba7bc|6663|1dc9762d|8a81220ef94b498ab495b8387249161d|0
+14:modulo_transporte.js|1|165c58ba7f0|1226f|3274bc37|232d6d425fec4bca86f69afeb15ec57c|0
+19:modulo_cambio_password.js|1|165c58ba7f2|221d|b9848f7a|7a4cbe341f2b437699e0f8a75e1dcaa1|0
+f:modulo_turno.js|1|165c58ba873|bbb8|b0f37b61|f01320b061ae4a0a93cec34d579c3cf8|0
+13:baseautorizacion.js|1|165c58ba80e|591c|b749f7f8|66a0d42521874d62a58d0e8e39757342|0
+12:modulo_despacho.js|1|165c58ba899|f24a|6c13b3c8|c01073cd3fb045918355c35c1d777da7|0
+11:modulo_usuario.js|1|167c7578347|aaaa|93d35987|d79a7153ed2c46468dadfd61d4ffc83d|0

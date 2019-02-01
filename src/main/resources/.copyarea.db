@@ -1,0 +1,8 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\resources
+2
+4
+19:diccionario_en.properties|1|16635b55f56|c0d|7b4e6867|d5a030aed7814cb889f531ed28b363f3|0
+19:diccionario_es.properties|1|16635b5610b|49c3|b55da800|3c0c6ff9bc2b4e7b8df640a98925369f|0
+f:jdbc.properties|1|1680f0f61b7|337|1f2a0a2c|4c71872e5fbf4a1988ac010d47ed0d28|0
+10:log4j.properties|1|165c58c3bf6|2e7|43db089e|bba0a549f2214638912e158cc5ef0075|0

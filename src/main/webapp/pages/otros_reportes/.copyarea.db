@@ -1,0 +1,24 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\pages\otros_reportes
+2
+14
+27:Reporte_Conciliacion_Volumetrica.jasper|1|165c58ba9bf|a863|d05ffd1a|e01c6eb100734023af2cc42a0912532d|0
+1d:Reporte_Atencion_Pedido.jrxml|1|165c58baa7f|a7ad|8f7f4ac5|70dd7d9d8f9c4cb5844622bd96c0e814|0
+2d:Reporte_Conciliacion_Volumetrica_Excel.jasper|1|165c58ba93d|9115|a3d8f366|d4291b8c2bc64cc1b82d664f9c992cbf|0
+2f:Reporte_Conciliacion_Volumetrica_Estacion.jrxml|1|165c58ba9fc|c1e4|da433964|0e555563e1204e7d878cdc219b1292b5|0
+26:Reporte_Fecha_Registro_Operacion.jrxml|1|165c58baa5b|40b5|4c793745|1096ba6a848d477d8a4ef1d4a1de2c0e|0
+1b:Reporte_Tiempo_Etapa.jasper|1|165c58baa80|d138|14b28c1b|185a1b9f3a9342789708570d5cd0fb86|0
+28:Reporte_Liquidacion_Cisterna_Excel.jrxml|1|165c58ba936|c9e1|9950830d|dcac7433d05f47bbaab97cb513161564|0
+1e:Reporte_Atencion_Pedido.jasper|1|165c58baa6d|c5d8|1b541b12|4a79e42b80ff463faaa430556fa9a7ee|0
+36:Reporte_Conciliacion_Volumetrica_Estacion_Excel.jasper|1|165c58ba999|bec5|41ff6|1c653083d50d42a0a2fdc61a7596586b|0
+2c:Reporte_Conciliacion_Volumetrica_Excel.jrxml|1|165c58ba9da|72bf|7d82fe60|85dcbfb47b374d5f9704fac034349816|0
+26:Reporte_Conciliacion_Volumetrica.jrxml|1|165c58ba8f4|83c3|93b864b9|ff2dc8d05fb64e4ca5eaa8055eddd55f|0
+35:Reporte_Conciliacion_Volumetrica_Estacion_Excel.jrxml|1|165c58ba9a1|b0e0|10c0d50b|8d7cf7ca42364ff6a0659235f76006f7|0
+b:reportes.js|1|165c58ba9f9|1f51|5b338965|9baf1cfc421c430f8b83583715a2740e|0
+22:Reporte_Liquidacion_Cisterna.jrxml|1|165c58ba9f2|dadc|bcdae4e7|dd48ac830ec6494cb499ec40b9df5ed2|0
+c:reportes.jsp|1|165c58baa3f|17e2|d468c40e|4c9278c00a7b4609a4180bca80031b1f|0
+30:Reporte_Conciliacion_Volumetrica_Estacion.jasper|1|165c58ba99a|d30c|f3bdd2da|644e23e452bd439ba03121ad4db5f5d3|0
+29:Reporte_Liquidacion_Cisterna_Excel.jasper|1|165c58ba9c2|d151|63403d0f|eeae085d243345bebc476950350938ba|0
+1a:Reporte_Tiempo_Etapa.jrxml|1|165c58baa6e|9b37|445b8dcd|253b4713b7124828ba0eb9cea0a16d4c|0
+23:Reporte_Liquidacion_Cisterna.jasper|1|165c58ba9b9|e59e|ffe4f819|b2e58ebb68ac4be894bc702451ef4c5f|0
+27:Reporte_Fecha_Registro_Operacion.jasper|1|165c58ba9f4|7436|d5673850|d7b1eecb0ba6458e8d0630c8f4ef04f8|0

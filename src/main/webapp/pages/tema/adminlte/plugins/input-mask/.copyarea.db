@@ -1,0 +1,11 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\pages\tema\adminlte\plugins\input-mask
+2
+7
+1e:jquery.inputmask.extensions.js|1|165c58c08cc|14c3|ab95bbcd|ef46fd70c4eb41bf8f919b3db037be76|0
+24:jquery.inputmask.regex.extensions.js|1|165c58c0917|24b0|1ed97120|a15ea471c09d48339ffa9b03fc1e8e0d|0
+24:jquery.inputmask.phone.extensions.js|1|165c58c090e|628|2d03a182|da85e1c36e054d67998a902c14bee5f3|0
+26:jquery.inputmask.numeric.extensions.js|1|165c58c090e|239e|266b72c8|a3099624c12044cea4a796b1a70aa7a7|0
+23:jquery.inputmask.date.extensions.js|1|165c58c091e|591e|9ca87d7a|a219ee5770204ac0ac06e04eaf64623a|0
+13:jquery.inputmask.js|1|165c58c0939|161ab|fccd3c95|598c3628fc4d41fba77acf6576ff8a3a|0
+b:phone-codes|2|0|0|0|5c060e938d9c4229a704a127e935a765|0

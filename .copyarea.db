@@ -1,0 +1,15 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp
+2
+b
+15:.externalToolBuilders|2|0|0|0|fec34928edf74bde830ecd6f9e7ee3ee|0
+3:src|2|0|0|0|ff3f310d9a24487581dbabf9925a1c55|0
+a:.classpath|1|1680f100f10|60a|ca1153|75d4ec4ea79a4cd7b72fae6ee2ec86c0|0
+8:ws-petro|2|0|0|0|cad0f7d9be964a42b4c16ccaee30fbe4|0
+a:WebContent|2|0|0|0|52fa2d474be64fa0a48365048eea3da3|0
+3:doc|2|0|0|0|08411297aace47ecb0d2422e599694b4|0
+c:.springBeans|1|165c58ba10c|27d|7af5d58b|880cf72143f348c7a4774df9079ec0f0|0
+7:pom.xml|1|16779dc713e|123d|e662fc01|c4be8fc6fa1941f395148d1e8437d8b0|0
+8:.project|1|165c58ba10f|645|d2111ff2|4f9daf69ffca4ad38a80beb808e12b98|0
+9:.settings|2|0|0|0|6a8e145ecdb04314a516bd179d911925|0
+6:target|2|0|0|0|7ea346edadfe46fa8f9a0efe5b297b86|0

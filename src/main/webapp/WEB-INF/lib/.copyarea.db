@@ -1,0 +1,18 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\WEB-INF\lib
+2
+e
+f:mail-plugin.jar|1|165c58c1c53|18c0|17159525|47f0a93f45134da1a291e6c7bfcfd385|0
+17:simplecaptcha-1.2.1.jar|1|165c58c1c11|1ea2d0|ee5093f8|2d0c02b689a64387b3b8da38f4eb1ab4|0
+11:poi-3.2-FINAL.jar|1|165c58c1c41|15ccd2|1ecbac09|08e4ea81f867466380d04514cb8462e3|0
+1f:DirectoryObjects.1806082119.jar|1|165c58c1d6b|436d|5bcf8fd5|e2e0602bf6a14724866014764c495b74|0
+17:comunpetroperu-j2se.jar|1|165c58c1c4d|12ac6|1e6f11d8|554b8067bcf2411ead4700327f13a06e|0
+29:DirectoryServicesEJBClient.2406081936.jar|1|165c58c1e25|991d|8c7c4ee2|316495a8290a49a0bfc392e1ad60ae16|0
+8:mail.jar|1|165c58c1c85|6b5a1|b0d39912|e937919eac8845f6b678249d19789133|0
+22:DirectoryDataAccess.2406081936.jar|1|165c58c1c77|fb1|1cc6a865|a6f4a98bf00c40b985efcbe65706cb74|0
+2b:petro.commonj2ee.nosessionpckg.24.04.09.jar|1|165c58c1def|684d|2c8d8696|660a937ee0614086845bdd707418e634|0
+17:jasperreports-3.6.0.jar|1|165c58c1c46|269f67|1edee84f|1a9b3990cdf341eca67f8787f752c601|0
+10:mail.jar.loading|1|165c58c1c85|6b5a1|b0d39912|e87f019957054303bffe192b989480b8|0
+1b:TivoliDirectoryServices.jar|1|165c58c1cef|1f3d|814e868e|079b5bd4e54e4ab1bc0ed4efaae03af3|0
+21:petro.common.objects.24.04.09.jar|1|165c58c1d82|36fd|ef9ecc27|d940095f9a51403c9a82ae5c3d58e9cd|0
+15:postgresql-42.2.1.jar|1|167665cc456|c200f|e3e80fa3|497b7616671b442cbe087bf13e57dba0|0

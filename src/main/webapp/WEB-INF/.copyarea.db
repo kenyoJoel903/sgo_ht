@@ -1,0 +1,15 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\WEB-INF
+2
+b
+11:sgo-seguridad.xml|1|165c58c1b8a|cce|eefd4fb6|b55afc5ab1f24fec8b56dfd080c8ec91|0
+1e:jboss-deployment-structure.xml|1|167665cc44a|3dd|11e54879|28392428f0c046929c2a709f5c067cf0|0
+f:sgo-context.xml|1|165c58c1b5f|79d|e7e1ad9a|3d4c3fab801f4b208596115727002a1a|0
+b:web.xml.old|1|165c58c1ba7|908|6a2211c6|27c39960fc4a41dd917883494b613311|0
+3:lib|2|0|0|0|0eba6077bba3440a89cc1208c98322d1|0
+7:web.xml|1|165c58c1b9f|99f|2c6b4226|c0623d27085e413ba3f7daadfdefaf52|0
+c:sgo-jdbc.xml|1|165c58c1bc0|451|dbfe75f9|b88400db496c4bd9b753f4da0fc1d56d|0
+32:Petroperu_BC_SWCC_ConsInformacionEntregas_Out.wsdl|1|165c58c1bd7|50a1|6865c99e|ee512234c7eb424ea3f44b2598a81025|0
+f:sgo-servlet.xml|1|165c58c1be5|1f7|b1c6b10e|1e9fb3c4498d475ab88dccca235b8a85|0
+18:Captcha-Context.xml.keep|1|165c58c1ba1|4e6|82d6a4ac|af100d21c28841d1bfe7da343b835937|0
+f:jdbc.properties|1|1680f0f90e3|337|1f2a0a2c|d77d234d8eb94899b478353e88e8be76|0

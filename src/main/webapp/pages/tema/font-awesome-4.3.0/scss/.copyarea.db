@@ -1,0 +1,17 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\webapp\pages\tema\font-awesome-4.3.0\scss
+2
+d
+c:_larger.scss|1|165c58c18a2|177|3769730b|90e6ababb3b14ae5a3169a5b1bcda206|0
+c:_mixins.scss|1|165c58c18be|3e8|9ddc4f6a|e8089172763843fdb17900c794cdbd45|0
+11:_fixed-width.scss|1|165c58c18e1|78|845520f9|7f1bcde88b59487aac22cf5dc784db63|0
+11:font-awesome.scss|1|165c58c18b1|195|99fa83f3|53580d582cfc42b9a237548bbc4ed7a2|0
+f:_variables.scss|1|165c58c18f9|41e0|87dd04b6|139fb42f75074c6d81557daf8df3297c|0
+15:_rotated-flipped.scss|1|165c58c18b0|2a0|93dfd1dd|7d91b47c19824aeea174be054295154d|0
+e:_animated.scss|1|165c58c18a6|2cb|be8dd614|dc96dd2d2ca04dfcbeeb10aaddfd957e|0
+a:_list.scss|1|165c58c18c5|17a|78c670fd|570b699c13fe4ad5a3c4e83aa024cf9c|0
+a:_path.scss|1|165c58c18d8|30f|a5730658|6c4834a488914de1a81dbce07a1f3f6f|0
+d:_stacked.scss|1|165c58c18ce|1e2|b4ac9a56|e0f54488bf25443f85d5b4325e5dfa78|0
+a:_core.scss|1|165c58c18d1|201|7a6aaca5|347e47da75f246de85078e27a4047aa0|0
+b:_icons.scss|1|165c58c18df|93fb|e0383150|0d53060ab3d144e0af971842a46c9a3b|0
+15:_bordered-pulled.scss|1|165c58c18e1|14c|950c65a2|650ab1c298ba4c95adddbb4050763561|0

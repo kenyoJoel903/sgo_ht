@@ -1,0 +1,16 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\java\sgo\seguridad
+2
+c
+15:GestorDirectorio.java|1|165c58c2125|2095|41e9f5a8|7a0760a5737b42ffa344dcac3b64eec6|0
+f:AppVersion.java|1|165c58c2136|643|5bde473|32f3c020b4d941b5b57c8c025161b7b4|0
+11:package-info.java|1|165c58c20f9|3f|c73e1111|ffa886f0358c414e8fe33df34574740e|0
+19:GestorDirectorio.java.bak|1|165c58c2149|2762|b9f00302|35b6d9ccd9904265b16850b2053786c1|0
+25:CustomAuthenticationProvider.java.bak|1|165c58c218d|17ce|ab1c187b|f1ff3849b3f04de0b338cd38c67acd09|0
+1b:UserDetailsServiceImpl.java|1|165c58c216f|559|e91ce28f|8411a093bd8a42f2a4d3658d42c194fc|0
+13:ValidaPermisos.java|1|165c58c216f|4473|4d441831|1d986abd04b1446c8249468c8cd68d48|0
+1d:AuthenticatedUserDetails.java|1|165c58c213e|9d7|9aaa657f|d976e73184c14a3e8d8039a706ae80a6|0
+21:CustomAuthenticationProvider.java|1|165c58c2147|19c9|c860b38e|20164a130f224cdead4a3de7b3bb0d90|0
+16:WebSecurityConfig.java|1|165c58c217e|279|46f9e220|fad61694f3de45529f3ace94d9622d00|0
+24:ValidateCaptchaInterceptor.java.keep|1|165c58c2185|3e2|bfb551b5|2eb116268a344206a7bd301df68a162b|0
+13:CambioPassword.java|1|165c58c2153|418e|678ca588|621ec04f86b54c1a9b908152a40d70f8|0

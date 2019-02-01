@@ -1,0 +1,8 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\java\sgo\ws\sap\comun
+2
+4
+14:ExchangeLogData.java|1|165c58c3a9b|1a1c|8795bc6c|3f579920249246f0ae5ff1b2d5175b04|0
+11:ZPI_Fault_DT.java|1|165c58c3a9e|2314|d9fd4201|af950e94203a45a1a5dc8c6a9a939b26|0
+16:ExchangeFaultData.java|1|165c58c3a7c|1a1e|e079e7e6|96fcf8430be84e73b9552e352e73d2b0|0
+e:ZPI_Fault.java|1|165c58c3a61|1397|e878fae6|505eb3d01f0841edb335b4d1ba4f9ff9|0

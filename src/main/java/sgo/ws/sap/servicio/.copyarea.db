@@ -1,0 +1,9 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\main\java\sgo\ws\sap\servicio
+2
+5
+20:ConsInformacionEntregas_Out.java|1|165c58c3a5d|1c8|38a79c74|90717b710bfb4573a1e4de9b221ef09a|0
+25:ConsInformacionEntregas_OutProxy.java|1|165c58c3a70|813|ad09cee2|6a41097063964aae89a4ed8a664668ad|0
+32:Petroperu_BC_SWCC_ConsInformacionEntregas_Out.java|1|165c58c3a74|395|976e40f9|7b2e50695ec24e8282b67ed78357198e|0
+39:Petroperu_BC_SWCC_ConsInformacionEntregas_OutLocator.java|1|1680f0f2e89|272b|3d20b855|d813fcdc8f834076b467456ca221d379|0
+2b:ConsInformacionEntregas_OutBindingStub.java|1|165c58c3a6c|47f2|4fe3eeda|60c5ccf0d2da4da1bb027638d8f3bb25|0

@@ -1,0 +1,8 @@
+ClearCase CopyAreaDB|4
+VOB_Java\PETRO_Sistema_SGO\sgov2a-vp\src\test\Jdepend
+2
+4
+16:DistanceTest.java.keep|1|165c58c3dd8|0|0|598f96d446084537a696fce61987d98b|0
+e:CycleTest.java|1|165c58c3dd2|0|0|20c785e796144e09999a0d911667f311|0
+13:CycleTest.java.keep|1|165c58c3dd5|0|0|bcd0e62228904acd8ec743f66627d26b|0
+11:DistanceTest.java|1|165c58c3dd5|0|0|4dc77020f96440368528199e5d9b617b|0
