@@ -960,9 +960,6 @@ $(document).ready(function() {
 		        var registro = respuesta.contenido.carga[0];
 		        console.log(registro);
 		        factorCorreccion = registro.factorCorreccion;
-		        
-		        console.log("nombre de Sheppit  " + nombreSheepit);
-		        console.log("factorCorreccion  " + factorCorreccion);
 
 		        if (nombreSheepit == "grupoAperturaTanques"){
 		        	var formulario = moduloActual.obj.grupoAperturaTanques.getForm(indiceFormulario);
@@ -1336,7 +1333,7 @@ $(document).ready(function() {
 	      eRegistro.tanqueJornada = [];
 	      // datos para los contometros de la jornada
 	      var numeroTanques = referenciaModulo.obj.grupoAperturaTanques.getForms().length;
-	      console.log("numeroTanques " + numeroTanques);
+
 	      for(var contador = 0; contador < numeroTanques; contador++){
 	        var tanqueJornada = {};
 	        var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);

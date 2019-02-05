@@ -745,18 +745,18 @@ moduloJornada.prototype.inicializarGrillaJornada=function(){
       "url": './jornada/listar',
       "type":constantes.PETICION_TIPO_GET,
       "data": function (d) {
-        var indiceOrdenamiento = d.order[0].column;
-        d.registrosxPagina =  d.length; 
-        d.inicioPagina = d.start; 
-        d.campoOrdenamiento= d.columns[indiceOrdenamiento].data;
-        d.sentidoOrdenamiento=d.order[0].dir;
-        d.filtroOperacion= referenciaModulo.obj.filtroOperacion.val();
-        d.filtroEstacion = referenciaModulo.obj.filtroEstacion.val();
-        var rangoFecha = referenciaModulo.obj.filtroFechaJornada.val().split("-");
-        var fechaInicio = utilitario.formatearFecha2Iso(rangoFecha[0]) ;
-        var fechaFinal = utilitario.formatearFecha2Iso(rangoFecha[1]);
-        d.filtroFechaInicio= fechaInicio;	
-        d.filtroFechaFinal = fechaFinal;	
+	        var indiceOrdenamiento = d.order[0].column;
+	        d.registrosxPagina =  d.length; 
+	        d.inicioPagina = d.start; 
+	        d.campoOrdenamiento= d.columns[indiceOrdenamiento].data;
+	        d.sentidoOrdenamiento=d.order[0].dir;
+	        d.filtroOperacion= referenciaModulo.obj.filtroOperacion.val();
+	        d.filtroEstacion = referenciaModulo.obj.filtroEstacion.val();
+	        var rangoFecha = referenciaModulo.obj.filtroFechaJornada.val().split("-");
+	        var fechaInicio = utilitario.formatearFecha2Iso(rangoFecha[0]) ;
+	        var fechaFinal = utilitario.formatearFecha2Iso(rangoFecha[1]);
+	        d.filtroFechaInicio= fechaInicio;	
+	        d.filtroFechaFinal = fechaFinal;	
       }
     },
     "columns": referenciaModulo.columnasGrillaJornada,
@@ -1268,17 +1268,18 @@ moduloJornada.prototype.validaFormularioXSS= function(formulario){
 
 moduloJornada.prototype.validaPermisos= function(){
   var referenciaModulo = this;
+  
   try{
-  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
-  referenciaModulo.obj.ocultaContenedorTabla.show();
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+
+	  referenciaModulo.obj.ocultaContenedorTabla.show();
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+	  
 	  $.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './validaPermisos/validar',
 	    contentType: referenciaModulo.TIPO_CONTENIDO, 
 	    data: { permiso : referenciaModulo.descripcionPermiso, },	
 	    success: function(respuesta) {
-	      console.log("respuesta.estado " + respuesta.estado);
 	      if(!respuesta.estado){
 	    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 		      referenciaModulo.obj.ocultaContenedorTabla.hide();
