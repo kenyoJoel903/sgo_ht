@@ -206,7 +206,7 @@ CREATE OR REPLACE VIEW sgo.v_perfil_detalle_horario AS
         JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
         JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario;
 
-ALTER TABLE sgo.v_perfil_horario
+ALTER TABLE sgo.v_perfil_detalle_horario
     OWNER TO sgo_user;
 -- *****************************************************************************
 -- *****************************************************************************
