@@ -219,3 +219,16 @@ ALTER TABLE sgo.v_perfil_detalle_horario
 -- *****************************************************************************
 -- *****************************************************************************
 
+
+
+
+-- *******************TURNOS JORNADA******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_TURNOS_JORNADA', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_TURNOS_JORNADA'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/perfilHorario/turnosJornada', 10, 255, '/perfilHorario', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_TURNOS_JORNADA'), 'Turnos por Jornada', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
