@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Locale;
 
 import javax.sql.DataSource;
@@ -21,9 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import sgo.entidad.GuiaCombustible;
 import sgo.entidad.Respuesta;
 
@@ -638,6 +636,18 @@ public static String formatearCotizacion(BigDecimal monto, Integer minDigit, Int
 	df.setGroupingUsed(true);
 	df.setDecimalFormatSymbols(new DecimalFormatSymbols(new Locale("es_PE")));
 	return df.format(result);
+}
+
+public static boolean isInteger(String s) {
+    try { 
+        Integer.parseInt(s); 
+    } catch(NumberFormatException e) { 
+        return false; 
+    } catch(NullPointerException e) {
+        return false;
+    }
+
+    return true;
 }
 
 }

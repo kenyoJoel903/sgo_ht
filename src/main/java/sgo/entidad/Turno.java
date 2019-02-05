@@ -1,6 +1,5 @@
 package sgo.entidad;
 
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Locale;
@@ -20,9 +19,10 @@ public class Turno  extends EntidadBase {
   private String comentario;
   private Timestamp fecha_hora_cierre;
   private String observacion;
-  private String horaInicioTurno;
-  private String horaFinTurno;
-  private String horaInicioFinTurno;
+  private int idPerfilDetalleHorario;
+  private int numeroOrden;
+  private int horaInicioTurno;
+  private int horaFinTurno;
 
   private Jornada jornada;
   private Operario responsable;
@@ -143,23 +143,29 @@ public String getObservacion() {
 public void setObservacion(String observacion) {
 	this.observacion = observacion;
 }
-public String getHoraInicioTurno() {
+public int getNumeroOrden() {
+	return numeroOrden;
+}
+public void setNumeroOrden(int numeroOrden) {
+	this.numeroOrden = numeroOrden;
+}
+public int getIdPerfilDetalleHorario() {
+	return idPerfilDetalleHorario;
+}
+public void setIdPerfilDetalleHorario(int idPerfilDetalleHorario) {
+	this.idPerfilDetalleHorario = idPerfilDetalleHorario;
+}
+public int getHoraInicioTurno() {
 	return horaInicioTurno;
 }
-public void setHoraInicioTurno(String horaInicioTurno) {
+public void setHoraInicioTurno(int horaInicioTurno) {
 	this.horaInicioTurno = horaInicioTurno;
 }
-public String getHoraFinTurno() {
+public int getHoraFinTurno() {
 	return horaFinTurno;
 }
-public void setHoraFinTurno(String horaFinTurno) {
+public void setHoraFinTurno(int horaFinTurno) {
 	this.horaFinTurno = horaFinTurno;
-}
-public String getHoraInicioFinTurno() {
-	return horaInicioFinTurno;
-}
-public void setHoraInicioFinTurno(String horaInicioFinTurno) {
-	this.horaInicioFinTurno = horaInicioFinTurno;
 }
 
 }

@@ -83,13 +83,11 @@ moduloCierre.prototype.inicializar=function(){
 };
 
 moduloCierre.prototype.configurarAjax=function(){
-	console.log("configurarAjax");
 	var csrfConfiguracion = $("#csrf-token");
 	var nombreParametro = csrfConfiguracion.attr("name");
 	var valorParametro = csrfConfiguracion.val();
 	var parametros = {};
 	parametros[nombreParametro]=valorParametro;
-	console.log(parametros);
 	$.ajaxSetup({
         data: parametros,
         headers : {'X-CSRF-TOKEN' : valorParametro}

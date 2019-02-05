@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import sgo.entidad.Estacion;
 import sgo.entidad.Operacion;
+import sgo.entidad.PerfilHorario;
 import sgo.utilidades.Utilidades;
 
 public class EstacionMapper implements RowMapper<Estacion> {
@@ -27,7 +28,11 @@ public class EstacionMapper implements RowMapper<Estacion> {
 			eEstacion.setMetodoDescarga(rs.getInt("metodo_descarga"));
 			eEstacion.setTipoAperturaTanque(rs.getInt("tipo_apertura_tanque"));
 			eEstacion.setNumeroDecimalesContometro(rs.getInt("numero_decimales_contometro"));
-			eEstacion.setNombrePerfil(Utilidades.cleanXSS(rs.getString("nombre_perfil")));
+			
+			PerfilHorario perfilHorario = new PerfilHorario();
+			perfilHorario.setId(rs.getInt("id_perfil_horario"));
+			perfilHorario.setNombrePerfil(Utilidades.cleanXSS(rs.getString("nombre_perfil")));
+			eEstacion.setPerfilHorario(perfilHorario);
 
 			eOperacion = new Operacion();
 			eOperacion.setId(rs.getInt("id_operacion"));

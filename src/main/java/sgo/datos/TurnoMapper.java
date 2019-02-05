@@ -1,12 +1,16 @@
 package sgo.datos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
 
 import sgo.entidad.Estacion;
 import sgo.entidad.Jornada;
 import sgo.entidad.Operario;
+import sgo.entidad.PerfilDetalleHorario;
+import sgo.entidad.PerfilHorario;
 import sgo.entidad.Turno;
 import sgo.utilidades.Utilidades;
 public class TurnoMapper implements RowMapper<Turno>{
@@ -34,6 +38,20 @@ public class TurnoMapper implements RowMapper<Turno>{
       eJornada.setId(rs.getInt("id_jornada"));
       eJornada.setFechaOperativa(rs.getDate("fecha_operativa"));
       eJornada.setEstacion(eEstacion);
+      eJornada.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+      
+		PerfilDetalleHorario perfilDetalleHorario = new PerfilDetalleHorario();
+		perfilDetalleHorario.setId(rs.getInt("id_perfil_detalle_horario"));
+		perfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+		List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
+		lstDetalles.add(perfilDetalleHorario);
+
+		PerfilHorario perfilHorario = new PerfilHorario();
+		perfilHorario.setId(rs.getInt("id_perfil_horario"));
+		perfilHorario.setNombrePerfil(Utilidades.cleanXSS(rs.getString("nombre_perfil")));
+		perfilHorario.setLstDetalles(lstDetalles);
+		eJornada.setPerfilHorario(perfilHorario);
+      
       eTurno.setJornada(eJornada);
       
       eResponsable=new Operario();
@@ -52,9 +70,6 @@ public class TurnoMapper implements RowMapper<Turno>{
       eTurno.setComentario(Utilidades.cleanXSS(rs.getString("comentario")));
       eTurno.setFechaHoraCierre(rs.getTimestamp("fecha_hora_cierre"));
       eTurno.setObservacion(Utilidades.cleanXSS(rs.getString("observacion")));
-      eTurno.setHoraInicioTurno(Utilidades.cleanXSS(rs.getString("hora_inicio_turno")));
-      eTurno.setHoraFinTurno(Utilidades.cleanXSS(rs.getString("hora_fin_turno")));
-      eTurno.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
       
       //Parametros de auditoria
       eTurno.setCreadoPor(rs.getInt("creado_por"));

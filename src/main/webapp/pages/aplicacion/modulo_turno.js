@@ -382,8 +382,6 @@ moduloTurno.prototype.recuperarApertura = function() {
 		  });
 	};
 	
-	
-	
 moduloTurno.prototype.botonCierre = function(){
 	var referenciaModulo = this;
 	try {
@@ -606,6 +604,9 @@ moduloTurno.prototype.inicializarGrillaJornada=function(){
 	    referenciaModulo.obj.nombreEstacion = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 3).data();
 	    referenciaModulo.obj.fechaOperativaSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 5).data();
 	    referenciaModulo.obj.horaInicioFinTurnoSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
+	    //referenciaModulo.obj.numeroOrdenSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 11).data();
+
+	    //console.log("numeroOrdenSeleccionado::: " + referenciaModulo.obj.numeroOrdenSeleccionado);
 	    
 	    //desactivamos todos los botones
     	referenciaModulo.desactivarBotones();

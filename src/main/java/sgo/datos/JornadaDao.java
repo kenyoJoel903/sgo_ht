@@ -153,9 +153,10 @@ public class JornadaDao {
 			consultaSQL.append("t1.tipo,");
 			consultaSQL.append("t1.estado_estacion,");
 			consultaSQL.append("t1.total_despachos,");
-			consultaSQL.append("t1.nombre_perfil,");
+			consultaSQL.append("t1.id_perfil_horario,");
+			consultaSQL.append("t1.nombre_perfil,"); 
 			consultaSQL.append("t1.horaInicioFinTurno,");
-			//consultaSQL.append("t1.horaInicioFinTurno,"); //jafeth agregar ID de perfil
+			consultaSQL.append("t1.numero_orden,");
 			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");
@@ -218,6 +219,7 @@ public class JornadaDao {
 			consultaSQL.append("t1.tipo,");
 			consultaSQL.append("t1.estado_estacion,");
 			consultaSQL.append("t1.total_despachos,");
+			consultaSQL.append("0 AS id_perfil_horario,");
 			consultaSQL.append("0 AS nombre_perfil,");
 			consultaSQL.append("0 AS horaInicioFinTurno,");
 

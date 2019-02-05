@@ -100,7 +100,7 @@ public class JornadaControlador {
 	private OperarioDao dOperario;
 	@Autowired
 	private DiaOperativoDao dDiaOperativo;
-	//
+	
 	private DataSourceTransactionManager transaccion;//Gestor de la transaccion
 	/** Nombre de la clase. */
     private static final String sNombreClase = "JornadaControlador";
@@ -599,35 +599,37 @@ public class JornadaControlador {
 	}
 	
 	@RequestMapping(value = URL_RECUPERAR_ULTIMO_DIA_RELATIVA, method = RequestMethod.GET)
-	public @ResponseBody Respuesta recuperaUltimoDia(HttpServletRequest httpRequest, Locale locale){
+	public @ResponseBody Respuesta recuperaUltimoDia(HttpServletRequest httpRequest, Locale locale) {
+		
 	Respuesta respuesta = null;
 	RespuestaCompuesta oRespuesta = null;
 	ParametrosListar parametros= null;
 	AuthenticatedUserDetails principal = null;
+	
 	try {
 		// Recupera el usuario actual
 		principal = this.getCurrentUser();
 		// Recuperar el enlace de la accion
 		oRespuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_ULTIMO_DIA_COMPLETA);
 		if (oRespuesta.estado == false) {
-		  throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		Enlace eEnlace = (Enlace) oRespuesta.getContenido().getCarga().get(0);
 		// Verificar si cuenta con el permiso necesario
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-		  throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
 		}
-
+		
 		//Recuperar parametros
 		parametros = new ParametrosListar();
 		parametros.setFiltroEstacion(Constante.FILTRO_TODOS);
-		if (httpRequest.getParameter("filtroEstacion") != null && httpRequest.getParameter("filtroEstacion") != "") {
-			parametros.setFiltroEstacion(Integer.parseInt( httpRequest.getParameter("filtroEstacion")));
+		if (Utilidades.isInteger(httpRequest.getParameter("filtroEstacion"))) {
+			parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
 		}
 		
 		parametros.setIdOperacion(Constante.FILTRO_TODOS);
 		if (httpRequest.getParameter("idOperacion") != null) {
-			parametros.setIdOperacion(Integer.parseInt( httpRequest.getParameter("idOperacion")));
+			parametros.setIdOperacion(Integer.parseInt(httpRequest.getParameter("idOperacion")));
 		}
 
 		parametros.setFiltroEstado(Constante.FILTRO_TODOS);
@@ -638,7 +640,7 @@ public class JornadaControlador {
 		respuesta = dJornada.recuperarUltimaJornada(parametros);
 	    
 		if (respuesta.estado == false) {
-	     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
 	    }
 
 	    respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
@@ -648,8 +650,9 @@ public class JornadaControlador {
 	  		respuesta.estado = false;
 	  		respuesta.mensaje = ex.getMessage();
 	  	}
+	
 	  return respuesta;
-	 }
+	}
 
 	@RequestMapping(value = URL_RECUPERAR_APERTURA_RELATIVA, method = RequestMethod.GET)
 	public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest httpRequest, Locale locale){

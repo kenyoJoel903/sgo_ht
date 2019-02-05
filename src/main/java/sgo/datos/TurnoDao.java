@@ -204,7 +204,10 @@ public class TurnoDao {
       consultaSQL.append("t1.usuario_actualizacion,");
       consultaSQL.append("t1.hora_inicio_turno,");
       consultaSQL.append("t1.hora_fin_turno,");
-      consultaSQL.append("t1.horaInicioFinTurno");
+      consultaSQL.append("t1.id_perfil_detalle_horario,"); 
+      consultaSQL.append("t1.id_perfil_horario,"); 
+      consultaSQL.append("t1.nombre_perfil,"); 
+      consultaSQL.append("t1.horaInicioFinTurno"); 
       consultaSQL.append(" FROM ");
       consultaSQL.append(NOMBRE_VISTA);
       consultaSQL.append(" t1 ");
@@ -265,9 +268,12 @@ public class TurnoDao {
           consultaSQL.append("t1.ip_actualizacion,");
           consultaSQL.append("t1.usuario_creacion,");
           consultaSQL.append("t1.usuario_actualizacion,");
-          consultaSQL.append("0 AS hora_inicio_turno,");
-          consultaSQL.append("0 AS hora_fin_turno,");
-          consultaSQL.append("0 AS horaInicioFinTurno");
+          consultaSQL.append("t1.hora_inicio_turno,");
+          consultaSQL.append("t1.hora_fin_turno,");
+          consultaSQL.append("t1.id_perfil_detalle_horario,"); 
+          consultaSQL.append("t1.id_perfil_horario,");
+          consultaSQL.append("t1.nombre_perfil,"); 
+          consultaSQL.append("t1.horaInicioFinTurno"); 
           consultaSQL.append(" FROM ");
           consultaSQL.append(NOMBRE_VISTA);
         consultaSQL.append(" t1 ");
@@ -303,9 +309,11 @@ public class TurnoDao {
       consultaSQL.append(NOMBRE_TABLA);
       consultaSQL.append(" ( fecha_hora_apertura,id_jornada, responsable, ayudante,estado,comentario,observacion, ");
       consultaSQL.append(" creado_el, creado_por, ip_creacion, actualizado_el, actualizado_por, ip_actualizacion) ");
+      //consultaSQL.append(" id_perfil_detalle_horario, numero_orden, hora_inicio_turno, hora_fin_turno) ");
       consultaSQL.append(" VALUES ");
       consultaSQL.append(" (:FechaHoraApertura,:IdJornada,:Responsable,:Ayudante,:Estado,:Comentario,:Observacion, ");
       consultaSQL.append(" :CreadoEl,:CreadoPor,:IpCreacion,:ActualizadoEl,:ActualizadoPor,:IpActualizacion) ");
+      //consultaSQL.append(" :IdPerfilDetalleHorario, :NumeroOrden, :HoraInicioTurno, :HoraFinTurno) ");
       
       MapSqlParameterSource listaParametros = new MapSqlParameterSource();   
       listaParametros.addValue("FechaHoraApertura", turno.getFechaHoraApertura());
@@ -322,16 +330,25 @@ public class TurnoDao {
       listaParametros.addValue("IpCreacion", turno.getIpCreacion());
       listaParametros.addValue("IpActualizacion", turno.getIpActualizacion());
       listaParametros.addValue("FechaHoraCierre", turno.getFechaHoraCierre());
+//      listaParametros.addValue("IdPerfilDetalleHorario", turno.getIdPerfilDetalleHorario());
+//      listaParametros.addValue("NumeroOrden", turno.getNumeroOrden());
+//      listaParametros.addValue("HoraInicioTurno", turno.getHoraInicioTurno());
+//      listaParametros.addValue("HoraFinTurno", turno.getHoraFinTurno());
         
       SqlParameterSource namedParameters= listaParametros;
       /*Ejecuta la consulta y retorna las filas afectadas*/
       claveGenerada = new GeneratedKeyHolder();
-      cantidadFilasAfectadas = namedJdbcTemplate.update(consultaSQL.toString(),namedParameters,claveGenerada,new String[] {NOMBRE_CAMPO_CLAVE});
+      cantidadFilasAfectadas = namedJdbcTemplate.update(
+		  consultaSQL.toString(),
+		  namedParameters,
+		  claveGenerada,
+		  new String[] {NOMBRE_CAMPO_CLAVE}
+	  );
       
-      if (cantidadFilasAfectadas>1){
-        respuesta.error=Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-        respuesta.estado=false;
-        return respuesta;
+      if (cantidadFilasAfectadas > 1) {
+    	  respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+    	  respuesta.estado = false;
+    	  return respuesta;
       }
       
       respuesta.estado = true;
@@ -500,6 +517,10 @@ public class TurnoDao {
 	          consultaSQL.append("t1.ip_creacion,");
 	          consultaSQL.append("t1.ip_actualizacion,");
 	          consultaSQL.append("t1.usuario_creacion,");
+	          consultaSQL.append("t1.id_perfil_detalle_horario,"); 
+	          consultaSQL.append("t1.id_perfil_horario,");
+	          consultaSQL.append("t1.nombre_perfil,"); 
+	          consultaSQL.append("t1.horaInicioFinTurno,"); 
 	          
 	        //Agregado por req 9000003068========================
 	          consultaSQL.append("t1.hora_inicio_turno,");

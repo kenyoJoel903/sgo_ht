@@ -6,6 +6,7 @@
 <%@ page import="sgo.entidad.Tolerancia"%>
 <%@ page import="sgo.entidad.DecimalContometro"%>
 <%@ page import="sgo.entidad.TanqueJornada"%>
+<%@ page import="sgo.entidad.PerfilHorario"%>
 <%@ page import="java.util.HashMap"%>
 <%
  HashMap<?, ?> mapaValores = (HashMap<?, ?>) request.getAttribute("mapaValores");
@@ -53,7 +54,7 @@
 											 int indiceOperaciones = 0;
 											 Operacion eOperacion = null;
 											 for (indiceOperaciones = 0; indiceOperaciones < numeroOperaciones; indiceOperaciones++) {
-											  eOperacion = (Operacion) listaOperaciones.get(indiceOperaciones);
+											 	eOperacion = (Operacion) listaOperaciones.get(indiceOperaciones);
 											%>
 											<option value='<%=eOperacion.getId()%>'><%=eOperacion.getCliente().getNombreCorto() + " / " + eOperacion.getNombre().trim()%></option>
 											<% } %>
@@ -155,8 +156,22 @@
 							</div>
 							<div class="form-group">
 								<label>Tipo de horario (Perfil)</label>
-								<select id="cmpPerfilHorario" name="cmpPerfilHorario" class="form-control input-sm" required>
-									<option value="371">Perfil 1</option>
+								<select 
+									tipo-control="select2" 
+									id="cmpPerfilHorario" 
+									name="cmpPerfilHorario" 
+									class="form-control input-sm" 
+									style="width: 100%"
+									required>
+									<option value="">[Seleccione un perfil]</option>
+									<%
+										PerfilHorario p = new PerfilHorario();
+										ArrayList<?> listPerfilHorario = (ArrayList<?>) request.getAttribute("listPerfilHorario");
+									 	for (int i = 0; i < listPerfilHorario.size(); i++) {
+									  		p = (PerfilHorario) listPerfilHorario.get(i);
+									%>
+										<option value="<%=p.getId() %>"><%=p.getNombrePerfil() %></option>
+									<% } %>
 								</select>
 							</div>
 							<div class="form-group">
@@ -194,7 +209,9 @@
 
 							<div class="form-group">
 								<label>Tipo</label>
-								<select id="cmpTipo" name="cmpTipo"
+								<select 
+									id="cmpTipo" 
+									name="cmpTipo"
 									class="form-control input-sm">
 									<option value="<%=mapaValores.get("VALOR_TIPO_ESTANDAR")%>"><%=mapaValores.get("TEXTO_TIPO_ESTANDAR")%></option>
 									<option value="<%=mapaValores.get("VALOR_TIPO_REPARTO")%>"><%=mapaValores.get("TEXTO_TIPO_REPARTO")%></option>
@@ -211,7 +228,7 @@
 									 indiceOperaciones = 0;
 									 eOperacion = null;
 									 for (indiceOperaciones = 0; indiceOperaciones < numeroOperaciones; indiceOperaciones++) {
-									  eOperacion = (Operacion) listaOperaciones.get(indiceOperaciones);
+									 	eOperacion = (Operacion) listaOperaciones.get(indiceOperaciones);
 									%>
 									<option value='<%=eOperacion.getId()%>'><%=eOperacion.getCliente().getNombreCorto() + " / " + eOperacion.getNombre().trim()%></option>
 									<% } %>
