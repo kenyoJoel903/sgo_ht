@@ -1,13 +1,14 @@
 $(document).ready(function(){
 
   var moduloActual = new moduloBase();  
-  moduloActual.urlBase='estacion';
+  moduloActual.urlBase = 'estacion';
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
   moduloActual.URL_ELIMINAR = moduloActual.urlBase + '/eliminar';
   moduloActual.URL_GUARDAR = moduloActual.urlBase + '/crear';
   moduloActual.URL_ACTUALIZAR = moduloActual.urlBase + '/actualizar';
   moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
+  moduloActual.URL_TURNOS_JORNADA = 'perfilHorario/turnosJornada';
   
   moduloActual.ordenGrilla=[[ 2, 'asc' ]];
 
@@ -40,22 +41,56 @@ $(document).ready(function(){
 	cmpTipo: 		   { required: "El campo es obligatorio", }
   };
   
-  moduloActual.inicializarCampos= function(){
+  moduloActual.inicializarCampos = function() {
     //Campos de formulario
 	var referenciaModulo=this;
     this.obj.cmpNombre=$("#cmpNombre");
     this.obj.cmpTipo=$("#cmpTipo");
     this.obj.cmpCantidadTurnos=$("#cmpCantidadTurnos");
     this.obj.cmpEstado=$("#cmpEstado");
+    this.obj.cmpMetodoDescarga = $("#cmpMetodoDescarga");
+    
     this.obj.cmpIdOperacion=$("#cmpIdOperacion");    
     this.obj.cmpIdOperacion.tipoControl="select2";
-    this.obj.cmpFiltroOperacion=$("#cmpFiltroOperacion");
-    this.obj.cmpFiltroOperacion.select2();
     this.obj.cmpIdOperacion.select2();
-    this.obj.cmpMetodoDescarga = $("#cmpMetodoDescarga");
+    
+    this.obj.cmpFiltroOperacion=$("#cmpFiltroOperacion");
+    this.obj.cmpFiltroOperacion.tipoControl="select2";
+    this.obj.cmpFiltroOperacion.select2();
+    
     this.obj.cmpPerfilHorario = $("#cmpPerfilHorario");
+    this.obj.cmpPerfilHorario.select2();
     this.obj.cmpDecimalContometro = $("#cmpDecimalContometro");
     this.obj.cmpTipoAperturaTanque = $("#cmpTipoAperturaTanque");
+    
+    this.obj.cmpPerfilHorario.on("change", function() {	 
+    	
+        var perfilHorario = {};
+        perfilHorario.id = $(this).val();
+    	
+		$.ajax({
+		    type: constantes.PETICION_TIPO_POST,
+		    url: moduloActual.URL_TURNOS_JORNADA,
+		    contentType: moduloActual.TIPO_CONTENIDO,
+		    data: JSON.stringify(perfilHorario),
+		    beforeSend: function() {
+		    	moduloActual.obj.cmpCantidadTurnos.val("");
+		    },
+		    success: function(data) {
+		    	
+		    	if (!data.contenido.carga.length) {
+		    		return false;
+		    	}
+		    	
+		    	var numeroTurnos = data.contenido.carga[0].numeroTurnos;
+		    	moduloActual.obj.cmpCantidadTurnos.val(numeroTurnos);
+		    },
+		    error: function(xhr,estado,error) {
+		    	console.log(xhr, estado, error); 
+		    }
+		});
+    	
+    });  
     
     this.obj.GrupoTolerancia = $('#GrupoTolerancia').sheepIt({
         separator: '',
@@ -111,7 +146,6 @@ $(document).ready(function(){
   };  
   
   moduloActual.llamadaAjax=function(d){
-		console.log("llamadaAjax2");
 		var referenciaModulo =this;
 	    var indiceOrdenamiento = d.order[0].column;
 	    d.registrosxPagina =  d.length; 
@@ -121,8 +155,6 @@ $(document).ready(function(){
 	    d.valorBuscado=d.search.value;
 	    d.txtFiltro = encodeURI(referenciaModulo.obj.txtFiltro.val());
 	    d.filtroEstado=  referenciaModulo.obj.cmpFiltroEstado.val();
-	    console.log(referenciaModulo.obj.cmpFiltroOperacion);
-	    
 	    d.filtroOperacion= referenciaModulo.obj.cmpFiltroOperacion.val();
 	};
 
@@ -159,37 +191,39 @@ $(document).ready(function(){
 		}
   };
   
-  moduloActual.llenarFormulario = function(registro){
-	var referenciaModulo=this;
-    this.idRegistro= registro.id;
+moduloActual.llenarFormulario = function(registro) {
+
+	var referenciaModulo = this;
+    this.idRegistro = registro.id;
     this.obj.cmpNombre.val(registro.nombre);
     this.obj.cmpTipo.val(registro.tipo);
     this.obj.cmpEstado.val(registro.estado);
     this.obj.cmpIdOperacion.val(registro.idOperacion);
     this.obj.cmpMetodoDescarga.val(registro.metodoDescarga);
     this.obj.cmpCantidadTurnos.val(registro.cantidadTurnos);
+    this.obj.cmpPerfilHorario.val(registro.perfilHorario.id).trigger("change");
+    
     var elemento=constantes.PLANTILLA_OPCION_SELECTBOX;
     elemento = elemento.replace(constantes.ID_OPCION_CONTENEDOR,registro.operacion.id);
     elemento = elemento.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.operacion.nombre);
     this.obj.cmpIdOperacion.empty().append(elemento).val(registro.operacion.id).trigger('change');
     referenciaModulo.obj.GrupoTolerancia.removeAllForms();
     
-    if (registro.tolerancias != null){
+    if (registro.tolerancias != null) {
         var numeroTolerancias = registro.tolerancias.length;
         this.obj.GrupoTolerancia.removeAllForms();
-        for(var contador=0; contador < numeroTolerancias;contador++){
-          referenciaModulo.obj.GrupoTolerancia.addForm();
-          var formulario= referenciaModulo.obj.GrupoTolerancia.getForm(contador);
-          console.log(registro.tolerancias[contador].tipoVolumen);
-          formulario.find("select[elemento-grupo='tipoVolumen']").select2("val", registro.tolerancias[contador].tipoVolumen);
-          formulario.find("select[elemento-grupo='producto']").select2("val", registro.tolerancias[contador].idProducto);
-          formulario.find("input[elemento-grupo='porcentajeActual']").val(registro.tolerancias[contador].porcentajeActual);      
+        
+        for (var contador=0; contador < numeroTolerancias;contador++) {
+        	referenciaModulo.obj.GrupoTolerancia.addForm();
+        	var formulario= referenciaModulo.obj.GrupoTolerancia.getForm(contador);
+        	formulario.find("select[elemento-grupo='tipoVolumen']").select2("val", registro.tolerancias[contador].tipoVolumen);
+        	formulario.find("select[elemento-grupo='producto']").select2("val", registro.tolerancias[contador].idProducto);
+        	formulario.find("input[elemento-grupo='porcentajeActual']").val(registro.tolerancias[contador].porcentajeActual);      
         } 
     }
-    
-  };
+};
 
-  moduloActual.llenarDetalles = function(registro) {
+moduloActual.llenarDetalles = function(registro) {
 	  
     this.idRegistro= registro.id;
     this.obj.vistaId.text(registro.id);
@@ -197,7 +231,7 @@ $(document).ready(function(){
     
     if (registro.cantidadTurnos == 0) {
     	this.obj.vistaCantidadTurnos.text("NO INGRESADO");
-    }else{
+    }else {
     	this.obj.vistaCantidadTurnos.text(registro.cantidadTurnos);
     }
     
@@ -264,11 +298,14 @@ $(document).ready(function(){
 	      tolerancia.tipoVolumen = parseInt(cmpTipoVolumen.val());
 	      eRegistro.tolerancias.push(tolerancia);
 	    }
+	    
     }  catch(error){
       console.log(error.message);
     }
     return eRegistro;
   };
+  
+  
   
   moduloActual.inicializar();
 });

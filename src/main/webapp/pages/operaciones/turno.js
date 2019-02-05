@@ -13,20 +13,19 @@ $(document).ready(function() {
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
   moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
   
-  
   //listado de jornadaf
   moduloActual.ordenGrillaJornada=[[ 2, 'asc' ]];
   moduloActual.columnasGrillaJornada.push({ "data": 'id'});
   moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});
   moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'nombrePerfil'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.nombrePerfil'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'}); // 5
   moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});
   moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
   moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
   moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'horaInicioFinTurno'});
-  //moduloActual.columnasGrillaJornada.push({ "data": 'horaInicioFinTurno'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'horaInicioFinTurno'}); // 10
+  //moduloActual.columnasGrillaJornada.push({ "data": 'numeroOrden'}); // 10
   
   // Columnas jornada
   moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
@@ -46,7 +45,7 @@ $(document).ready(function() {
   moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraApertura'});
   moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraCierre'});
   moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.nombre'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'horaInicioFinTurno'});
+  moduloActual.columnasGrillaTurno.push({ "data": 'jornada.horaInicioFinTurno'});
   moduloActual.columnasGrillaTurno.push({ "data": 'responsable.nombreCompletoOperario'});
   moduloActual.columnasGrillaTurno.push({ "data": 'ayudante.nombreCompletoOperario'});
   moduloActual.columnasGrillaTurno.push({ "data": 'estado'});

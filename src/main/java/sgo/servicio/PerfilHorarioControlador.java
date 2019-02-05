@@ -30,6 +30,7 @@ import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PerfilHorarioDao;
 import sgo.datos.TurnoDao;
 import sgo.entidad.Bitacora;
+import sgo.entidad.CargaTanque;
 import sgo.entidad.Contenido;
 import sgo.entidad.Enlace;
 import sgo.entidad.MenuGestor;
@@ -74,9 +75,10 @@ public class PerfilHorarioControlador {
 	 private static final String URL_ACTUALIZAR_ESTADO_RELATIVA = "/perfilHorario/actualizarEstado";
 	 private static final String URL_GUARDAR_COMPLETA = "/admin/perfilHorario/crear";
 	 private static final String URL_GUARDAR_RELATIVA = "/perfilHorario/crear";
-	 
 	 private static final String URL_ACTUALIZAR_COMPLETA = "/admin/perfilHorario/actualizar";
 	 private static final String URL_ACTUALIZAR_RELATIVA = "/perfilHorario/actualizar";
+	 private static final String URL_TURNOS_JORNADA_COMPLETA = "/admin/perfilHorario/turnosJornada";
+	 private static final String URL_TURNOS_JORNADA_RELATIVA = "/perfilHorario/turnosJornada";
 	 
 	 private DataSourceTransactionManager transaccion;// Gestor de la transaccion
 	 
@@ -622,4 +624,56 @@ public class PerfilHorarioControlador {
 			 
 	 }
 
+	 @RequestMapping(value = URL_TURNOS_JORNADA_RELATIVA, method = RequestMethod.POST)
+	 public @ResponseBody RespuestaCompuesta numeroTurnosPorJornada(
+			@RequestBody PerfilHorario ePerfilHorario,
+			HttpServletRequest httpRequest,
+			Locale locale
+	 ) {
+		 
+		  RespuestaCompuesta respuesta = null;
+		  AuthenticatedUserDetails principal = null;
+		  TransactionDefinition definicionTransaccion = null;
+		  TransactionStatus estadoTransaccion = null;
+		  Bitacora eBitacora = null;
+		  String direccionIp = "";
+		 
+		 try{
+			 
+			   // Inicia la transaccion
+			   this.transaccion = new DataSourceTransactionManager(dPerfilHorario.getDataSource());
+			   definicionTransaccion = new DefaultTransactionDefinition();
+			   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
+			   
+			   eBitacora = new Bitacora();
+			   // Recuperar el usuario actual
+			   principal = this.getCurrentUser();
+			   // Recuperar el enlace de la accion
+			   respuesta = dEnlace.recuperarRegistro(URL_TURNOS_JORNADA_COMPLETA);
+			   if (respuesta.estado == false) {
+				   throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+			   }
+			   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+			   // Verificar si cuenta con el permiso necesario
+			   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+				   throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+			   }
+
+			   respuesta = dPerfilHorario.recuperarRegistro(ePerfilHorario.getId());
+			   if (respuesta.estado == false) {
+				   throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
+			   }
+
+			   this.transaccion.commit(estadoTransaccion);
+		  } catch (Exception e) {
+			  e.printStackTrace();
+			  this.transaccion.rollback(estadoTransaccion);
+			  respuesta.estado = false;
+			  respuesta.contenido = null;
+			  respuesta.mensaje = e.getMessage();
+		  }
+		 
+		  return respuesta;	 
+	 } 
+	 
 }

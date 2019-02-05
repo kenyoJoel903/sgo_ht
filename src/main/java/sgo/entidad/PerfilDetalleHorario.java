@@ -9,6 +9,7 @@ public class PerfilDetalleHorario extends EntidadBase{
 	private String glosa_turno;
 	private String hora_inicio_turno;
 	private String hora_fin_turno;
+	private String horaInicioFinTurno;
 	
 	private int id_perfil_horario;
 	
@@ -58,6 +59,12 @@ public class PerfilDetalleHorario extends EntidadBase{
 	}
 	public void setRango(String rango) {
 		this.rango = rango;
+	}
+	public String getHoraInicioFinTurno() {
+		return horaInicioFinTurno;
+	}
+	public void setHoraInicioFinTurno(String horaInicioFinTurno) {
+		this.horaInicioFinTurno = horaInicioFinTurno;
 	}
 
 }

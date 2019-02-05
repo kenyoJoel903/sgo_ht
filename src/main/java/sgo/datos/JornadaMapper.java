@@ -1,9 +1,14 @@
 package sgo.datos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.jdbc.core.RowMapper;
 import sgo.entidad.Estacion;
 import sgo.entidad.Jornada;
+import sgo.entidad.PerfilDetalleHorario;
+import sgo.entidad.PerfilHorario;
 import sgo.utilidades.Utilidades;
 
 public class JornadaMapper implements RowMapper<Jornada> {
@@ -25,8 +30,20 @@ public class JornadaMapper implements RowMapper<Jornada> {
 			eJornada.setObservacion(Utilidades.cleanXSS(rs.getString("observacion")));
 			eJornada.setFechaOperativa(rs.getDate("fecha_operativa"));
 			eJornada.setTotalDespachos(rs.getInt("total_despachos"));
-			eJornada.setNombrePerfil(Utilidades.cleanXSS(rs.getString("nombre_perfil")));
 			eJornada.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+	
+			PerfilDetalleHorario perfilDetalleHorario = new PerfilDetalleHorario();
+			perfilDetalleHorario.setId(rs.getInt("id_perfil_detalle_horario"));
+			perfilDetalleHorario.setNumeroOrden(rs.getInt("numero_orden"));
+			perfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+			List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
+			lstDetalles.add(perfilDetalleHorario);
+			
+			PerfilHorario perfilHorario = new PerfilHorario();
+			perfilHorario.setId(rs.getInt("id_perfil_horario"));
+			perfilHorario.setNombrePerfil(Utilidades.cleanXSS(rs.getString("nombre_perfil")));
+			perfilHorario.setLstDetalles(lstDetalles);
+			eJornada.setPerfilHorario(perfilHorario);
 			
 			eEstacion = new Estacion();
 			eEstacion.setId(rs.getInt("id_estacion"));

@@ -17,14 +17,14 @@ $(document).ready(function() {
 
   // listado de jornadaf
   moduloActual.ordenGrillaJornada=[[ 2, 'asc' ]];
-  moduloActual.columnasGrillaJornada.push({ "data": 'id'}); // Target1
-  moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});// Target2
-  moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});// Target3
-  moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'});// Target4
-  moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});// Target5
-  moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});// Target6
-  moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});// Target7
-  moduloActual.columnasGrillaJornada.push({ "data": 'estado'});// Target8
+  moduloActual.columnasGrillaJornada.push({ "data": 'id'}); 
+  moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
+  moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
   
   // Columnas jornada
   moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });

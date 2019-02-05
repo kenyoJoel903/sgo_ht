@@ -351,7 +351,7 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		if (httpRequest.getParameter("filtroFechaFinal") != null) {
 			parametros.setFiltroFechaFinal((httpRequest.getParameter("filtroFechaFinal")));
 		}
-
+		
 		//Recuperar registros
 		respuesta = dTurno.recuperarRegistros(parametros);
 		respuesta.mensaje= gestorDiccionario.getMessage("sgo.listarExitoso",null,locale);

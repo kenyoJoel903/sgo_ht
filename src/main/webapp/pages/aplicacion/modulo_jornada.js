@@ -61,7 +61,7 @@ function moduloJornada(){
 moduloJornada.prototype.mostrarDepuracion=function(mensaje){
   var referenciaModulo=this;
   if (referenciaModulo.depuracionActivada=true){
-    console.log(mensaje);
+
   }
 };
 
@@ -86,20 +86,18 @@ moduloJornada.prototype.mostrarErrorServidor=function(xhr,estado,error){
 
 moduloJornada.prototype.inicializar=function(){
 	this.configurarAjax();
-  this.inicializarControlesGenericos();
-  this.inicializarGrillaJornada();
-  this.inicializarCampos();
-  this.inicializarFormularioApertura();
+	this.inicializarControlesGenericos();
+	this.inicializarGrillaJornada();
+	this.inicializarCampos();
+	this.inicializarFormularioApertura();
 };
 
 moduloJornada.prototype.configurarAjax=function(){
-	console.log("configurarAjax");
 	var csrfConfiguracion = $("#csrf-token");
 	var nombreParametro = csrfConfiguracion.attr("name");
 	var valorParametro = csrfConfiguracion.val();
 	var parametros = {};
 	parametros[nombreParametro]=valorParametro;
-	console.log(parametros);
 	$.ajaxSetup({
         data: parametros,
         headers : {'X-CSRF-TOKEN' : valorParametro}

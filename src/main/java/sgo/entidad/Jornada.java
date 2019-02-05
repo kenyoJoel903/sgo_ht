@@ -2,8 +2,6 @@ package sgo.entidad;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,6 +12,7 @@ import sgo.utilidades.Utilidades;
 
 public class Jornada extends EntidadBase {
 	
+	private static final long serialVersionUID = 1L;
 	private int id_jornada;
 	private int id_estacion;
 	private int estado;
@@ -28,6 +27,7 @@ public class Jornada extends EntidadBase {
 	private int total_despachos;
 	private String nombrePerfil;
 	private String horaInicioFinTurno;
+	private PerfilHorario perfilHorario;
 
 	private List<ContometroJornada> contometroJornada;
 	private List<TanqueJornada> tanqueJornada;
@@ -316,6 +316,18 @@ public class Jornada extends EntidadBase {
 
 	public void setHoraInicioFinTurno(String horaInicioFinTurno) {
 		this.horaInicioFinTurno = horaInicioFinTurno;
+	}
+
+	public PerfilHorario getPerfilHorario() {
+		return perfilHorario;
+	}
+
+	public void setPerfilHorario(PerfilHorario perfilHorario) {
+		this.perfilHorario = perfilHorario;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }

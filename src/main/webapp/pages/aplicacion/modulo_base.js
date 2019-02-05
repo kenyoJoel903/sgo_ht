@@ -57,7 +57,7 @@ moduloBase.prototype.mostrarDepuracion=function(mensaje,titulo){
   var ref=this;
   if (ref.depuracionActivada === true){
     if ((typeof titulo != "undefined") && (titulo != null)) {
-      console.log(titulo);
+
     }
     console.log(mensaje);
   }
@@ -98,23 +98,19 @@ moduloBase.prototype.mostrarErrorServidor=function(xhr,estado,error){
 };
 
 moduloBase.prototype.inicializar=function(){
-	console.log("inicializar en modulo base ");
 	this.configurarAjax();
-  this.inicializarControlesGenericos();
-  this.inicializarCampos();
-  this.inicializarGrilla();
-  this.inicializarFormularioPrincipal();
-  
+	this.inicializarControlesGenericos();
+	this.inicializarCampos();
+	this.inicializarGrilla();
+	this.inicializarFormularioPrincipal();
 };
 
 moduloBase.prototype.configurarAjax=function(){
-	console.log("configurarAjax");
 	var csrfConfiguracion = $("#csrf-token");
 	var nombreParametro = csrfConfiguracion.attr("name");
 	var valorParametro = csrfConfiguracion.val();
 	var parametros = {};
 	parametros[nombreParametro]=valorParametro;
-	console.log(parametros);
 	$.ajaxSetup({
         data: parametros,
         headers : {'X-CSRF-TOKEN' : valorParametro}
@@ -127,7 +123,6 @@ moduloBase.prototype.resetearFormulario= function(){
   jQuery.each( this.obj, function( i, val ) {
   if (typeof referenciaModulo.obj[i].tipoControl != constantes.CONTROL_NO_DEFINIDO ){
       if (referenciaModulo.obj[i].tipoControl == constantes.TIPO_CONTROL_SELECT2){
-    	  console.log(referenciaModulo.obj[i].attr("data-valor-inicial"));
         referenciaModulo.obj[i].select2("val", referenciaModulo.obj[i].attr("data-valor-inicial"));
       }
     }
@@ -273,8 +268,8 @@ moduloBase.prototype.iniciarGuardar = function(){
 };
 
 moduloBase.prototype.iniciarAgregar= function(){  
-	console.log("entra en iniciarAgregar del modulo base");
 	var referenciaModulo=this;
+	
 	try {
     referenciaModulo.modoEdicion=constantes.MODO_NUEVO;
     referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_AGREGAR_REGISTRO);
@@ -392,7 +387,6 @@ moduloBase.prototype.llamadaAjaxGrilla=function(e,configuracion,json){
 };
 
 moduloBase.prototype.llamadaAjax=function(d){
-	 console.log("entra en llamadaAjax en modulo base");
 	var referenciaModulo =this;
     var indiceOrdenamiento = d.order[0].column;
     d.registrosxPagina =  d.length; 
@@ -413,14 +407,14 @@ moduloBase.prototype.llamadaAjax=function(d){
 
 moduloBase.prototype.inicializarGrilla=function(){
   var referenciaModulo=this;
-  console.log("entra en inicializarGrilla en modulo base");
+
   this.obj.tablaPrincipal.on(constantes.DT_EVENTO_AJAX, function (e,configuracion,json) {
 	   referenciaModulo.llamadaAjaxGrilla(e,configuracion,json);
   });
   
   this.obj.tablaPrincipal.on(constantes.DT_EVENTO_PREAJAX, function (e,configuracion,datos) {
     if (referenciaModulo.estaCargadaInterface==true){
-    referenciaModulo.obj.ocultaContenedorTabla.show();
+    	referenciaModulo.obj.ocultaContenedorTabla.show();
     }
   });
 
@@ -442,7 +436,6 @@ moduloBase.prototype.inicializarGrilla=function(){
       url: referenciaModulo.URL_LISTAR,
       type:constantes.PETICION_TIPO_GET,
       data: function (d) {
-    	  console.log("referenciaModulo.llamadaAjax(d) modulo base");
     	  referenciaModulo.llamadaAjax(d);
       }
     },
@@ -505,9 +498,11 @@ moduloBase.prototype.listarRegistros = function(){
   referenciaModulo.obj.datClienteApi.ajax.reload(referenciaModulo.despuesListarRegistros,true);	 	
 };
 
-moduloBase.prototype.recuperarRegistro= function(){
+moduloBase.prototype.recuperarRegistro = function() {
+	
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: referenciaModulo.URL_RECUPERAR, 
@@ -520,20 +515,21 @@ moduloBase.prototype.recuperarRegistro= function(){
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
 	    		if (referenciaModulo.modoEdicion == constantes.MODO_ACTUALIZAR){
 	    			referenciaModulo.llenarFormulario(respuesta.contenido.carga[0]);
-            referenciaModulo.obj.ocultaContenedorFormulario.hide();
+	    			referenciaModulo.obj.ocultaContenedorFormulario.hide();
 	    		} else if (referenciaModulo.modoEdicion == constantes.MODO_VER){
 	    			referenciaModulo.llenarDetalles(respuesta.contenido.carga[0]);
-            referenciaModulo.obj.ocultaContenedorVista.hide();
+	    			referenciaModulo.obj.ocultaContenedorVista.hide();
 	    		}          
     		}
 	    },			    		    
-	    error: function(xhr,estado,error) {
-        referenciaModulo.mostrarErrorServidor(xhr,estado,error);        
-        if (referenciaModulo.modoEdicion == constantes.MODO_ACTUALIZAR){
-          referenciaModulo.obj.ocultaContenedorFormulario.hide();
-        } else if (referenciaModulo.modoEdicion == constantes.MODO_VER){
-          referenciaModulo.obj.ocultaContenedorVista.hide();
-        } 
+	    error: function(xhr, estado, error) {
+	        referenciaModulo.mostrarErrorServidor(xhr,estado,error);
+	        
+	        if (referenciaModulo.modoEdicion == constantes.MODO_ACTUALIZAR) {
+	        	referenciaModulo.obj.ocultaContenedorFormulario.hide();
+	        } else if (referenciaModulo.modoEdicion == constantes.MODO_VER) {
+	        	referenciaModulo.obj.ocultaContenedorVista.hide();
+	        } 
 	    }
 	});
 };
@@ -682,14 +678,14 @@ moduloBase.prototype.actualizarRegistro= function(){
     referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
     referenciaModulo.obj.ocultaContenedorFormulario.show();
     var eRegistro = referenciaModulo.recuperarValores();
-    console.log(eRegistro);
+    
     $.ajax({
       type: constantes.PETICION_TIPO_POST,
       url: referenciaModulo.URL_ACTUALIZAR, 
       contentType: referenciaModulo.TIPO_CONTENIDO, 
       data: JSON.stringify(eRegistro),	
       success: function(respuesta) {
-    	  console.log(respuesta);
+    	  
         if (!respuesta.estado) {
           referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
         } 	else {		    				    			    		
@@ -821,17 +817,14 @@ moduloBase.prototype.despuesListarRegistros=function(){
 };
 
 moduloBase.prototype.validaFormularioXSS= function(formulario){
-//$(document).ready(function(){
 	var retorno = true;
     $(formulario).find(':input').each(function() {
      var elemento= this;
-     console.log($(this));
      if(!utilitario.validaCaracteresFormulario(elemento.value)){
     	 retorno = false;
      }
     });
     return retorno;
-  // });
 };
 
 moduloBase.prototype.validaPermisos=function(){

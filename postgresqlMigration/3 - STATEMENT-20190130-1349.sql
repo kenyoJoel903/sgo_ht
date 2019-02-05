@@ -20,7 +20,8 @@ CREATE OR REPLACE VIEW sgo.v_estacion AS
     t1.cantidad_turnos,
     t1.tipo_apertura_tanque,
     t1.numero_decimales_contometro,
-    t6.nombre_perfil
+    t6.nombre_perfil,
+    t6.id_perfil_horario
    FROM sgo.estacion t1
      JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
      JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
@@ -59,7 +60,9 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     t1.observacion,
     t4.nombre_perfil,
     CONCAT(t5.hora_inicio_turno, ' - ', t5.hora_fin_turno) AS horaInicioFinTurno,
-    t4.id_perfil_horario
+    t4.id_perfil_horario,
+    t5.id_perfil_detalle_horario,
+    t5.numero_orden
    FROM sgo.jornada t1
      JOIN sgo.estacion t2 ON t1.id_estacion = t2.id_estacion
      JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
@@ -73,7 +76,8 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     t1.creado_el, t1.creado_por, t1.actualizado_por, t1.actualizado_el, 
     t1.ip_creacion, t1.ip_actualizacion, u1.identidad, u2.identidad, 
     t1.operario1, t1.operario2, t1.observacion,
-    t4.nombre_perfil, t5.hora_inicio_turno, t5.hora_fin_turno, t4.id_perfil_horario
+    t4.nombre_perfil, t5.hora_inicio_turno, t5.hora_fin_turno, t4.id_perfil_horario,
+    t5.numero_orden, t5.id_perfil_detalle_horario
     ;
 
 ALTER TABLE sgo.v_jornada
@@ -111,7 +115,9 @@ CREATE OR REPLACE VIEW sgo.v_turno AS
     t7.hora_inicio_turno,
     t7.hora_fin_turno,
     CONCAT(t7.hora_inicio_turno, ' - ', t7.hora_fin_turno) AS horaInicioFinTurno,
-    t1.id_perfil_detalle_horario
+    t1.id_perfil_detalle_horario,
+    t3.id_perfil_horario,
+    t6.nombre_perfil
    FROM sgo.turno t1
      JOIN sgo.jornada t2 ON t2.id_jornada = t1.id_jornada
      JOIN sgo.estacion t3 ON t3.id_estacion = t2.id_estacion

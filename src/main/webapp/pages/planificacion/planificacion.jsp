@@ -46,8 +46,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
                     String seleccionado="selected='selected'";
                     seleccionado="";
                     for(int indiceOperaciones=0; indiceOperaciones < numeroOperaciones; indiceOperaciones++){ 
-                    eOperacion =(Operacion) listaOperaciones.get(indiceOperaciones);
-                    eCliente = eOperacion.getCliente();
+                    	eOperacion =(Operacion) listaOperaciones.get(indiceOperaciones);
+                    	eCliente = eOperacion.getCliente();
                     %>
                     <option <%=seleccionado%> data-planta-despacho='<%=eOperacion.getPlantaDespacho().getDescripcion() %>' data-eta='<%=eOperacion.getEta() %>' data-fecha-hoy='<%=fechaHoy%>' data-fecha-actual='<%=fechaActual%>' data-volumen-promedio-cisterna='<%=eOperacion.getVolumenPromedioCisterna()%>' data-nombre-operacion='<%=eOperacion.getNombre().trim()%>' data-nombre-cliente='<%=eCliente.getNombreCorto().trim()%>' value='<%=eOperacion.getId()%>'><%=eOperacion.getNombre().trim() + " / " + eCliente.getNombreCorto().trim() %></option>
                     <%

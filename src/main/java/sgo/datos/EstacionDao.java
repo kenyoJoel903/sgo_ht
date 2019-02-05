@@ -144,7 +144,8 @@ public class EstacionDao {
 			consultaSQL.append("t1.metodo_descarga,");
 			consultaSQL.append(" 0 tipo_apertura_tanque,");
 			consultaSQL.append(" 0 numero_decimales_contometro,");
-			consultaSQL.append(" 0 nombre_perfil,");
+			consultaSQL.append("t1.id_perfil_horario,");
+			consultaSQL.append("t1.nombre_perfil,");
 			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");
@@ -182,57 +183,59 @@ public class EstacionDao {
 		return respuesta;
 	}
 	
-	
-	public RespuestaCompuesta recuperarRegistro(int ID){
-			StringBuilder consultaSQL= new StringBuilder();		
-			List<Estacion> listaRegistros=new ArrayList<Estacion>();
-			Contenido<Estacion> contenido = new Contenido<Estacion>();
-			RespuestaCompuesta respuesta= new RespuestaCompuesta();
-			try {
-				consultaSQL.append("SELECT ");
-				consultaSQL.append("t1.id_estacion,");
-				consultaSQL.append("t1.nombre,");
-				consultaSQL.append("t1.tipo,");
-				consultaSQL.append("t1.cantidad_turnos,");
-				consultaSQL.append("t1.estado,");
-				consultaSQL.append("t1.id_operacion,");
-				consultaSQL.append("t1.metodo_descarga,");
-				consultaSQL.append("t1.nombre_operacion,");
-				consultaSQL.append("t1.tipo_apertura_tanque,");
-				consultaSQL.append("t1.numero_decimales_contometro,");
-				consultaSQL.append("t1.nombre_perfil,");
-				
-				//Campos de auditoria
-				consultaSQL.append("t1.creado_el,");
-				consultaSQL.append("t1.creado_por,");
-				consultaSQL.append("t1.actualizado_por,");
-				consultaSQL.append("t1.actualizado_el,");	
-				consultaSQL.append("t1.usuario_creacion,");
-				consultaSQL.append("t1.usuario_actualizacion,");
-				consultaSQL.append("t1.ip_creacion,");
-				consultaSQL.append("t1.ip_actualizacion");
-				consultaSQL.append(" FROM ");				
-				consultaSQL.append(NOMBRE_VISTA);
-				consultaSQL.append(" t1 ");
-				consultaSQL.append(" WHERE ");
-				consultaSQL.append(NOMBRE_CAMPO_CLAVE);
-				consultaSQL.append("=?");
-				
-				listaRegistros= jdbcTemplate.query(consultaSQL.toString(),new Object[] {ID},new EstacionMapper());
-				contenido.totalRegistros=listaRegistros.size();
-				contenido.totalEncontrados=listaRegistros.size();
-				contenido.carga= listaRegistros;
-				respuesta.mensaje="OK";
-				respuesta.estado=true;
-				respuesta.contenido = contenido;			
-			} catch (DataAccessException excepcionAccesoDatos) {
-				excepcionAccesoDatos.printStackTrace();
-				respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
-				respuesta.estado=false;
-				respuesta.contenido=null;
-			}
-			return respuesta;
+	public RespuestaCompuesta recuperarRegistro(int ID) {
+		
+		StringBuilder consultaSQL = new StringBuilder();		
+		List<Estacion> listaRegistros = new ArrayList<Estacion>();
+		Contenido<Estacion> contenido = new Contenido<Estacion>();
+		RespuestaCompuesta respuesta = new RespuestaCompuesta();
+		
+		try {
+			consultaSQL.append("SELECT ");
+			consultaSQL.append("t1.id_estacion,");
+			consultaSQL.append("t1.nombre,");
+			consultaSQL.append("t1.tipo,");
+			consultaSQL.append("t1.cantidad_turnos,");
+			consultaSQL.append("t1.estado,");
+			consultaSQL.append("t1.id_operacion,");
+			consultaSQL.append("t1.metodo_descarga,");
+			consultaSQL.append("t1.nombre_operacion,");
+			consultaSQL.append("t1.tipo_apertura_tanque,");
+			consultaSQL.append("t1.numero_decimales_contometro,");
+			consultaSQL.append("t1.id_perfil_horario,");
+			consultaSQL.append("t1.nombre_perfil,");
+			
+			//Campos de auditoria
+			consultaSQL.append("t1.creado_el,");
+			consultaSQL.append("t1.creado_por,");
+			consultaSQL.append("t1.actualizado_por,");
+			consultaSQL.append("t1.actualizado_el,");	
+			consultaSQL.append("t1.usuario_creacion,");
+			consultaSQL.append("t1.usuario_actualizacion,");
+			consultaSQL.append("t1.ip_creacion,");
+			consultaSQL.append("t1.ip_actualizacion");
+			consultaSQL.append(" FROM ");				
+			consultaSQL.append(NOMBRE_VISTA); 
+			consultaSQL.append(" t1 ");
+			consultaSQL.append(" WHERE ");
+			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
+			consultaSQL.append("=?");
+			
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),new Object[] {ID},new EstacionMapper());
+			contenido.totalRegistros = listaRegistros.size();
+			contenido.totalEncontrados = listaRegistros.size();
+			contenido.carga = listaRegistros;
+			respuesta.mensaje = "OK";
+			respuesta.estado = true;
+			respuesta.contenido = contenido;			
+		} catch (DataAccessException excepcionAccesoDatos) {
+			excepcionAccesoDatos.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado=false;
+			respuesta.contenido=null;
 		}
+		return respuesta;
+	}
 	
 	public RespuestaCompuesta guardarRegistro(Estacion estacion){
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
@@ -258,7 +261,6 @@ public class EstacionDao {
 			listaParametros.addValue("Estado", estacion.getEstado());
 			listaParametros.addValue("IdOperacion", estacion.getIdOperacion());
 			listaParametros.addValue("MetodoDescarga", estacion.getMetodoDescarga());
-			
 			listaParametros.addValue("IdPerfilHorario", estacion.getIdPerfilHorario());
 			listaParametros.addValue("NumeroDecimalesContometro", estacion.getNumeroDecimalesContometro());
 			listaParametros.addValue("TipoAperturaTanque", estacion.getTipoAperturaTanque());
@@ -292,26 +294,32 @@ public class EstacionDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta actualizarRegistro(Estacion estacion){
+	public RespuestaCompuesta actualizarRegistro(Estacion estacion) {
+		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
-		StringBuilder consultaSQL= new StringBuilder();
-		int cantidadFilasAfectadas=0;
+		StringBuilder consultaSQL = new StringBuilder();
+		int cantidadFilasAfectadas = 0;
+		
 		try {
 			consultaSQL.append("UPDATE ");
 			consultaSQL.append(NOMBRE_TABLA);
 			consultaSQL.append(" SET ");
-			consultaSQL.append("nombre=:Nombre,");
-			consultaSQL.append("tipo=:Tipo,");
-			consultaSQL.append("cantidad_turnos=:CantidadTurnos,");
-			consultaSQL.append("estado=:Estado,");
-			consultaSQL.append("id_operacion=:IdOperacion,");
-			consultaSQL.append("metodo_descarga=:MetodoDescarga,");		 
-			consultaSQL.append("actualizado_por=:ActualizadoPor,");
-			consultaSQL.append("actualizado_el=:ActualizadoEl,");
-			consultaSQL.append("ip_actualizacion=:IpActualizacion");
+			consultaSQL.append("nombre = :Nombre,");
+			consultaSQL.append("tipo = :Tipo,");
+			consultaSQL.append("cantidad_turnos = :CantidadTurnos,");
+			consultaSQL.append("estado = :Estado,");
+			consultaSQL.append("id_operacion = :IdOperacion,");
+			consultaSQL.append("metodo_descarga = :MetodoDescarga,");		 
+			consultaSQL.append("actualizado_por = :ActualizadoPor,");
+			consultaSQL.append("actualizado_el = :ActualizadoEl,");
+			consultaSQL.append("ip_actualizacion = :IpActualizacion,");
+			consultaSQL.append("id_perfil_horario = :IdPerfilHorario,");
+			consultaSQL.append("tipo_apertura_tanque = :TipoAperturaTanque,");
+			consultaSQL.append("numero_decimales_contometro = :NumeroDecimalesContometro ");
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=:Id");
+			
 			MapSqlParameterSource listaParametros= new MapSqlParameterSource();
 			listaParametros.addValue("Nombre", estacion.getNombre());
 			listaParametros.addValue("Tipo", estacion.getTipo());
@@ -319,12 +327,17 @@ public class EstacionDao {
 			listaParametros.addValue("Estado", estacion.getEstado());
 			listaParametros.addValue("MetodoDescarga", estacion.getMetodoDescarga());
 			listaParametros.addValue("IdOperacion", estacion.getIdOperacion());
+			listaParametros.addValue("IdPerfilHorario", estacion.getIdPerfilHorario());
+			listaParametros.addValue("TipoAperturaTanque", estacion.getTipoAperturaTanque());
+			listaParametros.addValue("NumeroDecimalesContometro", estacion.getNumeroDecimalesContometro());
+			
 			//Valores Auditoria
 			listaParametros.addValue("ActualizadoEl", estacion.getActualizadoEl());
 			listaParametros.addValue("ActualizadoPor", estacion.getActualizadoPor());
 			listaParametros.addValue("IpActualizacion", estacion.getIpActualizacion());
 			listaParametros.addValue("Id", estacion.getId());
-			SqlParameterSource namedParameters= listaParametros;
+			
+			SqlParameterSource namedParameters = listaParametros;
 			/*Ejecuta la consulta y retorna las filas afectadas*/
 			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);		
 			if (cantidadFilasAfectadas>1){

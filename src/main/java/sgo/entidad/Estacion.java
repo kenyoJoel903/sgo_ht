@@ -20,12 +20,12 @@ public class Estacion extends EntidadBase {
 	private int idPerfilHorario;
 	private int numeroDecimalesContometro;
 	private int tipoAperturaTanque;
-	private String nombrePerfil;
-
+	
 	/*
 	 * private String sincronizado_el; private String fecha_referencia; private
 	 * String codigo_referencia;
 	 */
+	private PerfilHorario perfilHorario;
 	private Operacion operacion;
 	private int metodoDescarga;
 	private ArrayList<Tolerancia> tolerancias;
@@ -234,13 +234,12 @@ public void setIdPerfilHorario(int idPerfilHorario) {
 	this.idPerfilHorario = idPerfilHorario;
 }
 
-public String getNombrePerfil() {
-	return nombrePerfil;
+public PerfilHorario getPerfilHorario() {
+	return perfilHorario;
 }
 
-public void setNombrePerfil(String nombrePerfil) {
-	this.nombrePerfil = nombrePerfil;
+public void setPerfilHorario(PerfilHorario perfilHorario) {
+	this.perfilHorario = perfilHorario;
 }
-
 
 }

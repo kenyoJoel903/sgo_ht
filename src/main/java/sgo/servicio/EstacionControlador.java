@@ -23,6 +23,7 @@ import sgo.datos.BitacoraDao;
 import sgo.datos.EstacionDao;
 import sgo.datos.EnlaceDao;
 import sgo.datos.OperacionDao;
+import sgo.datos.PerfilHorarioDao;
 import sgo.datos.ProductoDao;
 import sgo.datos.ToleranciaDao;
 import sgo.entidad.Bitacora;
@@ -52,6 +53,8 @@ public class EstacionControlador {
  private EnlaceDao dEnlace;
  @Autowired
  private ProductoDao dProducto;
+ @Autowired
+ private PerfilHorarioDao dPerfilHorario; 
  @Autowired
  private MenuGestor menu;
  @Autowired
@@ -152,8 +155,10 @@ public class EstacionControlador {
   ArrayList<?> listaProductos = null;
   ArrayList<DecimalContometro> listDecimalContometro = null;
   ArrayList<TanqueJornada> listTipoAperturaTanque = null;
+  ArrayList<?> listPerfilHorario = null;
 
   try {
+	  
    principal = this.getCurrentUser();
    respuesta = menu.Generar(principal.getRol().getId(), URL_GESTION_COMPLETA);
    if (respuesta.estado == false) {
@@ -179,6 +184,15 @@ public class EstacionControlador {
    }
    listaProductos = (ArrayList<?>) respuesta.contenido.carga;
    
+   parametros = new ParametrosListar();
+   parametros.setPaginacion(Constante.SIN_PAGINACION);
+   parametros.setFiltroEstado(Constante.FILTRO_TODOS);
+   respuesta = dPerfilHorario.recuperarRegistros(parametros);
+   if (respuesta.estado == false) {
+	   throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
+   }
+   listPerfilHorario = (ArrayList<?>) respuesta.contenido.carga; 
+   
    listDecimalContometro = ArrayListMap.decimalContometroArray();
    listTipoAperturaTanque = ArrayListMap.tipoAperturaTanqueArray();
 
@@ -191,6 +205,7 @@ public class EstacionControlador {
    vista.addObject("listadoOperaciones", listaOperaciones);
    vista.addObject("listaProductos", listaProductos);
    vista.addObject("mapaValores", mapaValores);
+   vista.addObject("listPerfilHorario", listPerfilHorario);
    vista.addObject("listDecimalContometro", listDecimalContometro);
    vista.addObject("listTipoAperturaTanque", listTipoAperturaTanque);
 
@@ -336,10 +351,10 @@ public class EstacionControlador {
    
    respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
   } catch (Exception ex) {
-   ex.printStackTrace();
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
+	  ex.printStackTrace();
+	  respuesta.estado = false;
+	  respuesta.contenido = null;
+	  respuesta.mensaje = ex.getMessage();
   }
   return respuesta;
  }
@@ -447,19 +462,26 @@ public class EstacionControlador {
 
  @RequestMapping(value = URL_ACTUALIZAR_RELATIVA, method = RequestMethod.POST)
  public @ResponseBody
- RespuestaCompuesta actualizarRegistro(@RequestBody Estacion eEstacion, HttpServletRequest peticionHttp, Locale locale) {
+ RespuestaCompuesta actualizarRegistro(
+	@RequestBody Estacion eEstacion, 
+	HttpServletRequest peticionHttp, 
+	Locale locale
+ ) {
+	 
   RespuestaCompuesta respuesta = null;
   AuthenticatedUserDetails principal = null;
   TransactionDefinition definicionTransaccion = null;
   TransactionStatus estadoTransaccion = null;
   Bitacora eBitacora = null;
   String direccionIp = "";
+  
   try {
 	//valida los datos que vienen del formulario 
     Respuesta validacion = Utilidades.validacionXSS(eEstacion, gestorDiccionario, locale);
     if (validacion.estado == false) {
       throw new Exception(validacion.valor);
     }
+    
    // Inicia la transaccion
    this.transaccion = new DataSourceTransactionManager(dEstacion.getDataSource());
    definicionTransaccion = new DefaultTransactionDefinition();
@@ -472,16 +494,19 @@ public class EstacionControlador {
    if (respuesta.estado == false) {
     throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
    }
+   
    Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
    // Verificar si cuenta con el permiso necesario
    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
     throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
    }
+   
    // Auditoria local (En el mismo registro)
    direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
    if (direccionIp == null) {
     direccionIp = peticionHttp.getRemoteAddr();
    }
+   
    eEstacion.setActualizadoEl(Calendar.getInstance().getTime().getTime());
    eEstacion.setActualizadoPor(principal.getID());
    eEstacion.setIpActualizacion(direccionIp);
@@ -489,6 +514,7 @@ public class EstacionControlador {
    if (respuesta.estado == false) {
     throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
    }
+   
    // Guardar en la bitacora
    ObjectMapper mapper = new ObjectMapper();
    eBitacora.setUsuario(principal.getNombre());
@@ -502,33 +528,36 @@ public class EstacionControlador {
    if (respuesta.estado == false) {
     throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
    }
+   
    respuesta= dTolerancia.eliminarRegistros(eEstacion.getId());
    if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
    }
    
-   for(Tolerancia tolerancia: eEstacion.getTolerancias()){
-    tolerancia.setIdEstacion(eEstacion.getId());
-    //valida los datos que vienen del formulario para la tolerancia
-    validacion = Utilidades.validacionXSS(tolerancia, gestorDiccionario, locale);
-    if (validacion.estado == false) {
-      throw new Exception(validacion.valor);
-    }
-    respuesta = dTolerancia.guardarRegistro(tolerancia);
-    if (respuesta.estado == false) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
-    }
+   for(Tolerancia tolerancia: eEstacion.getTolerancias()) {
+	    tolerancia.setIdEstacion(eEstacion.getId());
+	    //valida los datos que vienen del formulario para la tolerancia
+	    validacion = Utilidades.validacionXSS(tolerancia, gestorDiccionario, locale);
+	    if (validacion.estado == false) {
+	    	throw new Exception(validacion.valor);
+	    }
+	    respuesta = dTolerancia.guardarRegistro(tolerancia);
+	    if (respuesta.estado == false) {
+	    	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
+	    }
    } 
    
    respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { eEstacion.getFechaActualizacion().substring(0, 9), eEstacion.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);
    this.transaccion.commit(estadoTransaccion);
+   
   } catch (Exception ex) {
-   ex.printStackTrace();
-   this.transaccion.rollback(estadoTransaccion);
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
+	  ex.printStackTrace();
+	  this.transaccion.rollback(estadoTransaccion);
+	  respuesta.estado = false;
+	  respuesta.contenido = null;
+	  respuesta.mensaje = ex.getMessage();
   }
+  
   return respuesta;
  }
 
