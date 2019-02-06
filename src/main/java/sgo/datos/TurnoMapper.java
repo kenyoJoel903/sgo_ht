@@ -13,7 +13,9 @@ import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Turno;
 import sgo.utilidades.Utilidades;
-public class TurnoMapper implements RowMapper<Turno>{
+
+public class TurnoMapper implements RowMapper<Turno> {
+	
   public Turno mapRow(ResultSet rs, int arg1) throws SQLException 
   {
 	  Turno eTurno = null;
@@ -23,9 +25,11 @@ public class TurnoMapper implements RowMapper<Turno>{
 	  Operario eAyudante=null;
 
     try {
+    	
       eTurno = new Turno();
       eTurno.setId(rs.getInt("id_turno"));
       eTurno.setFechaHoraApertura(rs.getTimestamp("fecha_hora_apertura"));
+      eTurno.setIdPerfilDetalleHorario(rs.getInt("id_perfil_detalle_horario"));
       
       eEstacion=new Estacion();
       eEstacion.setId(rs.getInt("id_estacion"));
@@ -38,11 +42,11 @@ public class TurnoMapper implements RowMapper<Turno>{
       eJornada.setId(rs.getInt("id_jornada"));
       eJornada.setFechaOperativa(rs.getDate("fecha_operativa"));
       eJornada.setEstacion(eEstacion);
-      eJornada.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+      //eJornada.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
       
 		PerfilDetalleHorario perfilDetalleHorario = new PerfilDetalleHorario();
 		perfilDetalleHorario.setId(rs.getInt("id_perfil_detalle_horario"));
-		perfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+		//perfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
 		List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
 		lstDetalles.add(perfilDetalleHorario);
 

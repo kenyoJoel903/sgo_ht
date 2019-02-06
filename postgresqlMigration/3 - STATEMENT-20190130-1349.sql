@@ -76,8 +76,8 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     t1.creado_el, t1.creado_por, t1.actualizado_por, t1.actualizado_el, 
     t1.ip_creacion, t1.ip_actualizacion, u1.identidad, u2.identidad, 
     t1.operario1, t1.operario2, t1.observacion,
-    t4.nombre_perfil, t5.hora_inicio_turno, t5.hora_fin_turno, t4.id_perfil_horario
-    -- t5.numero_orden, t5.id_perfil_detalle_horario
+    t4.nombre_perfil, t4.id_perfil_horario
+    -- t5.hora_inicio_turno, t5.hora_fin_turno, t5.numero_orden, t5.id_perfil_detalle_horario
     ;
 
 ALTER TABLE sgo.v_jornada
@@ -112,9 +112,9 @@ CREATE OR REPLACE VIEW sgo.v_turno AS
     u2.identidad AS usuario_actualizacion,
     t1.observacion,
     t3.cantidad_turnos,
-    t7.hora_inicio_turno,
-    t7.hora_fin_turno,
-    CONCAT(t7.hora_inicio_turno, ' - ', t7.hora_fin_turno) AS horaInicioFinTurno,
+    -- t7.hora_inicio_turno,
+    -- t7.hora_fin_turno,
+    -- CONCAT(t7.hora_inicio_turno, ' - ', t7.hora_fin_turno) AS horaInicioFinTurno,
     t1.id_perfil_detalle_horario,
     t3.id_perfil_horario,
     t6.nombre_perfil
@@ -126,7 +126,7 @@ CREATE OR REPLACE VIEW sgo.v_turno AS
      LEFT JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
      LEFT JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
      LEFT JOIN sgo.perfil_horario t6 ON t6.id_perfil_horario = t3.id_perfil_horario
-     LEFT JOIN sgo.perfil_detalle_horario t7 ON t7.id_perfil_horario = t6.id_perfil_horario
+     -- LEFT JOIN sgo.perfil_detalle_horario t7 ON t7.id_perfil_horario = t6.id_perfil_horario
      ;
 
 ALTER TABLE sgo.v_turno
@@ -171,6 +171,7 @@ ALTER TABLE sgo.v_operacion
     OWNER TO sgo_user;
 
 -- *****************************************************************************
+
 CREATE OR REPLACE VIEW sgo.v_perfil_horario AS
  SELECT t1.id_perfil_horario,
         t1.nombre_perfil,
@@ -191,8 +192,8 @@ CREATE OR REPLACE VIEW sgo.v_perfil_horario AS
 ALTER TABLE sgo.v_perfil_horario
     OWNER TO sgo_user;
     
-
 -- *****************************************************************************
+
 CREATE OR REPLACE VIEW sgo.v_perfil_detalle_horario AS
  SELECT t1.id_perfil_detalle_horario,
         t1.numero_orden,
@@ -214,15 +215,8 @@ CREATE OR REPLACE VIEW sgo.v_perfil_detalle_horario AS
 
 ALTER TABLE sgo.v_perfil_detalle_horario
     OWNER TO sgo_user;
--- *****************************************************************************
--- *****************************************************************************
--- *****************************************************************************
--- *****************************************************************************
 
-
-
-
--- *******************TURNOS JORNADA******************************
+-- ******************* TURNOS JORNADA 2019-02-04 10:10 ******************************
 INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
         VALUES('URL_TURNOS_JORNADA', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
 
@@ -232,3 +226,15 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
         VALUES('/admin/perfilHorario/turnosJornada', 10, 255, '/perfilHorario', 2, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_TURNOS_JORNADA'), 'Turnos por Jornada', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+-- ******************* TURNOS JORNADA 2019-02-05 10:10 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_RECUPERAR_CIERRE', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_CIERRE'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/turno/recuperarCierre', 10, 255, '/turno', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_CIERRE'), 'Recuperar cierre', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');

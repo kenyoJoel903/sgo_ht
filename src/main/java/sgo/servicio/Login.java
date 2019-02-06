@@ -59,16 +59,20 @@ private DiaOperativoDao dDiaOperativo;
 	
 	@RequestMapping("/processlogin")
 	public ModelAndView processlogin(@ModelAttribute("loginEntity") LoginEntity loginEntity, HttpSession session, HttpServletRequest peticionHttp, Locale locale, Class<?> authentication) {
+		
 		ModelAndView vista = null;
-		boolean error=false;
-		String mensajeError="";
+		boolean error = false;
+		String mensajeError = "";
 		StringBuffer jb = new StringBuffer();
 		String line = null;
 		String valores = null;
+		
 		try{
-			vista= new ModelAndView("/panel");
+			
+			vista = new ModelAndView("/panel");
 			vista.addObject("mensajeError", "");
-			if (peticionHttp.getParameter("error")!= null){
+			
+			if (peticionHttp.getParameter("error")!= null) {
 		      error = Boolean.parseBoolean(peticionHttp.getParameter("error")) ;
 		    } else {
 				BufferedReader reader = peticionHttp.getReader();
@@ -78,10 +82,9 @@ private DiaOperativoDao dDiaOperativo;
 			    }
 			    String[] parts = valores.split("captcha=");
 			    String valorCaptcha = parts[1];
-			    
-	
-				String captcha=(String)session.getAttribute("CAPTCHA");
-		        if(captcha==null || (captcha!=null && !captcha.equals(valorCaptcha))){
+				String captcha = (String) session.getAttribute("CAPTCHA");
+				
+		        if (captcha==null || (captcha!=null && !captcha.equals(valorCaptcha))) {
 		        	vista= new ModelAndView("login");
 					vista.addObject("mensajeError", "El código Captcha es incorrecto.");
 					return vista;
@@ -89,23 +92,22 @@ private DiaOperativoDao dDiaOperativo;
 		    }
 			
 			peticionHttp.getSession().getAttribute("FORM_LOGIN_FILTER");
-			
-			
-			
-			if (error==true){
+
+			if (error == true) {
 				Exception exception = (Exception) peticionHttp.getSession().getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
-				vista= new ModelAndView("login");
+				vista = new ModelAndView("login");
 				vista.addObject("mensajeError", exception.getMessage());
+				
 				return vista;
 			}
 			
-			}catch(Exception ex){
-				
-			}
+		} catch (Exception e) {
+			
+		}
+		
 		return vista;
 	}
 	
-
 	@RequestMapping("/invalida")
 	public ModelAndView mostrarSesionInvalida(HttpServletRequest peticionHTTP,Locale locale){
 		ModelAndView vista = null;
@@ -128,11 +130,11 @@ private DiaOperativoDao dDiaOperativo;
 	
 	 public boolean supports(Class<?> authentication) {
 		 
-	        return authentication.equals(UsernamePasswordAuthenticationToken.class);
-	    }
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
+     }
 	 
 	 private AuthenticatedUserDetails getCurrentUser() {
 		  return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		 }
+	 }
 	 
 }

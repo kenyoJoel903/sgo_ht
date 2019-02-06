@@ -159,10 +159,10 @@ public class TurnoDao {
 		 filtrosWhere.add(" t1." + FECHA_OPERATIVA + Constante.SQL_ENTRE + ("'" + argumentosListar.getFiltroFechaInicio() + "'" + Constante.SQL_Y + "'" + argumentosListar.getFiltroFechaFinal() + "'"));
 		} else {
 			if (!argumentosListar.getFiltroFechaInicio().isEmpty()) {
-			filtrosWhere.add(" t1." + FECHA_OPERATIVA + " >= '" + argumentosListar.getFiltroFechaInicio() + "'");
+				filtrosWhere.add(" t1." + FECHA_OPERATIVA + " >= '" + argumentosListar.getFiltroFechaInicio() + "'");
 			}
 			if (!argumentosListar.getFiltroFechaFinal().isEmpty()) {
-			filtrosWhere.add(" t1." + FECHA_OPERATIVA + " <= '" + argumentosListar.getFiltroFechaFinal() + "'");
+				filtrosWhere.add(" t1." + FECHA_OPERATIVA + " <= '" + argumentosListar.getFiltroFechaFinal() + "'");
 			}
 		}
 
@@ -202,14 +202,14 @@ public class TurnoDao {
       consultaSQL.append("t1.ip_actualizacion,");
       consultaSQL.append("t1.usuario_creacion,");
       consultaSQL.append("t1.usuario_actualizacion,");
-      consultaSQL.append("t1.hora_inicio_turno,");
-      consultaSQL.append("t1.hora_fin_turno,");
-      consultaSQL.append("t1.id_perfil_detalle_horario,"); 
-      consultaSQL.append("t1.id_perfil_horario,"); 
-      consultaSQL.append("t1.nombre_perfil,"); 
-      consultaSQL.append("t1.horaInicioFinTurno"); 
+      consultaSQL.append("t1.id_perfil_horario,");
+      consultaSQL.append("t1.nombre_perfil,");
+      //consultaSQL.append("t1.horaInicioFinTurno"); 
+      //consultaSQL.append("t1.hora_inicio_turno,");
+      //consultaSQL.append("t1.hora_fin_turno,");
+      consultaSQL.append("t1.id_perfil_detalle_horario"); 
       consultaSQL.append(" FROM ");
-      consultaSQL.append(NOMBRE_VISTA);
+      consultaSQL.append(NOMBRE_VISTA); 
       consultaSQL.append(" t1 ");
 	  consultaSQL.append(sqlWhere);
 	  consultaSQL.append(sqlOrderBy);
@@ -268,12 +268,12 @@ public class TurnoDao {
           consultaSQL.append("t1.ip_actualizacion,");
           consultaSQL.append("t1.usuario_creacion,");
           consultaSQL.append("t1.usuario_actualizacion,");
-          consultaSQL.append("t1.hora_inicio_turno,");
-          consultaSQL.append("t1.hora_fin_turno,");
           consultaSQL.append("t1.id_perfil_detalle_horario,"); 
           consultaSQL.append("t1.id_perfil_horario,");
-          consultaSQL.append("t1.nombre_perfil,"); 
-          consultaSQL.append("t1.horaInicioFinTurno"); 
+          consultaSQL.append("t1.nombre_perfil "); 
+          //consultaSQL.append("t1.hora_inicio_turno,");
+          //consultaSQL.append("t1.hora_fin_turno,");
+          //consultaSQL.append("t1.horaInicioFinTurno"); 
           consultaSQL.append(" FROM ");
           consultaSQL.append(NOMBRE_VISTA);
         consultaSQL.append(" t1 ");

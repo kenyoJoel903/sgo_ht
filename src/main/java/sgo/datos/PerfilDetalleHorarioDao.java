@@ -16,7 +16,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import sgo.entidad.Cisterna;
 import sgo.entidad.Contenido;
 import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.RespuestaCompuesta;
@@ -45,8 +44,9 @@ public class PerfilDetalleHorarioDao {
 	
 	public final static String NOMBRE_CAMPO_ORDENAMIENTO = "numero_orden";
 	
-	public final static String CAMPO_PERFIL_HORARIO	=	"id_perfil_horario";
-	public final static String NOMBRE_CAMPO_CLAVE 	= 	"id_perfil_detalle_horario";
+	public final static String CAMPO_PERFIL_HORARIO	= "id_perfil_horario";
+	public final static String NOMBRE_CAMPO_CLAVE = "id_perfil_detalle_horario";
+	public final static String CAMPO_NUMERO_ORDEN = "numero_orden";
 	
 	public RespuestaCompuesta recuperarRegistros(Integer idPerfilHorario) {
 		
@@ -234,6 +234,79 @@ public class PerfilDetalleHorarioDao {
 		} catch (DataAccessException excepcionAccesoDatos) {
 			excepcionAccesoDatos.printStackTrace();
 			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
+		}
+		return respuesta;
+	}
+	
+	/**
+	 * 
+	 * @param idPerfilHorario
+	 * @param cantidadTurnos
+	 * @return
+	 */
+	public RespuestaCompuesta recuperarRegistroPorTurno(Integer idPerfilHorario, Integer cantidadTurnos) {
+		
+		String sqlWhere = "";
+		String sqlOrderBy = "";
+		int totalRegistros = 0, totalEncontrados = 0;
+		List<Object> parametros = new ArrayList<Object>();
+		
+		Contenido<PerfilDetalleHorario> contenido = new Contenido<PerfilDetalleHorario>();
+		List<PerfilDetalleHorario> listaRegistros = new ArrayList<PerfilDetalleHorario>();
+		
+		RespuestaCompuesta respuesta = new RespuestaCompuesta();
+		
+		try{
+			
+			sqlWhere = "WHERE t1." + CAMPO_PERFIL_HORARIO + " = " + idPerfilHorario + " AND t1." + CAMPO_NUMERO_ORDEN + " = " + cantidadTurnos;
+			sqlOrderBy= " ORDER BY t1." + NOMBRE_CAMPO_ORDENAMIENTO + " ASC";
+			
+			StringBuilder consultaSQL = new StringBuilder();
+			consultaSQL.setLength(0);
+			consultaSQL.append("SELECT count(" + NOMBRE_CAMPO_CLAVE	+ ") as total FROM " + NOMBRE_TABLA);
+			totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
+			totalEncontrados = totalRegistros;
+		
+			consultaSQL.setLength(0);
+			consultaSQL.append("SELECT ");
+			consultaSQL.append("t1.id_perfil_detalle_horario,");
+			consultaSQL.append("t1.numero_orden,");
+			consultaSQL.append("t1.glosa_turno,");
+			consultaSQL.append("t1.hora_inicio_turno,");
+			consultaSQL.append("t1.hora_fin_turno,");
+			consultaSQL.append("t1.id_perfil_horario,");
+			consultaSQL.append("t1.creado_el,");
+			consultaSQL.append("t1.creado_por,");
+			consultaSQL.append("t1.actualizado_por,");
+			consultaSQL.append("t1.actualizado_el,");
+			consultaSQL.append("t1.ip_creacion,");
+			consultaSQL.append("t1.ip_actualizacion,");
+			consultaSQL.append("t1.usuario_creacion,"); 
+			consultaSQL.append("t1.usuario_actualizacion, ");
+			consultaSQL.append("CONCAT(t1.hora_inicio_turno, ' - ', t1.hora_fin_turno) AS horaInicioFinTurno ");
+			consultaSQL.append(" FROM ");
+			consultaSQL.append(NOMBRE_VISTA);
+			consultaSQL.append(" t1 ");	
+			consultaSQL.append(sqlWhere);
+			consultaSQL.append(sqlOrderBy);
+			
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	parametros.toArray(), new PerfilDetalleHorarioMapper());
+			
+			contenido.carga = listaRegistros;
+			respuesta.estado = true;
+			respuesta.contenido = contenido;
+			respuesta.contenido.totalRegistros = totalRegistros;
+			respuesta.contenido.totalEncontrados = totalEncontrados;
+		} catch (DataAccessException excepcionAccesoDatos) {
+			excepcionAccesoDatos.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
+			respuesta.contenido = null;
+		} catch (Exception excepcionGenerica) {
+			excepcionGenerica.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_GENERICA;
+			respuesta.contenido = null;
 			respuesta.estado = false;
 		}
 		return respuesta;

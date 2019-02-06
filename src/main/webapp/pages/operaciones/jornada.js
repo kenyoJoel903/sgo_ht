@@ -97,24 +97,28 @@ $(document).ready(function() {
 	this.obj.filtroOperacion = $("#filtroOperacion");
 	this.obj.filtroOperacion.select2();
 	
-	this.obj.filtroOperacion.on('change', function(e){
+	this.obj.filtroOperacion.on('change', function(e) {
+		
 	   moduloActual.obj.idOperacionSeleccionado=$(this).val();
 	   moduloActual.obj.operacionSeleccionado=$(this).find("option:selected").attr('data-nombre-operacion');
 	   moduloActual.obj.clienteSeleccionado=$(this).find("option:selected").attr('data-nombre-cliente');
 	   moduloActual.obj.filtroEstacion.select2("val", moduloActual.obj.filtroEstacion.attr("data-valor-inicial"));		
 	   moduloActual.obj.ocultaContenedorTabla.show();
+	   
 	   $.ajax({
 		    type: constantes.PETICION_TIPO_GET,
 		    url: "./estacion/listar", 
 		    dataType: 'json',
-		    data: {filtroOperacion: moduloActual.obj.filtroOperacion.val()},	
+		    data: {
+		    	filtroOperacion: moduloActual.obj.filtroOperacion.val(),
+		    	filtroEstado: constantes.ESTADO_ACTIVO
+		    },	
 		    success: function (respuesta) {
 		    	if(respuesta.contenido.carga.length > 0){
 		    		document.getElementById("filtroEstacion").innerHTML = "";
 		    		for(var cont = 0; cont < respuesta.contenido.carga.length; cont++){
 		    			var registro = respuesta.contenido.carga[cont];
 		    			$('#filtroEstacion').append("<option value="+ registro.id +"> " + registro.nombre + "</option>");
-		    			
 		    		}
 		    		moduloActual.obj.filtroEstacion.select2("val", respuesta.contenido.carga[0].id);		
  		    	} else {

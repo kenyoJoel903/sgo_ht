@@ -20,6 +20,7 @@ public class ContometroJornada {
 	
 	private Producto producto;
 	private Jornada jornada;
+	private PerfilHorario perfilHorario;
 	private Contometro contometro;
 	
 	public static final int ESTADO_ABIERTO=1;
@@ -205,4 +206,12 @@ public class ContometroJornada {
 	public void setDescripcionContometro(String descripcionContometro) {
 		this.descripcionContometro = descripcionContometro;
 	}
+	public PerfilHorario getPerfilHorario() {
+		return perfilHorario;
+	}
+	public void setPerfilHorario(PerfilHorario perfilHorario) {
+		this.perfilHorario = perfilHorario;
+	}
+
+
 }

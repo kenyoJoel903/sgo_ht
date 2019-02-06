@@ -273,7 +273,7 @@ moduloTurno.prototype.inicializaApertura = function(registro, valor) {
 		referenciaModulo.obj.cntCierre.hide();
 		referenciaModulo.obj.cntVistaDetalleTurno.hide();
 		referenciaModulo.obj.cntApertura.show();    
-		referenciaModulo.datosCabecera();//esto para llenar la cabecera
+		referenciaModulo.datosCabecera(registro);
 		referenciaModulo.recuperarTanquesDespachando();
 		
 		if (valor == 2) {
@@ -293,25 +293,31 @@ moduloTurno.prototype.recuperarApertura = function() {
 	
 	  var referenciaModulo = this;
 	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,"Procesando petici\u00f3n...");
+
+	  console.log(" **** recuperarApertura **** ");
+	  console.dir("idJornadaSeleccionada:: " + referenciaModulo.obj.idJornadaSeleccionada);
+	  console.dir("idPerfilHorarioSeleccionado:: " + referenciaModulo.obj.idPerfilHorarioSeleccionado);
+	  console.dir("cantidadTurnos:: " + referenciaModulo.cantidadTurnos);
 	  
 	  $.ajax({
 	      type: constantes.PETICION_TIPO_GET,
 	      url: referenciaModulo.URL_RECUPERAR_APERTURA, 
 	      contentType: referenciaModulo.TIPO_CONTENIDO, 
 	      data: {
-	    	  idJornada:referenciaModulo.obj.idJornadaSeleccionada,
-	    	  cantidadTurnos:referenciaModulo.cantidadTurnos
+	    	  idJornada: referenciaModulo.obj.idJornadaSeleccionada, 
+	    	  cantidadTurnos: referenciaModulo.cantidadTurnos,
+	    	  idPerfilHorario: referenciaModulo.obj.idPerfilHorarioSeleccionado
     	  }, 
 	      success: function(respuesta) {
 			if (!respuesta.estado) {
 				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-			} else {	  
-			  if (respuesta.valor==0) { //Existe turno abierto
-				  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);	
-			  } else {
-				  referenciaModulo.inicializaApertura(respuesta.contenido.carga, respuesta.valor);	        	         	          	  
-				  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);	           
-			  } 
+			} else {
+				if (respuesta.valor == 0) { //Existe turno abierto
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);	
+				} else {
+					referenciaModulo.inicializaApertura(respuesta.contenido.carga, respuesta.valor);	        	         	          	  
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);	           
+				} 
 			}
 	      },                  
 	      error: function() {
@@ -382,9 +388,33 @@ moduloTurno.prototype.recuperarApertura = function() {
 		  });
 	};
 	
-moduloTurno.prototype.botonCierre = function(){
+moduloTurno.prototype.botonCierre = function() {
+	
 	var referenciaModulo = this;
+	
+	console.log(" *** botonCierre *** ");
+	
 	try {
+		
+		$.ajax({
+			type: constantes.PETICION_TIPO_GET,
+			url: referenciaModulo.URL_RECUPERAR_CIERRE, 
+			contentType: referenciaModulo.TIPO_CONTENIDO, 
+			data: {
+				idTurno: referenciaModulo.obj.idTurnoSeleccionado
+			}, 
+			success: function(response) {
+				if (!response.estado) {
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, response.mensaje);
+				} else {
+					referenciaModulo.datosCabecera(response.contenido.carga); // JAFETH
+				}
+			},                  
+			error: function() {
+				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Hubo un error en la petici\u00f3n");
+			}
+		});
+		
 		referenciaModulo.modoEdicion = constantes.MODO_CIERRE_TURNO;
 		referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_TURNO_CERRAR);
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.CERRAR_DETALLE_PROGRAMACION);
@@ -393,7 +423,7 @@ moduloTurno.prototype.botonCierre = function(){
 		referenciaModulo.obj.cntApertura.hide();
 		referenciaModulo.obj.cntVistaDetalleTurno.hide();
 		referenciaModulo.obj.cntCierre.show();		
-	    referenciaModulo.datosCabecera();
+	    //referenciaModulo.datosCabecera(); // JAFETH
 	    referenciaModulo.recuperarRegistro();
 	    referenciaModulo.obj.ocultaContenedorCierre.hide();
 	} catch(error){
@@ -603,7 +633,8 @@ moduloTurno.prototype.inicializarGrillaJornada=function(){
 	    referenciaModulo.obj.idEstacion= referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 2).data();
 	    referenciaModulo.obj.nombreEstacion = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 3).data();
 	    referenciaModulo.obj.fechaOperativaSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 5).data();
-	    referenciaModulo.obj.horaInicioFinTurnoSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
+	    referenciaModulo.obj.idPerfilHorarioSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
+	    //referenciaModulo.obj.horaInicioFinTurnoSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
 	    //referenciaModulo.obj.numeroOrdenSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 11).data();
 
 	    //console.log("numeroOrdenSeleccionado::: " + referenciaModulo.obj.numeroOrdenSeleccionado);

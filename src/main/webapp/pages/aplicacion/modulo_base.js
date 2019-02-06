@@ -435,7 +435,7 @@ moduloBase.prototype.inicializarGrilla=function(){
     ajax: {
       url: referenciaModulo.URL_LISTAR,
       type:constantes.PETICION_TIPO_GET,
-      data: function (d) {
+      data: function (d) {    	  
     	  referenciaModulo.llamadaAjax(d);
       }
     },
