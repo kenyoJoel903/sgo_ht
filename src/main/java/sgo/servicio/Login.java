@@ -73,7 +73,7 @@ private DiaOperativoDao dDiaOperativo;
 			vista.addObject("mensajeError", "");
 			
 			if (peticionHttp.getParameter("error")!= null) {
-		      error = Boolean.parseBoolean(peticionHttp.getParameter("error")) ;
+				error = Boolean.parseBoolean(peticionHttp.getParameter("error")) ;
 		    } else {
 				BufferedReader reader = peticionHttp.getReader();
 			    while ((line = reader.readLine()) != null) {
