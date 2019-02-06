@@ -114,6 +114,78 @@ public class PerfilDetalleHorarioDao {
 		return respuesta;
 	}
 	
+	/**
+	 * 
+	 * @param idPerfilHorario
+	 * @return
+	 */
+	public RespuestaCompuesta recuperarRegistro(Integer idPerfilDetalleHorario) {
+		
+		String sqlWhere = "";
+		String sqlOrderBy = "";
+		int totalRegistros = 0, totalEncontrados = 0;
+		List<Object> parametros = new ArrayList<Object>();
+		
+		Contenido<PerfilDetalleHorario> contenido = new Contenido<PerfilDetalleHorario>();
+		List<PerfilDetalleHorario> listaRegistros = new ArrayList<PerfilDetalleHorario>();
+		
+		RespuestaCompuesta respuesta = new RespuestaCompuesta();
+		
+		try{
+			
+			sqlWhere = "WHERE " + NOMBRE_CAMPO_CLAVE + " = " + idPerfilDetalleHorario;
+			sqlOrderBy = " ORDER BY " + NOMBRE_CAMPO_ORDENAMIENTO + " ASC";
+			
+			StringBuilder consultaSQL = new StringBuilder();
+			consultaSQL.setLength(0);
+			consultaSQL.append("SELECT count(" + NOMBRE_CAMPO_CLAVE	+ ") as total FROM " + NOMBRE_TABLA);
+			totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
+			totalEncontrados = totalRegistros;
+		
+			consultaSQL.setLength(0);
+			consultaSQL.append("SELECT ");
+			consultaSQL.append("t1.id_perfil_detalle_horario, ");
+			consultaSQL.append("t1.numero_orden, ");
+			consultaSQL.append("t1.glosa_turno, ");
+			consultaSQL.append("t1.hora_inicio_turno, ");
+			consultaSQL.append("t1.hora_fin_turno, ");
+			consultaSQL.append("t1.id_perfil_horario, ");
+			consultaSQL.append("t1.creado_el, ");
+			consultaSQL.append("t1.creado_por, ");
+			consultaSQL.append("t1.actualizado_por, ");
+			consultaSQL.append("t1.actualizado_el, ");
+			consultaSQL.append("t1.ip_creacion, ");
+			consultaSQL.append("t1.ip_actualizacion, ");
+			consultaSQL.append(" t1.usuario_creacion, "); 
+			consultaSQL.append(" t1.usuario_actualizacion ");
+			consultaSQL.append("FROM ");
+			consultaSQL.append(NOMBRE_VISTA);
+			consultaSQL.append(" t1 ");	
+			consultaSQL.append(sqlWhere);
+			consultaSQL.append(sqlOrderBy);
+			
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	parametros.toArray(), new PerfilDetalleHorarioMapper());
+			
+			contenido.carga = listaRegistros;
+			respuesta.estado = true;
+			respuesta.contenido = contenido;
+			respuesta.contenido.totalRegistros = totalRegistros;
+			respuesta.contenido.totalEncontrados = totalEncontrados;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
+			respuesta.contenido = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_GENERICA;
+			respuesta.contenido = null;
+			respuesta.estado = false;
+		}
+		
+		return respuesta;
+	}
+	
 	public RespuestaCompuesta guardarRegistro(PerfilDetalleHorario perfilDetalleHorario) {
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		StringBuilder consultaSQL = new StringBuilder();

@@ -37,17 +37,18 @@ private DiaOperativoDao dDiaOperativo;
 
 	@RequestMapping("/login")
 	public ModelAndView mostrarLogin(@ModelAttribute("loginEntity") LoginEntity loginEntity, HttpServletRequest peticionHTTP, Locale locale){
+		
 		ModelAndView vista = null;
 		boolean error=false;
 		String mensajeError="";
-		try{
+		
+		try {
 		 if (peticionHTTP.getParameter("error")!= null){
 		  error = Boolean.parseBoolean(peticionHTTP.getParameter("error")) ;
 		 }
 		 if (error==true){
 			Exception exception = (Exception) peticionHTTP.getSession().getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
 			mensajeError = exception.getMessage();
-//		  mensajeError = gestorDiccionario.getMessage("sgo.errorInicioSesion", null, locale);
 		 }
 		vista= new ModelAndView("login");
 		vista.addObject("mensajeError",mensajeError);

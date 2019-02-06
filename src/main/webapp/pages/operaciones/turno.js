@@ -46,7 +46,7 @@ $(document).ready(function() {
   moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraApertura'});
   moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraCierre'});
   moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.nombre'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'jornada.horaInicioFinTurno'});
+  moduloActual.columnasGrillaTurno.push({ "data": 'perfilHorario.lstDetalles[0].horaInicioFinTurno'});
   moduloActual.columnasGrillaTurno.push({ "data": 'responsable.nombreCompletoOperario'});
   moduloActual.columnasGrillaTurno.push({ "data": 'ayudante.nombreCompletoOperario'});
   moduloActual.columnasGrillaTurno.push({ "data": 'estado'});
@@ -555,26 +555,42 @@ moduloActual.llenarApertura = function(registro) {
      }
   };
   
+  moduloActual.perfilDetalleHorario = function(registro) {
+	  
+	  var perfilDetalleHorario = null;
+	  
+	  try {
+		  perfilDetalleHorario = registro[0].perfilHorario.lstDetalles[0];
+	  } catch(error){
+	
+	  }
+	
+	  try {
+		  perfilDetalleHorario = registro[0].lstDetalles[0];
+	  } catch(error){
+	
+	  }
+	
+	  try {
+		  perfilDetalleHorario = registro[0].turno.perfilHorario.lstDetalles[0];
+	  } catch(error){
+	
+	  }
+	  
+	  return perfilDetalleHorario;
+  };
+  
   moduloActual.datosCabecera = function(registro) {
 	  
 	  var referenciaModulo = this;
 	  var horaInicioFinTurno = null;
-	  var perfilDetalleHorario = null;
-	  
-	try {
-		perfilDetalleHorario = registro[0].perfilHorario.lstDetalles[0];
-	} catch(error){
 
-	}
-	
-	try {
-		perfilDetalleHorario = registro[0].lstDetalles[0];
-	} catch(error){
-
-	}
+	  console.log(" ***** datosCabecera ***** ");
 	  
-	  if (typeof perfilDetalleHorario != "undefined") {
-		  horaInicioFinTurno = perfilDetalleHorario.horaInicioTurno + '-' + perfilDetalleHorario.horaFinTurno;
+	  var perfilDetalleHorario = moduloActual.perfilDetalleHorario(registro);
+	  
+	  if (typeof perfilDetalleHorario != null) {
+		  horaInicioFinTurno = perfilDetalleHorario.horaInicioFinTurno;
 	  }
 	  
 	  //para pantalla apertura
@@ -634,14 +650,20 @@ moduloActual.llenarApertura = function(registro) {
       moduloActual.obj.cmpIdTanque.empty().append(elemento1).val(0).trigger('change');
   };
 
-  moduloActual.recuperarValores = function(registro){
+  moduloActual.recuperarValores = function(registro) {
+	  
     var eRegistro = {};
-    var referenciaModulo=this;
+    var referenciaModulo = this;
+    
     try {
+    	
+    	console.log(" ****** recuperarValores ********** ");
+    	console.dir(referenciaModulo.obj);
+    	
 	    //datos para el despacho
 	    eRegistro.idJornada = parseInt(referenciaModulo.idJornada);
-	    eRegistro.idResponsable=parseInt(referenciaModulo.obj.cmpOperarioResponsable.val());
-	    eRegistro.idAyudante=parseInt(referenciaModulo.obj.cmpOperarioAyudante.val());
+	    eRegistro.idResponsable = parseInt(referenciaModulo.obj.cmpOperarioResponsable.val());
+	    eRegistro.idAyudante = parseInt(referenciaModulo.obj.cmpOperarioAyudante.val());
 	    eRegistro.estado = parseInt(constantes.TIPO_TURNO_ABIERTO);
 	    
 	    //detalle

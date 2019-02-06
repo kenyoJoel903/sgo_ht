@@ -2,6 +2,7 @@ package sgo.seguridad;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ResourceBundle;
 
 import nl.captcha.Captcha;
 
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpSession;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
+	
 	@Autowired
 	private UsuarioDao dUsuario;
 	@Autowired
@@ -51,7 +53,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	private DiaOperativoDao dDiaOperativo;
 	@Autowired
 	private UserDetailsServiceImpl userService;
+	
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    	
     	GestorDirectorio gestorDirectorio=null;
         String nombreUsuario = authentication.getName();
         String clave = authentication.getCredentials().toString();
@@ -64,17 +68,20 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         //***REQ 3 - SAR STIC-STI-0004-2017***
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes!=null ?((ServletRequestAttributes) requestAttributes).getRequest():null;
+        
         //INI REQ 9000002341
         HttpSession session = request.getSession();
-        session.setAttribute("UsuarioLogueado",nombreUsuario);
-        session.setAttribute("ClaveIngresada",clave);
-        System.out.println("nombreUsuario : " +nombreUsuario );
-        System.out.println("claveIngresada : " +clave );
+        session.setAttribute("UsuarioLogueado", nombreUsuario);
+        session.setAttribute("ClaveIngresada", clave);
+        
         //FIN REQ 9000002341        
         String valorCaptcha = request!=null?(String) request.getParameter("captcha"):null;
-		String captcha=request!=null? ((Captcha)request.getSession().getAttribute(Captcha.NAME)).getAnswer():null;
+		String captcha = request!=null? ((Captcha) request.getSession().getAttribute(Captcha.NAME)).getAnswer():null;
 		
-        if(captcha==null || (captcha!=null && !captcha.equals(valorCaptcha))){
+		ResourceBundle rb = ResourceBundle.getBundle("jdbc");
+		boolean captchaValidation = Utilidades.strToBool(rb.getString("captchaValidation"));
+		
+        if( captchaValidation && (captcha==null || (captcha!=null && !captcha.equals(valorCaptcha))) ){
         	throw new BadCredentialsException("El código Captcha es incorrecto.");
         }        
         //***REQ 3 - SAR STIC-STI-0004-2017***

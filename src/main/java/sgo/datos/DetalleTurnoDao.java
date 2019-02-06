@@ -76,14 +76,16 @@ public class DetalleTurnoDao {
   }
 
   public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+	  
 	  StringBuilder consultaSQL = new StringBuilder();
 	  RespuestaCompuesta respuesta = new RespuestaCompuesta();
 	  Contenido<DetalleTurno> contenido = new Contenido<DetalleTurno>();
-	  List<String> filtrosWhere= new ArrayList<String>();
+	  List<String> filtrosWhere = new ArrayList<String>();
 	  List<DetalleTurno> listaRegistros = new ArrayList<DetalleTurno>();
 	  List<Object> parametros = new ArrayList<Object>();
 	  String sqlWhere = "";
-	  String sqlOrderBy="";
+	  String sqlOrderBy = "";
+	  
 	  try {	  
 	 	 
 	 	 
@@ -101,37 +103,39 @@ public class DetalleTurnoDao {
 	 			consultaSQL.setLength(0);
 	 			sqlWhere = "WHERE " + StringUtils.join(filtrosWhere,Constante.SQL_Y);
 	 		}
-	 		sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
-	    consultaSQL.append("SELECT ");
-	    consultaSQL.append("t1.id_turno,");
-	    consultaSQL.append("t1.id_dturno,");
-	    consultaSQL.append("t1.lectura_inicial,");
-	    consultaSQL.append("t1.lectura_final,");
-	    consultaSQL.append("t1.id_producto,");
-	    consultaSQL.append("t1.nombre_producto,");
-	    consultaSQL.append("t1.id_contometro,");
-	    consultaSQL.append("t1.alias_contometro,");
-	    consultaSQL.append("t1.id_jornada,");
-	    consultaSQL.append("t1.estado,");
-	    consultaSQL.append("t1.id_estacion,");
-	    consultaSQL.append("t1.estacion,");
-	    consultaSQL.append("t1.fecha_hora_apertura,");
-	    consultaSQL.append("t1.fecha_hora_cierre,");
-	    consultaSQL.append("t1.observacion,");
-	    consultaSQL.append("t1.creado_el,");
-	    consultaSQL.append("t1.creado_por,");
-	    consultaSQL.append("t1.actualizado_por,");
-	    consultaSQL.append("t1.actualizado_el,");
-	    consultaSQL.append("t1.ip_creacion,");
-	    consultaSQL.append("t1.ip_actualizacion,");
-	    consultaSQL.append("t1.usuario_creacion,");
-	    consultaSQL.append("t1.usuario_actualizacion,");
-	    consultaSQL.append("t1.fecha_operativa");
-      consultaSQL.append(" FROM ");
-      consultaSQL.append(NOMBRE_VISTA);
-      consultaSQL.append(" t1 ");
-      consultaSQL.append(sqlWhere);
-      consultaSQL.append(sqlOrderBy);
+	 		
+ 		sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
+		consultaSQL.append("SELECT ");
+		consultaSQL.append("t1.id_turno,");
+		consultaSQL.append("t1.id_dturno,");
+		consultaSQL.append("t1.lectura_inicial,");
+		consultaSQL.append("t1.lectura_final,");
+		consultaSQL.append("t1.id_producto,");
+		consultaSQL.append("t1.nombre_producto,");
+		consultaSQL.append("t1.id_contometro,");
+		consultaSQL.append("t1.alias_contometro,");
+		consultaSQL.append("t1.id_jornada,");
+		consultaSQL.append("t1.estado,");
+		consultaSQL.append("t1.id_estacion,");
+		consultaSQL.append("t1.estacion,");
+		consultaSQL.append("t1.fecha_hora_apertura,");
+		consultaSQL.append("t1.fecha_hora_cierre,");
+		consultaSQL.append("t1.observacion,");
+		consultaSQL.append("t1.creado_el,");
+		consultaSQL.append("t1.creado_por,");
+		consultaSQL.append("t1.actualizado_por,");
+		consultaSQL.append("t1.actualizado_el,");
+		consultaSQL.append("t1.ip_creacion,");
+		consultaSQL.append("t1.ip_actualizacion,");
+		consultaSQL.append("t1.usuario_creacion,");
+		consultaSQL.append("t1.usuario_actualizacion,");
+		consultaSQL.append("t1.fecha_operativa");
+		  consultaSQL.append(" FROM ");
+		  consultaSQL.append(NOMBRE_VISTA);
+		  consultaSQL.append(" t1 ");
+		  consultaSQL.append(sqlWhere);
+		  consultaSQL.append(sqlOrderBy);
+		  
       listaRegistros = jdbcTemplate.query(consultaSQL.toString(), parametros.toArray(), new DetalleTurnoMapper());
       contenido.totalRegistros = listaRegistros.size();
       contenido.totalEncontrados = listaRegistros.size();
@@ -139,17 +143,16 @@ public class DetalleTurnoDao {
       respuesta.mensaje = "OK";
       respuesta.estado = true;
       respuesta.contenido = contenido;
+      
      } catch (DataAccessException excepcionAccesoDatos) {
       excepcionAccesoDatos.printStackTrace();
       respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
       respuesta.estado = false;
       respuesta.contenido = null;
      }
+	  
      return respuesta;
   }
-  
-
-  
   
   public RespuestaCompuesta recuperarRegistro(int ID){
       StringBuilder consultaSQL= new StringBuilder();   

@@ -665,4 +665,17 @@ public static int parseInt(String s) {
     return out;
 }
 
+public static boolean strToBool(String s) {
+	
+	boolean out = false;
+	
+    try { 
+    	out = Boolean.valueOf(s);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 }
