@@ -20,9 +20,11 @@ public class UserDetailsServiceImpl extends JdbcDaoImpl {
     	//String errorMessage= "Usuario no encontrado";
     	String errorMessage= "Usuario o clave incorrecto.";
         Usuario mUsuario = usuarioDAO.getRecord(username);
+        
         if (mUsuario == null) {
         	throw new UsernameNotFoundException(errorMessage);
-        }       
+        }
+        
         Rol mRol = mUsuario.getRol();
         Collection<SimpleGrantedAuthority> listaRoles = new ArrayList<SimpleGrantedAuthority>();
         listaRoles.add(new SimpleGrantedAuthority(mRol.getNombre()));

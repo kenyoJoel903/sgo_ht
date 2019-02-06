@@ -1081,7 +1081,7 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
         * Inicio: Perfil Detalle Horario
         * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
         */
-        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistros(eTurno.getIdPerfilDetalleHorario());
+        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
         
         if (respuestaPerfilDetalle.estado == false) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
