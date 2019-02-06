@@ -276,7 +276,7 @@ public class EstacionControlador {
 		 //parametros.setTxtFiltro((httpRequest.getParameter("txtFiltro")));
    }
    
-   parametros.setFiltroEstado(Constante.FILTRO_TODOS);
+   parametros.setFiltroEstado(Constante.FILTRO_TODOS); 
    if (httpRequest.getParameter("filtroEstado") != null) {
 	   parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
    }

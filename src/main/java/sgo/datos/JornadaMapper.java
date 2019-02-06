@@ -30,12 +30,12 @@ public class JornadaMapper implements RowMapper<Jornada> {
 			eJornada.setObservacion(Utilidades.cleanXSS(rs.getString("observacion")));
 			eJornada.setFechaOperativa(rs.getDate("fecha_operativa"));
 			eJornada.setTotalDespachos(rs.getInt("total_despachos"));
-			eJornada.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+			//eJornada.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
 	
 			PerfilDetalleHorario perfilDetalleHorario = new PerfilDetalleHorario();
-			perfilDetalleHorario.setId(rs.getInt("id_perfil_detalle_horario"));
-			perfilDetalleHorario.setNumeroOrden(rs.getInt("numero_orden"));
-			perfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+			//perfilDetalleHorario.setId(rs.getInt("id_perfil_detalle_horario"));
+			//perfilDetalleHorario.setNumeroOrden(rs.getInt("numero_orden"));
+			//perfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
 			List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
 			lstDetalles.add(perfilDetalleHorario);
 			

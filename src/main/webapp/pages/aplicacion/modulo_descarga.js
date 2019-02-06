@@ -3525,18 +3525,17 @@ moduloDescarga.prototype.validaFormularioXSS= function(formulario){
 moduloDescarga.prototype.validaPermisos= function(){
   var referenciaModulo = this;
   try{
-  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
-  referenciaModulo.obj.ocultaContenedorTablaDiaOperativo.show();
-  referenciaModulo.obj.ocultaContenedorTablaCargaTanque.show();
-  referenciaModulo.obj.ocultaContenedorTablaDescarga.show();
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+
+	  referenciaModulo.obj.ocultaContenedorTablaDiaOperativo.show();
+	  referenciaModulo.obj.ocultaContenedorTablaCargaTanque.show();
+	  referenciaModulo.obj.ocultaContenedorTablaDescarga.show();
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
 	  $.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './validaPermisos/validar',
 	    contentType: referenciaModulo.TIPO_CONTENIDO, 
 	    data: { permiso : referenciaModulo.descripcionPermiso, },	
 	    success: function(respuesta) {
-	      console.log("respuesta.estado " + respuesta.estado);
 	      if(!respuesta.estado){
 	    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	  referenciaModulo.obj.ocultaContenedorTablaDiaOperativo.hide();

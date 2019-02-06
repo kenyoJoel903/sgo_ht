@@ -5,6 +5,7 @@ $(document).ready(function() {
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR_JORNADA = './jornada/listar';
   moduloActual.URL_RECUPERAR_APERTURA = './turno/recuperarApertura';
+  moduloActual.URL_RECUPERAR_CIERRE = './turno/recuperarCierre';
   moduloActual.URL_RECUPERA_ULTIMA_JORNADA = './turno/obtieneUltimaJornada'; 
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_ELIMINAR = moduloActual.urlBase + '/eliminar';
@@ -24,7 +25,7 @@ $(document).ready(function() {
   moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
   moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
   moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'horaInicioFinTurno'}); // 10
+  moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.id'}); // 10
   //moduloActual.columnasGrillaJornada.push({ "data": 'numeroOrden'}); // 10
   
   // Columnas jornada
@@ -45,7 +46,7 @@ $(document).ready(function() {
   moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraApertura'});
   moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraCierre'});
   moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.nombre'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'jornada.horaInicioFinTurno'});
+  moduloActual.columnasGrillaTurno.push({ "data": 'perfilHorario.lstDetalles[0].horaInicioFinTurno'});
   moduloActual.columnasGrillaTurno.push({ "data": 'responsable.nombreCompletoOperario'});
   moduloActual.columnasGrillaTurno.push({ "data": 'ayudante.nombreCompletoOperario'});
   moduloActual.columnasGrillaTurno.push({ "data": 'estado'});
@@ -162,6 +163,7 @@ $(document).ready(function() {
 	   moduloActual.obj.clienteSeleccionado=$(this).find("option:selected").attr('data-nombre-cliente');
 	   moduloActual.obj.filtroEstacion.select2("val", moduloActual.obj.filtroEstacion.attr("data-valor-inicial"));		
 	   moduloActual.obj.ocultaContenedorTabla.show();
+	   
 	   $.ajax({
 		    type: constantes.PETICION_TIPO_GET,
 		    url: "./estacion/listar", 
@@ -553,20 +555,50 @@ moduloActual.llenarApertura = function(registro) {
      }
   };
   
-  moduloActual.datosCabecera = function() {
+  moduloActual.perfilDetalleHorario = function(registro) {
+	  
+	  var perfilDetalleHorario = null;
+	  
+	  try {
+		  perfilDetalleHorario = registro[0].perfilHorario.lstDetalles[0];
+	  } catch(error){
+	
+	  }
+	
+	  try {
+		  perfilDetalleHorario = registro[0].lstDetalles[0];
+	  } catch(error){
+	
+	  }
+	
+	  try {
+		  perfilDetalleHorario = registro[0].turno.perfilHorario.lstDetalles[0];
+	  } catch(error){
+	
+	  }
+	  
+	  return perfilDetalleHorario;
+  };
+  
+  moduloActual.datosCabecera = function(registro) {
 	  
 	  var referenciaModulo = this;
-	  
-	  console.log(" *********** datosCabecera ");
-	  console.log(referenciaModulo.obj.horaInicioFinTurnoSeleccionado);
+	  var horaInicioFinTurno = null;
 
+	  console.log(" ***** datosCabecera ***** ");
+	  
+	  var perfilDetalleHorario = moduloActual.perfilDetalleHorario(registro);
+	  
+	  if (typeof perfilDetalleHorario != null) {
+		  horaInicioFinTurno = perfilDetalleHorario.horaInicioFinTurno;
+	  }
+	  
 	  //para pantalla apertura
 	  moduloActual.obj.cmpClienteApertura.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion') + " / " + $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente') );
 	  moduloActual.obj.cmpEstacion.text(moduloActual.obj.nombreEstacion);
 	  moduloActual.obj.cmpDiaOperativoApertura.text(
-		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)
-		  + "  (" + referenciaModulo.obj.horaInicioFinTurnoSeleccionado + ")"
-	  );
+		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)+ " (" + horaInicioFinTurno + ")"
+	  ); 
 	  moduloActual.obj.cmpHoraInicio.val("");
 	  var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
       elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, 0);
@@ -580,8 +612,7 @@ moduloActual.llenarApertura = function(registro) {
       moduloActual.obj.cmpClienteCierre.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion') + " / " + $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente') );
 	  moduloActual.obj.cmpEstacionCierre.text(moduloActual.obj.nombreEstacion);
 	  moduloActual.obj.cmpDiaOperativoCierre.text(
-		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)
-		  + "  (" + referenciaModulo.obj.horaInicioFinTurnoSeleccionado + ")"
+		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado) + " (" + horaInicioFinTurno + ")"
 	  );
       
 	  moduloActual.obj.cmpCierreEstacion.val(referenciaModulo.obj.estacionSeleccionado);
@@ -619,14 +650,20 @@ moduloActual.llenarApertura = function(registro) {
       moduloActual.obj.cmpIdTanque.empty().append(elemento1).val(0).trigger('change');
   };
 
-  moduloActual.recuperarValores = function(registro){
+  moduloActual.recuperarValores = function(registro) {
+	  
     var eRegistro = {};
-    var referenciaModulo=this;
+    var referenciaModulo = this;
+    
     try {
+    	
+    	console.log(" ****** recuperarValores ********** ");
+    	console.dir(referenciaModulo.obj);
+    	
 	    //datos para el despacho
 	    eRegistro.idJornada = parseInt(referenciaModulo.idJornada);
-	    eRegistro.idResponsable=parseInt(referenciaModulo.obj.cmpOperarioResponsable.val());
-	    eRegistro.idAyudante=parseInt(referenciaModulo.obj.cmpOperarioAyudante.val());
+	    eRegistro.idResponsable = parseInt(referenciaModulo.obj.cmpOperarioResponsable.val());
+	    eRegistro.idAyudante = parseInt(referenciaModulo.obj.cmpOperarioAyudante.val());
 	    eRegistro.estado = parseInt(constantes.TIPO_TURNO_ABIERTO);
 	    
 	    //detalle

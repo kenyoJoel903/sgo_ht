@@ -142,10 +142,10 @@ public class EstacionDao {
 			consultaSQL.append("t1.id_operacion,");
 			consultaSQL.append("t1.nombre_operacion,");
 			consultaSQL.append("t1.metodo_descarga,");
-			consultaSQL.append(" 0 tipo_apertura_tanque,");
-			consultaSQL.append(" 0 numero_decimales_contometro,");
-			consultaSQL.append("t1.id_perfil_horario,");
-			consultaSQL.append("t1.nombre_perfil,");
+			consultaSQL.append("0 tipo_apertura_tanque,");
+			consultaSQL.append("0 numero_decimales_contometro,");
+			consultaSQL.append("0 id_perfil_horario,");
+			consultaSQL.append("0 nombre_perfil,");
 			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");

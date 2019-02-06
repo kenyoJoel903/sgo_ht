@@ -1719,18 +1719,18 @@ moduloTransporte.prototype.validarFormulario=function(){
 
 moduloTransporte.prototype.validaPermisos= function(){
   var referenciaModulo = this;
+  
   try{
-  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
-  referenciaModulo.obj.ocultaContenedorTabla.show();
-  referenciaModulo.obj.ocultaContenedorDetalleTransporte.show();
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+	  referenciaModulo.obj.ocultaContenedorTabla.show();
+	  referenciaModulo.obj.ocultaContenedorDetalleTransporte.show();
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+	  
 	  $.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './validaPermisos/validar',
 	    contentType: referenciaModulo.TIPO_CONTENIDO, 
 	    data: { permiso : referenciaModulo.descripcionPermiso, },	
 	    success: function(respuesta) {
-	      console.log("respuesta.estado " + respuesta.estado);
 	      if(!respuesta.estado){
 	    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	  referenciaModulo.obj.ocultaContenedorTabla.hide();

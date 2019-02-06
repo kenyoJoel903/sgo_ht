@@ -61,7 +61,7 @@ public class PerfilDetalleHorario extends EntidadBase{
 		this.rango = rango;
 	}
 	public String getHoraInicioFinTurno() {
-		return horaInicioFinTurno;
+		return hora_inicio_turno + "-" + hora_fin_turno;
 	}
 	public void setHoraInicioFinTurno(String horaInicioFinTurno) {
 		this.horaInicioFinTurno = horaInicioFinTurno;

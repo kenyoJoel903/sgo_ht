@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import sgo.entidad.PerfilDetalleHorario;
+import sgo.utilidades.Utilidades;
 
 //Agregado por req 9000003068
 
@@ -24,7 +25,8 @@ public class PerfilDetalleHorarioMapper implements RowMapper<PerfilDetalleHorari
 			ePerfilDetalleHorario.setHoraInicioTurno(rs.getString("hora_inicio_turno"));
 			ePerfilDetalleHorario.setHoraFinTurno(rs.getString("hora_fin_turno"));
 			ePerfilDetalleHorario.setIdPerfilHorario(rs.getInt("id_perfil_horario"));
-			
+			ePerfilDetalleHorario.setHoraInicioFinTurno(Utilidades.cleanXSS(rs.getString("horaInicioFinTurno")));
+
 			//Parametros de auditoria
 			ePerfilDetalleHorario.setCreadoPor(rs.getInt("creado_por"));
 			ePerfilDetalleHorario.setCreadoEl(rs.getLong("creado_el"));

@@ -154,12 +154,13 @@ public class JornadaDao {
 			consultaSQL.append("t1.estado_estacion,");
 			consultaSQL.append("t1.total_despachos,");
 			consultaSQL.append("t1.id_perfil_horario,");
-			consultaSQL.append("t1.nombre_perfil,"); 
-			consultaSQL.append("t1.horaInicioFinTurno,");
-			consultaSQL.append("t1.numero_orden,");
+			consultaSQL.append("t1.nombre_perfil,"); // JAFETH - HE PUESTO ESTO EN ZEORO ,. sale error en sgov2a-vp/admin/jornada,.,.
+			//consultaSQL.append("0 AS id_perfil_detalle_horario,");
+			//consultaSQL.append("0 AS horaInicioFinTurno,");
+			//consultaSQL.append("0 AS numero_orden,");
 			
 			//Campos de auditoria
-			consultaSQL.append("t1.creado_el,");
+			consultaSQL.append("t1.creado_el,"); 
 			consultaSQL.append("t1.creado_por,");
 			consultaSQL.append("t1.actualizado_por,");
 			consultaSQL.append("t1.actualizado_el,");
@@ -168,13 +169,13 @@ public class JornadaDao {
 			consultaSQL.append("t1.ip_creacion,");
 			consultaSQL.append("t1.ip_actualizacion");
 			consultaSQL.append(" FROM ");
-			consultaSQL.append(NOMBRE_VISTA);
+			consultaSQL.append(NOMBRE_VISTA);  
 			consultaSQL.append(" t1 ");
 			consultaSQL.append(sqlWhere);
 			consultaSQL.append(sqlOrderBy);
 			consultaSQL.append(sqlLimit);
 			
-			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new JornadaMapper());
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(), parametros.toArray(), new JornadaMapper());
 			contenido.carga = listaRegistros;
 			respuesta.estado = true;
 			respuesta.contenido = contenido;
@@ -221,7 +222,7 @@ public class JornadaDao {
 			consultaSQL.append("t1.total_despachos,");
 			consultaSQL.append("0 AS id_perfil_horario,");
 			consultaSQL.append("0 AS nombre_perfil,");
-			consultaSQL.append("0 AS horaInicioFinTurno,");
+			//consultaSQL.append("0 AS horaInicioFinTurno,");
 
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");

@@ -25,6 +25,7 @@ public class Turno  extends EntidadBase {
   private int horaFinTurno;
 
   private Jornada jornada;
+  private PerfilHorario perfilHorario;
   private Operario responsable;
   private Operario ayudante;
   private List<DetalleTurno> turnoDetalles;
@@ -166,6 +167,12 @@ public int getHoraFinTurno() {
 }
 public void setHoraFinTurno(int horaFinTurno) {
 	this.horaFinTurno = horaFinTurno;
+}
+public PerfilHorario getPerfilHorario() {
+	return perfilHorario;
+}
+public void setPerfilHorario(PerfilHorario perfilHorario) {
+	this.perfilHorario = perfilHorario;
 }
 
 }

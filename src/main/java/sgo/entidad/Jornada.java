@@ -48,14 +48,13 @@ public class Jornada extends EntidadBase {
 	public static final int ESTADO_REGISTRADO = 2;
 	public static final int ESTADO_CERRADO = 3;
 	public static final int ESTADO_LIQUIDADO = 4;
-	
-	static final int MAXIMA_LONGITUD_OBSERVACION = 700;
+	public static final int MAXIMA_LONGITUD_OBSERVACION = 700;
 	
 	public void agregarContometroJornada(ContometroJornada elemento){
-	 if (this.contometroJornada == null){
-	  this.contometroJornada = new ArrayList<ContometroJornada>();
-	 }
-	 this.contometroJornada.add(elemento);
+		if (this.contometroJornada == null) {
+			this.contometroJornada = new ArrayList<ContometroJornada>();
+		}
+		this.contometroJornada.add(elemento);
 	}
 	
 	public void agregarTanqueJornada(TanqueJornada elemento){

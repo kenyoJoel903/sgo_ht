@@ -650,4 +650,32 @@ public static boolean isInteger(String s) {
     return true;
 }
 
+public static int parseInt(String s) {
+	
+	int out = 0;
+	
+    try { 
+    	out = Integer.parseInt(s); 
+    } catch(NumberFormatException e) { 
+    	e.getStackTrace();
+    } catch(NullPointerException e) {
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
+public static boolean strToBool(String s) {
+	
+	boolean out = false;
+	
+    try { 
+    	out = Boolean.valueOf(s);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 }
