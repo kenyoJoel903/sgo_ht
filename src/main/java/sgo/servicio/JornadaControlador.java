@@ -928,26 +928,28 @@ public class JornadaControlador {
 			
 			//TODO
 			//validacion de producto por tanque
-			ParametrosListar argumentosProd = new ParametrosListar();
-			//argumentosProd.setFiltroOperacion(eJornada.get)
-			argumentosProd.setFiltroEstacion(eJornada.getIdEstacion());
-			RespuestaCompuesta listaProdPorEstacion = dProducto.recuperarRegistrosPorOperacion(argumentosProd);
-			for (int b = 0; b < listaProdPorEstacion.contenido.carga.size(); b++) {
-				Producto prodEstacion =(Producto) listaProdPorEstacion.contenido.carga.get(b);
-				int atencionProducto = 0;
-				
-				for (int a = 0; a < tanqueApertura.size(); a++) {
-					int idProd = tanqueApertura.get(a).getIdProducto();
-					
-					if(idProd == prodEstacion.getId()){
-						atencionProducto++;
-					}
-				}
-
-				if(atencionProducto == 0){
-					throw new Exception(gestorDiccionario.getMessage("sgo.jornada.soloUnTanquePorProducto", new Object[] {  prodEstacion.getNombre() }, locale));
-				}
-			}
+//			Inicio comentado por req 9000003068====================================================================================================
+//			ParametrosListar argumentosProd = new ParametrosListar();
+//			//argumentosProd.setFiltroOperacion(eJornada.get)
+//			argumentosProd.setFiltroEstacion(eJornada.getIdEstacion());
+//			RespuestaCompuesta listaProdPorEstacion = dProducto.recuperarRegistrosPorOperacion(argumentosProd);
+//			for (int b = 0; b < listaProdPorEstacion.contenido.carga.size(); b++) {
+//				Producto prodEstacion =(Producto) listaProdPorEstacion.contenido.carga.get(b);
+//				int atencionProducto = 0;
+//				
+//				for (int a = 0; a < tanqueApertura.size(); a++) {
+//					int idProd = tanqueApertura.get(a).getIdProducto();
+//					
+//					if(idProd == prodEstacion.getId()){
+//						atencionProducto++;
+//					}
+//				}
+//
+//				if(atencionProducto == 0){
+//					throw new Exception(gestorDiccionario.getMessage("sgo.jornada.soloUnTanquePorProducto", new Object[] {  prodEstacion.getNombre() }, locale));
+//				}
+//			}
+//			Fin comentado por req 9000003068===========================================================================================================
 		
         	eJornada.setActualizadoEl(Calendar.getInstance().getTime().getTime());
             eJornada.setActualizadoPor(principal.getID()); 

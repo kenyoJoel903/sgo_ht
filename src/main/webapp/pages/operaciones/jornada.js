@@ -59,6 +59,7 @@ $(document).ready(function() {
   };
 
   moduloActual.inicializarCampos= function(){
+	  
 	this.obj.cantTurnosEstacion =$("#cantTurnosEstacion");
     this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
     this.obj.idEstacionSeleccionado =$("#idEstacionSeleccionado");
@@ -912,7 +913,74 @@ $(document).ready(function() {
       },
     }); 
     
-    
+//	Inicio Agregado por req 9000003068===============
+	this.obj.btnConfirmGuardarApertura = $("#btnConfirmGuardarApertura");
+	
+	this.obj.btnConfirmGuardarApertura.on('click', function(e) {
+		
+		console.log(moduloActual.obj.filtroOperacion.val());
+		console.log(moduloActual.obj.filtroEstacion.val());
+		console.log(constantes.ESTADO_ACTIVO);
+		
+		var filas = moduloActual.obj.grupoAperturaTanques;
+		
+		$.ajax({
+		    type: constantes.PETICION_TIPO_GET,
+		    url: "./producto/listarPorOperacion",
+		    contentType: "application/json",
+		    data: {
+		    	filtroOperacion : moduloActual.obj.filtroOperacion.val(),
+		    	filtroEstacion: moduloActual.obj.filtroEstacion.val(),
+		    	filtroEstado: constantes.ESTADO_ACTIVO,		    	
+		        paginacion:0
+		    },
+		    success: function(respuesta) {
+		    	
+		    	var encontrado;
+		    	var mensaje = "";
+		    	var resultados= respuesta.contenido.carga;
+		    	
+		    	resultados.forEach(function(element) {
+		    		
+		    		encontrado = 0;
+		    		var numTanques = filas.getForms().length;
+		    		for(var j = 0; j < numTanques; j++){
+						var formularioTanque= filas.getForm(j);
+						var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
+						var nombreProductoTanque = cmpProductoTanque.val();
+						
+						console.log(element.nombre + ' ' + nombreProductoTanque);
+						
+						if(element.nombre == nombreProductoTanque){
+							encontrado = 1;
+							break;
+						}
+					}
+		    		
+		    		if(encontrado == 0){
+		    			mensaje = mensaje + element.nombre + ","
+		    		}
+	    		});
+		    	
+		    	if(mensaje != ""){
+			    	mesaje = mensaje.substring(0, mensaje.length);
+			    	console.log('mensaje: ' + mensaje)
+			    	$("#cmpMensajeConfirmGuardarApertura").text("Los productos " + mensaje + " no tienen tanque asignado. ¿Desea continuar? Esta configuración es irreversible");
+		    		$("#frmConfirmarGuardarApertura").show();
+		    	}else{
+		    		moduloActual.botonGuardarApertura;
+		    	}
+		
+		    },
+		    error: function(xhr,estado,error) {
+		      
+		    }
+		  });
+
+		
+		
+	});
+//	Fin Agregado por req 9000003068=================
 
   };
   
@@ -1197,6 +1265,7 @@ $(document).ready(function() {
 	      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
 	      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
 	      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
+	      
 	      console.log("3a:" + contador)
 	      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
 	      console.log("4a:" + contador)
