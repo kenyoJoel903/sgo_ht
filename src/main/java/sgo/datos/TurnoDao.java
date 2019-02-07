@@ -235,67 +235,72 @@ public class TurnoDao {
     return respuesta;
   }
     
-  public RespuestaCompuesta recuperarRegistro(int ID){
-      StringBuilder consultaSQL= new StringBuilder();   
-      List<Turno> listaRegistros=new ArrayList<Turno>();
-      Contenido<Turno> contenido = new Contenido<Turno>();
-      RespuestaCompuesta respuesta= new RespuestaCompuesta();
-      try {
-          consultaSQL.append("SELECT ");
-          consultaSQL.append("t1.id_turno,");
-          consultaSQL.append("t1.fecha_hora_apertura,");
-          consultaSQL.append("t1.id_estacion,");
-          consultaSQL.append("t1.id_jornada,");
-          consultaSQL.append("t1.fecha_operativa,");
-          consultaSQL.append("t1.estacion,");
-          consultaSQL.append("t1.id_operacion,");
-          consultaSQL.append("t1.nombre_operario,");
-          consultaSQL.append("t1.cantidad_turnos,");
-          consultaSQL.append("t1.apellido_paterno_operario,");
-          consultaSQL.append("t1.apellido_materno_operario,");
-          consultaSQL.append("t1.ayudante,");
-          consultaSQL.append("t1.ayudante_paterno,");
-          consultaSQL.append("t1.ayudante_materno,");
-          consultaSQL.append("t1.estado,");
-          consultaSQL.append("t1.comentario,");
-          consultaSQL.append("t1.fecha_hora_cierre,");
-          consultaSQL.append("t1.observacion,");
-          consultaSQL.append("t1.creado_el,");
-          consultaSQL.append("t1.creado_por,");
-          consultaSQL.append("t1.actualizado_por,");
-          consultaSQL.append("t1.actualizado_el,");
-          consultaSQL.append("t1.ip_creacion,");
-          consultaSQL.append("t1.ip_actualizacion,");
-          consultaSQL.append("t1.usuario_creacion,");
-          consultaSQL.append("t1.usuario_actualizacion,");
-          consultaSQL.append("t1.id_perfil_detalle_horario,"); 
-          consultaSQL.append("t1.id_perfil_horario,");
-          consultaSQL.append("t1.nombre_perfil "); 
-          //consultaSQL.append("t1.hora_inicio_turno,");
-          //consultaSQL.append("t1.hora_fin_turno,");
-          //consultaSQL.append("t1.horaInicioFinTurno"); 
-          consultaSQL.append(" FROM ");
-          consultaSQL.append(NOMBRE_VISTA);
-        consultaSQL.append(" t1 ");
-        consultaSQL.append(" WHERE ");
-        consultaSQL.append(NOMBRE_CAMPO_CLAVE);
-        consultaSQL.append("=?");
+  public RespuestaCompuesta recuperarRegistro(int ID) {
+	  
+	  StringBuilder consultaSQL = new StringBuilder();   
+	  List<Turno> listaRegistros = new ArrayList<Turno>();
+	  Contenido<Turno> contenido = new Contenido<Turno>();
+	  RespuestaCompuesta respuesta = new RespuestaCompuesta();
+
+	  try {
+
+		consultaSQL.append("SELECT ");
+		consultaSQL.append("t1.id_turno,");
+		consultaSQL.append("t1.fecha_hora_apertura,");
+		consultaSQL.append("t1.id_estacion,");
+		consultaSQL.append("t1.id_jornada,");
+		consultaSQL.append("t1.fecha_operativa,");
+		consultaSQL.append("t1.estacion,");
+		consultaSQL.append("t1.id_operacion,");
+		consultaSQL.append("t1.nombre_operario,");
+		consultaSQL.append("t1.cantidad_turnos,");
+		consultaSQL.append("t1.apellido_paterno_operario,");
+		consultaSQL.append("t1.apellido_materno_operario,");
+		consultaSQL.append("t1.ayudante,");
+		consultaSQL.append("t1.ayudante_paterno,");
+		consultaSQL.append("t1.ayudante_materno,");
+		consultaSQL.append("t1.estado,");
+		consultaSQL.append("t1.comentario,");
+		consultaSQL.append("t1.fecha_hora_cierre,");
+		consultaSQL.append("t1.observacion,");
+		consultaSQL.append("t1.creado_el,");
+		consultaSQL.append("t1.creado_por,");
+		consultaSQL.append("t1.actualizado_por,");
+		consultaSQL.append("t1.actualizado_el,");
+		consultaSQL.append("t1.ip_creacion,");
+		consultaSQL.append("t1.ip_actualizacion,");
+		consultaSQL.append("t1.usuario_creacion,");
+		consultaSQL.append("t1.usuario_actualizacion,");
+		consultaSQL.append("t1.id_perfil_detalle_horario,"); 
+		consultaSQL.append("t1.id_perfil_horario,");
+		consultaSQL.append("t1.nombre_perfil ");
+		//consultaSQL.append("t1.hora_inicio_turno,");
+		//consultaSQL.append("t1.hora_fin_turno,");
+		//consultaSQL.append("t1.horaInicioFinTurno"); 
+		consultaSQL.append(" FROM ");
+		consultaSQL.append(NOMBRE_VISTA);
+		consultaSQL.append(" t1 ");
+		consultaSQL.append(" WHERE ");
+		consultaSQL.append(NOMBRE_CAMPO_CLAVE);
+		consultaSQL.append("=?");
+		
+		listaRegistros = jdbcTemplate.query(consultaSQL.toString(),new Object[] {ID},new TurnoMapper());
+		contenido.totalRegistros = listaRegistros.size();
+		contenido.totalEncontrados = listaRegistros.size();
+		contenido.carga = listaRegistros;
+		respuesta.mensaje = "OK";
+		respuesta.estado = true;
+		respuesta.contenido = contenido;
         
-        listaRegistros= jdbcTemplate.query(consultaSQL.toString(),new Object[] {ID},new TurnoMapper());
-        contenido.totalRegistros=listaRegistros.size();
-        contenido.totalEncontrados=listaRegistros.size();
-        contenido.carga= listaRegistros;
-        respuesta.mensaje="OK";
-        respuesta.estado=true;
-        respuesta.contenido = contenido;      
-      } catch (DataAccessException excepcionAccesoDatos) {
-        excepcionAccesoDatos.printStackTrace();
+      } catch (DataAccessException e) {
+        e.printStackTrace();
         respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
-        respuesta.estado=false;
-        respuesta.contenido=null;
+        respuesta.estado = false;
+        respuesta.contenido = null;
       }
+      
       return respuesta;
-    }
+  }
   
   public RespuestaCompuesta guardarRegistro(Turno turno) {
 	  

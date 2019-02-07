@@ -743,6 +743,12 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
 	return respuesta;
 }
 
+/**
+ * 
+ * @param ID
+ * @param locale
+ * @return
+ */
 @RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
 public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 	
@@ -765,27 +771,51 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
 		}
 		
-		//Recuperar el registro ID TURNO
+		//Recuperar el registro 'DetalleTurno'
     	respuesta = dDetalleTurnoDao.recuperarRegistroDetalleTurno(ID);
-    	//Verifica el resultado de la accion
         if (respuesta.estado == false) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        //jafeth
-        //Carga el turno
+        //Carga el DetalleTurno
         DetalleTurno eDetalleTurno = (DetalleTurno) respuesta.getContenido().getCarga().get(0);
         
-		//retorna la 'horaCierre' del ultimo turno cerrado
-        ParametrosListar parameters = new ParametrosListar(); 
-        parameters.setIdJornada(eDetalleTurno.getTurno().getIdJornada());
-        parameters.setFiltroEstado(Turno.ESTADO_CERRADO);
-        Respuesta respuestaSimple = dTurno.recuperarUltimoTurnoCerrado(parameters);
+        // jafeth
         
-		if (respuestaSimple.valor != null) {
-			Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(respuestaSimple.valor, "yyyy/MM/dd HH:mm:ss").getTime());
-			eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
-		}
+		//Recuperar el registro 'Turno'
+        RespuestaCompuesta respuestaTurno = dTurno.recuperarRegistro(eDetalleTurno.getTurno().getId());
+        if (!respuesta.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
+        
+        //Carga el DetalleTurno
+        Turno eTurno = (Turno) respuestaTurno.getContenido().getCarga().get(0);
+        
+        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
+        if (!respuestaPerfilDetalle.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
+        
+        PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+        
+//		Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(eTurno.getFechaHoraApertura(), "yyyy/MM/dd HH:mm:ss").getTime());
+//		eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
+        
+        
+        // jafeth
+        
+		//retorna la 'horaCierre' del ultimo turno cerrado
+//        ParametrosListar parameters = new ParametrosListar(); 
+//        parameters.setIdJornada(eDetalleTurno.getTurno().getIdJornada());
+//        parameters.setFiltroEstado(Turno.ESTADO_CERRADO);
+//        Respuesta respuestaSimple = dTurno.recuperarUltimoTurnoCerrado(parameters);
+//        
+//		if (respuestaSimple.valor != null) {
+//			Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(respuestaSimple.valor, "yyyy/MM/dd HH:mm:ss").getTime());
+//			eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
+//		}
+		
+		//eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
 
 		List<DetalleTurno> list = new ArrayList<DetalleTurno>();
 		list.add(eDetalleTurno);
@@ -902,7 +932,6 @@ RespuestaCompuesta guardarRegistro(@RequestBody Turno eTurno, HttpServletRequest
 		* Fin: Perfil Detalle Horario
 		*/
 
-		// JAFETH - -AQUI GUARDA TURNO
         respuesta = dTurno.guardarRegistro(eTurno);
         //Verifica si la accion se ejecuto de forma satisfactoria
         if (respuesta.estado == false) {     	

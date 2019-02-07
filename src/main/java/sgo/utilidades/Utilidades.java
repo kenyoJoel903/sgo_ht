@@ -213,7 +213,6 @@ public class Utilidades extends BaseUtilidades {
   return sql;
  }
  
- 
  public static java.sql.Date convierteStringADate(String str,String patron) {
 	  java.sql.Date sql = null;
 	  SimpleDateFormat format = new SimpleDateFormat(patron);
@@ -224,7 +223,8 @@ public class Utilidades extends BaseUtilidades {
 	   e.printStackTrace();
 	  }
 	  return sql;
-	 }
+}
+ 
  public static String convierteDateAString(Date str,String patron) {
 	  String sql = null;
 	  SimpleDateFormat format = new SimpleDateFormat(patron);	

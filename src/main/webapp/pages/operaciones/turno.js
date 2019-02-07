@@ -539,6 +539,10 @@ moduloActual.llenarApertura = function(registro) {
     var numeroDetalles= registro.length;
     this.obj.grupoCierre.removeAllForms();
     
+    // fechaHoraApertura
+    console.log(" ******** XXXX llenarFormularioCierre ********");
+    console.dir(registro[0].turno);
+    
     referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
     referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
     
@@ -587,15 +591,17 @@ moduloActual.llenarApertura = function(registro) {
 	  
 	  var perfilDetalleHorario = moduloActual.perfilDetalleHorario(registro);
 	  
-	  if (typeof perfilDetalleHorario != null) {
-		  horaInicioFinTurno = perfilDetalleHorario.horaInicioFinTurno;
+	  if (typeof perfilDetalleHorario != null && referenciaModulo.modoEdicion == constantes.MODO_APERTURA_TURNO) {
+		  horaInicioFinTurno = perfilDetalleHorario.horaInicioTurno;
+	  } else if (typeof perfilDetalleHorario != null && referenciaModulo.modoEdicion == constantes.MODO_CIERRE_TURNO) {
+		  horaInicioFinTurno = perfilDetalleHorario.horaFinTurno;
 	  }
 	  
 	  //para pantalla apertura
 	  moduloActual.obj.cmpClienteApertura.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion') + " / " + $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente') );
 	  moduloActual.obj.cmpEstacion.text(moduloActual.obj.nombreEstacion);
 	  moduloActual.obj.cmpDiaOperativoApertura.text(
-		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)+ " (" + horaInicioFinTurno + ")"
+		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)+ " " + horaInicioFinTurno
 	  ); 
 	  moduloActual.obj.cmpHoraInicio.val("");
 	  var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
@@ -610,7 +616,7 @@ moduloActual.llenarApertura = function(registro) {
       moduloActual.obj.cmpClienteCierre.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion') + " / " + $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente') );
 	  moduloActual.obj.cmpEstacionCierre.text(moduloActual.obj.nombreEstacion);
 	  moduloActual.obj.cmpDiaOperativoCierre.text(
-		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado) + " (" + horaInicioFinTurno + ")"
+		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado) + " " + horaInicioFinTurno
 	  );
       
 	  moduloActual.obj.cmpCierreEstacion.val(referenciaModulo.obj.estacionSeleccionado);

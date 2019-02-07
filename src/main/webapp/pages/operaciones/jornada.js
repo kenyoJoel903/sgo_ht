@@ -1181,31 +1181,21 @@ $(document).ready(function() {
 	    for(var contador = 0; contador < numeroContometros; contador++){
 	      referenciaModulo.obj.GrupoAperturaContometros.addForm();
 	      
-	      console.log('Asize: ' + referenciaModulo.obj.GrupoAperturaContometros.size());
 	      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
-
-	      console.log("1a: " + contador);
 	      formulario.find("input[elemento-grupo='idContometros']").val(registro.contometroJornada[contador].contometro.id);
-	      console.log("2a:" + contador);
 	      formulario.find("input[elemento-grupo='contometros']").val(registro.contometroJornada[contador].contometro.alias);
 
 	      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
 	      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
 	      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
-	      console.log("3a:" + contador)
 	      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
-	      console.log("4a:" + contador)
-	      
-	      // formulario.find("input[elemento-grupo='productosContometros']").val(registro.contometroJornada[contador].producto.nombre);
-	      console.log("5a:" + contador)
 	      formulario.find("input[elemento-grupo='lecturaInicial']").val(registro.contometroJornada[contador].lecturaFinal);
-	      console.log("6a:" + contador)
-	      console.log(formulario);
 	    }
 	    
 	    if (registro.tanqueJornada != null){
 	    	numeroTanques = registro.tanqueJornada.length;
 	    }
+	    
 	    referenciaModulo.obj.grupoAperturaTanques.removeAllForms();
 	    for(var cont = 0; cont < numeroTanques; cont++){
 	      referenciaModulo.obj.grupoAperturaTanques.addForm();
@@ -1247,24 +1237,19 @@ $(document).ready(function() {
 	    referenciaModulo.obj.GrupoAperturaContometros.removeAllForms();
 	    for(var contador = 0; contador < numeroContometros; contador++){
 	      referenciaModulo.obj.GrupoAperturaContometros.addForm();
-	      console.log('Bsize: ' + referenciaModulo.obj.GrupoAperturaContometros.getForms().length);
 	      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
 	      
-	      console.log("1b: " + contador);
 	      formulario.find("input[elemento-grupo='idContometros']").val(registro.contometro[contador].id);
 	      formulario.find("input[elemento-grupo='contometros']").val(registro.contometro[contador].alias);
 	      formulario.find("input[elemento-grupo='lecturaInicial']").val("");
-
 	      formulario.find("select[elemento-grupo='productosContometros']").prop('disabled', false);
 	      formulario.find("input[elemento-grupo='lecturaInicial']").prop('disabled', false);
-
-	      console.log("2b: " + contador);
-	      console.log(formulario);
 	    }
 
 	    if (registro.tanque != null){
 	    	numeroTanques = registro.tanque.length;
 	    }
+	    
 	    referenciaModulo.obj.grupoAperturaTanques.removeAllForms();
 	    for(var cont = 0; cont < numeroTanques; cont++){
 	      referenciaModulo.obj.grupoAperturaTanques.addForm();
@@ -1320,9 +1305,7 @@ $(document).ready(function() {
 	        var cmpContometros			= formularioContometro.find("input[elemento-grupo='contometros']");
 	        var cmpProductoContometro	= formularioContometro.find("select[elemento-grupo='productosContometros']");
 	        var cmpLecturaInicial		= formularioContometro.find("input[elemento-grupo='lecturaInicial']");
-	        
-	        console.log(cmpLecturaInicial.val());
-	        
+
 	        contometroJornada.lecturaInicial = parseFloat(cmpLecturaInicial.val().replace(moduloActual.SEPARADOR_MILES,""));
 	        contometroJornada.idContometro = parseInt(cmpIdContometros.val());
 	        contometroJornada.idProducto = parseInt(cmpProductoContometro.val());
@@ -1375,7 +1358,7 @@ $(document).ready(function() {
   moduloActual.llenarFormularioCierre = function(registro){
 	  var referenciaModulo = this;
 	  console.log("==============================================Formulario Cierre ============================================");
-	  console.log(registro);
+
 	var numeroContometros = 0;
 	var numeroTanques = 0;
 	var numeroProductos = 0;
