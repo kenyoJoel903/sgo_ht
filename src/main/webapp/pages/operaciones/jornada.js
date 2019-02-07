@@ -1962,7 +1962,7 @@ $(document).ready(function() {
   };
 
 moduloActual.resetearFormularioApertura= function(){
-  console.log("entra resetearFormularioApertura");
+	
   var referenciaModulo= this;
   referenciaModulo.obj.frmApertura[0].reset();
 
@@ -1977,7 +1977,7 @@ moduloActual.resetearFormularioApertura= function(){
 };
 
 moduloActual.resetearFormularioCierre= function(){
-  console.log("entra resetearFormularioApertura");
+
   var referenciaModulo= this;
   referenciaModulo.obj.frmCierre[0].reset();
 
@@ -1992,7 +1992,7 @@ moduloActual.resetearFormularioCierre= function(){
 };
 
 moduloActual.resetearFormularioCambioTanque= function(){
-  console.log("entra resetearFormularioApertura");
+
   var referenciaModulo= this;
   referenciaModulo.obj.frmCambioTanque[0].reset();
 
@@ -2007,7 +2007,7 @@ moduloActual.resetearFormularioCambioTanque= function(){
 };
 
 moduloActual.resetearFormularioMuestreo= function(){
-  console.log("entra resetearFormularioApertura");
+
   var referenciaModulo= this;
   referenciaModulo.obj.frmMuestreo[0].reset();
 

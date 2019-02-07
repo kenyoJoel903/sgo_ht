@@ -5,4 +5,5 @@ bin/*
 .classpath
 .settings
 BACKUP-settings
-#src/main/resources/jdbc.properties
+src/main/resources/jdbc.properties
+src/main/webapp/WEB-INF/jdbc.properties
