@@ -395,9 +395,6 @@ moduloTurno.prototype.botonCierre = function() {
 	
 	try {
 		
-		console.log(" ********* botonCierre 1111");
-		console.dir(referenciaModulo.obj);
-		
 		$.ajax({
 			type: constantes.PETICION_TIPO_GET,
 			url: referenciaModulo.URL_RECUPERAR_CIERRE, 
@@ -406,11 +403,6 @@ moduloTurno.prototype.botonCierre = function() {
 				idTurno: referenciaModulo.obj.idTurnoSeleccionado
 			}, 
 			success: function(response) {
-				
-				console.log(" ********* botonCierre  2222 ");
-				console.dir(response.contenido.carga);
-				
-				
 				if (!response.estado) {
 					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, response.mensaje);
 				} else {

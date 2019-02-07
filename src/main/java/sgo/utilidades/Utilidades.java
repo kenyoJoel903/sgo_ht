@@ -678,4 +678,20 @@ public static boolean strToBool(String s) {
     return out;
 }
 
+public static long differenceBetweenTwoTimes(String start, String end) {
+	
+	long difference = 0;
+	
+    try { 
+    	SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+    	Date date1 = format.parse(start);
+    	Date date2 = format.parse(end);
+    	difference = date2.getTime() - date1.getTime();
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return difference;
+}
+
 }

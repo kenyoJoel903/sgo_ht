@@ -539,10 +539,6 @@ moduloActual.llenarApertura = function(registro) {
     var numeroDetalles= registro.length;
     this.obj.grupoCierre.removeAllForms();
     
-    // fechaHoraApertura
-    console.log(" ******** XXXX llenarFormularioCierre ********");
-    console.dir(registro[0].turno);
-    
     referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
     referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
     

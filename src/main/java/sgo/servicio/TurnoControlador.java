@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -780,15 +781,11 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
         //Carga el DetalleTurno
         DetalleTurno eDetalleTurno = (DetalleTurno) respuesta.getContenido().getCarga().get(0);
         
-        // jafeth
-        
-		//Recuperar el registro 'Turno'
         RespuestaCompuesta respuestaTurno = dTurno.recuperarRegistro(eDetalleTurno.getTurno().getId());
         if (!respuesta.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        //Carga el DetalleTurno
         Turno eTurno = (Turno) respuestaTurno.getContenido().getCarga().get(0);
         
         RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
@@ -798,11 +795,17 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
         
         PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
         
-//		Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(eTurno.getFechaHoraApertura(), "yyyy/MM/dd HH:mm:ss").getTime());
-//		eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
+        /**
+         * Conseguir 'HoraCierre', se trae la 'FechaHoraApertura' del turno
+         * y se le suma la diferencia de horas del 'PerfilDetalleHorario'
+         */
+        String horaInicioTurno = ePerfilDetalleHorario.getHoraInicioTurno();
+        String horaFinTurno = ePerfilDetalleHorario.getHoraFinTurno();
+        long difference = Utilidades.differenceBetweenTwoTimes(horaInicioTurno, horaFinTurno);
+        Timestamp fechaHoraApertura = eTurno.getFechaHoraApertura();
+        fechaHoraApertura.setTime(fechaHoraApertura.getTime() + difference);
         
-        
-        // jafeth
+        eDetalleTurno.getTurno().setFechaHoraCierre(fechaHoraApertura);
         
 		//retorna la 'horaCierre' del ultimo turno cerrado
 //        ParametrosListar parameters = new ParametrosListar(); 
@@ -814,8 +817,6 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 //			Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(respuestaSimple.valor, "yyyy/MM/dd HH:mm:ss").getTime());
 //			eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
 //		}
-		
-		//eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
 
 		List<DetalleTurno> list = new ArrayList<DetalleTurno>();
 		list.add(eDetalleTurno);
