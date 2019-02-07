@@ -370,13 +370,13 @@ public class PerfilDetalleHorarioDao {
 			respuesta.contenido = contenido;
 			respuesta.contenido.totalRegistros = totalRegistros;
 			respuesta.contenido.totalEncontrados = totalEncontrados;
-		} catch (DataAccessException excepcionAccesoDatos) {
-			excepcionAccesoDatos.printStackTrace();
+		} catch (DataAccessException e) {
+			e.printStackTrace();
 			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
 			respuesta.estado = false;
 			respuesta.contenido = null;
-		} catch (Exception excepcionGenerica) {
-			excepcionGenerica.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 			respuesta.error = Constante.EXCEPCION_GENERICA;
 			respuesta.contenido = null;
 			respuesta.estado = false;

@@ -507,7 +507,6 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
                 
                 DetalleTurno eDetalleTurno = (DetalleTurno) oRespuesta.getContenido().getCarga().get(0);
                 
-
                 /**
                  * Inicio: Perfil Detalle Horario
                  * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
@@ -886,6 +885,22 @@ RespuestaCompuesta guardarRegistro(@RequestBody Turno eTurno, HttpServletRequest
 				 throw new Exception("La Hora de Apertura debe ser mayor que la hora Cierre : " + respuestaSimple.valor);
 			}
 		}
+		
+		/**
+		* Inicio: Perfil Detalle Horario
+		* Se trae el detalle del perfil, basado en la 'cantidadTurnos'
+		*/
+		RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistroPorTurno(eTurno.getIdPerfilHorario(), eTurno.getCantidadTurnosIncrement());
+		
+		if (!respuestaPerfilDetalle.estado && respuestaPerfilDetalle.getContenido().getCarga().size() == 0) {
+			 throw new Exception("No se pudo recuperar el detalle del Perfil.");
+		}
+		
+		PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+		eTurno.setPerfilDetalleHorario(ePerfilDetalleHorario);
+		/**
+		* Fin: Perfil Detalle Horario
+		*/
 
 		// JAFETH - -AQUI GUARDA TURNO
         respuesta = dTurno.guardarRegistro(eTurno);

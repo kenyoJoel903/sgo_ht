@@ -308,12 +308,12 @@ public class TurnoDao {
       consultaSQL.append("INSERT INTO ");
       consultaSQL.append(NOMBRE_TABLA);
       consultaSQL.append(" ( fecha_hora_apertura,id_jornada, responsable, ayudante,estado,comentario,observacion, ");
-      consultaSQL.append(" creado_el, creado_por, ip_creacion, actualizado_el, actualizado_por, ip_actualizacion) ");
-      //consultaSQL.append(" id_perfil_detalle_horario, numero_orden, hora_inicio_turno, hora_fin_turno) ");
+      consultaSQL.append(" creado_el, creado_por, ip_creacion, actualizado_el, actualizado_por, ip_actualizacion, ");
+      consultaSQL.append(" id_perfil_detalle_horario, numero_orden, hora_inicio_turno, hora_fin_turno) ");
       consultaSQL.append(" VALUES ");
       consultaSQL.append(" (:FechaHoraApertura,:IdJornada,:Responsable,:Ayudante,:Estado,:Comentario,:Observacion, ");
-      consultaSQL.append(" :CreadoEl,:CreadoPor,:IpCreacion,:ActualizadoEl,:ActualizadoPor,:IpActualizacion) ");
-      //consultaSQL.append(" :IdPerfilDetalleHorario, :NumeroOrden, :HoraInicioTurno, :HoraFinTurno) ");
+      consultaSQL.append(" :CreadoEl,:CreadoPor,:IpCreacion,:ActualizadoEl,:ActualizadoPor,:IpActualizacion, ");
+      consultaSQL.append(" :IdPerfilDetalleHorario, :NumeroOrden, :HoraInicioTurno, :HoraFinTurno) ");
       
       MapSqlParameterSource listaParametros = new MapSqlParameterSource();   
       listaParametros.addValue("FechaHoraApertura", turno.getFechaHoraApertura());
@@ -330,10 +330,10 @@ public class TurnoDao {
       listaParametros.addValue("IpCreacion", turno.getIpCreacion());
       listaParametros.addValue("IpActualizacion", turno.getIpActualizacion());
       listaParametros.addValue("FechaHoraCierre", turno.getFechaHoraCierre());
-//      listaParametros.addValue("IdPerfilDetalleHorario", turno.getIdPerfilDetalleHorario());
-//      listaParametros.addValue("NumeroOrden", turno.getNumeroOrden());
-//      listaParametros.addValue("HoraInicioTurno", turno.getHoraInicioTurno());
-//      listaParametros.addValue("HoraFinTurno", turno.getHoraFinTurno());
+      listaParametros.addValue("IdPerfilDetalleHorario", turno.getPerfilDetalleHorario().getId());
+      listaParametros.addValue("NumeroOrden", turno.getPerfilDetalleHorario().getNumeroOrden());
+      listaParametros.addValue("HoraInicioTurno", turno.getPerfilDetalleHorario().getHoraInicioTurno());
+      listaParametros.addValue("HoraFinTurno", turno.getPerfilDetalleHorario().getHoraFinTurno());
         
       SqlParameterSource namedParameters= listaParametros;
       /*Ejecuta la consulta y retorna las filas afectadas*/

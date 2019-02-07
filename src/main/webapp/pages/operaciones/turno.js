@@ -657,15 +657,13 @@ moduloActual.llenarApertura = function(registro) {
     
     try {
     	
-    	console.log(" ****** recuperarValores ********** ");
-    	console.dir(referenciaModulo.obj);
-    	
 	    //datos para el despacho
 	    eRegistro.idJornada = parseInt(referenciaModulo.idJornada);
 	    eRegistro.idResponsable = parseInt(referenciaModulo.obj.cmpOperarioResponsable.val());
 	    eRegistro.idAyudante = parseInt(referenciaModulo.obj.cmpOperarioAyudante.val());
 	    eRegistro.estado = parseInt(constantes.TIPO_TURNO_ABIERTO);
-	    eRegistro.idPerfilHorarioSeleccionado = parseInt(referenciaModulo.obj.idPerfilHorarioSeleccionado);
+	    eRegistro.idPerfilHorario = parseInt(referenciaModulo.obj.idPerfilHorarioSeleccionado);
+	    eRegistro.cantidadTurnos = parseInt(referenciaModulo.cantidadTurnos);
 	    
 	    //detalle
 	    eRegistro.turnoDetalles=[];
