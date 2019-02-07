@@ -1,75 +1,75 @@
 $(document).ready(function() {
 
-  var moduloActual = new moduloTurno();
-  moduloActual.urlBase='turno';
-  moduloActual.SEPARADOR_MILES = ",";
-  moduloActual.URL_LISTAR_JORNADA = './jornada/listar';
-  moduloActual.URL_RECUPERAR_APERTURA = './turno/recuperarApertura';
-  moduloActual.URL_RECUPERAR_CIERRE = './turno/recuperarCierre';
-  moduloActual.URL_RECUPERA_ULTIMA_JORNADA = './turno/obtieneUltimaJornada'; 
-  moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
-  moduloActual.URL_ELIMINAR = moduloActual.urlBase + '/eliminar';
-  moduloActual.URL_GUARDAR = moduloActual.urlBase + '/crear';
-  moduloActual.URL_ACTUALIZAR = moduloActual.urlBase + '/actualizar';
-  moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
-  moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
-  
-  //listado de jornadaf
-  moduloActual.ordenGrillaJornada=[[ 2, 'asc' ]];
-  moduloActual.columnasGrillaJornada.push({ "data": 'id'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.nombrePerfil'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'}); // 5
-  moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
-  moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.id'}); // 10
-  //moduloActual.columnasGrillaJornada.push({ "data": 'numeroOrden'}); // 10
-  
-  // Columnas jornada
-  moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
-  moduloActual.definicionColumnasJornada.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : false });
-  moduloActual.definicionColumnasJornada.push({"targets" : 3, "searchable" : true, "orderable" : false, "visible" : true });
-  moduloActual.definicionColumnasJornada.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true });
-  moduloActual.definicionColumnasJornada.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearFecha });
-  moduloActual.definicionColumnasJornada.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-right" });
-  moduloActual.definicionColumnasJornada.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
-  moduloActual.definicionColumnasJornada.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
-  moduloActual.definicionColumnasJornada.push({"targets" : 9, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoJornada });
-  moduloActual.definicionColumnasJornada.push({"targets" : 10, "searchable" : true, "orderable" : false, "visible" : false });
-  
-  //listado de jornada
-  moduloActual.ordenGrillaTurno=[[ 2, 'asc' ]];
-  moduloActual.columnasGrillaTurno.push({ "data": 'id'}); 
-  moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraApertura'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraCierre'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.nombre'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'perfilHorario.lstDetalles[0].horaInicioFinTurno'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'responsable.nombreCompletoOperario'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'ayudante.nombreCompletoOperario'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'estado'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.id'});
-  moduloActual.columnasGrillaTurno.push({ "data": 'jornada.fechaOperativa'});
+	var moduloActual = new moduloTurno();
+	moduloActual.urlBase='turno';
+	moduloActual.SEPARADOR_MILES = ",";
+	moduloActual.URL_LISTAR_JORNADA = './jornada/listar';
+	moduloActual.URL_RECUPERAR_APERTURA = './turno/recuperarApertura';
+	moduloActual.URL_RECUPERAR_CIERRE = './turno/recuperarCierre';
+	moduloActual.URL_RECUPERA_ULTIMA_JORNADA = './turno/obtieneUltimaJornada'; 
+	moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
+	moduloActual.URL_ELIMINAR = moduloActual.urlBase + '/eliminar';
+	moduloActual.URL_GUARDAR = moduloActual.urlBase + '/crear';
+	moduloActual.URL_ACTUALIZAR = moduloActual.urlBase + '/actualizar';
+	moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
+	moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
 
-  //Columnas jornada
-  moduloActual.definicionColumnasTurno.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
-  moduloActual.definicionColumnasTurno.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearTimestampToString });
-  moduloActual.definicionColumnasTurno.push({"targets" : 3, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearTimestampToString });
-  moduloActual.definicionColumnasTurno.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
-  moduloActual.definicionColumnasTurno.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
-  moduloActual.definicionColumnasTurno.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
-  moduloActual.definicionColumnasTurno.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
-  moduloActual.definicionColumnasTurno.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoTurno });
-  moduloActual.definicionColumnasTurno.push({"targets" : 9, "searchable" : true, "orderable" : false, "visible" : false });
-  moduloActual.definicionColumnasTurno.push({"targets" : 10, "searchable" : true, "orderable" : false, "visible" : false });
+	//listado de jornadaf
+	moduloActual.ordenGrillaJornada=[[ 2, 'asc' ]];
+	moduloActual.columnasGrillaJornada.push({ "data": 'id'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.nombrePerfil'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'}); // 5
+	moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
+	moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.id'}); // 10
+	//moduloActual.columnasGrillaJornada.push({ "data": 'numeroOrden'}); // 10
 
-  moduloActual.reglasValidacionFormulario={
-    //cmpFechaHoraInicio : { fechahora: true },
-    cmpHoraInicio : 		{ required: true },
-	cmpOperarioResponsable: { required: true}
-  };
+	// Columnas jornada
+	moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
+	moduloActual.definicionColumnasJornada.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : false });
+	moduloActual.definicionColumnasJornada.push({"targets" : 3, "searchable" : true, "orderable" : false, "visible" : true });
+	moduloActual.definicionColumnasJornada.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true });
+	moduloActual.definicionColumnasJornada.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearFecha });
+	moduloActual.definicionColumnasJornada.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-right" });
+	moduloActual.definicionColumnasJornada.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
+	moduloActual.definicionColumnasJornada.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
+	moduloActual.definicionColumnasJornada.push({"targets" : 9, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoJornada });
+	moduloActual.definicionColumnasJornada.push({"targets" : 10, "searchable" : true, "orderable" : false, "visible" : false });
+
+	//listado de jornada
+	moduloActual.ordenGrillaTurno=[[ 2, 'asc' ]];
+	moduloActual.columnasGrillaTurno.push({ "data": 'id'}); 
+	moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraApertura'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'fechaHoraCierre'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.nombre'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'perfilHorario.lstDetalles[0].horaInicioFinTurno'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'responsable.nombreCompletoOperario'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'ayudante.nombreCompletoOperario'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'estado'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'jornada.estacion.id'});
+	moduloActual.columnasGrillaTurno.push({ "data": 'jornada.fechaOperativa'});
+
+	//Columnas jornada
+	moduloActual.definicionColumnasTurno.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
+	moduloActual.definicionColumnasTurno.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearTimestampToString });
+	moduloActual.definicionColumnasTurno.push({"targets" : 3, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearTimestampToString });
+	moduloActual.definicionColumnasTurno.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
+	moduloActual.definicionColumnasTurno.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
+	moduloActual.definicionColumnasTurno.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
+	moduloActual.definicionColumnasTurno.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
+	moduloActual.definicionColumnasTurno.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoTurno });
+	moduloActual.definicionColumnasTurno.push({"targets" : 9, "searchable" : true, "orderable" : false, "visible" : false });
+	moduloActual.definicionColumnasTurno.push({"targets" : 10, "searchable" : true, "orderable" : false, "visible" : false });
+
+	moduloActual.reglasValidacionFormulario={
+	   //cmpFechaHoraInicio : { fechahora: true },
+	   cmpHoraInicio :     { required: true },
+	   cmpOperarioResponsable: { required: true}
+	};
 
   moduloActual.mensajesValidacionFormulario={
 	//cmpFechaHoraInicio: 	{ fechahora: "El campo 'Fecha y Hora Inicio' es obligatorio" },
@@ -584,8 +584,6 @@ moduloActual.llenarApertura = function(registro) {
 	  
 	  var referenciaModulo = this;
 	  var horaInicioFinTurno = null;
-
-	  console.log(" ***** datosCabecera ***** ");
 	  
 	  var perfilDetalleHorario = moduloActual.perfilDetalleHorario(registro);
 	  

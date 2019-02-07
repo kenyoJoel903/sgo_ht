@@ -996,6 +996,10 @@ moduloTurno.prototype.guardarCierre = function() {
 	if (!referenciaModulo.validaFormularioXSS("#frmCierre")) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,  cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.validarCierre()) {
+		
+		if (!confirm("Esta seguro de realizar el cierre del turno?")) {
+			return false;
+		}
 		  
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 		referenciaModulo.obj.ocultaContenedorCierre.show();
@@ -1008,7 +1012,7 @@ moduloTurno.prototype.guardarCierre = function() {
 			data: JSON.stringify(eRegistro),	
 			success: function(respuesta) {
 				if (!respuesta.estado) {
-					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 				} else {		    				    			    		
 					referenciaModulo.iniciarListado(respuesta.mensaje);
 				}
