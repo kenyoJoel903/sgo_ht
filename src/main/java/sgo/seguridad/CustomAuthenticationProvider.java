@@ -1,43 +1,29 @@
 package sgo.seguridad;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ResourceBundle;
 
 import nl.captcha.Captcha;
 
-import org.apache.poi.hssf.record.formula.functions.Days360;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import sgo.datos.DiaOperativoDao;
-import sgo.datos.EnlaceDao;
 import sgo.datos.ParametroDao;
 import sgo.datos.UsuarioDao;
-import sgo.entidad.Parametro;
 import sgo.entidad.ParametrosListar;
-import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.entidad.Usuario;
 import sgo.utilidades.Utilidades;
 
-
-
-
 import org.springframework.web.context.request.RequestContextHolder;//FIXME
 import org.springframework.web.context.request.RequestAttributes ; //FIXME
 import org.springframework.web.context.request.ServletRequestAttributes; //FIXME
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest; //FIXME
 import javax.servlet.http.HttpSession;

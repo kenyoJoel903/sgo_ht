@@ -1066,17 +1066,15 @@ moduloJornada.prototype.actualizarRegistro= function(){
   var referenciaModulo = this;
   var eRegistro = {};
 
-  //if (referenciaModulo.obj.frmPrincipal.valid()){
   	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
   	if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA){
-  		console.log("entra en actualizarRegistro por cierre de jornada");
   		referenciaModulo.obj.ocultaContenedorCierreJornada.show();
   		eRegistro = referenciaModulo.recuperarValoresCierre();
   	} else if (referenciaModulo.modoEdicion == constantes.MODO_MUESTREO_JORNADA){
-  		console.log("entra en actualizarRegistro por muestreo");
   		referenciaModulo.obj.ocultaContenedorMuestreoJornada.show();
   		eRegistro = referenciaModulo.recuperarValoresMuestreo();
 	}
+  	
     $.ajax({
       type: constantes.PETICION_TIPO_POST,
       url: referenciaModulo.URL_ACTUALIZAR, 

@@ -7,7 +7,7 @@ import org.springframework.context.MessageSource;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
 
-public class Turno  extends EntidadBase {
+public class Turno extends EntidadBase {
 
   private static final long serialVersionUID = 1L;
   private int id_turno;
@@ -20,12 +20,15 @@ public class Turno  extends EntidadBase {
   private Timestamp fecha_hora_cierre;
   private String observacion;
   private int idPerfilDetalleHorario;
+  private int idPerfilHorario;
+  private int cantidadTurnos;
   private int numeroOrden;
   private int horaInicioTurno;
   private int horaFinTurno;
 
   private Jornada jornada;
   private PerfilHorario perfilHorario;
+  private PerfilDetalleHorario perfilDetalleHorario;
   private Operario responsable;
   private Operario ayudante;
   private List<DetalleTurno> turnoDetalles;
@@ -173,6 +176,30 @@ public PerfilHorario getPerfilHorario() {
 }
 public void setPerfilHorario(PerfilHorario perfilHorario) {
 	this.perfilHorario = perfilHorario;
+}
+public int getIdPerfilHorario() {
+	return idPerfilHorario;
+}
+public void setIdPerfilHorario(int idPerfilHorario) {
+	this.idPerfilHorario = idPerfilHorario;
+}
+public int getCantidadTurnos() {
+	return cantidadTurnos;
+}
+public int getCantidadTurnosIncrement() {
+	return cantidadTurnos + 1;
+}
+public void setCantidadTurnos(int cantidadTurnos) {
+	this.cantidadTurnos = cantidadTurnos;
+}
+public static long getSerialversionuid() {
+	return serialVersionUID;
+}
+public PerfilDetalleHorario getPerfilDetalleHorario() {
+	return perfilDetalleHorario;
+}
+public void setPerfilDetalleHorario(PerfilDetalleHorario perfilDetalleHorario) {
+	this.perfilDetalleHorario = perfilDetalleHorario;
 }
 
 }

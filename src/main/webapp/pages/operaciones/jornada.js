@@ -549,7 +549,6 @@ $(document).ready(function() {
           cmpVolAguaFinalTanque.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
           
           cmpMedidaFinalTanque.on("change",function(){
-        	  console.log("cmpMedidaFinalTanque......on(change,function()");
         	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
         	  moduloActual.calcularVolumenObservadoFinal(cmpMedidaFinalTanque.val(), "GrupoCierreTanques", indiceFormulario);
           });
@@ -1083,12 +1082,12 @@ $(document).ready(function() {
 };
 
 	moduloActual.calcularVolumenObservadoFinal= function(medida, nombreSheepit, indiceFormulario){
-		console.log("medida:" + medida + "-nombreSheepit:" + nombreSheepit + "-indiceFormulario:" + indiceFormulario);
+		
 		var ref=this;
 		var parametros={};
 		var camposInvalidos = 0;
 		var volumenObservado = 0;
-		//volumenObservado = volumenObservado.toFixed(ref.NUMERO_DECIMALES);
+		
 		try {
 			if ((typeof medida == "undefined") || (medida == null) || (medida == '')){
 			  camposInvalidos++;
@@ -1114,19 +1113,15 @@ $(document).ready(function() {
 			        ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
 			        } else {
 			          if (respuesta.contenido.carga.length > 0 ) {
-			        	  console.log("If...");
 			            ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
 			            var registro = respuesta.contenido.carga[0];
 			            volumenObservado = parseInt(registro.volumen);
 			            //volumenObservado = volumenObservado.toFixed(ref.NUMERO_DECIMALES);			            
 			          } else {
-			        	  console.log("Else...");
 			        	  volumenObservado = 0;
 			            ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,cadenas.MENSAJE_ALTURA_NO_AFORADA);
 			          }
 			          
-			          console.log("volumenObservado:" + volumenObservado);
-			          //var formulario = moduloActual.obj.GrupoCierreTanques.getForm(indiceFormulario);
 			  	        formulario.find("input[elemento-grupo='volObsFinalTanque']").val(volumenObservado);
 			        }
 			        //ref.obj.ocultaFormularioDescarga.hide();
@@ -1581,7 +1576,6 @@ $(document).ready(function() {
 	    	numeroProductos = registro.producto.length;
 	    }
 	    
-	    console.log("numeros de productos " + numeroProductos);
 	    referenciaModulo.obj.GrupoCierreProducto.removeAllForms();
 
 	    for(var indice = 0; indice < numeroProductos; indice++){
@@ -1591,15 +1585,14 @@ $(document).ready(function() {
 		  formularioMuestreo.find("input[elemento-grupo='idProducto']").val(registro.producto[indice].id);
 		  formularioMuestreo.find("input[elemento-grupo='producto']").val(registro.producto[indice].nombre);
 	    }
-
   };
   
-  
-  moduloActual.recuperarValoresCierre = function(registro){
+  moduloActual.recuperarValoresCierre = function(registro) {
+	  
     var eRegistro = {};
     var referenciaModulo=this;
+    
     try {
-    	console.log("cmpCierreFechaJornada " + referenciaModulo.obj.cmpCierreFechaJornada.text());
 	    // datos para la jornada
 	    eRegistro.id = parseInt(referenciaModulo.obj.idJornada);
 	    eRegistro.estado = parseInt(constantes.TIPO_JORNADA_CERRADO);

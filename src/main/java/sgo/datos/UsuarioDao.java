@@ -934,14 +934,9 @@ public class UsuarioDao {
 		sqlSB.append("u.identidad, u.zona_horaria,u.estado,u.rol as id_rol,u.email,u.tipo,r.nombre as nombre_rol, u.id_operacion as id_operacion,u.id_cliente, ");
 		sqlSB.append(" u.creado_por,u.creado_el,u.actualizado_por,u.actualizado_el,u.ip_actualizacion,u.ip_creacion, u.usuario_creacion, u.usuario_actualizacion, ");
 		sqlSB.append(" k.referencia_planta_recepcion, k.referencia_destinatario_mercaderia, k.volumen_promedio_cisterna, k.nombre as nombre_operacion, c.nombre_corto as nombre_cliente, ");
-		//sqlSB.append(" u.clave_temporal, ");
 		sqlSB.append(" u6.id_transportista, u6.razon_social, u6.nombre_corto, u6.ruc, u.actualizacion_clave, u.intentos, u.clave_temporal ");
-		
-		//sqlSB.append(" u6.id_transportista, u6.razon_social, u6.nombre_corto, u6.ruc ");
-		
         sqlSB.append(" FROM ");
         sqlSB.append(NOMBRE_VISTA);
-        //sqlSB.append(NOMBRE_TABLA);
         sqlSB.append(" u INNER JOIN ");
         sqlSB.append(TABLA_ROL);
         sqlSB.append(" r ON u.rol = r.id_rol ");
@@ -950,6 +945,7 @@ public class UsuarioDao {
         sqlSB.append(" LEFT JOIN sgo.transportista u6 ON u.id_transportista = u6.id_transportista ");
         sqlSB.append(" WHERE u.nombre=?");
         Object[] params = {username};
+        
         try{
             mUsuario=(Usuario) jdbcTemplate.queryForObject(sqlSB.toString(), new UsuarioMapper(),params);
             sqlSB.setLength(0);
@@ -964,13 +960,13 @@ public class UsuarioDao {
             sqlSB.append(" WHERE pr.id_rol = ?");
             
             Object[] params2 = {mUsuario.getId_rol()};
-//            Object[] params2 = {mUsuario.getIdRol()};
             mUsuario.getRol().setPermisos(jdbcTemplate.query(sqlSB.toString(), new PermisoMapper(),params2));
             logger.info(mUsuario.getRol().getPermisos().size());
+            
         } catch(DataAccessException daEx){
-                logger.info(daEx.getMessage());
-               // daEx.printStackTrace();
+             logger.info(daEx.getMessage());
         }
+        
         return mUsuario;
 	}
 

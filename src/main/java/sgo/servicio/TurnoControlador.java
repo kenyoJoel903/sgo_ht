@@ -363,6 +363,8 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		//Recuperar registros
 		respuesta = dTurno.recuperarRegistros(parametros);
 		
+		int totalRegistros = respuesta.contenido.totalRegistros;
+		int totalEncontrados = respuesta.contenido.totalEncontrados;
 		List<Turno> listaRegistros = (List<Turno>) respuesta.contenido.getCarga();
 		
         /**
@@ -373,8 +375,10 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		for (Turno eTurno : listaRegistros) {
 	        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
 	        
-	        if (respuestaPerfilDetalle.estado == false) {        	
-	        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+	        if (!respuestaPerfilDetalle.estado) {
+	        	list.add(eTurno);
+	        	continue;
+	        	//throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
 	        }
 	        
 	        PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
@@ -388,17 +392,19 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 	        
 	        list.add(eTurno);
 		}
-		
+
         Contenido<Turno> contenido = new Contenido<Turno>();
         contenido.carga = list;
         respuesta.contenido = contenido;
-		respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
+        respuesta.contenido.totalRegistros = totalRegistros;
+        respuesta.contenido.totalEncontrados = totalEncontrados; 
+        respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
 		
-	} catch(Exception ex){
-		Utilidades.gestionaError(ex, sNombreClase, "recuperarRegistros");
-		respuesta.estado=false;
+	} catch(Exception e) {
+		Utilidades.gestionaError(e, sNombreClase, "recuperarRegistros");
+		respuesta.estado = false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
 	
 	return respuesta;
@@ -501,7 +507,6 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
                 
                 DetalleTurno eDetalleTurno = (DetalleTurno) oRespuesta.getContenido().getCarga().get(0);
                 
-
                 /**
                  * Inicio: Perfil Detalle Horario
                  * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
@@ -880,6 +885,22 @@ RespuestaCompuesta guardarRegistro(@RequestBody Turno eTurno, HttpServletRequest
 				 throw new Exception("La Hora de Apertura debe ser mayor que la hora Cierre : " + respuestaSimple.valor);
 			}
 		}
+		
+		/**
+		* Inicio: Perfil Detalle Horario
+		* Se trae el detalle del perfil, basado en la 'cantidadTurnos'
+		*/
+		RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistroPorTurno(eTurno.getIdPerfilHorario(), eTurno.getCantidadTurnosIncrement());
+		
+		if (!respuestaPerfilDetalle.estado && respuestaPerfilDetalle.getContenido().getCarga().size() == 0) {
+			 throw new Exception("No se pudo recuperar el detalle del Perfil.");
+		}
+		
+		PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+		eTurno.setPerfilDetalleHorario(ePerfilDetalleHorario);
+		/**
+		* Fin: Perfil Detalle Horario
+		*/
 
 		// JAFETH - -AQUI GUARDA TURNO
         respuesta = dTurno.guardarRegistro(eTurno);
@@ -1081,7 +1102,7 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
         * Inicio: Perfil Detalle Horario
         * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
         */
-        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistros(eTurno.getIdPerfilDetalleHorario());
+        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
         
         if (respuestaPerfilDetalle.estado == false) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
