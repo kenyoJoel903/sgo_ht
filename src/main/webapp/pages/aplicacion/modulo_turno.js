@@ -305,7 +305,7 @@ moduloTurno.prototype.recuperarApertura = function() {
 	      contentType: referenciaModulo.TIPO_CONTENIDO, 
 	      data: {
 	    	  idJornada: referenciaModulo.obj.idJornadaSeleccionada, 
-	    	  cantidadTurnos: referenciaModulo.cantidadTurnos,
+	    	  cantidadTurnos: referenciaModulo.cantidadTurnos, // jafeth
 	    	  idPerfilHorario: referenciaModulo.obj.idPerfilHorarioSeleccionado
     	  }, 
 	      success: function(respuesta) {
@@ -646,41 +646,45 @@ moduloTurno.prototype.inicializarGrillaJornada=function(){
 };
 
 //para el listado de Jornadas
-moduloTurno.prototype.llamadaAjaxGrillaTurno=function(e,configuracion,json){
-  var referenciaModulo=this;
-  referenciaModulo.mostrarDepuracion(constantes.DT_EVENTO_AJAX);
-  referenciaModulo.desactivarBotones();
+moduloTurno.prototype.llamadaAjaxGrillaTurno = function(e, configuracion, json) {
+	
+	var referenciaModulo = this;
+	referenciaModulo.mostrarDepuracion(constantes.DT_EVENTO_AJAX);
+	referenciaModulo.desactivarBotones();
   
-  if (json.estado==true){
-    json.recordsTotal=json.contenido.totalRegistros;
-    json.recordsFiltered=json.contenido.totalEncontrados;
-    json.data= json.contenido.carga;
-    referenciaModulo.cantidadTurnos = json.contenido.totalEncontrados;
+	if (json.estado==true){
+		
+		json.recordsTotal=json.contenido.totalRegistros;
+		json.recordsFiltered=json.contenido.totalEncontrados;
+		json.data= json.contenido.carga;
+		referenciaModulo.cantidadTurnos = json.contenido.totalEncontrados;
     
-    if (referenciaModulo.modoEdicion==constantes.MODO_LISTAR){
-    	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,json.mensaje);
-    }
-  } else {
-    json.recordsTotal=0;
-    json.recordsFiltered=0;
-    json.data= {};
-    if (referenciaModulo.modoEdicion==constantes.MODO_LISTAR){
-    referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,json.mensaje);
-    } else {
-
-    }
-  }
-  if (referenciaModulo.estaCargadaInterface==false){        
-    referenciaModulo.estaCargadaInterface=true;
-  }
-  referenciaModulo.obj.ocultaContenedorTabla.hide();  
+	    if (referenciaModulo.modoEdicion==constantes.MODO_LISTAR){
+	    	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,json.mensaje);
+	    }
+	} else {
+		json.recordsTotal=0;
+		json.recordsFiltered=0;
+		json.data= {};
+		
+		if (referenciaModulo.modoEdicion==constantes.MODO_LISTAR){
+			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,json.mensaje);
+		}
+	}
+	
+	if (referenciaModulo.estaCargadaInterface==false){        
+		referenciaModulo.estaCargadaInterface=true;
+	}
+	
+	referenciaModulo.obj.ocultaContenedorTabla.hide();  
 };
 
-moduloTurno.prototype.inicializarGrillaTurno=function(){
+moduloTurno.prototype.inicializarGrillaTurno = function() {
 	//Nota no retornar el objeto solo manipular directamente
 	//Establecer grilla y su configuracion
 	
   var referenciaModulo=this;
+  
   try {
 	  this.obj.tablaTurno.on(constantes.DT_EVENTO_AJAX, function (e,configuracion,json) {
 		  referenciaModulo.llamadaAjaxGrillaTurno(e,configuracion,json);
@@ -881,7 +885,7 @@ moduloTurno.prototype.actualizarBandaInformacion = function(tipo, mensaje) {
 moduloTurno.prototype.obtieneUltimaJornada= function() {
 	
 	var referenciaModulo = this;
-	
+
 	if (referenciaModulo.obj.filtroEstacion.val() > 0) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 		$.ajax({
@@ -958,25 +962,26 @@ moduloTurno.prototype.guardarApertura = function() {
 		console.log(" **** guardarApertura **** ");
 		console.dir(eRegistro);
 		
-		$.ajax({
-		      type: constantes.PETICION_TIPO_POST,
-		      url: referenciaModulo.URL_GUARDAR, 
-		      contentType: referenciaModulo.TIPO_CONTENIDO, 
-		      data: JSON.stringify(eRegistro),	
-		      success: function(respuesta) {
-		        if (!respuesta.estado) {
-		          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-		        } else {
-		          referenciaModulo.iniciarListado(respuesta.mensaje);
-		          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
-		        }
-		        referenciaModulo.obj.ocultaContenedorApertura.hide();
-		      },			    		    
-		      error: function() {
-		    	  referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-		    	  referenciaModulo.obj.ocultaContenedorApertura.hide();
-		      }
-		});
+		
+//		$.ajax({
+//		      type: constantes.PETICION_TIPO_POST,
+//		      url: referenciaModulo.URL_GUARDAR, 
+//		      contentType: referenciaModulo.TIPO_CONTENIDO, 
+//		      data: JSON.stringify(eRegistro),	
+//		      success: function(respuesta) {
+//		        if (!respuesta.estado) {
+//		          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
+//		        } else {
+//		          referenciaModulo.iniciarListado(respuesta.mensaje);
+//		          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
+//		        }
+//		        referenciaModulo.obj.ocultaContenedorApertura.hide();
+//		      },			    		    
+//		      error: function() {
+//		    	  referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
+//		    	  referenciaModulo.obj.ocultaContenedorApertura.hide();
+//		      }
+//		});
 	} else {
 		referenciaModulo.obj.ocultaContenedorApertura.hide();
 	}

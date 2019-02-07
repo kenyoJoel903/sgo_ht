@@ -665,6 +665,7 @@ moduloActual.llenarApertura = function(registro) {
 	    eRegistro.idResponsable = parseInt(referenciaModulo.obj.cmpOperarioResponsable.val());
 	    eRegistro.idAyudante = parseInt(referenciaModulo.obj.cmpOperarioAyudante.val());
 	    eRegistro.estado = parseInt(constantes.TIPO_TURNO_ABIERTO);
+	    eRegistro.idPerfilHorarioSeleccionado = parseInt(referenciaModulo.obj.idPerfilHorarioSeleccionado);
 	    
 	    //detalle
 	    eRegistro.turnoDetalles=[];
