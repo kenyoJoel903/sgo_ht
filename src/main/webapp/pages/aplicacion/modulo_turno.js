@@ -1,75 +1,75 @@
 function moduloTurno() {
-	
-  this.obj = {};
-  this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA_DOBLE_LISTADO;
-  this.TOPES_PAGINACION = constantes.TOPES_PAGINACION_BOBLE_LISTADO;
-  this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
-  this.LENGUAJE_GRILLA =  {
-    "sProcessing":    cadenas.GRILLA_PROCESANDO,
-    "sLengthMenu":    cadenas.GRILLA_LONGITUD_MENU,
-    "sZeroRecords":   cadenas.GRILLA_SIN_REGISTROS,
-    "sEmptyTable":    cadenas.GRILLA_TABLA_VACIA,
-    "sInfo":          cadenas.GRILLA_INFO,
-    "sInfoEmpty":     cadenas.GRILLA_INFO_VACIA,
-    "sInfoFiltered":  cadenas.GRILLA_INFO_FILTRADA,
-    "sInfoPostFix":   cadenas.GRILLA_INFO_POST_FIX,
-    "sSearch":        cadenas.GRILLA_BUSCAR,
-    "sUrl":           cadenas.GRILLA_URL,
-    "sInfoThousands": cadenas.GRILLA_MILES,
-    "sLoadingRecords":cadenas.GRILLA_CARGANDO_REGISTROS,
-    "oPaginate": {
-      "sFirst":       cadenas.GRILLA_PAGINACION_PRIMERO,
-      "sLast":        cadenas.GRILLA_PAGINACION_ULTIMO,
-      "sNext":        cadenas.GRILLA_PAGINACION_SIGUIENTE,
-      "sPrevious":    cadenas.GRILLA_PAGINACION_ANTERIOR,
-    },
-    "oAria": {
-      "sSortAscending":  cadenas.GRILLA_ORDEN_ASCENDENTE,
-      "sSortDescending": cadenas.GRILLA_ORDEN_DESCENDENTE,
-    }
-  };
 
-  this.TIPO_CONTENIDO=constantes.TIPO_CONTENIDO_JSON;
-  this.NOMBRE_EVENTO_CLICK=constantes.NOMBRE_EVENTO_CLICK;
-  this.modoEdicion=constantes.MODO_LISTAR;
-  this.depuracionActivada=true;
-  this.estaCargadaInterface=false;
-  //Inicializar propiedades
-  this.urlBase='';  
-  this.mensajeEsMostrado=false;
-  this.idRegistro = 0;
-  this.reglasValidacionFormulario={};
-  this.mensajesValidacionFormulario={};
-  this.idJornada = 0;
+	this.obj = {};
+	this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA_DOBLE_LISTADO;
+	this.TOPES_PAGINACION = constantes.TOPES_PAGINACION_BOBLE_LISTADO;
+	this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
+	this.LENGUAJE_GRILLA =  {
+		"sProcessing":    cadenas.GRILLA_PROCESANDO,
+		"sLengthMenu":    cadenas.GRILLA_LONGITUD_MENU,
+		"sZeroRecords":   cadenas.GRILLA_SIN_REGISTROS,
+		"sEmptyTable":    cadenas.GRILLA_TABLA_VACIA,
+		"sInfo":          cadenas.GRILLA_INFO,
+		"sInfoEmpty":     cadenas.GRILLA_INFO_VACIA,
+		"sInfoFiltered":  cadenas.GRILLA_INFO_FILTRADA,
+		"sInfoPostFix":   cadenas.GRILLA_INFO_POST_FIX,
+		"sSearch":        cadenas.GRILLA_BUSCAR,
+		"sUrl":           cadenas.GRILLA_URL,
+		"sInfoThousands": cadenas.GRILLA_MILES,
+		"sLoadingRecords":cadenas.GRILLA_CARGANDO_REGISTROS,
+		"oPaginate": {
+			"sFirst":       cadenas.GRILLA_PAGINACION_PRIMERO,
+			"sLast":        cadenas.GRILLA_PAGINACION_ULTIMO,
+			"sNext":        cadenas.GRILLA_PAGINACION_SIGUIENTE,
+			"sPrevious":    cadenas.GRILLA_PAGINACION_ANTERIOR,
+		},
+		"oAria": {
+			"sSortAscending":  cadenas.GRILLA_ORDEN_ASCENDENTE,
+			"sSortDescending": cadenas.GRILLA_ORDEN_DESCENDENTE,
+		}
+	};
 
-  //para la grilla de la jornada
-  this.ordenGrillaJornada = [[ 1, 'asc' ]];
-  this.columnasGrillaJornada = [{ "data": null} ];//Target 0
-  this.definicionColumnasJornada = [{ 
-	  "targets": 0, 
-	  "searchable": false, 
-	  "orderable": false, 
-	  "visible":false, 
-	  "render": function ( datos, tipo, fila, meta ) {
-		  var configuracion = meta.settings;
-		  return configuracion._iDisplayStart + meta.row + 1;
-	  }
-  }];  
-  
-  //para la grilla de la turno
-  this.ordenGrillaTurno=[[ 1, 'asc' ]];
-  this.columnasGrillaTurno=[{ "data": null} ];//Target 0
-  this.definicionColumnasTurno=[{ 
-	  "targets": 0, 
-	  "searchable": false, 
-	  "orderable": false, 
-	  "visible":false, 
-	  "render": function ( datos, tipo, fila, meta ) {
-		  var configuracion = meta.settings;
-		  return configuracion._iDisplayStart + meta.row + 1;
-	  }
-  }]; 
-  
+	this.TIPO_CONTENIDO=constantes.TIPO_CONTENIDO_JSON;
+	this.NOMBRE_EVENTO_CLICK=constantes.NOMBRE_EVENTO_CLICK;
+	this.modoEdicion=constantes.MODO_LISTAR;
+	this.depuracionActivada=true;
+	this.estaCargadaInterface=false;
+
+	//Inicializar propiedades
+	this.urlBase='';  
+	this.mensajeEsMostrado=false;
+	this.idRegistro = 0;
+	this.reglasValidacionFormulario={};
+	this.mensajesValidacionFormulario={};
+	this.idJornada = 0;
+
+	//para la grilla de la jornada
+	this.ordenGrillaJornada = [[ 1, 'asc' ]];
+	this.columnasGrillaJornada = [{ "data": null} ];//Target 0
+	this.definicionColumnasJornada = [{ 
+		"targets": 0, 
+		"searchable": false, 
+		"orderable": false, 
+		"visible":false, 
+		"render": function ( datos, tipo, fila, meta ) {
+			var configuracion = meta.settings;
+			return configuracion._iDisplayStart + meta.row + 1;
+		}
+	}];  
+
+	//para la grilla de la turno
+	this.ordenGrillaTurno=[[ 1, 'asc' ]];
+	this.columnasGrillaTurno=[{ "data": null} ];//Target 0
+	this.definicionColumnasTurno=[{ 
+		"targets": 0, 
+		"searchable": false, 
+		"orderable": false, 
+		"visible":false, 
+		"render": function ( datos, tipo, fila, meta ) {
+			var configuracion = meta.settings;
+			return configuracion._iDisplayStart + meta.row + 1;
+		}
+	}];
 };
 
 moduloTurno.prototype.mostrarDepuracion = function(mensaje) {
@@ -295,10 +295,11 @@ moduloTurno.prototype.recuperarApertura = function() {
 	  var referenciaModulo = this;
 	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,"Procesando petici\u00f3n...");
 
-	  console.log(" **** recuperarApertura **** ");
-	  console.dir("idJornadaSeleccionada:: " + referenciaModulo.obj.idJornadaSeleccionada);
-	  console.dir("idPerfilHorarioSeleccionado:: " + referenciaModulo.obj.idPerfilHorarioSeleccionado);
-	  console.dir("cantidadTurnos:: " + referenciaModulo.cantidadTurnos);
+//	  console.log(" **** recuperarApertura **** ");
+//	  console.dir("idJornadaSeleccionada:: " + referenciaModulo.obj.idJornadaSeleccionada);
+//	  console.dir("idPerfilHorarioSeleccionado:: " + referenciaModulo.obj.idPerfilHorarioSeleccionado);
+//	  console.dir("cantidadTurnos:: " + referenciaModulo.cantidadTurnos);
+//	  console.log("*********************************");
 	  
 	  $.ajax({
 	      type: constantes.PETICION_TIPO_GET,

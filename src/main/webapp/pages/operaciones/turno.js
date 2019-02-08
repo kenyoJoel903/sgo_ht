@@ -451,109 +451,115 @@ moduloActual.llenarApertura = function(registro) {
      }
 };
   
-  moduloActual.llenarAperturaContometroJornada = function(registro) {
+moduloActual.llenarAperturaContometroJornada = function(registro) {
+	
+	//actualiza cabecera operador ay
+	var numeroDetalles = registro.length;
+	moduloActual.obj.cmpHoraInicio.val("");
+	moduloActual.obj.cmpObservacionApertura.val("");
 	  
-	  //actualiza cabecera operador ay
-	  var numeroDetalles= registro.length;
-	  moduloActual.obj.cmpHoraInicio.val("");
-	  moduloActual.obj.cmpObservacionApertura.val("");
-	  
-	  if(numeroDetalles > 0){
-		  //operario
-		  try {
-		      $.ajax({
-		        type: constantes.PETICION_TIPO_GET,
-		        url: "./operario/recuperar", 
-		        contentType: moduloActual.TIPO_CONTENIDO, 
-		        data: {ID: parseInt(registro[0].jornada.idOperario1) },
-		        success: function(respuesta) {
-		          if (respuesta.estado) {
-		        	  var contenido = respuesta.contenido.carga.length;
-		        	  if(contenido > 0){
-		        		var reg = respuesta.contenido.carga[0];
-		        		var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
-		                elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
-		                elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
-		                moduloActual.obj.cmpOperarioResponsable.empty().append(elemento1).val(reg.id).trigger('change');
-		                $('#cmpOperarioResponsable').prop('disabled', true);
-		        	  } 
-		            }
-		          },
-		          error: function(xhr,estado,error) {
-		        	  moduloActual.mostrarErrorServidor(xhr,estado,error); 
-		          }
-		        }); 
-		      } 
-			  catch(error){
-				  moduloActual.mostrarDepuracion(error.message);
-			  }
-			  
-			  //ayudante
-			  try {
-			      $.ajax({
-			        type: constantes.PETICION_TIPO_GET,
-			        url: "./operario/recuperar", 
-			        contentType: moduloActual.TIPO_CONTENIDO, 
-			        data: {ID: parseInt(registro[0].jornada.idOperario2) },
-			        success: function(respuesta) {
-			          if (respuesta.estado) {
-			        	  var contenido = respuesta.contenido.carga.length;
-			        	  
-			        	  if(contenido > 0){
-			        		var reg = respuesta.contenido.carga[0];
-			        		var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
-			                elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
-			                elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
-			                moduloActual.obj.cmpOperarioAyudante.empty().append(elemento1).val(reg.id).trigger('change');
-			                $('#cmpOperarioAyudante').prop('disabled', true);
-			        	  } 
-			            }
-			        },
-			        error: function(xhr,estado,error) {
-			        	moduloActual.mostrarErrorServidor(xhr,estado,error); 
-			        }
-		        }); 
-		      } catch(error){
-					  moduloActual.mostrarDepuracion(error.message);
-			  }
-	  }
+	if (numeroDetalles > 0) {
+
+		//operario
+		try {
+			$.ajax({
+				type: constantes.PETICION_TIPO_GET,
+				url: "./operario/recuperar", 
+				contentType: moduloActual.TIPO_CONTENIDO, 
+				data: {ID: parseInt(registro[0].jornada.idOperario1) },
+				success: function(respuesta) {
+			  		if (respuesta.estado) {
+					  	var contenido = respuesta.contenido.carga.length;
+					  
+						if(contenido > 0){
+						var reg = respuesta.contenido.carga[0];
+						var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
+						elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
+						elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
+						moduloActual.obj.cmpOperarioResponsable.empty().append(elemento1).val(reg.id).trigger('change');
+						$('#cmpOperarioResponsable').prop('disabled', true);
+						} 
+					}
+				},
+				error: function(xhr,estado,error) {
+					moduloActual.mostrarErrorServidor(xhr,estado,error); 
+				}
+			}); 
+		} catch(error) {
+			moduloActual.mostrarDepuracion(error.message);
+		}
+
+		//ayudante
+		try {
+			$.ajax({
+				type: constantes.PETICION_TIPO_GET,
+				url: "./operario/recuperar", 
+				contentType: moduloActual.TIPO_CONTENIDO, 
+				data: {ID: parseInt(registro[0].jornada.idOperario2) },
+				success: function(respuesta) {
+					if (respuesta.estado) {
+						var contenido = respuesta.contenido.carga.length;
+
+						if (contenido > 0) {
+							var reg = respuesta.contenido.carga[0];
+							var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
+							elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
+							elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
+							moduloActual.obj.cmpOperarioAyudante.empty().append(elemento1).val(reg.id).trigger('change');
+							$('#cmpOperarioAyudante').prop('disabled', true);
+						} 
+					}
+				},
+				error: function(xhr,estado,error) {
+					moduloActual.mostrarErrorServidor(xhr,estado,error); 
+				}
+			}); 
+		} catch(error){
+			moduloActual.mostrarDepuracion(error.message);
+		}
+
+	}
    
     this.obj.grupoApertura.removeAllForms();
 
-	for(var contador=0; contador < numeroDetalles; contador++){      
+	for(var contador = 0; contador < numeroDetalles; contador++){      
 		moduloActual.obj.grupoApertura.addForm();
-	    var formulario= moduloActual.obj.grupoApertura.getForm(contador);
+	    var formulario = moduloActual.obj.grupoApertura.getForm(contador);
+	    
+	    if (!formulario) {
+	    	continue;
+	    }
 	    
 	    formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
-	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro",registro[contador].contometro.id);
+	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id);
 	    formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);  	  
-	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto",registro[contador].producto.id);
+	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id);
 	    formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);  
 	}
 };
 
-  //llena el formularo de contometro jornada
-  moduloActual.llenarFormularioCierre = function(registro) {
-	  
-	var referenciaModulo=this;
-    var numeroDetalles= registro.length;
-    this.obj.grupoCierre.removeAllForms();
-    
-    referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
-    referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
-    
-    for(var contador=0; contador < numeroDetalles; contador++){      
-    	moduloActual.obj.grupoCierre.addForm();
-        var formulario= moduloActual.obj.grupoCierre.getForm(contador);
-        
-  	  	formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
-  	  	formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro",registro[contador].contometro.id); 
-  	  	formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-  	  	formulario.find("input[elemento-grupo='producto']").attr("data-idProducto",registro[contador].producto.id); 
-  	  	formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial); 
-  	  	formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno",registro[contador].id); 
-     }
-  };
+//llena el formularo de contometro jornada
+moduloActual.llenarFormularioCierre = function(registro) {
+
+	var referenciaModulo = this;
+	var numeroDetalles = registro.length;
+	this.obj.grupoCierre.removeAllForms();
+
+	referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
+	referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
+
+	for (var contador=0; contador < numeroDetalles; contador++) {      
+		moduloActual.obj.grupoCierre.addForm();
+		var formulario = moduloActual.obj.grupoCierre.getForm(contador);
+
+		formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
+		formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
+		formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
+		formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+		formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial); 
+		formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
+	}
+};
   
   moduloActual.perfilDetalleHorario = function(registro) {
 	  

@@ -83,6 +83,7 @@ public class ContometroJornadaDao {
 	}
 
 	public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+		
 		String sqlLimit = "";
 		String sqlOrderBy="";
 		List<String> filtrosWhere= new ArrayList<String>();
@@ -93,6 +94,7 @@ public class ContometroJornadaDao {
 		Contenido<ContometroJornada> contenido = new Contenido<ContometroJornada>();
 		List<ContometroJornada> listaRegistros = new ArrayList<ContometroJornada>();
 		List<Object> parametros = new ArrayList<Object>();
+		
 		try {
 			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
 				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;

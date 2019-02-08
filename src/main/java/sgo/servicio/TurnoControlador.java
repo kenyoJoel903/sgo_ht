@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,6 +142,8 @@ private static final String URL_RECUPERAR_APERTURA_RELATIVA = "/turno/recuperarA
 
 private static final String URL_RECUPERAR_CIERRE_COMPLETA = "/admin/turno/recuperarCierre";
 private static final String URL_RECUPERAR_CIERRE_RELATIVA = "/turno/recuperarCierre";
+
+private static final int PRIMER_ROW = 0;
 
 private HashMap<String, String> recuperarMapaValores(Locale locale) {
 	
@@ -411,15 +412,20 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 	return respuesta;
 }	
 
+/**
+ * 
+ * @param httpRequest
+ * @param locale
+ * @return
+ */
 @RequestMapping(value = URL_RECUPERAR_APERTURA_RELATIVA ,method = RequestMethod.GET)
 public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest httpRequest, Locale locale) {
 	
 	RespuestaCompuesta oRespuesta = null;
 	AuthenticatedUserDetails principal = null;
-	ParametrosListar parametros= null;
+	ParametrosListar parametros = null;
 	int cantidadTurnos = 0;
 	String MensajeCantidadTurnos = "";
-	
 	
 	try {
 		
@@ -427,12 +433,12 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		oRespuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_APERTURA_COMPLETA);
-		if (oRespuesta.estado==false){
-			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
+		if (oRespuesta.estado == false){
+			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		Enlace eEnlace = (Enlace) oRespuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
-		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
+		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
 		}
 		//Recuperar el registro por id Estacion de la ultima jornada
@@ -443,48 +449,45 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
 		if (httpRequest.getParameter("idJornada") != null && httpRequest.getParameter("idJornada") != "") {
 			parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
 		}
-		
-		//if (httpRequest.getParameter("cantidadTurnos") != null && httpRequest.getParameter("cantidadTurnos") != "") {
-		if (Utilidades.isInteger(httpRequest.getParameter("cantidadTurnos"))) {
-			cantidadTurnos = Integer.parseInt(httpRequest.getParameter("cantidadTurnos"));
-		}
+
+		cantidadTurnos = Utilidades.parseInt(httpRequest.getParameter("cantidadTurnos"));
 		
 		//verifica que no exista un turno abierto
 		parametros.setFiltroEstado(Turno.ESTADO_ABIERTO);
-		oRespuesta=dTurno.recuperarRegistros(parametros);		
-        if (oRespuesta.estado==false){        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+		oRespuesta = dTurno.recuperarRegistros(parametros);		
+        if (oRespuesta.estado == false){        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        if(oRespuesta.getContenido().getCarga()!=null && oRespuesta.getContenido().getCarga().size()>0){
-        	oRespuesta.valor="0";
-        	oRespuesta.mensaje="Existe un turno abierto";
-        	//throw new Exception("Existe un turno abierto");
+        if (oRespuesta.getContenido().getCarga() != null && oRespuesta.getContenido().getCarga().size() > 0) {
+        	oRespuesta.valor = "0";
+        	oRespuesta.mensaje = "Existe un turno abierto";
         } else {
-        	parametros=new ParametrosListar();
+        	
+        	parametros = new ParametrosListar();
     		//ordena por la ultima hora de cierre
         	parametros.setIdJornada(Integer.parseInt( httpRequest.getParameter("idJornada")));
     		parametros.setCampoOrdenamiento("fechaHoraCierre");
     		parametros.setSentidoOrdenamiento("DESC");  
     		//obtiene cabecera del turno.
-    		oRespuesta=dTurno.recuperarRegistros(parametros);		
-            if (oRespuesta.estado==false){        	
-            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+    		oRespuesta = dTurno.recuperarRegistros(parametros);		
+            if (oRespuesta.estado == false){        	
+            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
             }
             
-            parametros=new ParametrosListar();
+            parametros = new ParametrosListar();
             
-            if(oRespuesta.getContenido().getCarga()!=null && oRespuesta.getContenido().getCarga().size() > 0) {
+            if(oRespuesta.getContenido().getCarga() != null && oRespuesta.getContenido().getCarga().size() > 0) {
             	
             	Turno eTurno = (Turno) oRespuesta.getContenido().getCarga().get(0);   
             	
             	//recuperamos la estacion del jornada del turno
                 RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
                 if (registroEstacion.estado==false) {        	
-                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
                 }
                 
-                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(PRIMER_ROW);
                 
                 if (eEstacion.getCantidadTurnos() == 0) {
                 	throw new Exception("Debe ingresar la cantidad de Turnos con las que cuenta la Estación. Favor verifique.");
@@ -502,37 +505,43 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
             	//extrae detalle del ultimo turno de la jornada            	
             	parametros.setIdTurno(eTurno.getId());
             	oRespuesta = dDetalleTurnoDao.recuperarRegistros(parametros);
-                if (oRespuesta.estado==false){        	
-                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+                if (oRespuesta.estado == false) {        	
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
                 }
                 
-                DetalleTurno eDetalleTurno = (DetalleTurno) oRespuesta.getContenido().getCarga().get(0);
+           	 	/**
+           	 	 * PRIMER ROW: del ContometroJornada array.
+           	 	 */
+                DetalleTurno eDetalleTurno = (DetalleTurno) oRespuesta.getContenido().getCarga().get(PRIMER_ROW);
                 
                 /**
                  * Inicio: Perfil Detalle Horario
                  * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
                  */
-         		int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
+                int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
                 RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistroPorTurno(idPerfilHorario, cantidadTurnos);
-    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(PRIMER_ROW);
+    			
     			List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
     			lstDetalles.add(ePerfilDetalleHorario);
+    			
     			PerfilHorario perfilHorario = new PerfilHorario();
     			perfilHorario.setLstDetalles(lstDetalles);
+    			
+    			eDetalleTurno.getTurno().setPerfilHorario(perfilHorario);
+    			
+    			List<DetalleTurno> listDetalleTurno = (List<DetalleTurno>) oRespuesta.getContenido().getCarga();
+    			listDetalleTurno.set(PRIMER_ROW, eDetalleTurno);
     			/**
     			 * Fin: Perfil Detalle Horario
     			 */
-    			
-    			eDetalleTurno.getTurno().setPerfilHorario(perfilHorario);
 
-	            List<DetalleTurno> list = new ArrayList<DetalleTurno>();
-	            list.add(eDetalleTurno);
 	            Contenido<DetalleTurno> contenidoDT = new Contenido<DetalleTurno>();
-	            contenidoDT.carga = list;
+	            contenidoDT.carga = listDetalleTurno;
 	            oRespuesta.contenido = contenidoDT;
-                
                 oRespuesta.valor = "1"; 
-                if(MensajeCantidadTurnos.length() != 0){
+                
+                if (MensajeCantidadTurnos.length() != 0) {
                 	oRespuesta.mensaje = MensajeCantidadTurnos;
                 } else {
                 	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
@@ -542,17 +551,20 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
             	
             	parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
             	oRespuesta = dContometroJornadaDao.recuperarRegistros(parametros);
-           	 	if (oRespuesta.estado==false){        	
-                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
-                } 
-           	 	ContometroJornada eContometroJornada = (ContometroJornada) oRespuesta.getContenido().getCarga().get(0);
-           	 	//recuperamos la estacion del jornada del turno
+           	 	if (oRespuesta.estado==false) {        	
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+                }
+           	 	
+           	 	/**
+           	 	 * PRIMER ROW: del ContometroJornada array.
+           	 	 */
+           	 	ContometroJornada eContometroJornada = (ContometroJornada) oRespuesta.getContenido().getCarga().get(PRIMER_ROW);
                 RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eContometroJornada.getJornada().getEstacion().getId());
                 if (registroEstacion.estado == false) {        	
                 	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
                 }
                 
-                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(PRIMER_ROW);
                 
                 if(eEstacion.getCantidadTurnos() == 0) {
                 	throw new Exception("Debe ingresar la cantidad de Turnos con las que cuenta la Estación. Favor verifique.");
@@ -569,36 +581,38 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
                  * Inicio: Perfil Detalle Horario
                  * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
                  */
-         		int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
+                int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
                 RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistroPorTurno(idPerfilHorario, cantidadTurnos);
-    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(PRIMER_ROW);
+    			
     			List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
     			lstDetalles.add(ePerfilDetalleHorario);
+    			
     			PerfilHorario perfilHorario = new PerfilHorario();
     			perfilHorario.setLstDetalles(lstDetalles);
+    			
+    			eContometroJornada.setPerfilHorario(perfilHorario);
+    			
+    			List<ContometroJornada> listContometroJornada = (List<ContometroJornada>) oRespuesta.getContenido().getCarga();
+    			listContometroJornada.set(PRIMER_ROW, eContometroJornada);
     			/**
     			 * Fin: Perfil Detalle Horario
     			 */
-    			
-    			eContometroJornada.setPerfilHorario(perfilHorario);
-
-				List<ContometroJornada> list = new ArrayList<ContometroJornada>();
-				list.add(eContometroJornada);
-				
+                
 				Contenido<ContometroJornada> contenidoCJ = new Contenido<ContometroJornada>();
-				contenidoCJ.carga = list;
+				contenidoCJ.carga = listContometroJornada;
     			oRespuesta.contenido = contenidoCJ;
            	 	oRespuesta.valor = "2";
            	 	
-           	 	if(MensajeCantidadTurnos.length() != 0) {
+           	 	if (MensajeCantidadTurnos.length() != 0) {
                 	oRespuesta.mensaje = MensajeCantidadTurnos;
                 } else {
-                	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
+                	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
                 }
            	 	
-	           	if(oRespuesta.getContenido().getCarga().isEmpty()) {
-	           		oRespuesta.valor="0"; 
-	           		oRespuesta.mensaje="No existe Contómetros para la jornada";
+	           	if (oRespuesta.getContenido().getCarga().isEmpty()) {
+	           		oRespuesta.valor = "0"; 
+	           		oRespuesta.mensaje = "No existe Contómetros para la jornada";
 	           	}
             }
         }
