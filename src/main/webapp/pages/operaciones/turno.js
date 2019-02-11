@@ -369,12 +369,17 @@ $(document).ready(function() {
         allowRemoveAll: true,
         allowAdd: true,
         allowAddN: false,
-        //maxFormsCount: 6,
+        maxFormsCount: 0,
         minFormsCount: 0,
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
         	var cmpElementoLecturaInicial=$(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
-        	cmpElementoLecturaInicial.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3}); 
+        	cmpElementoLecturaInicial.inputmask('decimal', {
+        		digits: 2, 
+        		groupSeparator:',',
+        		autoGroup:true,
+        		groupSize:3
+        	}); 
         }
     });
     
@@ -560,7 +565,10 @@ moduloActual.llenarFormularioCierre = function(registro) {
 		formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
 	}
 };
-  
+  /**
+   * Detalle de Perfil de Horario
+   * Solo en el primer elemento del array se coloco los datos del Perfil Horario
+   */
   moduloActual.perfilDetalleHorario = function(registro) {
 	  
 	  var perfilDetalleHorario = null;

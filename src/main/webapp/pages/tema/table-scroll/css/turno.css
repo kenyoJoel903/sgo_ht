@@ -1,0 +1,48 @@
+@CHARSET "ISO-8859-1";
+
+table.grupo-apertura
+{
+	width: 100%;
+}
+
+table.grupo-apertura thead tr td
+{
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+table.grupo-apertura thead tr td label
+{
+	margin-top: 3px;
+	margin-bottom: 3px !important; 
+}
+
+table.grupo-apertura thead
+{
+    background-color: #FFC05A;
+}
+
+table.grupo-apertura tbody
+{
+    height: 375px;
+}
+
+table.grupo-apertura tbody tr td:nth-child(1),
+table.grupo-apertura tbody tr td:nth-child(2),
+table.grupo-apertura tbody tr td:nth-child(3)
+{
+    width: 50% !important;
+}
+
+table.grupo-apertura thead tr td:nth-child(1),
+table.grupo-apertura thead tr td:nth-child(2),
+table.grupo-apertura thead tr td:nth-child(3)
+{
+    width: 50% !important;
+}
+
+table.grupo-apertura thead tr td:nth-child(3)
+{
+    border-right: 0;
+}

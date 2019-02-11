@@ -544,11 +544,14 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
                 if (MensajeCantidadTurnos.length() != 0) {
                 	oRespuesta.mensaje = MensajeCantidadTurnos;
                 } else {
-                	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+                	oRespuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
                 }
             	
             } else {//obtener lista de contometro jornada 
             	
+        		parametros.setCampoOrdenamiento("alias_contometro");
+        		parametros.setSentidoOrdenamiento("ASC");
+            	parametros.setPaginacion(Constante.SIN_PAGINACION);
             	parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
             	oRespuesta = dContometroJornadaDao.recuperarRegistros(parametros);
            	 	if (oRespuesta.estado==false) {        	
@@ -626,12 +629,21 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
 	return oRespuesta;
 }
 
+/**
+ * 
+ * @param idJornada
+ * @param locale
+ * @return
+ */
 @RequestMapping(value = URL_RECUPERAR_TANQUES_RELATIVA ,method = RequestMethod.GET)
-public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada, Locale locale){
+public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada, Locale locale) {
+	
 	RespuestaCompuesta respuesta = null;
 	ParametrosListar parametros = null;
 	AuthenticatedUserDetails principal = null;
-	try {			
+	
+	try {
+		
 		//Recupera el usuario actual
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
@@ -639,21 +651,24 @@ public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada
 		if (respuesta.estado==false){
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 		}
+		
 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
 		}
+		
 		//Recuperar el registro
-    	respuesta= dJornada.recuperarRegistro(idJornada);
+    	respuesta = dJornada.recuperarRegistro(idJornada);
     	//Verifica el resultado de la accion
-        if (respuesta.estado==false){        	
+        if (respuesta.estado==false) {
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
         }
+        
         Contenido<Jornada> contenido = new Contenido<Jornada>();
         List<TanqueJornada> listaTanqueJornada = new ArrayList<TanqueJornada>();
         List<Jornada> listaRegistros = new ArrayList<Jornada>();
-
+    	
         Jornada eJornada = (Jornada) respuesta.contenido.carga.get(0);
 
         parametros = new ParametrosListar();
@@ -662,10 +677,11 @@ public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada
         parametros.setEstadoDespachando(TanqueJornada.ESTADO_DESPACHANDO);
         //recuperamos los tanques de la jornada
         respuesta = dTanqueJornadaDao.recuperarRegistros(parametros);
-        if (respuesta.estado==false){        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+        if (respuesta.estado == false) {
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
-        for (int a = 0; a < respuesta.contenido.carga.size(); a++){
+        
+        for (int a = 0; a < respuesta.contenido.carga.size(); a++) {
         	TanqueJornada eTanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(a);
         	listaTanqueJornada.add(eTanqueJornada);
 		}
@@ -676,15 +692,15 @@ public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada
 
         contenido.carga = listaRegistros;
 		respuesta.contenido = contenido;
-        
-     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
-	} catch (Exception ex){
-		Utilidades.gestionaError(ex, sNombreClase, "recuperaRegistro");
-		//ex.printStackTrace();
-		respuesta.estado=false;
+     	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+     	
+	} catch (Exception e){
+		Utilidades.gestionaError(e, sNombreClase, "recuperaRegistro");
+		respuesta.estado = false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
+	
 	return respuesta;
 }
 

@@ -10,6 +10,9 @@
 HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); 
 %>
 
+<link href="tema/table-scroll/css/table-scroll.css" rel="stylesheet" type="text/css"/>
+<link href="tema/table-scroll/css/turno.css" rel="stylesheet" type="text/css"/>
+
 <div class="content-wrapper">
 
   <section class="content-header">
@@ -33,7 +36,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
                     <td class="celda-detalle" style="width:12%;">
                     	<label class="etiqueta-titulo-horizontal">Operación / Cliente: </label>
                    	</td>
-        			<td class="celda-detalle" ><select style="width:100%;" id="filtroOperacion" name="filtroOperacion" class="form-control espaciado input-sm" >
+        			<td class="celda-detalle" >
+        			<select style="width:100%;" id="filtroOperacion" name="filtroOperacion" class="form-control espaciado input-sm" >
                  		<% 
                  		ArrayList<?> listaOperaciones = (ArrayList<?>) request.getAttribute("operaciones"); 
 	                    String fechaActual = (String) request.getAttribute("fechaActual");   
@@ -49,10 +53,12 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		                    <option <%=seleccionado%> data-operacion-cliente='<%=eOperacion.getNombre().trim() + " / " + eCliente.getNombreCorto().trim() %>' data-idCliente='<%=eOperacion.getIdCliente()%>' data-idOperacion='<%=eOperacion.getId()%>' data-fecha-actual='<%=fechaActual%>' data-nombre-operacion='<%=eOperacion.getNombre().trim()%>' data-nombre-cliente='<%=eCliente.getNombreCorto().trim()%>' value='<%=eOperacion.getId()%>'><%=eOperacion.getNombre().trim() + " / " + eCliente.getNombreCorto().trim() %></option>
 		                    <%
 	                    } %>
-                    </select></td> 
-                    
+                    </select>
+                    </td> 
                     <td></td>
-                    <td class="celda-detalle" style="width:5%;"><label class="etiqueta-titulo-horizontal">Estación: </label></td>
+                    <td class="celda-detalle" style="width:5%;">
+                    	<label class="etiqueta-titulo-horizontal">Estación: </label>
+                    </td>
                     <td class="celda-detalle" >
 	                    <select style="width:100%;" id="filtroEstacion" name="filtroEstacion" class="form-control espaciado input-sm" >
 	                 		<% 
@@ -72,18 +78,19 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		                    } %>
 	                    </select>
                     </td>
-                    
-                    
-                    <!-- <td></td>
-                    <td class="celda-detalle" style="width:5%;"><label class="etiqueta-titulo-horizontal">Estación: </label></td>
-                    <td  class="celda-detalle" style="width:20%;"><select style="width:100%;"  id="filtroEstacion" name="filtroEstacion" class="form-control input-sm">
-                    	<option value="0" selected="selected">Seleccionar...</option>
-                    </select></td> -->
         			<td></td>
-        			<td class="celda-detalle" style="width:10%;"><label class="etiqueta-titulo-horizontal">Día Operativo: </label></td>
-	                <td class="celda-detalle" style="width:15%;"><input id="filtroFechaJornada" type="text" style="width:100%" class="form-control espaciado input-sm" data-fecha-actual="<%=fechaActual%>" /></td>
+        			<td class="celda-detalle" style="width:10%;">
+        				<label class="etiqueta-titulo-horizontal">Día Operativo: </label>
+        			</td>
+	                <td class="celda-detalle" style="width:15%;">
+	                	<input id="filtroFechaJornada" type="text" style="width:100%" class="form-control espaciado input-sm" data-fecha-actual="<%=fechaActual%>" />
+	                </td>
             		<td></td>
-                  	<td><a id="btnFiltrar" class="btn btn-default btn-sm col-md-12"><i class="fa fa-refresh"></i>  <%=mapaValores.get("ETIQUETA_BOTON_FILTRAR")%></a></td>
+                  	<td>
+                  		<a id="btnFiltrar" class="btn btn-default btn-sm col-md-12">
+                  			<i class="fa fa-refresh"></i> <%=mapaValores.get("ETIQUETA_BOTON_FILTRAR")%>
+                		</a>
+                	</td>
                 </tr>
                 </thead>
               </table>
@@ -199,13 +206,12 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 				        <br>
 		                 <label>Cont&oacute;metros</label>
 		                 	
-					    <table class="sgo-simple-table table table-condensed" style="width:100%;">
+					    <table class="grupo-apertura table-scroll sgo-simple-table table table-condensed">
 			      			<thead>
 			      				<tr>
-			      				<td><label class="text-left">Cont&oacute;metro</label></td>
-								<td><label class="text-left">Producto</label></td>
-								<td><label class="text-left">Lectura Inicial</label></td>
-			      				<td></td>
+				      				<td><label class="text-left">Cont&oacute;metro</label></td>
+									<td><label class="text-left">Producto</label></td>
+									<td><label class="text-left">Lectura Inicial</label></td>
 			      				</tr>
 			      			</thead>
 			      			<tbody id="GrupoApertura">
@@ -214,18 +220,17 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 			      						<input elemento-grupo="contometro" id="GrupoApertura_#index#_Contometro" name="programacion[detalle][#index#][id_contometro]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
 			      					</td>
 			      					<td class="celda-detalle" style="width:50%;">
-									 <input elemento-grupo="producto" id="GrupoApertura_#index#_Producto" name="programacion[detalle][#index#][id_producto]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
+										<input elemento-grupo="producto" id="GrupoApertura_#index#_Producto" name="programacion[detalle][#index#][id_producto]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
 			      					</td>
 			      					<td class="celda-detalle" style="width:20%;">
 										<input elemento-grupo="lecturaInicial" id="GrupoApertura_#index#_LecturaInicial" name="programacion[detalle][#index#][lectura_inicial]" readonly="readonly" type="text" class="form-control input-sm text-left"/>
 			      					</td>
 			      				</tr>
 			      				<tr id="GrupoApertura_noforms_template">
-			      				<td></td>
+			      					<td></td>
 			      				</tr>    			
 			      			</tbody>
 		      		    </table>
-      		    
       		    <br>
       		    <label>Observaciones</label>
       		    <table class="sgo-simple-table table table-condensed">

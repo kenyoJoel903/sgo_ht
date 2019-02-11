@@ -10,14 +10,17 @@ import sgo.entidad.Estacion;
 import sgo.entidad.Jornada;
 import sgo.entidad.Producto;
 import sgo.utilidades.Utilidades;
-public class ContometroJornadaMapper implements RowMapper<ContometroJornada>{
+
+public class ContometroJornadaMapper implements RowMapper<ContometroJornada> {
+	
 	public ContometroJornada mapRow(ResultSet rs, int arg1) throws SQLException 
 	{
 		ContometroJornada eContometroJornada = null;
 		Estacion eEstacion = null;
-		Jornada eJornada=null;
-		Contometro eContometro=null;
-		Producto eProducto=null;
+		Jornada eJornada = null;
+		Contometro eContometro = null;
+		Producto eProducto = null;
+		
 		try {
 			eContometroJornada = new ContometroJornada();
 			eContometroJornada.setId(rs.getInt("id_cjornada"));

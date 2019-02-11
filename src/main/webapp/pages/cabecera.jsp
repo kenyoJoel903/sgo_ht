@@ -9,38 +9,42 @@
 <% String tituloSeccionDetalle = (String) request.getAttribute("tituloSeccionDetalle"); %>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
+
+<head>
+	<meta charset="UTF-8">
 	<meta name="_csrf" content="${_csrf.token}"/>
-    <!-- default header name is X-CSRF-TOKEN -->
-    <meta name="_csrf_header" content="${_csrf.headerName}"/>
-    <title>SGO</title>
-    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-    <!-- Bootstrap 3.3.2 -->
-    <link href="tema/adminlte/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <!-- Font Awesome Icons -->
-    <link type="text/css" rel="stylesheet" href="tema/font-awesome-4.3.0/css/font-awesome.css"/>
-    <!-- Ionicons -->
-    <link href="tema/ionicons/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
-    <!-- 
-    <link type="text/css" rel="stylesheet" href="tema/adminlte/plugins/daterangepicker/daterangepicker-bs3.css"/>    
-     -->
-     <link type="text/css" rel="stylesheet" href="tema/adminlte/plugins/daterangepicker.2.0.8/daterangepicker.css"/>	
-     <link href="tema/datatable/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css"/>     
-    <!-- Theme style -->
-    <link href="tema/adminlte/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
-    <link href="tema/adminlte/dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
-    <link href="tema/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-    <link href="tema/app/css/select2-bootstrap.css" rel="stylesheet" type="text/css" />    
-     <link href="tema/multiselect/css/multi-select.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="tema/app/css/app.css" rel="stylesheet" type="text/css" />    
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="tema/html5shiv.3.7.0/html5shiv.js"></script>
-        <script src="tema/respond.1.3.0/respond.min.js"></script>
-    <![endif]-->
-  </head>
+	<meta name="_csrf_header" content="${_csrf.headerName}"/>
+	<title>SGO</title>
+	
+	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+	
+	<!-- Bootstrap 3.3.2 -->
+	<link href="tema/adminlte/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	
+	<!-- Font Awesome Icons -->
+	<link type="text/css" rel="stylesheet" href="tema/font-awesome-4.3.0/css/font-awesome.css"/>
+	
+	<!-- Ionicons -->
+	<link href="tema/ionicons/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
+	<link type="text/css" rel="stylesheet" href="tema/adminlte/plugins/daterangepicker.2.0.8/daterangepicker.css"/>	
+	<link href="tema/datatable/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css"/>
+	  
+	<!-- Theme style -->
+	<link href="tema/adminlte/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
+	<link href="tema/adminlte/dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
+	<link href="tema/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+	<link href="tema/app/css/select2-bootstrap.css" rel="stylesheet" type="text/css" />    
+	<link href="tema/multiselect/css/multi-select.css" media="screen" rel="stylesheet" type="text/css">
+	<link href="tema/app/css/app.css" rel="stylesheet" type="text/css" />
+	   
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+		<script src="tema/html5shiv.3.7.0/html5shiv.js"></script>
+		<script src="tema/respond.1.3.0/respond.min.js"></script>
+	<![endif]-->
+</head>
+  
   <body class="skin-blue">
 	  <form id="frmCerrarSesion" action="./processlogout" method="post">
 	  <input id="csrf-token" type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
