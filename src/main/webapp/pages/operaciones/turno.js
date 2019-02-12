@@ -373,9 +373,9 @@ $(document).ready(function() {
         minFormsCount: 0,
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
-        	var cmpElementoLecturaInicial=$(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
+        	var cmpElementoLecturaInicial = $(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
         	cmpElementoLecturaInicial.inputmask('decimal', {
-        		digits: 2, 
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
         		groupSeparator:',',
         		autoGroup:true,
         		groupSize:3
@@ -390,18 +390,37 @@ $(document).ready(function() {
         allowRemoveAll: true,
         allowAdd: true,
         allowAddN: false,
-        //maxFormsCount: 6,
+        maxFormsCount: 0,
         minFormsCount: 0,
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
-        	var cmpElementoLecturaFinal=$(formularioNuevo).find("input[elemento-grupo='lecturaFinal']");
-        	cmpElementoLecturaFinal.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
-        	var cmpElementoLecturaInicial=$(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
-        	cmpElementoLecturaInicial.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
-        	var cmpElementoLecturaDifVolEncontrado=$(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
-        	cmpElementoLecturaDifVolEncontrado.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});	
         	
-        	var cmpElementoDiferencia=$(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
+        	var cmpElementoLecturaFinal = $(formularioNuevo).find("input[elemento-grupo='lecturaFinal']");
+        	cmpElementoLecturaFinal.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator:',',
+        		autoGroup:true,
+        		groupSize:3
+        	});
+        	
+        	var cmpElementoLecturaInicial = $(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
+        	cmpElementoLecturaInicial.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator:',',
+        		autoGroup:true,
+        		groupSize:3
+        	});
+        	
+        	var cmpElementoLecturaDifVolEncontrado = $(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
+        	cmpElementoLecturaDifVolEncontrado.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator:',', 
+        		autoGroup:true, 
+        		groupSize:3
+        	});
+        	
+        	var cmpElementoDiferencia = $(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
+        	
         	cmpElementoLecturaFinal.on("change", function(e) {   		
             	var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
             	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());    		
@@ -444,15 +463,15 @@ moduloActual.llenarApertura = function(registro) {
     $('#cmpOperarioAyudante').prop('disabled', false);
     
     for(var contador=0; contador < numeroDetalles; contador++) {
-    	
     	moduloActual.obj.grupoApertura.addForm();
         var formulario = moduloActual.obj.grupoApertura.getForm(contador);
         
   	  	formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
-  	  	formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro",registro[contador].contometro.id); 
+  	  	formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
   	  	formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-  	  	formulario.find("input[elemento-grupo='producto']").attr("data-idProducto",registro[contador].producto.id); 
-  	  	formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);   
+  	  	formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+  	  	//formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);
+  	  	formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
      }
 };
   
@@ -527,7 +546,7 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
    
     this.obj.grupoApertura.removeAllForms();
 
-	for(var contador = 0; contador < numeroDetalles; contador++){      
+	for (var contador = 0; contador < numeroDetalles; contador++) {      
 		moduloActual.obj.grupoApertura.addForm();
 	    var formulario = moduloActual.obj.grupoApertura.getForm(contador);
 	    
@@ -539,7 +558,8 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id);
 	    formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);  	  
 	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id);
-	    formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);  
+	    //formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
+	    formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);  
 	}
 };
 
@@ -548,12 +568,13 @@ moduloActual.llenarFormularioCierre = function(registro) {
 
 	var referenciaModulo = this;
 	var numeroDetalles = registro.length;
-	this.obj.grupoCierre.removeAllForms();
+	this.obj.grupoCierre.removeAllForms(); 
+	//this.obj.grupoCierre.getOptions().maxFormsCount = 5; // CAMBIAR ROW JAFETH
 
 	referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
 	referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
-
-	for (var contador=0; contador < numeroDetalles; contador++) {      
+	
+	for (var contador = 0; contador < numeroDetalles; contador++) {      
 		moduloActual.obj.grupoCierre.addForm();
 		var formulario = moduloActual.obj.grupoCierre.getForm(contador);
 
@@ -561,10 +582,12 @@ moduloActual.llenarFormularioCierre = function(registro) {
 		formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
 		formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
 		formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
-		formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial); 
+		//formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
+		formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);
 		formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
 	}
 };
+
   /**
    * Detalle de Perfil de Horario
    * Solo en el primer elemento del array se coloco los datos del Perfil Horario
@@ -699,7 +722,7 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	          var cmpElementoProducto     	= formulario.find("input[elemento-grupo='producto']").attr("data-idProducto");
 	          var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");
 	          var cmpElementoLecturaFinal   = formulario.find("input[elemento-grupo='lecturaFinal']");
-	          var cmpElementoId				= formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno");// idDetalle
+	          var cmpElementoId				= formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno");
 	          detalles.lecturaInicial  		= parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	          detalles.lecturaFinal  		= parseFloat(cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	          detalles.idProducto  			= parseInt(cmpElementoProducto);
@@ -722,7 +745,7 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	          var cmpElementoContometro = formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro");
 	          var cmpElementoProducto = formulario.find("input[elemento-grupo='producto']").attr("data-idProducto");
 	          var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");	          
-	          detalles.lecturaInicial = parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
+	          detalles.lecturaInicial = parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES, ""));
 	          detalles.idProducto = parseInt(cmpElementoProducto);
 	          detalles.idContometro = parseInt(cmpElementoContometro);
 	          eRegistro.turnoDetalles.push(detalles);          
@@ -746,23 +769,27 @@ moduloActual.llenarFormularioCierre = function(registro) {
 		  if(referenciaModulo.obj.cmpHoraCierre.val().length == 0) {
 			  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar el campo Hora Cierre.");
 			  return false;
-		  }  
+		  }
+		  
 	    var numeroFormularios = referenciaModulo.obj.grupoCierre.getForms().length;
+	    
 	    for(var contador = 0; contador < numeroFormularios; contador++){
-	          var formulario = referenciaModulo.obj.grupoCierre.getForm(contador);
-	          var cmpElementoLecturaFinal     = formulario.find("input[elemento-grupo='lecturaFinal']");
-	          var cmpElementoLecturaInicial=formulario.find("input[elemento-grupo='lecturaInicial']");
-		        var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
-	          	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());  
-	          	if(lenturaFin==null || lenturaFin.length==0 || parseFloat(lenturaFin)<=0){
-	          		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar la lectura final correcta del cont\u00f3metro.");
-		        	return false;
-	          	}	          	
-	      		var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni); 
-	      		if(diferencia < 0){
-	      			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La diferencia de lectura no debe ser negativa.");
-		        	return false;
-	      		}        
+	    	var formulario = referenciaModulo.obj.grupoCierre.getForm(contador);
+	    	var cmpElementoLecturaFinal = formulario.find("input[elemento-grupo='lecturaFinal']");
+	    	var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");
+	    	var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
+	    	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val()); 
+	          	
+	    	if(lenturaFin==null || lenturaFin.length==0 || parseFloat(lenturaFin)<=0){
+	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar la lectura final correcta del cont\u00f3metro.");
+	    		return false;
+    		}
+	    	
+	    	var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni); 
+	    	if(diferencia < 0){
+	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La diferencia de lectura no debe ser negativa.");
+	    		return false;
+	    	}  
 	      }
 	    
 	    return retorno;
@@ -815,23 +842,27 @@ moduloActual.llenarTanquesCierre = function(registro){
   moduloActual.llenarDetalles = function(registro){
 		
 		var turno = registro[0].turno;	
-	    var contometro="";
-	    var producto="";
-	    var lecturaInicial="";
-	    var lecturaFinal="";
-	    var filaNueva="";
-	    var diferenciaVolumen=0;	
-	    if(registro != null){
+	    var contometro = "";
+	    var producto = "";
+	    var lecturaInicial = "";
+	    var lecturaFinal = "";
+	    var filaNueva = "";
+	    var diferenciaVolumen = 0;
+	    
+	    if(registro != null) {
 		    var indice= registro.length;		    
 		    $("#tablaVistaDetalle tbody").empty();
 		    //$("#tablaVistaDetalle tr").remove(); 
-		    for(var k = 0; k < indice; k++){ 
+		    for (var k = 0; k < indice; k++) {
 		    	contometro=registro[k].contometro.alias;		    	
-		    	producto=registro[k].producto.nombre;		  	    
-		    	lecturaInicial= registro[k].lecturaInicial;
-		    	lecturaFinal= registro[k].lecturaFinal;
+		    	producto=registro[k].producto.nombre;
 		    	
-		    	diferenciaVolumen = parseInt(lecturaFinal)-parseInt(lecturaInicial);
+		    	//lecturaInicial= registro[k].lecturaInicial;
+		    	//lecturaFinal= registro[k].lecturaFinal;
+		    	lecturaInicial= registro[k].lecturaInicialStr;
+		    	lecturaFinal= registro[k].lecturaFinalStr;
+		    	
+		    	diferenciaVolumen = parseInt(lecturaFinal) - parseInt(lecturaInicial);
 		    	filaNueva='<tr><td>'+contometro+'</td>'
 		    	+'<td class="text-left">'+producto+'</td>'
 		    	+'<td class="text-right">'+lecturaInicial+'</td>'
@@ -848,8 +879,7 @@ moduloActual.llenarTanquesCierre = function(registro){
 		    this.obj.vistaIPCreacion.text(turno.ipCreacion);		    
 		    this.obj.vistaCreadoEl.text(turno.fechaCreacion);
 		    this.obj.vistaCreadoPor.text(turno.usuarioCreacion);		    
-	    }
-	    else{
+	    } else {
 	    	$("#tablaVistaDetalle tbody tr").remove();
 	    	this.obj.vistaActualizadoEl.text("");
 		    this.obj.vistaActualizadoPor.text("");

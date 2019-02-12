@@ -293,13 +293,7 @@ moduloTurno.prototype.inicializaApertura = function(registro, valor) {
 moduloTurno.prototype.recuperarApertura = function() {
 	
 	  var referenciaModulo = this;
-	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,"Procesando petici\u00f3n...");
-
-//	  console.log(" **** recuperarApertura **** ");
-//	  console.dir("idJornadaSeleccionada:: " + referenciaModulo.obj.idJornadaSeleccionada);
-//	  console.dir("idPerfilHorarioSeleccionado:: " + referenciaModulo.obj.idPerfilHorarioSeleccionado);
-//	  console.dir("cantidadTurnos:: " + referenciaModulo.cantidadTurnos);
-//	  console.log("*********************************");
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Procesando petici\u00f3n...");
 	  
 	  $.ajax({
 	      type: constantes.PETICION_TIPO_GET,
@@ -323,7 +317,7 @@ moduloTurno.prototype.recuperarApertura = function() {
 			}
 	      },                  
 	      error: function() {
-	        referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Hubo un error en la petici\u00f3n");
+	    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Hubo un error en la petici\u00f3n");
 	      }
 	  });
 };

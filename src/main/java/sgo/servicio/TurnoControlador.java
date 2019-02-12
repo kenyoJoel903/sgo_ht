@@ -37,6 +37,7 @@ import sgo.datos.EstacionDao;
 import sgo.datos.EventoDao;
 import sgo.datos.JornadaDao;
 import sgo.datos.OperacionDao;
+import sgo.datos.ParametroDao;
 import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PlanificacionDao;
 import sgo.datos.ProductoDao;
@@ -52,11 +53,13 @@ import sgo.entidad.Estacion;
 import sgo.entidad.Jornada;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.Operacion;
+import sgo.entidad.Parametro;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
+import sgo.entidad.TableAttributes;
 import sgo.entidad.TanqueJornada;
 import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
@@ -114,6 +117,8 @@ private DetalleProgramacionDao dDetalleProgramacion;
 private ContometroJornadaDao dContometroJornadaDao;
 @Autowired
 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
+@Autowired
+private ParametroDao dParametro;
 @Autowired
 private TanqueJornadaDao dTanqueJornadaDao;
 private static final String sNombreClase = "TurnoControlador";
@@ -186,6 +191,7 @@ private HashMap<String, String> recuperarMapaValores(Locale locale) {
 // @SuppressWarnings("unchecked")
 @RequestMapping(URL_GESTION_RELATIVA)
 public ModelAndView mostrarFormulario(Locale locale) {
+	
 	ModelAndView vista = null;
 	AuthenticatedUserDetails principal = null;
 	ArrayList<?> listaEnlaces = null;
@@ -221,9 +227,10 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		parametros.setFiltroEstado(Constante.FILTRO_TODOS);
 		parametros.setFiltroEstadoCliente(Constante.ESTADO_ACTIVO);
 		respuesta = dOperacion.recuperarRegistros(parametros);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 		}
+		
 		listaOperaciones = (ArrayList<?>) respuesta.contenido.carga;
 
 		parametros = new ParametrosListar();
@@ -231,7 +238,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		// Para que retorne solo los productos que se encuentren activos
 		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
 		respuesta = dProducto.recuperarRegistros(parametros);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 		}
 		listaProductos = (ArrayList<?>) respuesta.contenido.carga;
@@ -239,10 +246,11 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		String fecha = dDiaOperativo.recuperarFechaActual().valor;
 		Operacion op = (Operacion) listaOperaciones.get(0);
 		parametros.setIdOperacion(op.getId());
+		
 	    //esto para obtener la última jornada cargada 
 	    Respuesta oRespuesta = dJornada.recuperarUltimaJornada(parametros);
 	    // Verifica el resultado de la accion
-	    if (oRespuesta.estado == false) {
+	    if (!oRespuesta.estado) {
 	    	throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 	    }
 	    
@@ -256,27 +264,41 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		parametros.setIdCliente(principal.getCliente().getId());
 		parametros.setFiltroOperacion(op.getId());
 		respuesta = dEstacion.recuperarRegistros(parametros);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 		}
 		listaEstaciones = (ArrayList<?>) respuesta.contenido.carga;
 		
+		parametros = new ParametrosListar();
+		parametros.setFiltroParametro(Parametro.ALIAS_CONTOMETRO_REGISTROS);
+		respuesta = dParametro.recuperarRegistros(parametros);
+	    if (!respuesta.estado) {
+	    	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+	    }
+	    
+		Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
+
+		TableAttributes tableAttributes = new TableAttributes();
+		tableAttributes.setBodyStyle("height: " + eParametro.getValorInt() * 25 + "px !important;");
+		
 		mapaValores = recuperarMapaValores(locale);
 		vista = new ModelAndView("plantilla");
-		vista.addObject("vistaJSP", "operaciones/turno.jsp");
-		vista.addObject("vistaJS", "operaciones/turno.js");
-		vista.addObject("identidadUsuario", principal.getIdentidad());
+		vista.addObject("fechaActual", fecha);
 		vista.addObject("menu", listaEnlaces);
 		vista.addObject("clientes", listaClientes);
-		vista.addObject("operaciones", listaOperaciones);
-		vista.addObject("estaciones", listaEstaciones);
-		vista.addObject("productos", listaProductos);
 		vista.addObject("mapaValores", mapaValores);
-		//vista.addObject("fechaActual", dDiaOperativo.recuperarFechaActual().valor);
-		vista.addObject("fechaActual", fecha);
-	} catch (Exception ex) {
+		vista.addObject("productos", listaProductos);
+		vista.addObject("estaciones", listaEstaciones);
+		vista.addObject("operaciones", listaOperaciones);
+		vista.addObject("vistaJS", "operaciones/turno.js");
+		vista.addObject("tableAttributes", tableAttributes);
+		vista.addObject("vistaJSP", "operaciones/turno.jsp");
+		vista.addObject("identidadUsuario", principal.getIdentidad());
+		
+	} catch (Exception e) {
 
 	}
+	
 	return vista;
 }
 
@@ -465,10 +487,12 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
         } else {
         	
         	parametros = new ParametrosListar();
+        	
     		//ordena por la ultima hora de cierre
         	parametros.setIdJornada(Integer.parseInt( httpRequest.getParameter("idJornada")));
     		parametros.setCampoOrdenamiento("fechaHoraCierre");
-    		parametros.setSentidoOrdenamiento("DESC");  
+    		parametros.setSentidoOrdenamiento("DESC");
+    		
     		//obtiene cabecera del turno.
     		oRespuesta = dTurno.recuperarRegistros(parametros);		
             if (oRespuesta.estado == false){        	
@@ -596,12 +620,27 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
     			
     			eContometroJornada.setPerfilHorario(perfilHorario);
     			
+    	        /**
+    	         * List
+    	         */
     			List<ContometroJornada> listContometroJornada = (List<ContometroJornada>) oRespuesta.getContenido().getCarga();
     			listContometroJornada.set(PRIMER_ROW, eContometroJornada);
+    			
     			/**
-    			 * Fin: Perfil Detalle Horario
+    			 * Modificar el formato de la columna 'Lectura Inicial y final'
+    			 * para mostrar la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
     			 */
+    			int i = 0;
+    			for (ContometroJornada iCJ : listContometroJornada) {
+    				iCJ.setLecturaInicialStr(Utilidades.leadingZeros(iCJ.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+    				iCJ.setLecturaFinalStr(Utilidades.leadingZeros(iCJ.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+    				listContometroJornada.set(i, iCJ);
+    				i++;
+    			}
                 
+    			/**
+    			 * Se agrega la lista en la variable 'Respuesta'
+    			 */
 				Contenido<ContometroJornada> contenidoCJ = new Contenido<ContometroJornada>();
 				contenidoCJ.carga = listContometroJornada;
     			oRespuesta.contenido = contenidoCJ;
@@ -610,7 +649,7 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
            	 	if (MensajeCantidadTurnos.length() != 0) {
                 	oRespuesta.mensaje = MensajeCantidadTurnos;
                 } else {
-                	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+                	oRespuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
                 }
            	 	
 	           	if (oRespuesta.getContenido().getCarga().isEmpty()) {
@@ -792,7 +831,7 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		
@@ -803,59 +842,67 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 		}
 		
 		//Recuperar el registro 'DetalleTurno'
-    	respuesta = dDetalleTurnoDao.recuperarRegistroDetalleTurno(ID);
-        if (respuesta.estado == false) {        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+    	respuesta = dDetalleTurnoDao.recuperarRegistroDetalleTurno(ID); // JAFETH
+        if (!respuesta.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale)); 
         }
         
         //Carga el DetalleTurno
-        DetalleTurno eDetalleTurno = (DetalleTurno) respuesta.getContenido().getCarga().get(0);
+        DetalleTurno eDetalleTurno = (DetalleTurno) respuesta.getContenido().getCarga().get(PRIMER_ROW);
         
         RespuestaCompuesta respuestaTurno = dTurno.recuperarRegistro(eDetalleTurno.getTurno().getId());
-        if (!respuesta.estado) {        	
+        if (!respuestaTurno.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
         Turno eTurno = (Turno) respuestaTurno.getContenido().getCarga().get(0);
+        
+        RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
+        if (!registroEstacion.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
+        
+        Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
         
         RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
         if (!respuestaPerfilDetalle.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+        PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(PRIMER_ROW);
         
         /**
          * Conseguir 'HoraCierre', se trae la 'FechaHoraApertura' del turno
          * y se le suma la diferencia de horas del 'PerfilDetalleHorario'
          */
-        String horaInicioTurno = ePerfilDetalleHorario.getHoraInicioTurno();
-        String horaFinTurno = ePerfilDetalleHorario.getHoraFinTurno();
-        long difference = Utilidades.differenceBetweenTwoTimes(horaInicioTurno, horaFinTurno);
+        long difference = Utilidades.differenceBetweenTwoTimes(ePerfilDetalleHorario.getHoraInicioTurno(), ePerfilDetalleHorario.getHoraFinTurno());
         Timestamp fechaHoraApertura = eTurno.getFechaHoraApertura();
         fechaHoraApertura.setTime(fechaHoraApertura.getTime() + difference);
-        
         eDetalleTurno.getTurno().setFechaHoraCierre(fechaHoraApertura);
         
-		//retorna la 'horaCierre' del ultimo turno cerrado
-//        ParametrosListar parameters = new ParametrosListar(); 
-//        parameters.setIdJornada(eDetalleTurno.getTurno().getIdJornada());
-//        parameters.setFiltroEstado(Turno.ESTADO_CERRADO);
-//        Respuesta respuestaSimple = dTurno.recuperarUltimoTurnoCerrado(parameters);
-//        
-//		if (respuestaSimple.valor != null) {
-//			Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(respuestaSimple.valor, "yyyy/MM/dd HH:mm:ss").getTime());
-//			eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
-//		}
-
-		List<DetalleTurno> list = new ArrayList<DetalleTurno>();
-		list.add(eDetalleTurno);
+        /**
+         * List
+         */
+        List<DetalleTurno> listDetalleTurno = (List<DetalleTurno>) respuesta.getContenido().getCarga();
+        listDetalleTurno.set(PRIMER_ROW, eDetalleTurno);
+        
+        /**
+        * Modificar el formato de la columna 'Lectura Inicial y final'
+        * para mostrar la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        */
+        int i = 0;
+        for (DetalleTurno iDT : listDetalleTurno) {
+        	iDT.setLecturaInicialStr(Utilidades.leadingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+        	iDT.setLecturaFinalStr(Utilidades.leadingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+	        listDetalleTurno.set(i, iDT);
+	        i++;
+        }
 		
 		Contenido<DetalleTurno> content = new Contenido<DetalleTurno>();
-		content.carga = list;
+		content.carga = listDetalleTurno;
 		respuesta.contenido = content;  
      	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
-     	
+
 	} catch (Exception e) {
 		Utilidades.gestionaError(e, sNombreClase, "recuperaRegistro");
 		respuesta.estado = false;
@@ -1021,8 +1068,8 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
 	AuthenticatedUserDetails principal = null;
 	TransactionDefinition definicionTransaccion = null;
 	TransactionStatus estadoTransaccion = null;
-	Bitacora eBitacora=null;
-	String direccionIp="";
+	Bitacora eBitacora = null;
+	String direccionIp = "";
 	
 	try {
 		
@@ -1073,8 +1120,8 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
 			throw new Exception("Error al obtener la Jornada");
 		}
 		
-		Jornada eJornada=(Jornada)respuesta.contenido.getCarga().get(0);
-        respuesta= dTurno.actualizarRegistro(eTurno);
+		Jornada eJornada = (Jornada)respuesta.contenido.getCarga().get(0);
+        respuesta = dTurno.actualizarRegistro(eTurno);
         if (respuesta.estado==false){          	
         	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
         }
@@ -1139,7 +1186,7 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_CIERRE_COMPLETA);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		
@@ -1150,9 +1197,8 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 		}
 		
 		int idTurno = Utilidades.parseInt(httpRequest.getParameter("idTurno"));
-		
 		respuesta = dTurno.recuperarRegistro(idTurno);	
-        if (respuesta.estado == false) {        	
+        if (!respuesta.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
@@ -1160,23 +1206,26 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
         
         /**
         * Inicio: Perfil Detalle Horario
-        * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
+        * Se trae el detalle del perfil
         */
         RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
         
-        if (respuestaPerfilDetalle.estado == false) {        	
+        if (!respuestaPerfilDetalle.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
         PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
         List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
         lstDetalles.add(ePerfilDetalleHorario);
+        
         PerfilHorario perfilHorario = new PerfilHorario();
         perfilHorario.setLstDetalles(lstDetalles);
+        
         eTurno.setPerfilHorario(perfilHorario);
 
         List<PerfilHorario> list = new ArrayList<PerfilHorario>();
         list.add(perfilHorario);
+        
         contenido.carga = list;
         respuesta.contenido = contenido;
        

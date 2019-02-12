@@ -59,7 +59,6 @@ moduloBase.prototype.mostrarDepuracion=function(mensaje,titulo){
     if ((typeof titulo != "undefined") && (titulo != null)) {
 
     }
-    console.log(mensaje);
   }
 };
 

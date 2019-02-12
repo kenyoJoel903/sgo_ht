@@ -22,6 +22,7 @@ public class ContometroJornadaMapper implements RowMapper<ContometroJornada> {
 		Producto eProducto = null;
 		
 		try {
+			
 			eContometroJornada = new ContometroJornada();
 			eContometroJornada.setId(rs.getInt("id_cjornada"));
 			eContometroJornada.setIdJornada(rs.getInt("id_jornada"));	
@@ -45,7 +46,7 @@ public class ContometroJornadaMapper implements RowMapper<ContometroJornada> {
 			eContometroJornada.setEstadoServicio(rs.getInt("estado_servicio"));
 			eContometroJornada.setIdContometro(rs.getInt("id_contometro"));
 			
-			eContometro=new Contometro();
+			eContometro = new Contometro();
 			eContometro.setId(rs.getInt("id_contometro"));
 			eContometro.setAlias(Utilidades.cleanXSS(rs.getString("alias_contometro")));
 			eContometro.setIdEstacion(rs.getInt("id_estacion"));
@@ -56,9 +57,11 @@ public class ContometroJornadaMapper implements RowMapper<ContometroJornada> {
 			eProducto.setId(rs.getInt("id_producto"));
 			eProducto.setNombre(Utilidades.cleanXSS(rs.getString("nombre_producto")));
 			eContometroJornada.setProducto(eProducto);
-		} catch(Exception ex){
-			ex.printStackTrace();
+			
+		} catch(Exception e){
+			e.printStackTrace();
 		}
+		
 		return eContometroJornada;
 	}
 }

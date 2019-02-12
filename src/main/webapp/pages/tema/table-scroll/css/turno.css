@@ -1,5 +1,8 @@
 @CHARSET "ISO-8859-1";
 
+/**
+* TABLA GRUPO APERTURA
+*/
 table.grupo-apertura
 {
 	width: 100%;
@@ -46,3 +49,79 @@ table.grupo-apertura thead tr td:nth-child(3)
 {
     border-right: 0;
 }
+/**
+* TABLA GRUPO APERTURA
+*/
+
+
+
+
+/**
+* TABLA GRUPO CIERRE
+*/
+table.grupo-cierre
+{
+	width: 100%;
+}
+
+table.grupo-cierre thead tr td
+{
+    padding: 0 !important; 
+    margin: 0 !important; 
+    text-align: center;
+}
+
+table.grupo-cierre thead tr td label
+{
+	margin-top: 3px;
+	margin-bottom: 3px !important; 
+}
+
+table.grupo-cierre thead
+{
+    background-color: #FFC05A;
+}
+
+table.grupo-cierre tbody
+{
+    height: 375px;
+}
+
+table.grupo-cierre tbody tr td:nth-child(1),
+table.grupo-cierre tbody tr td:nth-child(2)
+{
+    width: 25% !important;
+}
+
+table.grupo-cierre tbody tr td:nth-child(3),
+table.grupo-cierre tbody tr td:nth-child(4),
+table.grupo-cierre tbody tr td:nth-child(5)
+{
+    width: 16.666666% !important;
+}
+
+table.grupo-cierre thead tr td:nth-child(1),
+table.grupo-cierre thead tr td:nth-child(2)
+{
+    width: 25% !important;
+}
+
+table.grupo-cierre thead tr td:nth-child(3),
+table.grupo-cierre thead tr td:nth-child(4),
+table.grupo-cierre thead tr td:nth-child(5)
+{
+    width: 16.666666% !important;
+}
+
+table.grupo-cierre thead tr td:nth-child(3)
+{
+    border-right: 0;
+}
+/**
+* TABLA GRUPO CIERRE
+*/
+
+
+
+
+

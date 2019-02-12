@@ -22,6 +22,7 @@ public class Parametro extends EntidadBase {
 	static final String ALIAS_ROL_TR_DEST_PLANIF = "ROL_TR_DEST_PLANIF";
 	public static final String ALIAS_DIRECTORIO_ARCHIVOS = "DIRECTORIO_ARCHIVOS";
 	public static final String ALIAS_PERIODO_NOTIFICACION = "PERIODO_NOTIFICACION";
+	public static final String ALIAS_CONTOMETRO_REGISTROS = "CONTOMETRO_REGISTROS";
 	
 	//SEGURIDAD LOGIN
 	public static final String ALIAS_MAX_CAMBIO_CLAVE = "MAX_CAMBIO_CLAVE";
@@ -39,6 +40,18 @@ public class Parametro extends EntidadBase {
 
 	public String getValor() {
 		return valor;
+	}
+	
+	public int getValorInt() {
+		int out = 0;
+		
+		try {
+			out = Integer.parseInt(valor);	
+		} catch (Exception e) {
+			e.getStackTrace();
+		}
+		
+		return out;
 	}
 
 	public void setValor(String Valor) {

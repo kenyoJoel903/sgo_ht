@@ -109,6 +109,7 @@ public class ContometroJornadaDao {
 		List<Object> parametros = new ArrayList<Object>();
 		
 		try {
+			
 			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
 				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
 				parametros.add(argumentosListar.getInicioPaginacion());
