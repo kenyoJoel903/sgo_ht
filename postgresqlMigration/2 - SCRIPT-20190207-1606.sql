@@ -1132,3 +1132,10 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
         VALUES('/admin/turno/recuperarCierre', 10, 255, '/turno', 2, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_CIERRE'), 'Recuperar cierre', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+-- ******************* PROGRAMA 2019-02-12 12:01 ******************************
+INSERT INTO sgo.parametro 
+(valor, alias, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES 
+(15, 'CONTOMETRO_REGISTROS', 1549984064053, 2, 2, 1549984064053, '127.0.0.1', '127.0.0.1');

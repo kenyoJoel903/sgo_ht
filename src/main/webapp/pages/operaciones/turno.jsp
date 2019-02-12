@@ -216,7 +216,7 @@
 									<td><label class="text-left">Lectura Inicial</label></td>
 			      				</tr>
 			      			</thead>
-			      			<tbody id="GrupoApertura">
+			      			<tbody id="GrupoApertura" style="<%=tableAttributes.getBodyStyle() %>">
 			      				<tr id="GrupoApertura_template">
 			      					<td class="celda-detalle" style="width:30%;">				
 			      						<input elemento-grupo="contometro" id="GrupoApertura_#index#_Contometro" name="programacion[detalle][#index#][id_contometro]" type="text" readonly="readonly" class="form-control input-sm text-left"/>

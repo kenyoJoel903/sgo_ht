@@ -554,12 +554,27 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
     			
     			eDetalleTurno.getTurno().setPerfilHorario(perfilHorario);
     			
+    	        /**
+    	         * List
+    	         */
     			List<DetalleTurno> listDetalleTurno = (List<DetalleTurno>) oRespuesta.getContenido().getCarga();
     			listDetalleTurno.set(PRIMER_ROW, eDetalleTurno);
-    			/**
-    			 * Fin: Perfil Detalle Horario
-    			 */
 
+    			/**
+    			 * Modificar el formato de la columna 'Lectura Inicial y final'
+    			 * para mostrar la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+    			 */
+    			int i = 0;
+    			for (DetalleTurno iDT : listDetalleTurno) {
+    				iDT.setLecturaInicialStr(Utilidades.leadingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+    				iDT.setLecturaFinalStr(Utilidades.leadingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+    				listDetalleTurno.set(i, iDT);
+    				i++;
+    			}
+
+    			/**
+    			 * Se agrega la lista en la variable 'Respuesta'
+    			 */
 	            Contenido<DetalleTurno> contenidoDT = new Contenido<DetalleTurno>();
 	            contenidoDT.carga = listDetalleTurno;
 	            oRespuesta.contenido = contenidoDT;
@@ -573,9 +588,9 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
             	
             } else {//obtener lista de contometro jornada 
             	
-        		parametros.setCampoOrdenamiento("alias_contometro");
         		parametros.setSentidoOrdenamiento("ASC");
             	parametros.setPaginacion(Constante.SIN_PAGINACION);
+        		parametros.setCampoOrdenamiento("alias_contometro");
             	parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
             	oRespuesta = dContometroJornadaDao.recuperarRegistros(parametros);
            	 	if (oRespuesta.estado==false) {        	
