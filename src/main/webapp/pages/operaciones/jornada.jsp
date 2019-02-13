@@ -104,6 +104,11 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
  					<th>ID Estacion</th>
  					<th>Estacion</th>
                  	<th>D&iacute;a Operativo</th>
+                 	
+<!--                  	Inicio Agregado por 9000003068 -->
+					<th>Tipo Turno</th>
+<!--                  	Fin Agregado por 9000003068 -->
+                 	
                  	<th>Total Despachos</th>
                  	<th>Ult. Actualizaci&oacute;n</th>
                  	<th>Usuario</th>
@@ -357,7 +362,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		        			  <td class="celda-detalle" style="width:18%;"><span id='cmpAperturaOperacion'>	</span></td>
 		        			  <td></td>
 		                      <td class="celda-detalle" style="width:7%;"><label>Estaci&oacute;n: </label></td>
-		                      <td class="celda-detalle" style="width:18%;"><span id='cmpAperturaEstacion'>	</span></td>
+<!-- 		                      Se agrega input hidden tipoAperturaTanque por req 9000003068-->
+		                      <td class="celda-detalle" style="width:18%;"><span id='cmpAperturaEstacion'>	</span> <input type="hidden" id="tipoAperturaTanque"/></td>
 		                      <td></td>
 		        			  <td class="celda-detalle" style="width:10%;"><label>D&iacute;a Operativo: </label></td>
 			                  <td class="celda-detalle" style="width:15%;"><FONT COLOR=red><B>	<span id='cmpAperturaFechaJornada'></span></B></FONT> </td>

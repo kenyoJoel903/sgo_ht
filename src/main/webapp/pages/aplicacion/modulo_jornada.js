@@ -777,7 +777,10 @@ moduloJornada.prototype.inicializarGrillaJornada=function(){
 		    }
 		    var indiceFila = referenciaModulo.obj.datJornadaAPI.row( this ).index();
 		    referenciaModulo.obj.idJornada = referenciaModulo.obj.datJornadaAPI.cell(indiceFila,1).data();
-		    referenciaModulo.obj.estadoJornada = referenciaModulo.obj.datJornadaAPI.cell(indiceFila,8).data();
+		    
+//		    Inicio Se cambio indice 8 por 9 por req 9000003068
+		    referenciaModulo.obj.estadoJornada = referenciaModulo.obj.datJornadaAPI.cell(indiceFila,9).data();
+//		    Fin Se cambio indice 8 por 9 por req 9000003068
 
 	    	referenciaModulo.desactivarBotones();
 	    	referenciaModulo.obj.btnVer.removeClass(constantes.CSS_CLASE_DESHABILITADA);

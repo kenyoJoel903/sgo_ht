@@ -86,6 +86,7 @@ public class PerfilDetalleHorarioDao {
 			consultaSQL.append("t1.ip_creacion, ");
 			consultaSQL.append("t1.ip_actualizacion, ");
 			consultaSQL.append(" t1.usuario_creacion, "); 
+			consultaSQL.append("CONCAT(t1.hora_inicio_turno, ' - ', t1.hora_fin_turno) AS horaInicioFinTurno, ");
 			consultaSQL.append(" t1.usuario_actualizacion ");
 			consultaSQL.append("FROM ");
 			consultaSQL.append(NOMBRE_VISTA);
@@ -157,6 +158,7 @@ public class PerfilDetalleHorarioDao {
 			consultaSQL.append("t1.ip_creacion, ");
 			consultaSQL.append("t1.ip_actualizacion, ");
 			consultaSQL.append(" t1.usuario_creacion, "); 
+			consultaSQL.append("CONCAT(t1.hora_inicio_turno, ' - ', t1.hora_fin_turno) AS horaInicioFinTurno, ");
 			consultaSQL.append(" t1.usuario_actualizacion ");
 			consultaSQL.append("FROM ");
 			consultaSQL.append(NOMBRE_VISTA);

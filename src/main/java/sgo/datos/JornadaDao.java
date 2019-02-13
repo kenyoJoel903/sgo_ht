@@ -152,6 +152,11 @@ public class JornadaDao {
 			consultaSQL.append("t1.nombre,");
 			consultaSQL.append("t1.tipo,");
 			consultaSQL.append("t1.estado_estacion,");
+			
+//			Inicio Agregado por req 9000003068===============
+			consultaSQL.append("t1.tipo_apertura_tanque,");
+//			Fin Agregado por req 9000003068=================
+			
 			consultaSQL.append("t1.total_despachos,");
 			consultaSQL.append("t1.id_perfil_horario,");
 			consultaSQL.append("t1.nombre_perfil,"); // JAFETH - HE PUESTO ESTO EN ZEORO ,. sale error en sgov2a-vp/admin/jornada,.,.
@@ -232,6 +237,11 @@ public class JornadaDao {
 			consultaSQL.append("t1.usuario_creacion,");
 			consultaSQL.append("t1.usuario_actualizacion,");
 			consultaSQL.append("t1.ip_creacion,");
+			
+//			Inicio Agregado por req 9000003068===============
+			consultaSQL.append("t1.tipo_apertura_tanque,");
+//			Fin Agregado por req 9000003068=================
+			
 			consultaSQL.append("t1.ip_actualizacion");
 			consultaSQL.append(" FROM ");				
 			consultaSQL.append(NOMBRE_VISTA);
@@ -373,8 +383,16 @@ public class JornadaDao {
 		try {
 			consultaSQL.append("INSERT INTO ");
 			consultaSQL.append(NOMBRE_TABLA);
-			consultaSQL.append(" (id_estacion, operario1, operario2, comentario,observacion, fecha_operativa, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) ");
-			consultaSQL.append(" VALUES (:Estacion,:Operario1,:Operario2,:Comentario,:Observacion,:FechaOperativa,:Estado,:CreadoEl,:CreadoPor,:ActualizadoPor,:ActualizadoEl,:IpCreacion,:IpActualizacion) ");
+			consultaSQL.append(" (id_estacion, operario1, operario2, comentario,observacion, fecha_operativa, estado, "
+//			Inicio agregado por req 9000003068=================================================================================================
+					+ "id_perfil_horario, "
+//			Fin agregado por req 9000003068====================================================================================================
+					+ "creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) ");
+			consultaSQL.append(" VALUES (:Estacion,:Operario1,:Operario2,:Comentario,:Observacion,:FechaOperativa,:Estado,"
+//					Inicio agregado por req 9000003068=========================================================================================
+					+ ":IdPerfilHorario, "
+//			Fin agregado por req 9000003068====================================================================================================			
+					+ ":CreadoEl,:CreadoPor,:ActualizadoPor,:ActualizadoEl,:IpCreacion,:IpActualizacion) ");
 			MapSqlParameterSource listaParametros= new MapSqlParameterSource();   
 			listaParametros.addValue("Estacion", jornada.getIdEstacion());
 			listaParametros.addValue("Operario1", jornada.getIdOperario1());
@@ -383,6 +401,11 @@ public class JornadaDao {
 			listaParametros.addValue("Observacion", jornada.getObservacion());
 			listaParametros.addValue("FechaOperativa", jornada.getFechaOperativa());
 			listaParametros.addValue("Estado", jornada.getEstado());
+			
+//			Inicio agregado por req 9000003068=================================================================================================
+			listaParametros.addValue("IdPerfilHorario", jornada.getPerfilHorario().getId());
+//			Fin agregado por req 9000003068====================================================================================================
+			
 			listaParametros.addValue("CreadoEl", jornada.getCreadoEl());
 			listaParametros.addValue("CreadoPor", jornada.getCreadoPor());
 			listaParametros.addValue("ActualizadoPor", jornada.getActualizadoPor());
