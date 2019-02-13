@@ -188,6 +188,8 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.btnGuardarCierre=$("#btnGuardarCierre");
   this.obj.btnCancelarCierre=$("#btnCancelarCierre");
   this.obj.btnCerrarVistaTurno=$("#btnCerrarVistaTurno");
+  this.obj.btnPlantillaContometros = $("#btnPlantillaContometros");
+  this.obj.btnCargarArchivoContometros = $("#btnCargarArchivoContometros");
 
   //para guardar los datos de la jornada seleccionada
   this.obj.idJornadaSeleccionada=$("#idJornadaSeleccionada");
@@ -240,24 +242,32 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
 	  //referenciaModulo.botonVer();		
   });
   
-  this.obj.btnGuardarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnGuardarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonGuardarApertura();		
   });
  
-  this.obj.btnCancelarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCancelarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonCancelarApertura();		
   });
 
-  this.obj.btnCerrarVistaTurno.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCerrarVistaTurno.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonCerrarVistaTurno();		
   });
 
-  this.obj.btnGuardarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnGuardarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function(){
 	  referenciaModulo.botonGuardarCierre();		
   });
   
-  this.obj.btnCancelarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCancelarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonCancelarGuardarCierre();		
+  });
+  
+  this.obj.btnPlantillaContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.botonGenerarPlantillaContometros();		
+  });
+  
+  this.obj.btnCargarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.botonCargarArchivoContometros();		
   });
 
 };
@@ -631,8 +641,6 @@ moduloTurno.prototype.inicializarGrillaJornada=function() {
 	    referenciaModulo.obj.idPerfilHorarioSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
 	    //referenciaModulo.obj.horaInicioFinTurnoSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
 	    //referenciaModulo.obj.numeroOrdenSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 11).data();
-
-	    //console.log("numeroOrdenSeleccionado::: " + referenciaModulo.obj.numeroOrdenSeleccionado);
 	    
 	    //desactivamos todos los botones
     	referenciaModulo.desactivarBotones();
@@ -821,8 +829,6 @@ moduloTurno.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json){
 		    ref.mostrarDepuracion(error.message);
 	   }  
 	};
-
-
 
 moduloTurno.prototype.inicializarFormularioPrincipal= function() {  
 
@@ -1167,3 +1173,72 @@ moduloTurno.prototype.validaPermisos= function() {
 	  referenciaModulo.mostrarDepuracion(error.message);
   };
 };
+
+/**
+ * Exportar Excel Contometros
+ */
+moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
+	var referenciaModulo = this;
+	window.open(referenciaModulo.GENERAR_PLANTILLA_CONTOMETROS + "?idTurno=" + referenciaModulo.obj.idTurnoSeleccionado);
+};
+
+moduloTurno.prototype.botonCargarArchivoContometros = function() {
+
+    var fileUpload = $("#fileUpload")[0];
+
+    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+    if (!regex.test(fileUpload.value.toLowerCase())) {
+    	alert("Suba un archivo excel valido.");
+    	return false;
+    }
+    	
+    if (typeof (FileReader) == "undefined") {
+    	alert("Este navegador no soporta HTML5.");
+    	return false;
+    }
+
+    var reader = new FileReader();
+
+    //For Browsers other than IE.
+    if (reader.readAsBinaryString) {
+        reader.onload = function (e) {
+            ProcessExcel(e.target.result);
+        };
+        reader.readAsBinaryString(fileUpload.files[0]);
+    } else {
+    	
+        //For IE Browser.
+        reader.onload = function (e) {
+            var data = "";
+            var bytes = new Uint8Array(e.target.result);
+            for (var i = 0; i < bytes.byteLength; i++) {
+                data += String.fromCharCode(bytes[i]);
+            }
+            ProcessExcel(data);
+        };
+        reader.readAsArrayBuffer(fileUpload.files[0]);
+    }
+    
+    $("#fileUpload").val("");
+
+	function ProcessExcel(data) {
+		
+	    //Read the Excel File data.
+	    var workbook = XLSX.read(data, {
+	        type: 'binary'
+	    });
+	
+	    //Fetch the name of First Sheet.
+	    var firstSheet = workbook.SheetNames[0];
+	
+	    //Read all rows from First Sheet into an JSON array.
+	    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	
+	    //Add the data rows from Excel file.
+	    for (var i = 0; i < excelRows.length; i++) {
+	    	$("#GrupoCierre_" + i + "_LecturaFinal").val(excelRows[i].LECTURA_FINAL);
+	    }
+	}
+	
+};
+

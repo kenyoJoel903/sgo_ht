@@ -13,7 +13,8 @@ $(document).ready(function() {
 	moduloActual.URL_ACTUALIZAR = moduloActual.urlBase + '/actualizar';
 	moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
 	moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
-
+	moduloActual.GENERAR_PLANTILLA_CONTOMETROS = moduloActual.urlBase + '/generarPlantillaContometros';
+	
 	//listado de jornadaf
 	moduloActual.ordenGrillaJornada=[[ 2, 'asc' ]];
 	moduloActual.columnasGrillaJornada.push({ "data": 'id'});
@@ -26,7 +27,6 @@ $(document).ready(function() {
 	moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.id'}); // 10
-	//moduloActual.columnasGrillaJornada.push({ "data": 'numeroOrden'}); // 10
 
 	// Columnas jornada
 	moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
@@ -442,7 +442,9 @@ $(document).ready(function() {
         	
         	function trailingZeros(num) {
         		
-        		var decimalesContometro = 4;
+        		console.log("trailingZeros ::: " + moduloActual.obj.numeroDecimalesContometro);
+        		
+        		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
         		
         		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
         			return num;
@@ -670,6 +672,12 @@ moduloActual.llenarFormularioCierre = function(registro) {
 		  horaInicioFinTurno = perfilDetalleHorario.horaInicioTurno;
 	  } else if (typeof perfilDetalleHorario != null && referenciaModulo.modoEdicion == constantes.MODO_CIERRE_TURNO) {
 		  horaInicioFinTurno = perfilDetalleHorario.horaFinTurno;
+	  }
+	  
+	  try {
+		  moduloActual.obj.numeroDecimalesContometro = registro[0].jornada.estacion.numeroDecimalesContometro;
+	  } catch(error){
+	
 	  }
 	  
 	  //para pantalla apertura

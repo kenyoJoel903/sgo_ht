@@ -1,6 +1,8 @@
 package sgo.servicio;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,7 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -59,11 +65,15 @@ import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
+import sgo.entidad.ResumenCierre;
 import sgo.entidad.TableAttributes;
 import sgo.entidad.TanqueJornada;
 import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
+import sgo.utilidades.CabeceraReporte;
+import sgo.utilidades.Campo;
 import sgo.utilidades.Constante;
+import sgo.utilidades.Reporteador;
 import sgo.utilidades.Utilidades;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,6 +130,8 @@ private PerfilDetalleHorarioDao dPerfilDetalleHorario;
 @Autowired
 private ParametroDao dParametro;
 @Autowired
+ServletContext servletContext;
+@Autowired
 private TanqueJornadaDao dTanqueJornadaDao;
 private static final String sNombreClase = "TurnoControlador";
 private DataSourceTransactionManager transaccion;// Gestor de la transaccion
@@ -147,6 +159,9 @@ private static final String URL_RECUPERAR_APERTURA_RELATIVA = "/turno/recuperarA
 
 private static final String URL_RECUPERAR_CIERRE_COMPLETA = "/admin/turno/recuperarCierre";
 private static final String URL_RECUPERAR_CIERRE_RELATIVA = "/turno/recuperarCierre";
+
+private static final String URL_GENERAR_PLANTILLA_CONTOMETROS_COMPLETA = "/admin/turno/generarPlantillaContometros";
+private static final String URL_GENERAR_PLANTILLA_CONTOMETROS_RELATIVA = "/turno/generarPlantillaContometros";
 
 private static final int PRIMER_ROW = 0;
 
@@ -857,7 +872,7 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 		}
 		
 		//Recuperar el registro 'DetalleTurno'
-    	respuesta = dDetalleTurnoDao.recuperarRegistroDetalleTurno(ID); // JAFETH
+    	respuesta = dDetalleTurnoDao.recuperarRegistroDetalleTurno(ID);
         if (!respuesta.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale)); 
         }
@@ -1123,7 +1138,7 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
 			throw new Exception("Error al obtener el Turno");
 		}
 		
-		Turno turnoOld=(Turno)respuesta.contenido.getCarga().get(0);
+		Turno turnoOld = (Turno)respuesta.contenido.getCarga().get(0);
 		if(eTurno.getFechaHoraCierre() != null && eTurno.getFechaHoraCierre().compareTo(turnoOld.getFechaHoraApertura())<0){
 			throw new Exception("La Hora de Cierre debe ser mayor a: " + Utilidades.convierteDateAString(turnoOld.getFechaHoraApertura(), "dd/MM/yyyy HH:mm:ss" ));
 		}
@@ -1193,7 +1208,7 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
-	Contenido<PerfilHorario> contenido = new Contenido<PerfilHorario>();
+	Contenido<Turno> contenido = new Contenido<Turno>();
 	
 	try {
 		
@@ -1217,14 +1232,23 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        Turno eTurno = (Turno) respuesta.contenido.getCarga().get(0);
+        Turno eTurno = (Turno) respuesta.contenido.getCarga().get(PRIMER_ROW);
+        
+        /**
+         * Conseguir 'Estacion'
+         */
+        RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
+        if (!registroEstacion.estado) {         
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
+        Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(PRIMER_ROW);
+        eTurno.getJornada().setEstacion(eEstacion);
         
         /**
         * Inicio: Perfil Detalle Horario
         * Se trae el detalle del perfil
         */
         RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
-        
         if (!respuestaPerfilDetalle.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
@@ -1238,12 +1262,17 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
         
         eTurno.setPerfilHorario(perfilHorario);
 
-        List<PerfilHorario> list = new ArrayList<PerfilHorario>();
-        list.add(perfilHorario);
+        /**
+         * Guarda todo en la respuesta
+         */
+        List<Turno> list = (List<Turno>) respuesta.contenido.getCarga();
+        list.set(PRIMER_ROW, eTurno);
         
         contenido.carga = list;
         respuesta.contenido = contenido;
-       
+		contenido.totalRegistros = list.size();
+		contenido.totalEncontrados = list.size();
+		
 	} catch (Exception e) {
 		Utilidades.gestionaError(e, sNombreClase, "recuperarApertura");
 		respuesta.estado = false;
@@ -1251,6 +1280,206 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 	}
 	
 	return respuesta;
+}
+
+@RequestMapping(value = URL_GENERAR_PLANTILLA_CONTOMETROS_RELATIVA ,method = RequestMethod.GET)
+public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletRequest httpRequest, HttpServletResponse response, Locale locale) {
+	
+	RespuestaCompuesta respuesta = null;
+	AuthenticatedUserDetails principal = null;
+	Contenido<Turno> contenido = new Contenido<Turno>();
+	
+	try {
+		
+		//Recupera el usuario actual
+		principal = this.getCurrentUser(); 
+		//Recuperar el enlace de la accion
+		respuesta = dEnlace.recuperarRegistro(URL_GENERAR_PLANTILLA_CONTOMETROS_COMPLETA);
+		if (!respuesta.estado) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+		}
+		
+		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+		//Verificar si cuenta con el permiso necesario			
+		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+		}
+		
+		// Recuperar el registro 'DetalleTurno'
+		int idTurno = Utilidades.parseInt(httpRequest.getParameter("idTurno"));
+		RespuestaCompuesta respuestaDetalleTurno = dDetalleTurnoDao.recuperarRegistroDetalleTurno(idTurno);
+		if (!respuesta.estado) {          
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale)); 
+		}
+		
+		// Recuperar la 'turno'
+		RespuestaCompuesta respuestaTurno = dTurno.recuperarRegistro(idTurno);
+		if (!respuestaTurno.estado) {           
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		Turno eTurno = (Turno) respuestaTurno.getContenido().getCarga().get(PRIMER_ROW);
+		
+		// Recuperar la 'estacion'
+		RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
+		if (!registroEstacion.estado) {         
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+
+		Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+        
+        /**
+         * Export Excel
+         */
+		int i = 1;
+		ArrayList<DetalleTurno> listDetalleTurno = (ArrayList<DetalleTurno>) respuestaDetalleTurno.contenido.getCarga();
+		ArrayList<HashMap<?,?>> hmRegistros = null;
+		hmRegistros = new  ArrayList<HashMap<?,?>>();
+		
+		for (DetalleTurno iDT : listDetalleTurno) {
+			HashMap<String, String> hm = new HashMap<String, String>();
+			hm.put("secuencia", Integer.toString(i));
+			hm.put("contometro", iDT.getContometro().getAlias());
+			hm.put("producto", iDT.getProducto().getNombre());
+			hm.put("lectura_inicial", Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+			hm.put("lectura_final", Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+			hmRegistros.add(hm);
+			i++;
+		}
+		
+		Reporteador uReporteador = new Reporteador();
+		uReporteador.setRutaServlet(servletContext.getRealPath("/"));
+		ArrayList<Campo> listaCampos = this.generarCamposCierre();
+		ArrayList<CabeceraReporte> listaCamposCabecera = this.cabeceraPlantillaContometros();
+		
+		ByteArrayOutputStream baos = uReporteador.generarPlantillaContometros(
+		    hmRegistros, 
+		    listaCampos, 
+		    listaCamposCabecera,
+		    "Plantilla Contómetros"
+		);
+		
+		byte[] bytes = baos.toByteArray();
+		response.setContentType("application/vnd.ms-excel");
+		response.addHeader("Content-Disposition", "attachment; filename=\"plantilla-contometros.xls\"");
+		response.setContentLength(bytes.length);
+		
+		ServletOutputStream ouputStream = response.getOutputStream();
+		ouputStream.write(bytes, 0, bytes.length); 
+	    ouputStream.flush();    
+	    ouputStream.close(); 
+		
+	} catch (IOException e) {
+		Utilidades.gestionaError(e, sNombreClase, "generarPlantillaContometros");
+		respuesta.estado = false;
+		respuesta.mensaje = e.getMessage();
+	} catch (Exception e) {
+		Utilidades.gestionaError(e, sNombreClase, "generarPlantillaContometros");
+		respuesta.estado = false;
+		respuesta.mensaje = e.getMessage();
+	}
+	
+	return respuesta;
+}
+
+private ArrayList<CabeceraReporte> cabeceraPlantillaContometros() {
+
+    ArrayList<CabeceraReporte> listaCr = null;
+    CabeceraReporte cr = null;
+
+    try {
+
+        listaCr = new ArrayList<CabeceraReporte>();
+
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Secuencia");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Contómetro");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+        
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Producto");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+        
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Lectura Inicial");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+        
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Lectura_Final");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+
+    } catch(Exception e) {
+
+    }
+
+    return listaCr;
+}
+
+private ArrayList<Campo> generarCamposCierre() {
+
+    Campo eCampo = null;
+    ArrayList<Campo> listaCampos = new ArrayList<Campo>();
+
+    try {
+    	
+        eCampo = new Campo();
+        eCampo.setEtiqueta("A");
+        eCampo.setNombre("secuencia");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(1);
+        listaCampos.add(eCampo);
+
+        eCampo = new Campo();
+        eCampo.setEtiqueta("B");
+        eCampo.setNombre("contometro");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo); 
+        
+        eCampo = new Campo();
+        eCampo.setEtiqueta("C");
+        eCampo.setNombre("producto");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo);
+        
+        eCampo = new Campo();
+        eCampo.setEtiqueta("D");
+        eCampo.setNombre("lectura_inicial");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo);
+        
+        eCampo = new Campo();
+        eCampo.setEtiqueta("E");
+        eCampo.setNombre("lectura_final");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo);
+
+    } catch (Exception e) {
+
+    }
+
+    return listaCampos;
 }
 
 }

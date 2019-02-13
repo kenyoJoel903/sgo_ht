@@ -13,6 +13,23 @@
 <link href="tema/table-scroll/css/table-scroll.css" rel="stylesheet" type="text/css"/>
 <link href="tema/table-scroll/css/turno.css" rel="stylesheet" type="text/css"/>
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+
+
+<div id="dvExcel"></div>
+
+
+
+
+
+
+
+
+
+
+
 <div class="content-wrapper">
 
   <section class="content-header">
@@ -349,6 +366,14 @@
 				<div class="box-footer">
 		            <button id="btnGuardarCierre" type="submit" class="btn btn-primary btn-sm">Guardar</button>
 		            <button id="btnCancelarCierre" class="btn btn-danger btn-sm">Cancelar</button>
+		            <button id="btnPlantillaContometros" class="btn btn-success btn-sm">
+		            	<i class="fa fa-fw fa-file-excel-o"></i> Plantilla Cont&oacute;metros
+	            	</button>
+		            <button id="btnCargarArchivoContometros" class="btn btn-success btn-sm">
+		            	<i class="fa fa-fw fa-cloud-upload"></i> Cargar Archivo Cont&oacute;metros
+	            	</button>
+	            	
+	            	<input type="file" id="fileUpload" />
 		    	</div>
 		    	<div class="overlay" id="ocultaContenedorCierre" style="display:none;">
 		            <i class="fa fa-refresh fa-spin"></i>
