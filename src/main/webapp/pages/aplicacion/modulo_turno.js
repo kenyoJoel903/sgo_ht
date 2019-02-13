@@ -216,13 +216,13 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.cmpFiltroTabla=$("#cmpFiltroTabla");
   this.obj.cmpFiltroTipoFecha=$("#cmpFiltroTipoFecha");	
 
-  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.validaFormularioXSS("#frmBuscar");
 	  referenciaModulo.modoEdicion=constantes.MODO_LISTAR;
 	  referenciaModulo.listarRegistrosJornada();
   });
   
-  this.obj.btnApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.descripcionPermiso = 'CREAR_TURNO';
 	  referenciaModulo.validaPermisos();
 	  //referenciaModulo.obtieneUltimaJornada();

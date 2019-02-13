@@ -24,6 +24,7 @@ table.grupo-apertura thead tr td label
 table.grupo-apertura thead
 {
     background-color: #FFC05A;
+    color: white;
 }
 
 table.grupo-apertura tbody
@@ -69,6 +70,8 @@ table.grupo-cierre thead tr td
     padding: 0 !important; 
     margin: 0 !important; 
     text-align: center;
+    border-top: 1px solid #6e6e6e !important; 
+    border-bottom: 1px solid #6e6e6e;
 }
 
 table.grupo-cierre thead tr td label
@@ -80,6 +83,7 @@ table.grupo-cierre thead tr td label
 table.grupo-cierre thead
 {
     background-color: #FFC05A;
+    color: white;
 }
 
 table.grupo-cierre tbody
@@ -104,6 +108,16 @@ table.grupo-cierre thead tr td:nth-child(1),
 table.grupo-cierre thead tr td:nth-child(2)
 {
     width: 25% !important;
+}
+
+table.grupo-cierre thead tr td:nth-child(1)
+{
+    border-left: 1px solid #6e6e6e;
+}
+
+table.grupo-cierre thead tr td:nth-child(5)
+{
+    border-right: 1px solid #6e6e6e;
 }
 
 table.grupo-cierre thead tr td:nth-child(3),

@@ -398,54 +398,96 @@ $(document).ready(function() {
         	var cmpElementoLecturaFinal = $(formularioNuevo).find("input[elemento-grupo='lecturaFinal']");
         	cmpElementoLecturaFinal.inputmask('decimal', {
         		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
-        		groupSeparator:',',
-        		autoGroup:true,
-        		groupSize:3
+        		groupSeparator: ',',
+        		autoGroup: true,
+        		groupSize: 3,
+        	});
+        	cmpElementoLecturaFinal.keyup(delay(function(e) {
+        		var num = $(this).val();
+        		num = trailingZeros(num);
+        		$(this).val(num);
+        	}, 900));
+        	cmpElementoLecturaFinal.keyup(function(e) {
+        		elementoLecturaFinalFunction();
         	});
         	
         	var cmpElementoLecturaInicial = $(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
         	cmpElementoLecturaInicial.inputmask('decimal', {
         		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
-        		groupSeparator:',',
-        		autoGroup:true,
-        		groupSize:3
+        		groupSeparator: ',',
+        		autoGroup: true,
+        		groupSize: 3
         	});
         	
         	var cmpElementoLecturaDifVolEncontrado = $(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
         	cmpElementoLecturaDifVolEncontrado.inputmask('decimal', {
         		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
-        		groupSeparator:',', 
-        		autoGroup:true, 
-        		groupSize:3
+        		groupSeparator: ',', 
+        		autoGroup: true, 
+        		groupSize: 3
         	});
         	
         	var cmpElementoDiferencia = $(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
+        	cmpElementoLecturaFinal.on("change", function(e) {
+        		elementoLecturaFinalFunction();
+            });
         	
-        	cmpElementoLecturaFinal.on("change", function(e) {   		
-            	var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
-            	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());    		
-        		var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni);  
+        	function elementoLecturaFinalFunction() {
+        		var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
+        		var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());    		
+        		var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni);
+        		diferencia = trailingZeros(diferencia);
         		cmpElementoDiferencia.val(diferencia);
-            });        	
+        	}
+        	
+        	function trailingZeros(num) {
+        		
+        		var decimalesContometro = 4;
+        		
+        		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
+        			return num;
+        		}
+        		  
+        		var result = num.toString().split(".");
+        		
+        		var integer = result[0];
+        		var decimal = result[1];
+        		
+        		if (decimal.length > decimalesContometro) {
+        			return integer + "." + decimal.substring(0, decimalesContometro);
+        		}
+        		
+        		while (decimal.length < decimalesContometro) {
+        			decimal = decimal + "0";
+        		}
+
+        		return integer + "." + decimal;
+    		}
         }
       });    
   };
   
-  moduloActual.eliminaSeparadorComa = function(numeroFloat){
+  moduloActual.eliminaSeparadorComa = function(numeroFloat) {
+	  
 		var parametros = numeroFloat.split(',');
-	  	var retorno =  new String(parametros[0]);
-	  	if(parametros[1] != null){
-	  		retorno =  new String(parametros[0] + parametros[1]);
+	  	var retorno = new String(parametros[0]);
+	  	
+	  	if (parametros[1] != null) {
+	  		retorno = new String(parametros[0] + parametros[1]);
 	  	}
-	  	if(parametros[2] != null){
-	  		retorno =  new String(parametros[0] + parametros[1] + parametros[2]);
+	  	
+	  	if (parametros[2] != null) {
+	  		retorno = new String(parametros[0] + parametros[1] + parametros[2]);
 	  	}
-	  	if(parametros[3] != null){
-	  		retorno =  new String(parametros[0] + parametros[1] + parametros[2] + parametros[3]);
+	  	
+	  	if (parametros[3] != null) {
+	  		retorno = new String(parametros[0] + parametros[1] + parametros[2] + parametros[3]);
 	  	}
-	  	if(parametros[4] != null){
-	  		retorno =  new String(parametros[0] + parametros[1] + parametros[2] + parametros[3] + parametros[4]);
+	  	
+	  	if (parametros[4] != null) {
+	  		retorno = new String(parametros[0] + parametros[1] + parametros[2] + parametros[3] + parametros[4]);
 	  	}
+	  	
 	  	return retorno;
   };
   
@@ -821,7 +863,7 @@ moduloActual.llenarFormularioCierre = function(registro) {
 //========================== llenarTanquesCierre ============================================================ 
 moduloActual.llenarTanquesCierre = function(registro){
   var indice = registro.tanqueJornada.length;
-  var filaNueva 	= $('#grillaCierre');
+  var filaNueva = $('#grillaCierre');
   $('#grillaCierre').html("");
   g_tr = '<thead><tr><th class="text-center">Tanque				</th>' +
   				  '<th class="text-center">Producto				</th>' + 
@@ -837,9 +879,9 @@ moduloActual.llenarTanquesCierre = function(registro){
 	 filaNueva.append(g_tr);
   }
 };
-	  
+
 //========================== cntVistaFormulario ============================================================ 
-  moduloActual.llenarDetalles = function(registro){
+  moduloActual.llenarDetalles = function(registro) {
 		
 		var turno = registro[0].turno;	
 	    var contometro = "";
@@ -885,8 +927,18 @@ moduloActual.llenarTanquesCierre = function(registro){
 		    this.obj.vistaActualizadoPor.text("");
 		    this.obj.vistaIpActualizacion.text("");
 	    }
-	    
-	  };
+  };
+
+  function delay(callback, ms) {
+      var timer = 0;
+      return function() {
+          var context = this, args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+              callback.apply(context, args);
+          }, ms || 0);
+      };
+  }
 	
   moduloActual.inicializar();
 });

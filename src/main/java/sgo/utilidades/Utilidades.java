@@ -696,7 +696,7 @@ public static long differenceBetweenTwoTimes(String start, String end) {
     return difference;
 }
 
-public static String leadingZeros(float f, int leadingZeros) {
+public static String trailingZeros(float f, int leadingZeros) {
 	
 	String out = "0";
 	

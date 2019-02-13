@@ -566,8 +566,8 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
     			 */
     			int i = 0;
     			for (DetalleTurno iDT : listDetalleTurno) {
-    				iDT.setLecturaInicialStr(Utilidades.leadingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
-    				iDT.setLecturaFinalStr(Utilidades.leadingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+    				iDT.setLecturaInicialStr(Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+    				iDT.setLecturaFinalStr(Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
     				listDetalleTurno.set(i, iDT);
     				i++;
     			}
@@ -647,8 +647,8 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
     			 */
     			int i = 0;
     			for (ContometroJornada iCJ : listContometroJornada) {
-    				iCJ.setLecturaInicialStr(Utilidades.leadingZeros(iCJ.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
-    				iCJ.setLecturaFinalStr(Utilidades.leadingZeros(iCJ.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+    				iCJ.setLecturaInicialStr(Utilidades.trailingZeros(iCJ.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+    				iCJ.setLecturaFinalStr(Utilidades.trailingZeros(iCJ.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
     				listContometroJornada.set(i, iCJ);
     				i++;
     			}
@@ -907,8 +907,8 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
         */
         int i = 0;
         for (DetalleTurno iDT : listDetalleTurno) {
-        	iDT.setLecturaInicialStr(Utilidades.leadingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
-        	iDT.setLecturaFinalStr(Utilidades.leadingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+        	iDT.setLecturaInicialStr(Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+        	iDT.setLecturaFinalStr(Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
 	        listDetalleTurno.set(i, iDT);
 	        i++;
         }
