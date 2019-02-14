@@ -207,7 +207,7 @@ public class DetalleTurnoDao {
       return respuesta;
     }
   
-  public RespuestaCompuesta recuperarRegistroDetalleTurno(int idTurno) {
+  public RespuestaCompuesta recuperarRegistroDetalleTurno(int idTurno) { JAFETH
 	  
       StringBuilder consultaSQL = new StringBuilder();   
       List<DetalleTurno> listaRegistros = new ArrayList<DetalleTurno>();

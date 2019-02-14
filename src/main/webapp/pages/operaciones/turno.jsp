@@ -13,9 +13,8 @@
 <link href="tema/table-scroll/css/table-scroll.css" rel="stylesheet" type="text/css"/>
 <link href="tema/table-scroll/css/turno.css" rel="stylesheet" type="text/css"/>
 
-<!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script> -->
+<script type="text/javascript" src="tema/read-excel-file/0.13.5/xlsx.full.min.js"></script>
+<script type="text/javascript" src="tema/read-excel-file/0.13.5/jszip.js"></script>
 
 <div class="content-wrapper">
 
@@ -359,8 +358,6 @@
 		            <button id="btnCargarArchivoContometros" class="btn btn-success btn-sm">
 		            	<i class="fa fa-fw fa-cloud-upload"></i> Cargar Archivo Cont&oacute;metros
 	            	</button>
-	            	
-	            	<input type="file" id="fileUpload" />
 		    	</div>
 		    	<div class="overlay" id="ocultaContenedorCierre" style="display:none;">
 		            <i class="fa fa-refresh fa-spin"></i>
@@ -473,15 +470,58 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<h4 class="modal-title">
-					<%=mapaValores.get("TITULO_VENTANA_MODAL") %>
+					<strong>Turno / Cierre</strong> - Carga de datos de cont&oacute;metros
 				</h4>
 			</div>
 			<div class="modal-body">
-				<p><%=mapaValores.get("MENSAJE_CAMBIAR_ESTADO") %></p>
+			
+				<div id="message" class="callout callout-danger" style="display: none;"></div>
+			
+				<table class="sgo-simple-table table table-condensed">
+					<thead>
+						<tr>
+							<td class="celda-detalle">
+								<label>Operación / Cliente:</label>
+							</td>
+							<td class="celda-detalle">
+								<span id="cmpClienteCierre">KIO / GRIFO KIO</span>
+							</td>
+						</tr>
+						<tr>
+							<td class="celda-detalle">
+								<label>Estación:</label>
+							</td>
+							<td class="celda-detalle">
+								<span id="cmpEstacionCierre">ESTACION KIO</span>
+							</td>
+						</tr>
+						<tr>
+							<td class="celda-detalle">
+								<label>Día Operativo:</label>
+							</td>
+							<td class="celda-detalle">
+								<span 
+									class="form-control alert-success text-center espaciado input-sm text-uppercase" 
+									style="width:50%;"
+									id="cmpDiaOperativoCierre">
+									02/08/2019 17:17
+								</span>
+							</td>
+						</tr>
+						<tr>
+							<td class="celda-detalle">
+								<label>Archivo:</label>
+							</td>
+							<td class="celda-detalle">
+								<input type="file" id="fileUpload" />
+							</td>
+						</tr>
+					</thead>
+				</table>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
-				<button id="btnConfirmarModificarEstado" type="button" class="btn btn-primary">Cargar</button>
+				<button id="btnProcesarArchivoContometros" type="button" class="btn btn-primary">Cargar</button>
 			</div>
 		</div>
 	</div>

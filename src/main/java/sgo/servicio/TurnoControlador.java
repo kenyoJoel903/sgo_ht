@@ -850,7 +850,7 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
  * @return
  */
 @RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
-public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
+public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) { JAFETH
 	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
@@ -1342,7 +1342,7 @@ public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletR
 			hm.put("contometro", iDT.getContometro().getAlias());
 			hm.put("producto", iDT.getProducto().getNombre());
 			hm.put("lectura_inicial", Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
-			hm.put("lectura_final", Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+			hm.put("lectura_final", "");
 			hmRegistros.add(hm);
 			i++;
 		}

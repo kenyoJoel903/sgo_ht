@@ -609,14 +609,13 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 
 //llena el formularo de contometro jornada
 moduloActual.llenarFormularioCierre = function(registro) {
-
+	
 	var referenciaModulo = this;
 	var numeroDetalles = registro.length;
 	this.obj.grupoCierre.removeAllForms(); 
-	//this.obj.grupoCierre.getOptions().maxFormsCount = 5; // CAMBIAR ROW JAFETH
-
 	referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
 	referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
+	//this.obj.grupoCierre.getOptions().maxFormsCount = 5; // CAMBIAR ROW JAFETH
 	
 	for (var contador = 0; contador < numeroDetalles; contador++) {      
 		moduloActual.obj.grupoCierre.addForm();
@@ -950,4 +949,5 @@ moduloActual.llenarTanquesCierre = function(registro){
 	
   moduloActual.inicializar();
 });
+
 

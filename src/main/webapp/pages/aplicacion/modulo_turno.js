@@ -192,6 +192,7 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.btnCerrarVistaTurno=$("#btnCerrarVistaTurno");
   this.obj.btnPlantillaContometros = $("#btnPlantillaContometros");
   this.obj.btnCargarArchivoContometros = $("#btnCargarArchivoContometros");
+  this.obj.btnProcesarArchivoContometros = $("#btnProcesarArchivoContometros");
 
   //para guardar los datos de la jornada seleccionada
   this.obj.idJornadaSeleccionada=$("#idJornadaSeleccionada");
@@ -270,6 +271,10 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   
   this.obj.btnCargarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.modalCargarArchivoContometros();		
+  });
+  
+  this.obj.btnProcesarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.procesarArchivoContometros();		
   });
 
 };
@@ -372,7 +377,10 @@ moduloTurno.prototype.recuperarRegistro = function() {
 	      contentType: referenciaModulo.TIPO_CONTENIDO, 
 	      data: {
 	    	  ID: parseInt(referenciaModulo.obj.idTurnoSeleccionado)
-	      }, 
+	      },
+	      beforeSend: function() {
+	    	  //$('#GrupoCierre').html('<tr id="GrupoCierre_noforms_template"><td>xxxxxxxxxx</td></tr>');
+	      },
 	      success: function(respuesta) {
 				if (!respuesta.estado) {
 					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
@@ -1184,18 +1192,38 @@ moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
 	window.open(referenciaModulo.GENERAR_PLANTILLA_CONTOMETROS + "?idTurno=" + referenciaModulo.obj.idTurnoSeleccionado);
 };
 
-moduloTurno.prototype.procesarCargarArchivoContometros = function() {
+/**
+ * Open modal
+ */
+moduloTurno.prototype.modalCargarArchivoContometros = function() {
+	var referenciaModulo = this;
+	referenciaModulo.obj.modalCargarArchivoContometros.modal("show");
+};
+
+/**
+ * Process excel
+ */
+moduloTurno.prototype.procesarArchivoContometros = function() {
 
     var fileUpload = $("#fileUpload")[0];
+    
+    $("#message").html("").hide();
 
     var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
     if (!regex.test(fileUpload.value.toLowerCase())) {
-    	alert("Suba un archivo excel valido.");
+    	
+    	var items = [];
+    	items.push($('<li/>').text("Suba un archivo excel valido."));
+    	$("#message").html(items).show();
+    	
     	return false;
     }
     	
     if (typeof (FileReader) == "undefined") {
-    	alert("Este navegador no soporta HTML5.");
+
+    	var items = [];
+    	items.push($('<li/>').text("Este navegador no soporta HTML5."));
+    	$("#message").html(items);
     	return false;
     }
 
@@ -1242,8 +1270,7 @@ moduloTurno.prototype.procesarCargarArchivoContometros = function() {
 	    }
 	}
 	
+	var referenciaModulo = this;
+	referenciaModulo.obj.modalCargarArchivoContometros.modal("hide");
 };
 
-moduloTurno.prototype.modalCargarArchivoContometros = function() {
-	moduloActual.obj.modalCargarArchivoContometros.modal("show");
-};
