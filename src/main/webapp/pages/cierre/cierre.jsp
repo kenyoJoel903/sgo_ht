@@ -59,7 +59,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
                     <label class="etiqueta-titulo-horizontal">F. Planificada: </label>
                   </div>
                   <div class="col-md-8" style="padding-left: 4px;padding-right: 4px">
-                    <input id="filtroFechaPlanificada" type="text" style="width:100%;text-align:center" class="form-control input-sm" data-fecha-actual="<%=fechaActual%>" />
+<!--                 se agrega text-center por req 9000003068 -->                   
+                    <input id="filtroFechaPlanificada" type="text" style="width:100%;text-align:center" class="form-control input-sm text-center" data-fecha-actual="<%=fechaActual%>" />
                   </div>
                 </div>
                 <div class="col-md-2">

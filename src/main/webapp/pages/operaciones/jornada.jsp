@@ -104,6 +104,11 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
  					<th>ID Estacion</th>
  					<th>Estacion</th>
                  	<th>D&iacute;a Operativo</th>
+                 	
+<!--                  	Inicio Agregado por 9000003068 -->
+					<th>Tipo Turno</th>
+<!--                  	Fin Agregado por 9000003068 -->
+                 	
                  	<th>Total Despachos</th>
                  	<th>Ult. Actualizaci&oacute;n</th>
                  	<th>Usuario</th>
@@ -357,7 +362,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		        			  <td class="celda-detalle" style="width:18%;"><span id='cmpAperturaOperacion'>	</span></td>
 		        			  <td></td>
 		                      <td class="celda-detalle" style="width:7%;"><label>Estaci&oacute;n: </label></td>
-		                      <td class="celda-detalle" style="width:18%;"><span id='cmpAperturaEstacion'>	</span></td>
+<!-- 		                      Se agrega input hidden tipoAperturaTanque por req 9000003068-->
+		                      <td class="celda-detalle" style="width:18%;"><span id='cmpAperturaEstacion'>	</span> <input type="hidden" id="tipoAperturaTanque"/></td>
 		                      <td></td>
 		        			  <td class="celda-detalle" style="width:10%;"><label>D&iacute;a Operativo: </label></td>
 			                  <td class="celda-detalle" style="width:15%;"><FONT COLOR=red><B>	<span id='cmpAperturaFechaJornada'></span></B></FONT> </td>
@@ -492,10 +498,37 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 					</form>
 				</div>
 				<div class="box-footer">
-		            <button id="btnGuardarApertura" type="submit" class="btn btn-primary btn-sm">Guardar</button>
+<!-- 					Se cambia nombre btnGuardarApertura por btnConfirmGuardarApertura por req 9000003068-->
+		            <button id="btnConfirmGuardarApertura" type="submit" class="btn btn-primary btn-sm">Guardar</button>
 		            <button id="btnCancelarApertura" class="btn btn-danger btn-sm">Cancelar</button>
 		            <br />
 		    	</div>
+		    	
+<!-- 		    	Inicio Agregado por 9000003068 -->
+		    							<div id="frmConfirmarGuardarApertura" class="modal"
+							data-keyboard="false" data-backdrop="static">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+										<h4 class="modal-title"><%=mapaValores.get("TITULO_VENTANA_MODAL")%></h4>
+									</div>
+									<div class="modal-body">
+										<p><span id='cmpMensajeConfirmGuardarApertura'>	</span></p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default pull-left"
+											data-dismiss="modal">Cerrar</button>
+										<button id="btnGuardarApertura" type="button"
+											class="btn btn-primary">Confirmar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+<!-- 				Fin agregado por 9000003068 -->
 				<div class="overlay" id="ocultaContenedorAperturaJornada">
 			    	<i class="fa fa-refresh fa-spin"></i>
 			    </div> 

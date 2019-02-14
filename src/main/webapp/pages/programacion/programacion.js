@@ -1220,7 +1220,7 @@ $(document).ready(function(){
 	  
 	  //para fomulario completar
 //    se cambio .text() por .val() en las siguientes cuatro lineas por req 9000003068 =========================================================
-	  this.obj.cmpCompletarClienteOperacion.val(referenciaModulo.obj.clienteSeleccionado + '/'+referenciaModulo.obj.operacionSeleccionado);
+	  this.obj.cmpCompletarClienteOperacion.val(referenciaModulo.obj.clienteSeleccionado + ' / '+referenciaModulo.obj.operacionSeleccionado);
 	  this.obj.cmpCompletarPlantaDespacho.val(referenciaModulo.obj.plantaSeleccionado);
 	  this.obj.cmpCompletarFechaDescarga.val(utilitario.formatearFecha(referenciaModulo.obj.fechaDescargaSeleccionado));
 	  this.obj.cmpCompletarFechaCarga.val(utilitario.formatearFecha(referenciaModulo.obj.fechaCargaSeleccionado));
