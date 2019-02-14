@@ -129,21 +129,21 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 	        			<td class="celda-detalle" style="width:18%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->	        			
 <!-- 	        				<span id='detalleCliente'>	</span> -->
-							<input id="detalleCliente" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+							<input id="detalleCliente" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 	        			</td>
 	                    <td></td>
 	                    <td class="celda-detalle" style="width:7%;"><label>Operaci&oacute;n: </label></td>
 	        			<td class="celda-detalle" style="width:18%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->
 <!-- 	        				<span id='detalleOperacion'>	</span>-->
-							<input id="detalleOperacion" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+							<input id="detalleOperacion" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 						</td> 
 	                    <td></td>
 	                    <td class="celda-detalle" style="width:7%;"><label>Estaci&oacute;n: </label></td>
 	                    <td class="celda-detalle" style="width:18%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->	                    
 <!-- 	                    	<span id='detalleEstacion'>	</span> -->
-							<input id="detalleEstacion" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+							<input id="detalleEstacion" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 	                    </td>
 	        			<td></td>
 	        			<td class="celda-detalle" style="width:10%;"><label>D&iacute;a Operativo: </label></td>
@@ -370,21 +370,21 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		        	 		  <td class="celda-detalle" style="width:25%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->		        	 		  
 <!-- 		        	 		  	<span id='cmpFormularioCliente'>	</span> -->
-								<input id="cmpFormularioCliente" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+								<input id="cmpFormularioCliente" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 		        	 		  </td>
 		        	 		  <td></td>
 		                      <td class="celda-detalle" style="width:10%;"><label class="etiqueta-titulo-horizontal">Operaci&oacute;n: </label></td>
 		        			  <td class="celda-detalle" style="width:25%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->		        			  
 <!-- 		        			  	<span id='cmpFormularioOperacion'>	</span> -->
-								<input id="cmpFormularioOperacion" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+								<input id="cmpFormularioOperacion" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 		        			  </td>
 		        			  <td></td>
 		                      <td class="celda-detalle" style="width:7%;"><label class="etiqueta-titulo-horizontal">Estaci&oacute;n: </label></td>
 		                      <td class="celda-detalle" style="width:25%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->		                      
 <!-- 		                      	<span id='cmpFormularioEstacion'>	</span> -->
-								<input id="cmpFormularioEstacion" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+								<input id="cmpFormularioEstacion" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 		                      </td>
 		                    </tr>
 		                    <tr>
@@ -405,6 +405,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		                   </tr>
 		                  </tbody>
 		                </table>
+		                
+		                <table><tr><td>&nbsp;</td></tr></table>
 			      			
 		      			<table class="sgo-simple-table table table-condensed">
 			      			<thead>

@@ -419,7 +419,7 @@
             </table>
             <table id="tablaVistaDetalle" class="sgo-table table table-striped" style="width:100%;">
                 <thead>
-            	<tr>
+            	<tr align="center">
             		<td>N# Guia Remisión</td>
             		<td>Fecha de Emisión</td>
             		<td>Fecha de Recepción</td>
