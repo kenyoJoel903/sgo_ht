@@ -63,7 +63,7 @@ public class EstacionControlador {
  private ToleranciaDao dTolerancia;
  @Autowired
  private OperacionDao dOperacion;
- //
+
  private DataSourceTransactionManager transaccion;// Gestor de la transaccion
  // urls generales
  private static final String URL_GESTION_COMPLETA = "/admin/estacion";
@@ -297,67 +297,75 @@ public class EstacionControlador {
   return respuesta;
  }
 
- @RequestMapping(value = URL_RECUPERAR_RELATIVA, method = RequestMethod.GET)
- public @ResponseBody
- RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
 
-  RespuestaCompuesta respuesta = null;
-  AuthenticatedUserDetails principal = null;
-  ParametrosListar parametros =null;
-  Estacion eEstacion = null;
-  Contenido<Estacion> contenido =  null;
-  
-  try {
-	  
-   // Recupera el usuario actual
-   principal = this.getCurrentUser();
-   // Recuperar el enlace de la accion
-   respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
-   if (respuesta.estado == false) {
-	   throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   // Verificar si cuenta con el permiso necesario
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-	   throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   
-   // Recuperar el registro
-   respuesta = dEstacion.recuperarRegistro(ID);
-   // Verifica el resultado de la accion
-   if (respuesta.estado == false) {
-	   throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-   }   
-   
-   eEstacion = (Estacion) respuesta.contenido.carga.get(0);
-   parametros = new ParametrosListar();
-   parametros.setFiltroEstacion(eEstacion.getId());
-   parametros.setPaginacion(Constante.SIN_PAGINACION);
-   respuesta = dTolerancia.recuperarRegistros(parametros);
-   
-   if (respuesta.estado == false) {
-	   throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-   }
-   
-   for(Object tolerancia: respuesta.contenido.carga){
-	   eEstacion.agregarTolerancia((Tolerancia)tolerancia);
-   }
-   
-   contenido = new Contenido<Estacion>();
-   contenido.carga = new ArrayList<Estacion>();
-   contenido.carga.add(eEstacion);
-   respuesta.contenido = contenido;
-   
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
-  } catch (Exception ex) {
-	  ex.printStackTrace();
-	  respuesta.estado = false;
-	  respuesta.contenido = null;
-	  respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
- }
+ 	/**
+ 	 * 
+ 	 * @param ID
+ 	 * @param locale
+ 	 * @return
+ 	 */
+	@RequestMapping(value = URL_RECUPERAR_RELATIVA, method = RequestMethod.GET)
+	public @ResponseBody
+	RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
+		
+		RespuestaCompuesta respuesta = null;
+		AuthenticatedUserDetails principal = null;
+		ParametrosListar parametros = null;
+		Estacion eEstacion = null;
+		Contenido<Estacion> contenido = null;
+		
+		try {
+		
+		    // Recupera el usuario actual
+		    principal = this.getCurrentUser();
+		    // Recuperar el enlace de la accion
+		    respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
+		    if (respuesta.estado == false) {
+		        throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+		    }
+		
+		    Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+		    // Verificar si cuenta con el permiso necesario
+		    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+		        throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+		    }
+		
+		    // Recuperar el registro
+		    respuesta = dEstacion.recuperarRegistro(ID);
+		    // Verifica el resultado de la accion
+		    if (respuesta.estado == false) {
+		        throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		    }   
+		
+		    eEstacion = (Estacion) respuesta.contenido.carga.get(0);
+		    parametros = new ParametrosListar();
+		    parametros.setFiltroEstacion(eEstacion.getId());
+		    parametros.setPaginacion(Constante.SIN_PAGINACION);
+		    respuesta = dTolerancia.recuperarRegistros(parametros);
+		
+		    if (respuesta.estado == false) {
+		        throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		    }
+		
+		    for(Object tolerancia: respuesta.contenido.carga){
+		        eEstacion.agregarTolerancia((Tolerancia)tolerancia);
+		    }
+		
+		    contenido = new Contenido<Estacion>();
+		    contenido.carga = new ArrayList<Estacion>();
+		    contenido.carga.add(eEstacion);
+		    respuesta.contenido = contenido;
+		    respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+		    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    respuesta.estado = false;
+		    respuesta.contenido = null;
+		    respuesta.mensaje = e.getMessage();
+		}
+		
+		return respuesta;
+	}
 
  @RequestMapping(value = URL_GUARDAR_RELATIVA, method = RequestMethod.POST)
  public @ResponseBody

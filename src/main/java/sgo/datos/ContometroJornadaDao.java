@@ -51,49 +51,65 @@ public class ContometroJornadaDao {
 	}
 	
 	public String mapearCampoOrdenamiento(String propiedad){
-		String campoOrdenamiento=NOMBRE_CAMPO_ORDENAMIENTO_DEFECTO;
+		String campoOrdenamiento = NOMBRE_CAMPO_ORDENAMIENTO_DEFECTO;
+		
 		try {
+			
 			if (propiedad.equals("id")){
-				campoOrdenamiento="id_cjornada";
-			}
-			if (propiedad.equals("idjornada")){
-				campoOrdenamiento="id_jornada";
-			}
-			if (propiedad.equals("lecturaInicial")){
-				campoOrdenamiento="lectura_inicial";
-			}
-			if (propiedad.equals("lecturaFinal")){
-				campoOrdenamiento="lectura_final";
-			}
-			if (propiedad.equals("estadoServicio")){
-				campoOrdenamiento="estado_servicio";
-			}
-			if (propiedad.equals("idContometro")){
-				campoOrdenamiento="id_contometro";
-			}
-			if (propiedad.equals("idProducto")){
-				campoOrdenamiento="id_producto";
+				campoOrdenamiento = "id_cjornada";
 			}
 			
-			//Campos de auditoria
-		}catch(Exception excepcion){
+			if (propiedad.equals("idjornada")){
+				campoOrdenamiento = "id_jornada";
+			}
+			
+			if (propiedad.equals("lecturaInicial")){
+				campoOrdenamiento = "lectura_inicial";
+			}
+			
+			if (propiedad.equals("lecturaFinal")){
+				campoOrdenamiento = "lectura_final";
+			}
+			
+			if (propiedad.equals("estadoServicio")){
+				campoOrdenamiento = "estado_servicio";
+			}
+			
+			if (propiedad.equals("idContometro")){
+				campoOrdenamiento = "id_contometro";
+			}
+			
+			if (propiedad.equals("idProducto")){
+				campoOrdenamiento = "id_producto";
+			}
+			
+			if (propiedad.equals("alias_contometro")){
+				campoOrdenamiento = "alias_contometro";
+			}
+			
+			
+		}catch(Exception e){
 			
 		}
+		
 		return campoOrdenamiento;
 	}
 
 	public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+		
 		String sqlLimit = "";
-		String sqlOrderBy="";
-		List<String> filtrosWhere= new ArrayList<String>();
-		String sqlWhere="";
+		String sqlOrderBy = "";
+		List<String> filtrosWhere = new ArrayList<String>();
+		String sqlWhere = "";
 		int totalRegistros = 0, 
 		totalEncontrados = 0;
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		Contenido<ContometroJornada> contenido = new Contenido<ContometroJornada>();
 		List<ContometroJornada> listaRegistros = new ArrayList<ContometroJornada>();
 		List<Object> parametros = new ArrayList<Object>();
+		
 		try {
+			
 			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
 				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
 				parametros.add(argumentosListar.getInicioPaginacion());
@@ -106,7 +122,8 @@ public class ContometroJornadaDao {
 			consultaSQL.setLength(0);
 			consultaSQL.append("SELECT count(" + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_TABLA);
 			totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
-			totalEncontrados=totalRegistros;
+			totalEncontrados = totalRegistros;
+			
 			if(argumentosListar.getFiltroEstado() != Constante.FILTRO_TODOS){
 				filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTADO + "=" + argumentosListar.getFiltroEstado());
 			}
@@ -154,6 +171,7 @@ public class ContometroJornadaDao {
 			consultaSQL.append(sqlWhere);
 			consultaSQL.append(sqlOrderBy);
 			consultaSQL.append(sqlLimit);
+			
 			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new ContometroJornadaMapper());
 			
 			contenido.carga = listaRegistros;
@@ -161,17 +179,19 @@ public class ContometroJornadaDao {
 			respuesta.contenido = contenido;
 			respuesta.contenido.totalRegistros = totalRegistros;
 			respuesta.contenido.totalEncontrados = totalEncontrados;
-		} catch (DataAccessException excepcionAccesoDatos) {
-			excepcionAccesoDatos.printStackTrace();
+			
+		} catch (DataAccessException e) {
+			e.printStackTrace();
 			respuesta.error=  Constante.EXCEPCION_ACCESO_DATOS;
 			respuesta.estado = false;
 			respuesta.contenido=null;
-		} catch (Exception excepcionGenerica) {
-			excepcionGenerica.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 			respuesta.error= Constante.EXCEPCION_GENERICA;
 			respuesta.contenido=null;
 			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	

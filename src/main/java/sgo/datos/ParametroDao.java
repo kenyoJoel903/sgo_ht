@@ -62,6 +62,7 @@ public class ParametroDao {
 	}
 	
 	public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+		
 		String sqlLimit = "";
 		String sqlOrderBy = "";
 		List<String> filtrosWhere = new ArrayList<String>();
@@ -71,7 +72,9 @@ public class ParametroDao {
 		Contenido<Parametro> contenido = new Contenido<Parametro>();
 		List<Parametro> listaRegistros = new ArrayList<Parametro>();
 		List<Object> parametros = new ArrayList<Object>();
+		
 		try {
+			
 			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
 				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
 				parametros.add(argumentosListar.getInicioPaginacion());

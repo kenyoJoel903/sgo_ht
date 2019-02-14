@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import sgo.utilidades.Constante;
 
 public class Bitacora {
+	
 private int id_bitacora;
 private String usuario;
 private String accion;

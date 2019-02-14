@@ -13,7 +13,8 @@ $(document).ready(function() {
 	moduloActual.URL_ACTUALIZAR = moduloActual.urlBase + '/actualizar';
 	moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
 	moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
-
+	moduloActual.GENERAR_PLANTILLA_CONTOMETROS = moduloActual.urlBase + '/generarPlantillaContometros';
+	
 	//listado de jornadaf
 	moduloActual.ordenGrillaJornada=[[ 2, 'asc' ]];
 	moduloActual.columnasGrillaJornada.push({ "data": 'id'});
@@ -26,7 +27,6 @@ $(document).ready(function() {
 	moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'estado'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.id'}); // 10
-	//moduloActual.columnasGrillaJornada.push({ "data": 'numeroOrden'}); // 10
 
 	// Columnas jornada
 	moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
@@ -369,12 +369,17 @@ $(document).ready(function() {
         allowRemoveAll: true,
         allowAdd: true,
         allowAddN: false,
-        //maxFormsCount: 6,
+        maxFormsCount: 0,
         minFormsCount: 0,
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
-        	var cmpElementoLecturaInicial=$(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
-        	cmpElementoLecturaInicial.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3}); 
+        	var cmpElementoLecturaInicial = $(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
+        	cmpElementoLecturaInicial.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator:',',
+        		autoGroup:true,
+        		groupSize:3
+        	}); 
         }
     });
     
@@ -385,43 +390,106 @@ $(document).ready(function() {
         allowRemoveAll: true,
         allowAdd: true,
         allowAddN: false,
-        //maxFormsCount: 6,
+        maxFormsCount: 0,
         minFormsCount: 0,
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
-        	var cmpElementoLecturaFinal=$(formularioNuevo).find("input[elemento-grupo='lecturaFinal']");
-        	cmpElementoLecturaFinal.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
-        	var cmpElementoLecturaInicial=$(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
-        	cmpElementoLecturaInicial.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
-        	var cmpElementoLecturaDifVolEncontrado=$(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
-        	cmpElementoLecturaDifVolEncontrado.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});	
         	
-        	var cmpElementoDiferencia=$(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
-        	cmpElementoLecturaFinal.on("change", function(e) {   		
-            	var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
-            	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());    		
-        		var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni);  
+        	var cmpElementoLecturaFinal = $(formularioNuevo).find("input[elemento-grupo='lecturaFinal']");
+        	cmpElementoLecturaFinal.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator: ',',
+        		autoGroup: true,
+        		groupSize: 3,
+        	});
+        	cmpElementoLecturaFinal.keyup(delay(function(e) {
+        		var num = $(this).val();
+        		num = trailingZeros(num);
+        		$(this).val(num);
+        	}, 900));
+        	cmpElementoLecturaFinal.keyup(function(e) {
+        		elementoLecturaFinalFunction();
+        	});
+        	
+        	var cmpElementoLecturaInicial = $(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
+        	cmpElementoLecturaInicial.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator: ',',
+        		autoGroup: true,
+        		groupSize: 3
+        	});
+        	
+        	var cmpElementoLecturaDifVolEncontrado = $(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
+        	cmpElementoLecturaDifVolEncontrado.inputmask('decimal', {
+        		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        		groupSeparator: ',', 
+        		autoGroup: true, 
+        		groupSize: 3
+        	});
+        	
+        	var cmpElementoDiferencia = $(formularioNuevo).find("input[elemento-grupo='lecturaDifVolEncontrado']");
+        	cmpElementoLecturaFinal.on("change", function(e) {
+        		elementoLecturaFinalFunction();
+            });
+        	
+        	function elementoLecturaFinalFunction() {
+        		var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
+        		var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());    		
+        		var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni);
+        		diferencia = trailingZeros(diferencia);
         		cmpElementoDiferencia.val(diferencia);
-            });        	
+        	}
+        	
+        	function trailingZeros(num) {
+        		
+        		console.log("trailingZeros ::: " + moduloActual.obj.numeroDecimalesContometro);
+        		
+        		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
+        		
+        		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
+        			return num;
+        		}
+        		  
+        		var result = num.toString().split(".");
+        		
+        		var integer = result[0];
+        		var decimal = result[1];
+        		
+        		if (decimal.length > decimalesContometro) {
+        			return integer + "." + decimal.substring(0, decimalesContometro);
+        		}
+        		
+        		while (decimal.length < decimalesContometro) {
+        			decimal = decimal + "0";
+        		}
+
+        		return integer + "." + decimal;
+    		}
         }
       });    
   };
   
-  moduloActual.eliminaSeparadorComa = function(numeroFloat){
+  moduloActual.eliminaSeparadorComa = function(numeroFloat) {
+	  
 		var parametros = numeroFloat.split(',');
-	  	var retorno =  new String(parametros[0]);
-	  	if(parametros[1] != null){
-	  		retorno =  new String(parametros[0] + parametros[1]);
+	  	var retorno = new String(parametros[0]);
+	  	
+	  	if (parametros[1] != null) {
+	  		retorno = new String(parametros[0] + parametros[1]);
 	  	}
-	  	if(parametros[2] != null){
-	  		retorno =  new String(parametros[0] + parametros[1] + parametros[2]);
+	  	
+	  	if (parametros[2] != null) {
+	  		retorno = new String(parametros[0] + parametros[1] + parametros[2]);
 	  	}
-	  	if(parametros[3] != null){
-	  		retorno =  new String(parametros[0] + parametros[1] + parametros[2] + parametros[3]);
+	  	
+	  	if (parametros[3] != null) {
+	  		retorno = new String(parametros[0] + parametros[1] + parametros[2] + parametros[3]);
 	  	}
-	  	if(parametros[4] != null){
-	  		retorno =  new String(parametros[0] + parametros[1] + parametros[2] + parametros[3] + parametros[4]);
+	  	
+	  	if (parametros[4] != null) {
+	  		retorno = new String(parametros[0] + parametros[1] + parametros[2] + parametros[3] + parametros[4]);
 	  	}
+	  	
 	  	return retorno;
   };
   
@@ -439,122 +507,135 @@ moduloActual.llenarApertura = function(registro) {
     $('#cmpOperarioAyudante').prop('disabled', false);
     
     for(var contador=0; contador < numeroDetalles; contador++) {
-    	
     	moduloActual.obj.grupoApertura.addForm();
         var formulario = moduloActual.obj.grupoApertura.getForm(contador);
         
   	  	formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
-  	  	formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro",registro[contador].contometro.id); 
+  	  	formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
   	  	formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-  	  	formulario.find("input[elemento-grupo='producto']").attr("data-idProducto",registro[contador].producto.id); 
-  	  	formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);   
+  	  	formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+  	  	//formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);
+  	  	formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
      }
 };
   
-  moduloActual.llenarAperturaContometroJornada = function(registro) {
+moduloActual.llenarAperturaContometroJornada = function(registro) {
+	
+	//actualiza cabecera operador ay
+	var numeroDetalles = registro.length;
+	moduloActual.obj.cmpHoraInicio.val("");
+	moduloActual.obj.cmpObservacionApertura.val("");
 	  
-	  //actualiza cabecera operador ay
-	  var numeroDetalles= registro.length;
-	  moduloActual.obj.cmpHoraInicio.val("");
-	  moduloActual.obj.cmpObservacionApertura.val("");
-	  
-	  if(numeroDetalles > 0){
-		  //operario
-		  try {
-		      $.ajax({
-		        type: constantes.PETICION_TIPO_GET,
-		        url: "./operario/recuperar", 
-		        contentType: moduloActual.TIPO_CONTENIDO, 
-		        data: {ID: parseInt(registro[0].jornada.idOperario1) },
-		        success: function(respuesta) {
-		          if (respuesta.estado) {
-		        	  var contenido = respuesta.contenido.carga.length;
-		        	  if(contenido > 0){
-		        		var reg = respuesta.contenido.carga[0];
-		        		var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
-		                elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
-		                elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
-		                moduloActual.obj.cmpOperarioResponsable.empty().append(elemento1).val(reg.id).trigger('change');
-		                $('#cmpOperarioResponsable').prop('disabled', true);
-		        	  } 
-		            }
-		          },
-		          error: function(xhr,estado,error) {
-		        	  moduloActual.mostrarErrorServidor(xhr,estado,error); 
-		          }
-		        }); 
-		      } 
-			  catch(error){
-				  moduloActual.mostrarDepuracion(error.message);
-			  }
-			  
-			  //ayudante
-			  try {
-			      $.ajax({
-			        type: constantes.PETICION_TIPO_GET,
-			        url: "./operario/recuperar", 
-			        contentType: moduloActual.TIPO_CONTENIDO, 
-			        data: {ID: parseInt(registro[0].jornada.idOperario2) },
-			        success: function(respuesta) {
-			          if (respuesta.estado) {
-			        	  var contenido = respuesta.contenido.carga.length;
-			        	  
-			        	  if(contenido > 0){
-			        		var reg = respuesta.contenido.carga[0];
-			        		var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
-			                elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
-			                elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
-			                moduloActual.obj.cmpOperarioAyudante.empty().append(elemento1).val(reg.id).trigger('change');
-			                $('#cmpOperarioAyudante').prop('disabled', true);
-			        	  } 
-			            }
-			        },
-			        error: function(xhr,estado,error) {
-			        	moduloActual.mostrarErrorServidor(xhr,estado,error); 
-			        }
-		        }); 
-		      } catch(error){
-					  moduloActual.mostrarDepuracion(error.message);
-			  }
-	  }
+	if (numeroDetalles > 0) {
+
+		//operario
+		try {
+			$.ajax({
+				type: constantes.PETICION_TIPO_GET,
+				url: "./operario/recuperar", 
+				contentType: moduloActual.TIPO_CONTENIDO, 
+				data: {ID: parseInt(registro[0].jornada.idOperario1) },
+				success: function(respuesta) {
+			  		if (respuesta.estado) {
+					  	var contenido = respuesta.contenido.carga.length;
+					  
+						if(contenido > 0){
+						var reg = respuesta.contenido.carga[0];
+						var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
+						elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
+						elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
+						moduloActual.obj.cmpOperarioResponsable.empty().append(elemento1).val(reg.id).trigger('change');
+						$('#cmpOperarioResponsable').prop('disabled', true);
+						} 
+					}
+				},
+				error: function(xhr,estado,error) {
+					moduloActual.mostrarErrorServidor(xhr,estado,error); 
+				}
+			}); 
+		} catch(error) {
+			moduloActual.mostrarDepuracion(error.message);
+		}
+
+		//ayudante
+		try {
+			$.ajax({
+				type: constantes.PETICION_TIPO_GET,
+				url: "./operario/recuperar", 
+				contentType: moduloActual.TIPO_CONTENIDO, 
+				data: {ID: parseInt(registro[0].jornada.idOperario2) },
+				success: function(respuesta) {
+					if (respuesta.estado) {
+						var contenido = respuesta.contenido.carga.length;
+
+						if (contenido > 0) {
+							var reg = respuesta.contenido.carga[0];
+							var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
+							elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, reg.id);
+							elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, reg.nombreCompletoOperario);
+							moduloActual.obj.cmpOperarioAyudante.empty().append(elemento1).val(reg.id).trigger('change');
+							$('#cmpOperarioAyudante').prop('disabled', true);
+						} 
+					}
+				},
+				error: function(xhr,estado,error) {
+					moduloActual.mostrarErrorServidor(xhr,estado,error); 
+				}
+			}); 
+		} catch(error){
+			moduloActual.mostrarDepuracion(error.message);
+		}
+
+	}
    
     this.obj.grupoApertura.removeAllForms();
 
-	for(var contador=0; contador < numeroDetalles; contador++){      
+	for (var contador = 0; contador < numeroDetalles; contador++) {      
 		moduloActual.obj.grupoApertura.addForm();
-	    var formulario= moduloActual.obj.grupoApertura.getForm(contador);
+	    var formulario = moduloActual.obj.grupoApertura.getForm(contador);
+	    
+	    if (!formulario) {
+	    	continue;
+	    }
 	    
 	    formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
-	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro",registro[contador].contometro.id);
+	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id);
 	    formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);  	  
-	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto",registro[contador].producto.id);
-	    formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);  
+	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id);
+	    //formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
+	    formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);  
 	}
 };
 
-  //llena el formularo de contometro jornada
-  moduloActual.llenarFormularioCierre = function(registro) {
-	  
-	var referenciaModulo=this;
-    var numeroDetalles= registro.length;
-    this.obj.grupoCierre.removeAllForms();
-    
-    referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
-    referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
-    
-    for(var contador=0; contador < numeroDetalles; contador++){      
-    	moduloActual.obj.grupoCierre.addForm();
-        var formulario= moduloActual.obj.grupoCierre.getForm(contador);
-        
-  	  	formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
-  	  	formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro",registro[contador].contometro.id); 
-  	  	formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-  	  	formulario.find("input[elemento-grupo='producto']").attr("data-idProducto",registro[contador].producto.id); 
-  	  	formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial); 
-  	  	formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno",registro[contador].id); 
-     }
-  };
-  
+//llena el formularo de contometro jornada
+moduloActual.llenarFormularioCierre = function(registro) {
+
+	var referenciaModulo = this;
+	var numeroDetalles = registro.length;
+	this.obj.grupoCierre.removeAllForms(); 
+	//this.obj.grupoCierre.getOptions().maxFormsCount = 5; // CAMBIAR ROW JAFETH
+
+	referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
+	referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
+	
+	for (var contador = 0; contador < numeroDetalles; contador++) {      
+		moduloActual.obj.grupoCierre.addForm();
+		var formulario = moduloActual.obj.grupoCierre.getForm(contador);
+
+		formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
+		formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
+		formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
+		formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+		//formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
+		formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);
+		formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
+	}
+};
+
+  /**
+   * Detalle de Perfil de Horario
+   * Solo en el primer elemento del array se coloco los datos del Perfil Horario
+   */
   moduloActual.perfilDetalleHorario = function(registro) {
 	  
 	  var perfilDetalleHorario = null;
@@ -587,15 +668,23 @@ moduloActual.llenarApertura = function(registro) {
 	  
 	  var perfilDetalleHorario = moduloActual.perfilDetalleHorario(registro);
 	  
-	  if (typeof perfilDetalleHorario != null) {
-		  horaInicioFinTurno = perfilDetalleHorario.horaInicioFinTurno;
+	  if (typeof perfilDetalleHorario != null && referenciaModulo.modoEdicion == constantes.MODO_APERTURA_TURNO) {
+		  horaInicioFinTurno = perfilDetalleHorario.horaInicioTurno;
+	  } else if (typeof perfilDetalleHorario != null && referenciaModulo.modoEdicion == constantes.MODO_CIERRE_TURNO) {
+		  horaInicioFinTurno = perfilDetalleHorario.horaFinTurno;
+	  }
+	  
+	  try {
+		  moduloActual.obj.numeroDecimalesContometro = registro[0].jornada.estacion.numeroDecimalesContometro;
+	  } catch(error){
+	
 	  }
 	  
 	  //para pantalla apertura
 	  moduloActual.obj.cmpClienteApertura.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion') + " / " + $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente') );
 	  moduloActual.obj.cmpEstacion.text(moduloActual.obj.nombreEstacion);
 	  moduloActual.obj.cmpDiaOperativoApertura.text(
-		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)+ " (" + horaInicioFinTurno + ")"
+		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado)+ " " + horaInicioFinTurno
 	  ); 
 	  moduloActual.obj.cmpHoraInicio.val("");
 	  var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
@@ -610,7 +699,7 @@ moduloActual.llenarApertura = function(registro) {
       moduloActual.obj.cmpClienteCierre.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion') + " / " + $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente') );
 	  moduloActual.obj.cmpEstacionCierre.text(moduloActual.obj.nombreEstacion);
 	  moduloActual.obj.cmpDiaOperativoCierre.text(
-		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado) + " (" + horaInicioFinTurno + ")"
+		  utilitario.formatearFecha(referenciaModulo.obj.fechaOperativaSeleccionado) + " " + horaInicioFinTurno
 	  );
       
 	  moduloActual.obj.cmpCierreEstacion.val(referenciaModulo.obj.estacionSeleccionado);
@@ -683,7 +772,7 @@ moduloActual.llenarApertura = function(registro) {
 	          var cmpElementoProducto     	= formulario.find("input[elemento-grupo='producto']").attr("data-idProducto");
 	          var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");
 	          var cmpElementoLecturaFinal   = formulario.find("input[elemento-grupo='lecturaFinal']");
-	          var cmpElementoId				= formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno");// idDetalle
+	          var cmpElementoId				= formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno");
 	          detalles.lecturaInicial  		= parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	          detalles.lecturaFinal  		= parseFloat(cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	          detalles.idProducto  			= parseInt(cmpElementoProducto);
@@ -706,7 +795,7 @@ moduloActual.llenarApertura = function(registro) {
 	          var cmpElementoContometro = formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro");
 	          var cmpElementoProducto = formulario.find("input[elemento-grupo='producto']").attr("data-idProducto");
 	          var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");	          
-	          detalles.lecturaInicial = parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
+	          detalles.lecturaInicial = parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES, ""));
 	          detalles.idProducto = parseInt(cmpElementoProducto);
 	          detalles.idContometro = parseInt(cmpElementoContometro);
 	          eRegistro.turnoDetalles.push(detalles);          
@@ -730,23 +819,27 @@ moduloActual.llenarApertura = function(registro) {
 		  if(referenciaModulo.obj.cmpHoraCierre.val().length == 0) {
 			  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar el campo Hora Cierre.");
 			  return false;
-		  }  
+		  }
+		  
 	    var numeroFormularios = referenciaModulo.obj.grupoCierre.getForms().length;
+	    
 	    for(var contador = 0; contador < numeroFormularios; contador++){
-	          var formulario = referenciaModulo.obj.grupoCierre.getForm(contador);
-	          var cmpElementoLecturaFinal     = formulario.find("input[elemento-grupo='lecturaFinal']");
-	          var cmpElementoLecturaInicial=formulario.find("input[elemento-grupo='lecturaInicial']");
-		        var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
-	          	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val());  
-	          	if(lenturaFin==null || lenturaFin.length==0 || parseFloat(lenturaFin)<=0){
-	          		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar la lectura final correcta del cont\u00f3metro.");
-		        	return false;
-	          	}	          	
-	      		var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni); 
-	      		if(diferencia < 0){
-	      			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La diferencia de lectura no debe ser negativa.");
-		        	return false;
-	      		}        
+	    	var formulario = referenciaModulo.obj.grupoCierre.getForm(contador);
+	    	var cmpElementoLecturaFinal = formulario.find("input[elemento-grupo='lecturaFinal']");
+	    	var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");
+	    	var lecturaIni = moduloActual.eliminaSeparadorComa(cmpElementoLecturaInicial.val());
+	    	var lenturaFin = moduloActual.eliminaSeparadorComa(cmpElementoLecturaFinal.val()); 
+	          	
+	    	if(lenturaFin==null || lenturaFin.length==0 || parseFloat(lenturaFin)<=0){
+	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar la lectura final correcta del cont\u00f3metro.");
+	    		return false;
+    		}
+	    	
+	    	var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni); 
+	    	if(diferencia < 0){
+	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La diferencia de lectura no debe ser negativa.");
+	    		return false;
+	    	}  
 	      }
 	    
 	    return retorno;
@@ -778,7 +871,7 @@ moduloActual.llenarApertura = function(registro) {
 //========================== llenarTanquesCierre ============================================================ 
 moduloActual.llenarTanquesCierre = function(registro){
   var indice = registro.tanqueJornada.length;
-  var filaNueva 	= $('#grillaCierre');
+  var filaNueva = $('#grillaCierre');
   $('#grillaCierre').html("");
   g_tr = '<thead><tr><th class="text-center">Tanque				</th>' +
   				  '<th class="text-center">Producto				</th>' + 
@@ -794,28 +887,32 @@ moduloActual.llenarTanquesCierre = function(registro){
 	 filaNueva.append(g_tr);
   }
 };
-	  
+
 //========================== cntVistaFormulario ============================================================ 
-  moduloActual.llenarDetalles = function(registro){
+  moduloActual.llenarDetalles = function(registro) {
 		
 		var turno = registro[0].turno;	
-	    var contometro="";
-	    var producto="";
-	    var lecturaInicial="";
-	    var lecturaFinal="";
-	    var filaNueva="";
-	    var diferenciaVolumen=0;	
-	    if(registro != null){
+	    var contometro = "";
+	    var producto = "";
+	    var lecturaInicial = "";
+	    var lecturaFinal = "";
+	    var filaNueva = "";
+	    var diferenciaVolumen = 0;
+	    
+	    if(registro != null) {
 		    var indice= registro.length;		    
 		    $("#tablaVistaDetalle tbody").empty();
 		    //$("#tablaVistaDetalle tr").remove(); 
-		    for(var k = 0; k < indice; k++){ 
+		    for (var k = 0; k < indice; k++) {
 		    	contometro=registro[k].contometro.alias;		    	
-		    	producto=registro[k].producto.nombre;		  	    
-		    	lecturaInicial= registro[k].lecturaInicial;
-		    	lecturaFinal= registro[k].lecturaFinal;
+		    	producto=registro[k].producto.nombre;
 		    	
-		    	diferenciaVolumen = parseInt(lecturaFinal)-parseInt(lecturaInicial);
+		    	//lecturaInicial= registro[k].lecturaInicial;
+		    	//lecturaFinal= registro[k].lecturaFinal;
+		    	lecturaInicial= registro[k].lecturaInicialStr;
+		    	lecturaFinal= registro[k].lecturaFinalStr;
+		    	
+		    	diferenciaVolumen = parseInt(lecturaFinal) - parseInt(lecturaInicial);
 		    	filaNueva='<tr><td>'+contometro+'</td>'
 		    	+'<td class="text-left">'+producto+'</td>'
 		    	+'<td class="text-right">'+lecturaInicial+'</td>'
@@ -832,15 +929,24 @@ moduloActual.llenarTanquesCierre = function(registro){
 		    this.obj.vistaIPCreacion.text(turno.ipCreacion);		    
 		    this.obj.vistaCreadoEl.text(turno.fechaCreacion);
 		    this.obj.vistaCreadoPor.text(turno.usuarioCreacion);		    
-	    }
-	    else{
+	    } else {
 	    	$("#tablaVistaDetalle tbody tr").remove();
 	    	this.obj.vistaActualizadoEl.text("");
 		    this.obj.vistaActualizadoPor.text("");
 		    this.obj.vistaIpActualizacion.text("");
 	    }
-	    
-	  };
+  };
+
+  function delay(callback, ms) {
+      var timer = 0;
+      return function() {
+          var context = this, args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+              callback.apply(context, args);
+          }, ms || 0);
+      };
+  }
 	
   moduloActual.inicializar();
 });

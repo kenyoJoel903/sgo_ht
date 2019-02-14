@@ -3,6 +3,7 @@ package sgo.utilidades;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,31 +37,32 @@ import java.util.regex.Pattern;
 public class Utilidades extends BaseUtilidades {
 	
 	/** Instancia del log4j */
-    protected static final Logger Log = Logger.getLogger(Utilidades.class);
-    // Mensaje de errores.
-    private String mError;
-    private final static String LIT_ERROR = "Error: ";
-    private final static String LIT_WARNING = "Warning: ";
-    private final static String LIT_INFO = "Info: ";
-    private final static String LIT_TRACE = "Traza: ";  
-    
-    /** Constante para retornos de error. */
-    protected static final int ERROR = -1;
+	protected static final Logger Log = Logger.getLogger(Utilidades.class);
+	
+	// Mensaje de errores.
+	private String mError;
+	private final static String LIT_ERROR = "Error: ";
+	private final static String LIT_WARNING = "Warning: ";
+	private final static String LIT_INFO = "Info: ";
+	private final static String LIT_TRACE = "Traza: ";  
 
-    /** Nombre de la clase. */
-    private String nombreClase;
-    
-    private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    
- /** Formato de fecha. */
- public static JdbcTemplate jdbcTemplate;
- public static NamedParameterJdbcTemplate namedJdbcTemplate;
- public static final String FORMATO_FECHA = "DD/MM/YYYY";
- public final static String DATOS_AUDITORIA = " t1.creado_el, t1.creado_por, t1.actualizado_por, t1.actualizado_el, t1.usuario_creacion, t1.usuario_actualizacion, t1.ip_creacion, t1.ip_actualizacion ";
+	/** Constante para retornos de error. */
+	protected static final int ERROR = -1;
 
- /** Constante para cadenas vacias. */
- public static final String STRVACIO = "";
+	/** Nombre de la clase. */
+	private String nombreClase;
+
+	private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+	+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+	/** Formato de fecha. */
+	public static JdbcTemplate jdbcTemplate;
+	public static NamedParameterJdbcTemplate namedJdbcTemplate;
+	public static final String FORMATO_FECHA = "DD/MM/YYYY";
+	public final static String DATOS_AUDITORIA = " t1.creado_el, t1.creado_por, t1.actualizado_por, t1.actualizado_el, t1.usuario_creacion, t1.usuario_actualizacion, t1.ip_creacion, t1.ip_actualizacion ";
+
+	/** Constante para cadenas vacias. */
+	public static final String STRVACIO = "";
 
  /**
   * Validate given email with regular expression.
@@ -213,7 +215,6 @@ public class Utilidades extends BaseUtilidades {
   return sql;
  }
  
- 
  public static java.sql.Date convierteStringADate(String str,String patron) {
 	  java.sql.Date sql = null;
 	  SimpleDateFormat format = new SimpleDateFormat(patron);
@@ -224,7 +225,8 @@ public class Utilidades extends BaseUtilidades {
 	   e.printStackTrace();
 	  }
 	  return sql;
-	 }
+}
+ 
  public static String convierteDateAString(Date str,String patron) {
 	  String sql = null;
 	  SimpleDateFormat format = new SimpleDateFormat(patron);	
@@ -671,6 +673,35 @@ public static boolean strToBool(String s) {
 	
     try { 
     	out = Boolean.valueOf(s);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
+public static long differenceBetweenTwoTimes(String start, String end) {
+	
+	long difference = 0;
+	
+    try { 
+    	SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+    	Date date1 = format.parse(start);
+    	Date date2 = format.parse(end);
+    	difference = date2.getTime() - date1.getTime();
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return difference;
+}
+
+public static String trailingZeros(float f, int leadingZeros) {
+	
+	String out = "0";
+	
+    try { 
+    	out = String.format("%16." + leadingZeros + "f", f).trim();
     } catch(Exception e) { 
     	e.getStackTrace();
     }

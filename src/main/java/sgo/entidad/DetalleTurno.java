@@ -4,10 +4,13 @@ public class DetalleTurno {
 	
   private int id_dturno;	
   private int id_turno;
-  private float lectura_inicial;
-  private float lectura_final;  
   private int id_producto;
   private int id_contometro;
+  
+  private float lectura_inicial;
+  private float lectura_final;  
+  private String lecturaInicialStr;
+  private String lecturaFinalStr;  
 
   private Turno turno;
   private Producto producto;
@@ -67,5 +70,18 @@ public class DetalleTurno {
 	}
 	public void setTurno(Turno turno) {
 		this.turno = turno;
-	}   
+	}
+	public String getLecturaInicialStr() {
+		return lecturaInicialStr;
+	}
+	public void setLecturaInicialStr(String lecturaInicialStr) {
+		this.lecturaInicialStr = lecturaInicialStr;
+	}
+	public String getLecturaFinalStr() {
+		return lecturaFinalStr;
+	}
+	public void setLecturaFinalStr(String lecturaFinalStr) {
+		this.lecturaFinalStr = lecturaFinalStr;
+	}
+	
 }

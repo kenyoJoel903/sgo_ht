@@ -387,7 +387,7 @@ moduloJornada.prototype.validarTurno= function(){
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	} else {		 
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
-	    		console.log(respuesta.contenido);
+
 	    		if(respuesta.contenido.carga.length == 0){
 	    			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El dia operativo no tiene turnos, favor verifique.");
 	    			referenciaModulo.obj.ocultaContenedorTabla.hide();

@@ -1,6 +1,8 @@
 package sgo.servicio;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,7 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -37,6 +43,7 @@ import sgo.datos.EstacionDao;
 import sgo.datos.EventoDao;
 import sgo.datos.JornadaDao;
 import sgo.datos.OperacionDao;
+import sgo.datos.ParametroDao;
 import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PlanificacionDao;
 import sgo.datos.ProductoDao;
@@ -52,15 +59,21 @@ import sgo.entidad.Estacion;
 import sgo.entidad.Jornada;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.Operacion;
+import sgo.entidad.Parametro;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
+import sgo.entidad.ResumenCierre;
+import sgo.entidad.TableAttributes;
 import sgo.entidad.TanqueJornada;
 import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
+import sgo.utilidades.CabeceraReporte;
+import sgo.utilidades.Campo;
 import sgo.utilidades.Constante;
+import sgo.utilidades.Reporteador;
 import sgo.utilidades.Utilidades;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -115,6 +128,10 @@ private ContometroJornadaDao dContometroJornadaDao;
 @Autowired
 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
 @Autowired
+private ParametroDao dParametro;
+@Autowired
+ServletContext servletContext;
+@Autowired
 private TanqueJornadaDao dTanqueJornadaDao;
 private static final String sNombreClase = "TurnoControlador";
 private DataSourceTransactionManager transaccion;// Gestor de la transaccion
@@ -142,6 +159,11 @@ private static final String URL_RECUPERAR_APERTURA_RELATIVA = "/turno/recuperarA
 
 private static final String URL_RECUPERAR_CIERRE_COMPLETA = "/admin/turno/recuperarCierre";
 private static final String URL_RECUPERAR_CIERRE_RELATIVA = "/turno/recuperarCierre";
+
+private static final String URL_GENERAR_PLANTILLA_CONTOMETROS_COMPLETA = "/admin/turno/generarPlantillaContometros";
+private static final String URL_GENERAR_PLANTILLA_CONTOMETROS_RELATIVA = "/turno/generarPlantillaContometros";
+
+private static final int PRIMER_ROW = 0;
 
 private HashMap<String, String> recuperarMapaValores(Locale locale) {
 	
@@ -184,6 +206,7 @@ private HashMap<String, String> recuperarMapaValores(Locale locale) {
 // @SuppressWarnings("unchecked")
 @RequestMapping(URL_GESTION_RELATIVA)
 public ModelAndView mostrarFormulario(Locale locale) {
+	
 	ModelAndView vista = null;
 	AuthenticatedUserDetails principal = null;
 	ArrayList<?> listaEnlaces = null;
@@ -219,9 +242,10 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		parametros.setFiltroEstado(Constante.FILTRO_TODOS);
 		parametros.setFiltroEstadoCliente(Constante.ESTADO_ACTIVO);
 		respuesta = dOperacion.recuperarRegistros(parametros);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 		}
+		
 		listaOperaciones = (ArrayList<?>) respuesta.contenido.carga;
 
 		parametros = new ParametrosListar();
@@ -229,7 +253,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		// Para que retorne solo los productos que se encuentren activos
 		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
 		respuesta = dProducto.recuperarRegistros(parametros);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 		}
 		listaProductos = (ArrayList<?>) respuesta.contenido.carga;
@@ -237,10 +261,11 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		String fecha = dDiaOperativo.recuperarFechaActual().valor;
 		Operacion op = (Operacion) listaOperaciones.get(0);
 		parametros.setIdOperacion(op.getId());
+		
 	    //esto para obtener la última jornada cargada 
 	    Respuesta oRespuesta = dJornada.recuperarUltimaJornada(parametros);
 	    // Verifica el resultado de la accion
-	    if (oRespuesta.estado == false) {
+	    if (!oRespuesta.estado) {
 	    	throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 	    }
 	    
@@ -254,27 +279,41 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		parametros.setIdCliente(principal.getCliente().getId());
 		parametros.setFiltroOperacion(op.getId());
 		respuesta = dEstacion.recuperarRegistros(parametros);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 		}
 		listaEstaciones = (ArrayList<?>) respuesta.contenido.carga;
 		
+		parametros = new ParametrosListar();
+		parametros.setFiltroParametro(Parametro.ALIAS_CONTOMETRO_REGISTROS);
+		respuesta = dParametro.recuperarRegistros(parametros);
+	    if (!respuesta.estado) {
+	    	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+	    }
+	    
+		Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
+
+		TableAttributes tableAttributes = new TableAttributes();
+		tableAttributes.setBodyStyle("height: " + eParametro.getValorInt() * 25 + "px !important;");
+		
 		mapaValores = recuperarMapaValores(locale);
 		vista = new ModelAndView("plantilla");
-		vista.addObject("vistaJSP", "operaciones/turno.jsp");
-		vista.addObject("vistaJS", "operaciones/turno.js");
-		vista.addObject("identidadUsuario", principal.getIdentidad());
+		vista.addObject("fechaActual", fecha);
 		vista.addObject("menu", listaEnlaces);
 		vista.addObject("clientes", listaClientes);
-		vista.addObject("operaciones", listaOperaciones);
-		vista.addObject("estaciones", listaEstaciones);
-		vista.addObject("productos", listaProductos);
 		vista.addObject("mapaValores", mapaValores);
-		//vista.addObject("fechaActual", dDiaOperativo.recuperarFechaActual().valor);
-		vista.addObject("fechaActual", fecha);
-	} catch (Exception ex) {
+		vista.addObject("productos", listaProductos);
+		vista.addObject("estaciones", listaEstaciones);
+		vista.addObject("operaciones", listaOperaciones);
+		vista.addObject("vistaJS", "operaciones/turno.js");
+		vista.addObject("tableAttributes", tableAttributes);
+		vista.addObject("vistaJSP", "operaciones/turno.jsp");
+		vista.addObject("identidadUsuario", principal.getIdentidad());
+		
+	} catch (Exception e) {
 
 	}
+	
 	return vista;
 }
 
@@ -410,15 +449,20 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 	return respuesta;
 }	
 
+/**
+ * 
+ * @param httpRequest
+ * @param locale
+ * @return
+ */
 @RequestMapping(value = URL_RECUPERAR_APERTURA_RELATIVA ,method = RequestMethod.GET)
 public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest httpRequest, Locale locale) {
 	
 	RespuestaCompuesta oRespuesta = null;
 	AuthenticatedUserDetails principal = null;
-	ParametrosListar parametros= null;
+	ParametrosListar parametros = null;
 	int cantidadTurnos = 0;
 	String MensajeCantidadTurnos = "";
-	
 	
 	try {
 		
@@ -426,12 +470,12 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		oRespuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_APERTURA_COMPLETA);
-		if (oRespuesta.estado==false){
-			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
+		if (oRespuesta.estado == false){
+			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		Enlace eEnlace = (Enlace) oRespuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
-		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
+		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
 		}
 		//Recuperar el registro por id Estacion de la ultima jornada
@@ -442,48 +486,47 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
 		if (httpRequest.getParameter("idJornada") != null && httpRequest.getParameter("idJornada") != "") {
 			parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
 		}
-		
-		//if (httpRequest.getParameter("cantidadTurnos") != null && httpRequest.getParameter("cantidadTurnos") != "") {
-		if (Utilidades.isInteger(httpRequest.getParameter("cantidadTurnos"))) {
-			cantidadTurnos = Integer.parseInt(httpRequest.getParameter("cantidadTurnos"));
-		}
+
+		cantidadTurnos = Utilidades.parseInt(httpRequest.getParameter("cantidadTurnos"));
 		
 		//verifica que no exista un turno abierto
 		parametros.setFiltroEstado(Turno.ESTADO_ABIERTO);
-		oRespuesta=dTurno.recuperarRegistros(parametros);		
-        if (oRespuesta.estado==false){        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+		oRespuesta = dTurno.recuperarRegistros(parametros);		
+        if (oRespuesta.estado == false){        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        if(oRespuesta.getContenido().getCarga()!=null && oRespuesta.getContenido().getCarga().size()>0){
-        	oRespuesta.valor="0";
-        	oRespuesta.mensaje="Existe un turno abierto";
-        	//throw new Exception("Existe un turno abierto");
+        if (oRespuesta.getContenido().getCarga() != null && oRespuesta.getContenido().getCarga().size() > 0) {
+        	oRespuesta.valor = "0";
+        	oRespuesta.mensaje = "Existe un turno abierto";
         } else {
-        	parametros=new ParametrosListar();
+        	
+        	parametros = new ParametrosListar();
+        	
     		//ordena por la ultima hora de cierre
         	parametros.setIdJornada(Integer.parseInt( httpRequest.getParameter("idJornada")));
     		parametros.setCampoOrdenamiento("fechaHoraCierre");
-    		parametros.setSentidoOrdenamiento("DESC");  
+    		parametros.setSentidoOrdenamiento("DESC");
+    		
     		//obtiene cabecera del turno.
-    		oRespuesta=dTurno.recuperarRegistros(parametros);		
-            if (oRespuesta.estado==false){        	
-            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+    		oRespuesta = dTurno.recuperarRegistros(parametros);		
+            if (oRespuesta.estado == false){        	
+            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
             }
             
-            parametros=new ParametrosListar();
+            parametros = new ParametrosListar();
             
-            if(oRespuesta.getContenido().getCarga()!=null && oRespuesta.getContenido().getCarga().size() > 0) {
+            if(oRespuesta.getContenido().getCarga() != null && oRespuesta.getContenido().getCarga().size() > 0) {
             	
             	Turno eTurno = (Turno) oRespuesta.getContenido().getCarga().get(0);   
             	
             	//recuperamos la estacion del jornada del turno
                 RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
                 if (registroEstacion.estado==false) {        	
-                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
                 }
                 
-                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(PRIMER_ROW);
                 
                 if (eEstacion.getCantidadTurnos() == 0) {
                 	throw new Exception("Debe ingresar la cantidad de Turnos con las que cuenta la Estación. Favor verifique.");
@@ -501,57 +544,84 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
             	//extrae detalle del ultimo turno de la jornada            	
             	parametros.setIdTurno(eTurno.getId());
             	oRespuesta = dDetalleTurnoDao.recuperarRegistros(parametros);
-                if (oRespuesta.estado==false){        	
-                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+                if (oRespuesta.estado == false) {        	
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
                 }
                 
-                DetalleTurno eDetalleTurno = (DetalleTurno) oRespuesta.getContenido().getCarga().get(0);
+           	 	/**
+           	 	 * PRIMER ROW: del ContometroJornada array.
+           	 	 */
+                DetalleTurno eDetalleTurno = (DetalleTurno) oRespuesta.getContenido().getCarga().get(PRIMER_ROW);
                 
                 /**
                  * Inicio: Perfil Detalle Horario
                  * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
                  */
-         		int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
+                int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
                 RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistroPorTurno(idPerfilHorario, cantidadTurnos);
-    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(PRIMER_ROW);
+    			
     			List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
     			lstDetalles.add(ePerfilDetalleHorario);
+    			
     			PerfilHorario perfilHorario = new PerfilHorario();
     			perfilHorario.setLstDetalles(lstDetalles);
-    			/**
-    			 * Fin: Perfil Detalle Horario
-    			 */
     			
     			eDetalleTurno.getTurno().setPerfilHorario(perfilHorario);
+    			
+    	        /**
+    	         * List
+    	         */
+    			List<DetalleTurno> listDetalleTurno = (List<DetalleTurno>) oRespuesta.getContenido().getCarga();
+    			listDetalleTurno.set(PRIMER_ROW, eDetalleTurno);
 
-	            List<DetalleTurno> list = new ArrayList<DetalleTurno>();
-	            list.add(eDetalleTurno);
+    			/**
+    			 * Modificar el formato de la columna 'Lectura Inicial y final'
+    			 * para mostrar la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+    			 */
+    			int i = 0;
+    			for (DetalleTurno iDT : listDetalleTurno) {
+    				iDT.setLecturaInicialStr(Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+    				iDT.setLecturaFinalStr(Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+    				listDetalleTurno.set(i, iDT);
+    				i++;
+    			}
+
+    			/**
+    			 * Se agrega la lista en la variable 'Respuesta'
+    			 */
 	            Contenido<DetalleTurno> contenidoDT = new Contenido<DetalleTurno>();
-	            contenidoDT.carga = list;
+	            contenidoDT.carga = listDetalleTurno;
 	            oRespuesta.contenido = contenidoDT;
-                
                 oRespuesta.valor = "1"; 
-                if(MensajeCantidadTurnos.length() != 0){
+                
+                if (MensajeCantidadTurnos.length() != 0) {
                 	oRespuesta.mensaje = MensajeCantidadTurnos;
                 } else {
-                	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+                	oRespuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
                 }
             	
             } else {//obtener lista de contometro jornada 
             	
+        		parametros.setSentidoOrdenamiento("ASC");
+            	parametros.setPaginacion(Constante.SIN_PAGINACION);
+        		parametros.setCampoOrdenamiento("alias_contometro");
             	parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
             	oRespuesta = dContometroJornadaDao.recuperarRegistros(parametros);
-           	 	if (oRespuesta.estado==false){        	
-                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
-                } 
-           	 	ContometroJornada eContometroJornada = (ContometroJornada) oRespuesta.getContenido().getCarga().get(0);
-           	 	//recuperamos la estacion del jornada del turno
+           	 	if (oRespuesta.estado==false) {        	
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+                }
+           	 	
+           	 	/**
+           	 	 * PRIMER ROW: del ContometroJornada array.
+           	 	 */
+           	 	ContometroJornada eContometroJornada = (ContometroJornada) oRespuesta.getContenido().getCarga().get(PRIMER_ROW);
                 RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eContometroJornada.getJornada().getEstacion().getId());
                 if (registroEstacion.estado == false) {        	
                 	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
                 }
                 
-                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+                Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(PRIMER_ROW);
                 
                 if(eEstacion.getCantidadTurnos() == 0) {
                 	throw new Exception("Debe ingresar la cantidad de Turnos con las que cuenta la Estación. Favor verifique.");
@@ -568,36 +638,53 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
                  * Inicio: Perfil Detalle Horario
                  * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
                  */
-         		int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
+                int idPerfilHorario = Utilidades.parseInt(httpRequest.getParameter("idPerfilHorario"));
                 RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistroPorTurno(idPerfilHorario, cantidadTurnos);
-    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
+    			PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(PRIMER_ROW);
+    			
     			List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
     			lstDetalles.add(ePerfilDetalleHorario);
+    			
     			PerfilHorario perfilHorario = new PerfilHorario();
     			perfilHorario.setLstDetalles(lstDetalles);
-    			/**
-    			 * Fin: Perfil Detalle Horario
-    			 */
     			
     			eContometroJornada.setPerfilHorario(perfilHorario);
-
-				List<ContometroJornada> list = new ArrayList<ContometroJornada>();
-				list.add(eContometroJornada);
-				
+    			
+    	        /**
+    	         * List
+    	         */
+    			List<ContometroJornada> listContometroJornada = (List<ContometroJornada>) oRespuesta.getContenido().getCarga();
+    			listContometroJornada.set(PRIMER_ROW, eContometroJornada);
+    			
+    			/**
+    			 * Modificar el formato de la columna 'Lectura Inicial y final'
+    			 * para mostrar la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+    			 */
+    			int i = 0;
+    			for (ContometroJornada iCJ : listContometroJornada) {
+    				iCJ.setLecturaInicialStr(Utilidades.trailingZeros(iCJ.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+    				iCJ.setLecturaFinalStr(Utilidades.trailingZeros(iCJ.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+    				listContometroJornada.set(i, iCJ);
+    				i++;
+    			}
+                
+    			/**
+    			 * Se agrega la lista en la variable 'Respuesta'
+    			 */
 				Contenido<ContometroJornada> contenidoCJ = new Contenido<ContometroJornada>();
-				contenidoCJ.carga = list;
+				contenidoCJ.carga = listContometroJornada;
     			oRespuesta.contenido = contenidoCJ;
            	 	oRespuesta.valor = "2";
            	 	
-           	 	if(MensajeCantidadTurnos.length() != 0) {
+           	 	if (MensajeCantidadTurnos.length() != 0) {
                 	oRespuesta.mensaje = MensajeCantidadTurnos;
                 } else {
-                	oRespuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
+                	oRespuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
                 }
            	 	
-	           	if(oRespuesta.getContenido().getCarga().isEmpty()) {
-	           		oRespuesta.valor="0"; 
-	           		oRespuesta.mensaje="No existe Contómetros para la jornada";
+	           	if (oRespuesta.getContenido().getCarga().isEmpty()) {
+	           		oRespuesta.valor = "0"; 
+	           		oRespuesta.mensaje = "No existe Contómetros para la jornada";
 	           	}
             }
         }
@@ -611,12 +698,21 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
 	return oRespuesta;
 }
 
+/**
+ * 
+ * @param idJornada
+ * @param locale
+ * @return
+ */
 @RequestMapping(value = URL_RECUPERAR_TANQUES_RELATIVA ,method = RequestMethod.GET)
-public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada, Locale locale){
+public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada, Locale locale) {
+	
 	RespuestaCompuesta respuesta = null;
 	ParametrosListar parametros = null;
 	AuthenticatedUserDetails principal = null;
-	try {			
+	
+	try {
+		
 		//Recupera el usuario actual
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
@@ -624,21 +720,24 @@ public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada
 		if (respuesta.estado==false){
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 		}
+		
 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
 		}
+		
 		//Recuperar el registro
-    	respuesta= dJornada.recuperarRegistro(idJornada);
+    	respuesta = dJornada.recuperarRegistro(idJornada);
     	//Verifica el resultado de la accion
-        if (respuesta.estado==false){        	
+        if (respuesta.estado==false) {
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
         }
+        
         Contenido<Jornada> contenido = new Contenido<Jornada>();
         List<TanqueJornada> listaTanqueJornada = new ArrayList<TanqueJornada>();
         List<Jornada> listaRegistros = new ArrayList<Jornada>();
-
+    	
         Jornada eJornada = (Jornada) respuesta.contenido.carga.get(0);
 
         parametros = new ParametrosListar();
@@ -647,10 +746,11 @@ public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada
         parametros.setEstadoDespachando(TanqueJornada.ESTADO_DESPACHANDO);
         //recuperamos los tanques de la jornada
         respuesta = dTanqueJornadaDao.recuperarRegistros(parametros);
-        if (respuesta.estado==false){        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+        if (respuesta.estado == false) {
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
-        for (int a = 0; a < respuesta.contenido.carga.size(); a++){
+        
+        for (int a = 0; a < respuesta.contenido.carga.size(); a++) {
         	TanqueJornada eTanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(a);
         	listaTanqueJornada.add(eTanqueJornada);
 		}
@@ -661,15 +761,15 @@ public @ResponseBody RespuestaCompuesta recuperaTanquesDespachando(int idJornada
 
         contenido.carga = listaRegistros;
 		respuesta.contenido = contenido;
-        
-     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
-	} catch (Exception ex){
-		Utilidades.gestionaError(ex, sNombreClase, "recuperaRegistro");
-		//ex.printStackTrace();
-		respuesta.estado=false;
+     	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+     	
+	} catch (Exception e){
+		Utilidades.gestionaError(e, sNombreClase, "recuperaRegistro");
+		respuesta.estado = false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
+	
 	return respuesta;
 }
 
@@ -743,6 +843,12 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
 	return respuesta;
 }
 
+/**
+ * 
+ * @param ID
+ * @param locale
+ * @return
+ */
 @RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
 public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 	
@@ -755,7 +861,7 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		
@@ -765,36 +871,68 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
 		}
 		
-		//Recuperar el registro ID TURNO
+		//Recuperar el registro 'DetalleTurno'
     	respuesta = dDetalleTurnoDao.recuperarRegistroDetalleTurno(ID);
-    	//Verifica el resultado de la accion
-        if (respuesta.estado == false) {        	
+        if (!respuesta.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale)); 
+        }
+        
+        //Carga el DetalleTurno
+        DetalleTurno eDetalleTurno = (DetalleTurno) respuesta.getContenido().getCarga().get(PRIMER_ROW);
+        
+        RespuestaCompuesta respuestaTurno = dTurno.recuperarRegistro(eDetalleTurno.getTurno().getId());
+        if (!respuestaTurno.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        //jafeth
-        //Carga el turno
-        DetalleTurno eDetalleTurno = (DetalleTurno) respuesta.getContenido().getCarga().get(0);
+        Turno eTurno = (Turno) respuestaTurno.getContenido().getCarga().get(0);
         
-		//retorna la 'horaCierre' del ultimo turno cerrado
-        ParametrosListar parameters = new ParametrosListar(); 
-        parameters.setIdJornada(eDetalleTurno.getTurno().getIdJornada());
-        parameters.setFiltroEstado(Turno.ESTADO_CERRADO);
-        Respuesta respuestaSimple = dTurno.recuperarUltimoTurnoCerrado(parameters);
+        RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
+        if (!registroEstacion.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
         
-		if (respuestaSimple.valor != null) {
-			Timestamp horaCierre = new java.sql.Timestamp(Utilidades.convierteStringADate(respuestaSimple.valor, "yyyy/MM/dd HH:mm:ss").getTime());
-			eDetalleTurno.getTurno().setFechaHoraCierre(horaCierre);
-		}
-
-		List<DetalleTurno> list = new ArrayList<DetalleTurno>();
-		list.add(eDetalleTurno);
+        Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+        
+        RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
+        if (!respuestaPerfilDetalle.estado) {        	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
+        
+        PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(PRIMER_ROW);
+        
+        /**
+         * Conseguir 'HoraCierre', se trae la 'FechaHoraApertura' del turno
+         * y se le suma la diferencia de horas del 'PerfilDetalleHorario'
+         */
+        long difference = Utilidades.differenceBetweenTwoTimes(ePerfilDetalleHorario.getHoraInicioTurno(), ePerfilDetalleHorario.getHoraFinTurno());
+        Timestamp fechaHoraApertura = eTurno.getFechaHoraApertura();
+        fechaHoraApertura.setTime(fechaHoraApertura.getTime() + difference);
+        eDetalleTurno.getTurno().setFechaHoraCierre(fechaHoraApertura);
+        
+        /**
+         * List
+         */
+        List<DetalleTurno> listDetalleTurno = (List<DetalleTurno>) respuesta.getContenido().getCarga();
+        listDetalleTurno.set(PRIMER_ROW, eDetalleTurno);
+        
+        /**
+        * Modificar el formato de la columna 'Lectura Inicial y final'
+        * para mostrar la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
+        */
+        int i = 0;
+        for (DetalleTurno iDT : listDetalleTurno) {
+        	iDT.setLecturaInicialStr(Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+        	iDT.setLecturaFinalStr(Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+	        listDetalleTurno.set(i, iDT);
+	        i++;
+        }
 		
 		Contenido<DetalleTurno> content = new Contenido<DetalleTurno>();
-		content.carga = list;
+		content.carga = listDetalleTurno;
 		respuesta.contenido = content;  
      	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
-     	
+
 	} catch (Exception e) {
 		Utilidades.gestionaError(e, sNombreClase, "recuperaRegistro");
 		respuesta.estado = false;
@@ -902,7 +1040,6 @@ RespuestaCompuesta guardarRegistro(@RequestBody Turno eTurno, HttpServletRequest
 		* Fin: Perfil Detalle Horario
 		*/
 
-		// JAFETH - -AQUI GUARDA TURNO
         respuesta = dTurno.guardarRegistro(eTurno);
         //Verifica si la accion se ejecuto de forma satisfactoria
         if (respuesta.estado == false) {     	
@@ -961,8 +1098,8 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
 	AuthenticatedUserDetails principal = null;
 	TransactionDefinition definicionTransaccion = null;
 	TransactionStatus estadoTransaccion = null;
-	Bitacora eBitacora=null;
-	String direccionIp="";
+	Bitacora eBitacora = null;
+	String direccionIp = "";
 	
 	try {
 		
@@ -1001,7 +1138,7 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
 			throw new Exception("Error al obtener el Turno");
 		}
 		
-		Turno turnoOld=(Turno)respuesta.contenido.getCarga().get(0);
+		Turno turnoOld = (Turno)respuesta.contenido.getCarga().get(0);
 		if(eTurno.getFechaHoraCierre() != null && eTurno.getFechaHoraCierre().compareTo(turnoOld.getFechaHoraApertura())<0){
 			throw new Exception("La Hora de Cierre debe ser mayor a: " + Utilidades.convierteDateAString(turnoOld.getFechaHoraApertura(), "dd/MM/yyyy HH:mm:ss" ));
 		}
@@ -1013,8 +1150,8 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
 			throw new Exception("Error al obtener la Jornada");
 		}
 		
-		Jornada eJornada=(Jornada)respuesta.contenido.getCarga().get(0);
-        respuesta= dTurno.actualizarRegistro(eTurno);
+		Jornada eJornada = (Jornada)respuesta.contenido.getCarga().get(0);
+        respuesta = dTurno.actualizarRegistro(eTurno);
         if (respuesta.estado==false){          	
         	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
         }
@@ -1071,7 +1208,7 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
-	Contenido<PerfilHorario> contenido = new Contenido<PerfilHorario>();
+	Contenido<Turno> contenido = new Contenido<Turno>();
 	
 	try {
 		
@@ -1079,7 +1216,7 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_CIERRE_COMPLETA);
-		if (respuesta.estado == false) {
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
 		
@@ -1090,36 +1227,52 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 		}
 		
 		int idTurno = Utilidades.parseInt(httpRequest.getParameter("idTurno"));
-		
 		respuesta = dTurno.recuperarRegistro(idTurno);	
-        if (respuesta.estado == false) {        	
+        if (!respuesta.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
-        Turno eTurno = (Turno) respuesta.contenido.getCarga().get(0);
+        Turno eTurno = (Turno) respuesta.contenido.getCarga().get(PRIMER_ROW);
+        
+        /**
+         * Conseguir 'Estacion'
+         */
+        RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
+        if (!registroEstacion.estado) {         
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+        }
+        Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(PRIMER_ROW);
+        eTurno.getJornada().setEstacion(eEstacion);
         
         /**
         * Inicio: Perfil Detalle Horario
-        * Se trae el detalle del perfil, basado en la 'cantidadTurnos'
+        * Se trae el detalle del perfil
         */
         RespuestaCompuesta respuestaPerfilDetalle = dPerfilDetalleHorario.recuperarRegistro(eTurno.getIdPerfilDetalleHorario());
-        
-        if (respuestaPerfilDetalle.estado == false) {        	
+        if (!respuestaPerfilDetalle.estado) {        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
         
         PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
         List<PerfilDetalleHorario> lstDetalles = new ArrayList<PerfilDetalleHorario>();
         lstDetalles.add(ePerfilDetalleHorario);
+        
         PerfilHorario perfilHorario = new PerfilHorario();
         perfilHorario.setLstDetalles(lstDetalles);
+        
         eTurno.setPerfilHorario(perfilHorario);
 
-        List<PerfilHorario> list = new ArrayList<PerfilHorario>();
-        list.add(perfilHorario);
+        /**
+         * Guarda todo en la respuesta
+         */
+        List<Turno> list = (List<Turno>) respuesta.contenido.getCarga();
+        list.set(PRIMER_ROW, eTurno);
+        
         contenido.carga = list;
         respuesta.contenido = contenido;
-       
+		contenido.totalRegistros = list.size();
+		contenido.totalEncontrados = list.size();
+		
 	} catch (Exception e) {
 		Utilidades.gestionaError(e, sNombreClase, "recuperarApertura");
 		respuesta.estado = false;
@@ -1127,6 +1280,206 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
 	}
 	
 	return respuesta;
+}
+
+@RequestMapping(value = URL_GENERAR_PLANTILLA_CONTOMETROS_RELATIVA ,method = RequestMethod.GET)
+public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletRequest httpRequest, HttpServletResponse response, Locale locale) {
+	
+	RespuestaCompuesta respuesta = null;
+	AuthenticatedUserDetails principal = null;
+	Contenido<Turno> contenido = new Contenido<Turno>();
+	
+	try {
+		
+		//Recupera el usuario actual
+		principal = this.getCurrentUser(); 
+		//Recuperar el enlace de la accion
+		respuesta = dEnlace.recuperarRegistro(URL_GENERAR_PLANTILLA_CONTOMETROS_COMPLETA);
+		if (!respuesta.estado) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+		}
+		
+		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+		//Verificar si cuenta con el permiso necesario			
+		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+		}
+		
+		// Recuperar el registro 'DetalleTurno'
+		int idTurno = Utilidades.parseInt(httpRequest.getParameter("idTurno"));
+		RespuestaCompuesta respuestaDetalleTurno = dDetalleTurnoDao.recuperarRegistroDetalleTurno(idTurno);
+		if (!respuesta.estado) {          
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale)); 
+		}
+		
+		// Recuperar la 'turno'
+		RespuestaCompuesta respuestaTurno = dTurno.recuperarRegistro(idTurno);
+		if (!respuestaTurno.estado) {           
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		Turno eTurno = (Turno) respuestaTurno.getContenido().getCarga().get(PRIMER_ROW);
+		
+		// Recuperar la 'estacion'
+		RespuestaCompuesta registroEstacion = dEstacion.recuperarRegistro(eTurno.getJornada().getEstacion().getId());
+		if (!registroEstacion.estado) {         
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+
+		Estacion eEstacion = (Estacion) registroEstacion.getContenido().getCarga().get(0);
+        
+        /**
+         * Export Excel
+         */
+		int i = 1;
+		ArrayList<DetalleTurno> listDetalleTurno = (ArrayList<DetalleTurno>) respuestaDetalleTurno.contenido.getCarga();
+		ArrayList<HashMap<?,?>> hmRegistros = null;
+		hmRegistros = new  ArrayList<HashMap<?,?>>();
+		
+		for (DetalleTurno iDT : listDetalleTurno) {
+			HashMap<String, String> hm = new HashMap<String, String>();
+			hm.put("secuencia", Integer.toString(i));
+			hm.put("contometro", iDT.getContometro().getAlias());
+			hm.put("producto", iDT.getProducto().getNombre());
+			hm.put("lectura_inicial", Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+			hm.put("lectura_final", Utilidades.trailingZeros(iDT.getLecturaFinal(), eEstacion.getNumeroDecimalesContometro()));
+			hmRegistros.add(hm);
+			i++;
+		}
+		
+		Reporteador uReporteador = new Reporteador();
+		uReporteador.setRutaServlet(servletContext.getRealPath("/"));
+		ArrayList<Campo> listaCampos = this.generarCamposCierre();
+		ArrayList<CabeceraReporte> listaCamposCabecera = this.cabeceraPlantillaContometros();
+		
+		ByteArrayOutputStream baos = uReporteador.generarPlantillaContometros(
+		    hmRegistros, 
+		    listaCampos, 
+		    listaCamposCabecera,
+		    "Plantilla Contómetros"
+		);
+		
+		byte[] bytes = baos.toByteArray();
+		response.setContentType("application/vnd.ms-excel");
+		response.addHeader("Content-Disposition", "attachment; filename=\"plantilla-contometros.xls\"");
+		response.setContentLength(bytes.length);
+		
+		ServletOutputStream ouputStream = response.getOutputStream();
+		ouputStream.write(bytes, 0, bytes.length); 
+	    ouputStream.flush();    
+	    ouputStream.close(); 
+		
+	} catch (IOException e) {
+		Utilidades.gestionaError(e, sNombreClase, "generarPlantillaContometros");
+		respuesta.estado = false;
+		respuesta.mensaje = e.getMessage();
+	} catch (Exception e) {
+		Utilidades.gestionaError(e, sNombreClase, "generarPlantillaContometros");
+		respuesta.estado = false;
+		respuesta.mensaje = e.getMessage();
+	}
+	
+	return respuesta;
+}
+
+private ArrayList<CabeceraReporte> cabeceraPlantillaContometros() {
+
+    ArrayList<CabeceraReporte> listaCr = null;
+    CabeceraReporte cr = null;
+
+    try {
+
+        listaCr = new ArrayList<CabeceraReporte>();
+
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Secuencia");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Contómetro");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+        
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Producto");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+        
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Lectura Inicial");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+        
+        cr = new CabeceraReporte();
+        cr.setEtiqueta("Lectura_Final");
+        cr.setColspan(2);
+        cr.setRowspan(1);
+        listaCr.add(cr);
+
+    } catch(Exception e) {
+
+    }
+
+    return listaCr;
+}
+
+private ArrayList<Campo> generarCamposCierre() {
+
+    Campo eCampo = null;
+    ArrayList<Campo> listaCampos = new ArrayList<Campo>();
+
+    try {
+    	
+        eCampo = new Campo();
+        eCampo.setEtiqueta("A");
+        eCampo.setNombre("secuencia");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(1);
+        listaCampos.add(eCampo);
+
+        eCampo = new Campo();
+        eCampo.setEtiqueta("B");
+        eCampo.setNombre("contometro");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo); 
+        
+        eCampo = new Campo();
+        eCampo.setEtiqueta("C");
+        eCampo.setNombre("producto");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo);
+        
+        eCampo = new Campo();
+        eCampo.setEtiqueta("D");
+        eCampo.setNombre("lectura_inicial");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo);
+        
+        eCampo = new Campo();
+        eCampo.setEtiqueta("E");
+        eCampo.setNombre("lectura_final");
+        eCampo.setTipo(Campo.TIPO_TEXTO);
+        eCampo.setAlineacionHorizontal(Campo.ALINEACION_IZQUIERDA);
+        eCampo.setAncho(2.1f);
+        listaCampos.add(eCampo);
+
+    } catch (Exception e) {
+
+    }
+
+    return listaCampos;
 }
 
 }

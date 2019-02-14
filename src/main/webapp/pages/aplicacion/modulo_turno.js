@@ -1,75 +1,75 @@
 function moduloTurno() {
-	
-  this.obj = {};
-  this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA_DOBLE_LISTADO;
-  this.TOPES_PAGINACION = constantes.TOPES_PAGINACION_BOBLE_LISTADO;
-  this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
-  this.LENGUAJE_GRILLA =  {
-		    "sProcessing":    cadenas.GRILLA_PROCESANDO,
-		    "sLengthMenu":    cadenas.GRILLA_LONGITUD_MENU,
-		    "sZeroRecords":   cadenas.GRILLA_SIN_REGISTROS,
-		    "sEmptyTable":    cadenas.GRILLA_TABLA_VACIA,
-		    "sInfo":          cadenas.GRILLA_INFO,
-		    "sInfoEmpty":     cadenas.GRILLA_INFO_VACIA,
-		    "sInfoFiltered":  cadenas.GRILLA_INFO_FILTRADA,
-		    "sInfoPostFix":   cadenas.GRILLA_INFO_POST_FIX,
-		    "sSearch":        cadenas.GRILLA_BUSCAR,
-		    "sUrl":           cadenas.GRILLA_URL,
-		    "sInfoThousands": cadenas.GRILLA_MILES,
-		    "sLoadingRecords":cadenas.GRILLA_CARGANDO_REGISTROS,
-		    "oPaginate": {
-		      "sFirst":       cadenas.GRILLA_PAGINACION_PRIMERO,
-		      "sLast":        cadenas.GRILLA_PAGINACION_ULTIMO,
-		      "sNext":        cadenas.GRILLA_PAGINACION_SIGUIENTE,
-		      "sPrevious":    cadenas.GRILLA_PAGINACION_ANTERIOR,
-		    },
-		    "oAria": {
-		      "sSortAscending":  cadenas.GRILLA_ORDEN_ASCENDENTE,
-		      "sSortDescending": cadenas.GRILLA_ORDEN_DESCENDENTE,
-		    }
-		  };
 
-  this.TIPO_CONTENIDO=constantes.TIPO_CONTENIDO_JSON;
-  this.NOMBRE_EVENTO_CLICK=constantes.NOMBRE_EVENTO_CLICK;
-  this.modoEdicion=constantes.MODO_LISTAR;
-  this.depuracionActivada=true;
-  this.estaCargadaInterface=false;
-  //Inicializar propiedades
-  this.urlBase='';  
-  this.mensajeEsMostrado=false;
-  this.idRegistro = 0;
-  this.reglasValidacionFormulario={};
-  this.mensajesValidacionFormulario={};
-  this.idJornada = 0;
+	this.obj = {};
+	this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA_DOBLE_LISTADO;
+	this.TOPES_PAGINACION = constantes.TOPES_PAGINACION_BOBLE_LISTADO;
+	this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
+	this.LENGUAJE_GRILLA =  {
+		"sProcessing":    cadenas.GRILLA_PROCESANDO,
+		"sLengthMenu":    cadenas.GRILLA_LONGITUD_MENU,
+		"sZeroRecords":   cadenas.GRILLA_SIN_REGISTROS,
+		"sEmptyTable":    cadenas.GRILLA_TABLA_VACIA,
+		"sInfo":          cadenas.GRILLA_INFO,
+		"sInfoEmpty":     cadenas.GRILLA_INFO_VACIA,
+		"sInfoFiltered":  cadenas.GRILLA_INFO_FILTRADA,
+		"sInfoPostFix":   cadenas.GRILLA_INFO_POST_FIX,
+		"sSearch":        cadenas.GRILLA_BUSCAR,
+		"sUrl":           cadenas.GRILLA_URL,
+		"sInfoThousands": cadenas.GRILLA_MILES,
+		"sLoadingRecords":cadenas.GRILLA_CARGANDO_REGISTROS,
+		"oPaginate": {
+			"sFirst":       cadenas.GRILLA_PAGINACION_PRIMERO,
+			"sLast":        cadenas.GRILLA_PAGINACION_ULTIMO,
+			"sNext":        cadenas.GRILLA_PAGINACION_SIGUIENTE,
+			"sPrevious":    cadenas.GRILLA_PAGINACION_ANTERIOR,
+		},
+		"oAria": {
+			"sSortAscending":  cadenas.GRILLA_ORDEN_ASCENDENTE,
+			"sSortDescending": cadenas.GRILLA_ORDEN_DESCENDENTE,
+		}
+	};
 
-  //para la grilla de la jornada
-  this.ordenGrillaJornada = [[ 1, 'asc' ]];
-  this.columnasGrillaJornada = [{ "data": null} ];//Target 0
-  this.definicionColumnasJornada = [{ 
-	  "targets": 0, 
-	  "searchable": false, 
-	  "orderable": false, 
-	  "visible":false, 
-	  "render": function ( datos, tipo, fila, meta ) {
-		  var configuracion = meta.settings;
-		  return configuracion._iDisplayStart + meta.row + 1;
-	  }
-  }];  
-  
-  //para la grilla de la turno
-  this.ordenGrillaTurno=[[ 1, 'asc' ]];
-  this.columnasGrillaTurno=[{ "data": null} ];//Target 0
-  this.definicionColumnasTurno=[{ 
-	  "targets": 0, 
-	  "searchable": false, 
-	  "orderable": false, 
-	  "visible":false, 
-	  "render": function ( datos, tipo, fila, meta ) {
-		  var configuracion = meta.settings;
-		  return configuracion._iDisplayStart + meta.row + 1;
-	  }
-  }]; 
-  
+	this.TIPO_CONTENIDO=constantes.TIPO_CONTENIDO_JSON;
+	this.NOMBRE_EVENTO_CLICK=constantes.NOMBRE_EVENTO_CLICK;
+	this.modoEdicion=constantes.MODO_LISTAR;
+	this.depuracionActivada=true;
+	this.estaCargadaInterface=false;
+
+	//Inicializar propiedades
+	this.urlBase='';  
+	this.mensajeEsMostrado=false;
+	this.idRegistro = 0;
+	this.reglasValidacionFormulario={};
+	this.mensajesValidacionFormulario={};
+	this.idJornada = 0;
+
+	//para la grilla de la jornada
+	this.ordenGrillaJornada = [[ 1, 'asc' ]];
+	this.columnasGrillaJornada = [{ "data": null} ];//Target 0
+	this.definicionColumnasJornada = [{ 
+		"targets": 0, 
+		"searchable": false, 
+		"orderable": false, 
+		"visible":false, 
+		"render": function ( datos, tipo, fila, meta ) {
+			var configuracion = meta.settings;
+			return configuracion._iDisplayStart + meta.row + 1;
+		}
+	}];  
+
+	//para la grilla de la turno
+	this.ordenGrillaTurno=[[ 1, 'asc' ]];
+	this.columnasGrillaTurno=[{ "data": null} ];//Target 0
+	this.definicionColumnasTurno=[{ 
+		"targets": 0, 
+		"searchable": false, 
+		"orderable": false, 
+		"visible":false, 
+		"render": function ( datos, tipo, fila, meta ) {
+			var configuracion = meta.settings;
+			return configuracion._iDisplayStart + meta.row + 1;
+		}
+	}];
 };
 
 moduloTurno.prototype.mostrarDepuracion = function(mensaje) {
@@ -188,6 +188,8 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.btnGuardarCierre=$("#btnGuardarCierre");
   this.obj.btnCancelarCierre=$("#btnCancelarCierre");
   this.obj.btnCerrarVistaTurno=$("#btnCerrarVistaTurno");
+  this.obj.btnPlantillaContometros = $("#btnPlantillaContometros");
+  this.obj.btnCargarArchivoContometros = $("#btnCargarArchivoContometros");
 
   //para guardar los datos de la jornada seleccionada
   this.obj.idJornadaSeleccionada=$("#idJornadaSeleccionada");
@@ -216,13 +218,13 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.cmpFiltroTabla=$("#cmpFiltroTabla");
   this.obj.cmpFiltroTipoFecha=$("#cmpFiltroTipoFecha");	
 
-  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.validaFormularioXSS("#frmBuscar");
 	  referenciaModulo.modoEdicion=constantes.MODO_LISTAR;
 	  referenciaModulo.listarRegistrosJornada();
   });
   
-  this.obj.btnApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.descripcionPermiso = 'CREAR_TURNO';
 	  referenciaModulo.validaPermisos();
 	  //referenciaModulo.obtieneUltimaJornada();
@@ -240,24 +242,32 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
 	  //referenciaModulo.botonVer();		
   });
   
-  this.obj.btnGuardarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnGuardarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonGuardarApertura();		
   });
  
-  this.obj.btnCancelarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCancelarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonCancelarApertura();		
   });
 
-  this.obj.btnCerrarVistaTurno.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCerrarVistaTurno.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonCerrarVistaTurno();		
   });
 
-  this.obj.btnGuardarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnGuardarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function(){
 	  referenciaModulo.botonGuardarCierre();		
   });
   
-  this.obj.btnCancelarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCancelarCierre.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.botonCancelarGuardarCierre();		
+  });
+  
+  this.obj.btnPlantillaContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.botonGenerarPlantillaContometros();		
+  });
+  
+  this.obj.btnCargarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.botonCargarArchivoContometros();		
   });
 
 };
@@ -293,12 +303,7 @@ moduloTurno.prototype.inicializaApertura = function(registro, valor) {
 moduloTurno.prototype.recuperarApertura = function() {
 	
 	  var referenciaModulo = this;
-	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,"Procesando petici\u00f3n...");
-
-	  console.log(" **** recuperarApertura **** ");
-	  console.dir("idJornadaSeleccionada:: " + referenciaModulo.obj.idJornadaSeleccionada);
-	  console.dir("idPerfilHorarioSeleccionado:: " + referenciaModulo.obj.idPerfilHorarioSeleccionado);
-	  console.dir("cantidadTurnos:: " + referenciaModulo.cantidadTurnos);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Procesando petici\u00f3n...");
 	  
 	  $.ajax({
 	      type: constantes.PETICION_TIPO_GET,
@@ -322,7 +327,7 @@ moduloTurno.prototype.recuperarApertura = function() {
 			}
 	      },                  
 	      error: function() {
-	        referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Hubo un error en la petici\u00f3n");
+	    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Hubo un error en la petici\u00f3n");
 	      }
 	  });
 };
@@ -416,7 +421,7 @@ moduloTurno.prototype.botonCierre = function() {
 		
 		referenciaModulo.modoEdicion = constantes.MODO_CIERRE_TURNO;
 		referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_TURNO_CERRAR);
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.CERRAR_DETALLE_PROGRAMACION);
+		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.CERRAR_DETALLE_PROGRAMACION);
 		referenciaModulo.obj.ocultaContenedorCierre.show();
 		referenciaModulo.obj.cntTabla.hide();		
 		referenciaModulo.obj.cntApertura.hide();
@@ -636,8 +641,6 @@ moduloTurno.prototype.inicializarGrillaJornada=function() {
 	    referenciaModulo.obj.idPerfilHorarioSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
 	    //referenciaModulo.obj.horaInicioFinTurnoSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 10).data();
 	    //referenciaModulo.obj.numeroOrdenSeleccionado = referenciaModulo.obj.datJornadaAPI.cell(indiceFilaJornada, 11).data();
-
-	    //console.log("numeroOrdenSeleccionado::: " + referenciaModulo.obj.numeroOrdenSeleccionado);
 	    
 	    //desactivamos todos los botones
     	referenciaModulo.desactivarBotones();
@@ -827,8 +830,6 @@ moduloTurno.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json){
 	   }  
 	};
 
-
-
 moduloTurno.prototype.inicializarFormularioPrincipal= function() {  
 
 };
@@ -961,9 +962,6 @@ moduloTurno.prototype.guardarApertura = function() {
 		referenciaModulo.obj.ocultaContenedorApertura.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
-		
-		console.log(" **** guardarApertura **** ");
-		console.dir(eRegistro);
 		
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
@@ -1175,3 +1173,72 @@ moduloTurno.prototype.validaPermisos= function() {
 	  referenciaModulo.mostrarDepuracion(error.message);
   };
 };
+
+/**
+ * Exportar Excel Contometros
+ */
+moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
+	var referenciaModulo = this;
+	window.open(referenciaModulo.GENERAR_PLANTILLA_CONTOMETROS + "?idTurno=" + referenciaModulo.obj.idTurnoSeleccionado);
+};
+
+moduloTurno.prototype.botonCargarArchivoContometros = function() {
+
+    var fileUpload = $("#fileUpload")[0];
+
+    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+    if (!regex.test(fileUpload.value.toLowerCase())) {
+    	alert("Suba un archivo excel valido.");
+    	return false;
+    }
+    	
+    if (typeof (FileReader) == "undefined") {
+    	alert("Este navegador no soporta HTML5.");
+    	return false;
+    }
+
+    var reader = new FileReader();
+
+    //For Browsers other than IE.
+    if (reader.readAsBinaryString) {
+        reader.onload = function (e) {
+            ProcessExcel(e.target.result);
+        };
+        reader.readAsBinaryString(fileUpload.files[0]);
+    } else {
+    	
+        //For IE Browser.
+        reader.onload = function (e) {
+            var data = "";
+            var bytes = new Uint8Array(e.target.result);
+            for (var i = 0; i < bytes.byteLength; i++) {
+                data += String.fromCharCode(bytes[i]);
+            }
+            ProcessExcel(data);
+        };
+        reader.readAsArrayBuffer(fileUpload.files[0]);
+    }
+    
+    $("#fileUpload").val("");
+
+	function ProcessExcel(data) {
+		
+	    //Read the Excel File data.
+	    var workbook = XLSX.read(data, {
+	        type: 'binary'
+	    });
+	
+	    //Fetch the name of First Sheet.
+	    var firstSheet = workbook.SheetNames[0];
+	
+	    //Read all rows from First Sheet into an JSON array.
+	    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	
+	    //Add the data rows from Excel file.
+	    for (var i = 0; i < excelRows.length; i++) {
+	    	$("#GrupoCierre_" + i + "_LecturaFinal").val(excelRows[i].LECTURA_FINAL);
+	    }
+	}
+	
+};
+

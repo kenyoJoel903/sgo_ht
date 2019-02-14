@@ -1,0 +1,17 @@
+@CHARSET "ISO-8859-1";
+
+table.table-scroll tbody {
+    display: inline-block;
+    overflow-y:scroll;
+}
+
+table.table-scroll thead, 
+table.table-scroll tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+table.table-scroll thead {
+    width: 100% /* calc( 100% - 12px ) */
+}

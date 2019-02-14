@@ -33,10 +33,6 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-/*import org.apache.poi.xssf.usermodel.XSSFName;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;*/
-//import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -56,12 +52,9 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-/*import pe.com.petroperu.sco.Constantes;
-import pe.com.petroperu.sco.ejb.entidad.Campo;
-import pe.com.petroperu.sco.ejb.entidad.Formulario;
-import pe.com.petroperu.sco.ejb.entidad.Modulo;*/
 
 public class Reporteador {
+	
  public final float PUNTOSXCENTIMENTRO = 28.35f;
  public float MARGEN_DERECHO = 1;
  public float MARGEN_IZQUIERDO = 1;
@@ -240,6 +233,7 @@ public class Reporteador {
     *      com.itextpdf.text.Document)
     */
    public void onEndPage(PdfWriter writer, Document documento) {
+	   
      PdfPTable tabla = null;
      float alturaDocumento;
      float anchoDocumento;
@@ -247,12 +241,15 @@ public class Reporteador {
      float posicionX;
      Phrase frase = null;
      Image imagenLogo = null;
+     
      try {
+    	 
        alturaDocumento = documento.getPageSize().getHeight();
        anchoDocumento = documento.getPageSize().getWidth();
        imagenLogo = Image.getInstance(this.getRutaLogo());
        posicionY = alturaDocumento - (1 * PUNTOSXCENTIMENTRO);
        posicionX = documento.leftMargin();
+       
        tabla = new PdfPTable(4);
        //Los anchos son proporcionales
        tabla.setWidths(new int[] { 1, 1, 1, 1 });
@@ -424,6 +421,7 @@ public class Reporteador {
  
  public ByteArrayOutputStream generarReporteListado(String titulo3, String titulo4, String DetallesUsuario, 
    ArrayList<HashMap<?, ?>> listaRegistros, ArrayList<Campo> listaCampos, ArrayList<CabeceraReporte> listaCamposCabecera) {
+	 
  Document objetoReporte = null;
  ByteArrayOutputStream baos = null;
  PdfPTable tablaCuerpo = null;
@@ -443,6 +441,7 @@ public class Reporteador {
  int COLSPAN =1;
  int ROWSPAN=1;
  PdfPCell celdaTabla= null;
+ 
  try {
    //CONFIGURA VALORES DE FECHA
    TimeZone.setDefault(TimeZone.getTimeZone("America/Lima"));
@@ -459,8 +458,12 @@ public class Reporteador {
    PdfWriter writer = PdfWriter.getInstance(objetoReporte, baos);
    GestorEventos pieCabeceraPagina = new GestorEventos();
    writer.setPageEvent(pieCabeceraPagina);
-   objetoReporte.setMargins(this.MARGEN_IZQUIERDO * PUNTOSXCENTIMENTRO, this.MARGEN_DERECHO * PUNTOSXCENTIMENTRO, this.MARGEN_SUPERIOR * PUNTOSXCENTIMENTRO,
-       this.MARGEN_INFERIOR * PUNTOSXCENTIMENTRO);
+   objetoReporte.setMargins(
+	   this.MARGEN_IZQUIERDO * PUNTOSXCENTIMENTRO, 
+	   this.MARGEN_DERECHO * PUNTOSXCENTIMENTRO, 
+	   this.MARGEN_SUPERIOR * PUNTOSXCENTIMENTRO,
+	   this.MARGEN_INFERIOR * PUNTOSXCENTIMENTRO
+   );
    objetoReporte.open();
    //Configura valores de la cabecera
    pieCabeceraPagina.setFuente(fuenteCabecera);
@@ -482,6 +485,7 @@ public class Reporteador {
    tablaCuerpo.setWidthPercentage(100);
    tablaCuerpo.getDefaultCell().setFixedHeight(ALTURA_CELDA);
    tablaCuerpo.getDefaultCell().setNoWrap(false);
+   
    //PINTA CABECERA
    for (int indice = 0; indice < listaCamposCabecera.size(); indice++) {
     cabeceraReporte = listaCamposCabecera.get(indice);
@@ -493,6 +497,7 @@ public class Reporteador {
     celdaTabla.setVerticalAlignment(cabeceraReporte.getAlineacionVertical());
     tablaCuerpo.addCell(celdaTabla);
    }
+   
    //PINTA REGISTROS
    for (int indice = 0; indice < numeroRegistros; indice++) {
     hmRegistro = listaRegistros.get(indice);
@@ -636,8 +641,6 @@ public class Reporteador {
  return baos;
 }
 
- 
- 
  public ByteArrayOutputStream generarReporteListadoExcel(ArrayList<HashMap<?, ?>> listaRegistros, ArrayList<Campo> listaCampos, ArrayList<CabeceraReporte> camposCabecera,String tituloReporte) {
 
  Campo campo = null;
@@ -653,29 +656,9 @@ public class Reporteador {
    numeroRegistros = listaRegistros.size();
    //SECCION CUERPO
 
-   
 	 HSSFWorkbook workbook = new HSSFWorkbook();
 	 HSSFSheet worksheet = workbook.createSheet(tituloReporte);  
-	 
-//     HSSFFont fuenteDetalle = workbook.createFont();
-//     fuenteDetalle.setFontHeightInPoints((short)7);
-//     fuenteDetalle.setBoldweight(fuenteDetalle.BOLDWEIGHT_NORMAL);	//negrita y 16   
-//     HSSFCellStyle estilodetalleborde = workbook.createCellStyle();
-//     estilodetalleborde.setWrapText(true);
-//     estilodetalleborde.setAlignment(HSSFCellStyle. ALIGN_CENTER);
-//     estilodetalleborde.setFont(fuenteDetalle);
-//     estilodetalleborde.setBorderBottom((short)1);
-//     estilodetalleborde.setBorderLeft((short)1);
-//     estilodetalleborde.setBorderRight((short)1);
-//     estilodetalleborde.setBorderTop((short)1);	 
-//     HSSFFont fuenteTitulo = workbook.createFont();
-//     fuenteTitulo.setFontHeightInPoints((short)7);
-//     fuenteTitulo.setBoldweight(fuenteTitulo.BOLDWEIGHT_BOLD);	//negrita y 16
-//     HSSFCellStyle estiloTitulo = workbook.createCellStyle();
-//     estiloTitulo.setWrapText(true);
-//     estiloTitulo.setAlignment(HSSFCellStyle.ALIGN_CENTER);		//centrado
-//     estiloTitulo.setFont(fuenteTitulo); 	 
-   
+
    ArrayList<String> listaValores=null;
    listaValores = new ArrayList<String>();
    CabeceraReporte campoCabecera = null;
@@ -744,8 +727,6 @@ public class Reporteador {
  return archivo;
 }
  
- 
- 
  public String generarReportePlantillaListadoExcel(String rutaPlantilla,   
 		   ArrayList<HashMap<?, ?>> listaRegistros,ArrayList<Campo> listaCampos,String tituloReporte,String directorio,
 		   String nombreArchivoTemporal,int contadorFila) {
@@ -796,7 +777,7 @@ public class Reporteador {
 		HSSFRow rowTitulo = worksheet.createRow(1);
 		HSSFCell cellTitulo = rowTitulo.createCell(1);
 		cellTitulo.setCellValue(tituloReporte.toUpperCase());
-		cellTitulo.setCellStyle(estiloTitulo);		
+		cellTitulo.setCellStyle(estiloTitulo);	
 		
 		int column =1;
 		for (int indice = 0; indice < numeroRegistros; indice++) {
@@ -910,33 +891,6 @@ public class Reporteador {
 
  return pdfReport;
 }
- 
-// private void centrarColumnas(JasperPrint jasperPrint, int xCol1, int xCol2, int xCol3, int xCol4, int xCol5, 
-//		 													int xCol6, int xCol7, int xCol8, int xCol9, int xCo10){
-//	 
-//	 List<JRPrintPage> pages = jasperPrint.getPages();
-//	 
-//	 JRPrintPage page;
-//	 
-//	 int size = pages.size();
-//	 for(int i = 0; i < size; i++){
-//		 page = pages.get(i);
-//		 List<JRPrintElement> elements = page.getElements();
-//		 
-//		 for(JRPrintElement elem : elements){
-//			 
-//			 if(elem.getPropertiesMap() == null) continue;
-//			 
-//			 String nombre = (String) elem.getPropertiesMap().getProperty("numColumna");
-//			 
-//			 if(nombre != null && nombre.equals("columna3")){
-//				 elem.setX(xCol3);
-//			 }
-//		 }
-//	 }
-//	 
-// }
-//=============================================================
 
  public ByteArrayOutputStream generarEXCEL(Map<String, Object> params, Class<?> clase, List<Object> data,String rutaJasper){
 	JasperDataSourceMap datasource = null;
@@ -963,6 +917,114 @@ public class Reporteador {
 		e.printStackTrace();
 	}
 	return xlsReport;
+}
+ 
+/**
+ * 
+ * @param listaRegistros
+ * @param listaCampos
+ * @param camposCabecera
+ * @param tituloReporte
+ * @return
+ */
+public ByteArrayOutputStream generarPlantillaContometros(
+	ArrayList<HashMap<?, ?>> listaRegistros, 
+	ArrayList<Campo> listaCampos, 
+	ArrayList<CabeceraReporte> camposCabecera,
+	String tituloReporte
+) {
+
+Campo campo = null;
+String valorCampo = "";
+int numeroCampos = 0;
+int numeroRegistros = 0;
+HashMap<?, ?> hmRegistro = null;
+ByteArrayOutputStream archivo = null;
+
+  try {
+
+    TimeZone.setDefault(TimeZone.getTimeZone("America/Lima"));
+    numeroCampos = listaCampos.size();
+    numeroRegistros = listaRegistros.size();
+
+    HSSFWorkbook workbook = new HSSFWorkbook();
+    HSSFSheet worksheet = workbook.createSheet(tituloReporte);  
+
+    ArrayList<String> listaValores=null;
+    listaValores = new ArrayList<String>();
+    CabeceraReporte campoCabecera = null;
+    int fila = 0; 
+    HSSFRow row = null;
+    HSSFCell cell = null;
+
+    /**
+     * HEADER
+     */
+    numeroRegistros = camposCabecera.size();
+    row = worksheet.createRow(fila);
+
+    for (int indice = 0; indice < numeroRegistros; indice++) {
+        campoCabecera = camposCabecera.get(indice);
+        valorCampo = campoCabecera.getEtiqueta().toUpperCase();     
+        cell = row.createCell(indice);
+        cell.setCellValue(valorCampo);	
+    }
+
+    /**
+     * BODY
+     */
+    numeroRegistros = listaRegistros.size();
+    listaValores = new ArrayList<String>();
+
+    for (int contador = 0; contador < numeroRegistros; contador++) {
+        hmRegistro = listaRegistros.get(contador);
+        listaValores.clear();
+        valorCampo = "";
+        fila++;
+        row = worksheet.createRow(fila);
+        
+        for (int indice = 0; indice < numeroCampos; indice++) {
+        	
+            campo = (Campo) listaCampos.get(indice);
+            
+            if (hmRegistro.get(campo.getNombre()) != null) {
+                valorCampo = hmRegistro.get(campo.getNombre()).toString();
+            }
+            cell = row.createCell(indice);
+            
+            if(valorCampo != null && valorCampo.trim().length() > 0) {
+	            switch(campo.getTipo()){
+	            	case Campo.TIPO_ENTERO:	    	   
+	            		cell.setCellValue(Integer.parseInt(valorCampo));
+	            		break;
+	            	case Campo.TIPO_NUMERICO:
+	            		cell.setCellValue(Integer.parseInt(valorCampo));
+	            		break;
+	            	case Campo.TIPO_DECIMAL:
+	            		cell.setCellValue(Double.parseDouble(valorCampo));
+	            		break;
+	            	case Campo.TIPO_TEXTO:
+	            		cell.setCellValue(valorCampo);
+	            		break;
+	            	case Campo.TIPO_MEMO:
+	            		break;
+	            	default:
+	            		cell.setCellValue(valorCampo);
+	            } 
+            } else {
+            	cell.setCellValue("");
+            }       
+        }
+    }
+    
+    archivo = new ByteArrayOutputStream();		
+    workbook.write(archivo); 	
+
+	} catch (Exception ex) {
+	    ex.printStackTrace();
+	}
+
+    return archivo;
 }
 
 }

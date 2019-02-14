@@ -85,6 +85,7 @@ public class CierreControlador {
  @Autowired
  ServletContext servletContext;
  private DataSourceTransactionManager transaccion;// Gestor de la transaccion
+ 
  // urls generales
  private static final String URL_GESTION_COMPLETA = "/admin/cierre";
  private static final String URL_GESTION_RELATIVA = "/cierre";
@@ -539,12 +540,14 @@ public class CierreControlador {
 
  @RequestMapping(value = URL_REPORTE_CIERRE_RELATIVA, method = RequestMethod.GET)
  public void mostrarReporteCierre(HttpServletRequest httpRequest, HttpServletResponse response, Locale locale) {
+	 
   RespuestaCompuesta respuesta = null;
   ParametrosListar parametros = null;
   AuthenticatedUserDetails principal = null;
   String mensajeRespuesta = "";
   String tituloReporte ="";
   String formatoReporte="pdf";
+  
   try {
    // Recuperar el usuario actual
    principal = this.getCurrentUser();

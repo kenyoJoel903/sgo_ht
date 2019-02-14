@@ -44,7 +44,7 @@ public class PanelControlador {
 private ParametroDao dParametro;
  @Autowired
  private DiaOperativoDao dDiaOperativo;
- //
+
  // urls generales
  private static final String URL_BASE = "/admin";
  private static final String URL_GESTION = "/panel";

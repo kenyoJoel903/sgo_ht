@@ -11,8 +11,12 @@ import sgo.utilidades.Utilidades;
 public class ContometroJornada {
 	private int id_cjornada;
 	private int id_jornada;
+	
 	private float lectura_inicial;
 	private float lectura_final;
+	private String lecturaInicialStr;
+	private String lecturaFinalStr;
+	
 	private int estado_servicio;
 	private int id_contometro;
 	private String descripcionContometro;
@@ -212,6 +216,17 @@ public class ContometroJornada {
 	public void setPerfilHorario(PerfilHorario perfilHorario) {
 		this.perfilHorario = perfilHorario;
 	}
-
+	public String getLecturaInicialStr() {
+		return lecturaInicialStr;
+	}
+	public void setLecturaInicialStr(String lecturaInicialStr) {
+		this.lecturaInicialStr = lecturaInicialStr;
+	}
+	public String getLecturaFinalStr() {
+		return lecturaFinalStr;
+	}
+	public void setLecturaFinalStr(String lecturaFinalStr) {
+		this.lecturaFinalStr = lecturaFinalStr;
+	}
 
 }

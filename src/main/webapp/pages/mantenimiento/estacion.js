@@ -192,7 +192,7 @@ $(document).ready(function(){
   };
   
 moduloActual.llenarFormulario = function(registro) {
-
+	
 	var referenciaModulo = this;
     this.idRegistro = registro.id;
     this.obj.cmpNombre.val(registro.nombre);
@@ -202,6 +202,7 @@ moduloActual.llenarFormulario = function(registro) {
     this.obj.cmpMetodoDescarga.val(registro.metodoDescarga);
     this.obj.cmpCantidadTurnos.val(registro.cantidadTurnos);
     this.obj.cmpPerfilHorario.val(registro.perfilHorario.id).trigger("change");
+    this.obj.cmpDecimalContometro.val(registro.numeroDecimalesContometro).trigger("change");
     
     var elemento=constantes.PLANTILLA_OPCION_SELECTBOX;
     elemento = elemento.replace(constantes.ID_OPCION_CONTENEDOR,registro.operacion.id);
