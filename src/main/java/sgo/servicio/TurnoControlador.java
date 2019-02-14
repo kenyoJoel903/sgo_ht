@@ -850,7 +850,7 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
  * @return
  */
 @RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
-public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) { JAFETH
+public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
