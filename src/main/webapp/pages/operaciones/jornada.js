@@ -21,6 +21,11 @@ $(document).ready(function() {
   moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});
   moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});
   moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'});
+  
+//  Inicio Agregado por 9000003068
+  moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.nombrePerfil'});
+//  Fin Agregado por 9000003068
+  
   moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});
   moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
   moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
@@ -31,11 +36,18 @@ $(document).ready(function() {
   moduloActual.definicionColumnasJornada.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : false });
   moduloActual.definicionColumnasJornada.push({"targets" : 3, "searchable" : true, "orderable" : false, "visible" : true });
   moduloActual.definicionColumnasJornada.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearFecha });
-  moduloActual.definicionColumnasJornada.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-right" });
-  moduloActual.definicionColumnasJornada.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
-  moduloActual.definicionColumnasJornada.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
-  moduloActual.definicionColumnasJornada.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoJornada });
-
+  
+//Inicio Agregado por 9000003068
+  moduloActual.definicionColumnasJornada.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
+//Fin Agregado por 9000003068
+  
+//  Inicio Se suma (+1) a las siguientes 4 lineas por req 9000003068
+  moduloActual.definicionColumnasJornada.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-right" });
+  moduloActual.definicionColumnasJornada.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
+  moduloActual.definicionColumnasJornada.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
+  moduloActual.definicionColumnasJornada.push({"targets" : 9, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoJornada });
+//  Fin Se suma (+1) a las siguientes 4 lineas por req 9000003068
+  
   moduloActual.reglasValidacionFormulario={
 	cmpIdVehiculo:			{required: true },
 	cmpIdClasificacion: 	{required: true },
@@ -59,6 +71,7 @@ $(document).ready(function() {
   };
 
   moduloActual.inicializarCampos= function(){
+	  
 	this.obj.cantTurnosEstacion =$("#cantTurnosEstacion");
     this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
     this.obj.idEstacionSeleccionado =$("#idEstacionSeleccionado");
@@ -174,6 +187,11 @@ $(document).ready(function() {
     this.obj.cmpAperturaCliente=$("#cmpAperturaCliente");
     this.obj.cmpAperturaOperacion=$("#cmpAperturaOperacion");
     this.obj.cmpAperturaEstacion=$("#cmpAperturaEstacion");
+    
+//	Inicio Agregado por req 9000003068===============
+    this.obj.tipoAperturaTanque=$("#tipoAperturaTanque");
+//	Fin Agregado por req 9000003068=================
+    
     this.obj.cmpAperturaFechaJornada=$("#cmpAperturaFechaJornada");
     this.obj.cmpObservacionApertura=$("#cmpObservacionApertura");
     this.obj.cmpObservacionCierre=$("#cmpObservacionCierre");
@@ -421,6 +439,43 @@ $(document).ready(function() {
         	formulario.find("input[elemento-grupo='factor']").val(""); // volumen_temperatura_observada
         	formulario.find("input[elemento-grupo='vol60']").val(""); // volumen_temperatura_observada
           });
+          
+//      	Inicio Agregado por req 9000003068===============
+          cmpDesp.on('click', function(e){
+        	  console.log('cmpDesp:' + cmpDesp.prop('checked'));
+        	  var check = cmpDesp.prop('checked');
+        	  
+        	  if(check){
+        		  console.log(moduloActual.obj.tipoAperturaTanque.val());
+        		  var tipoApTanque = moduloActual.obj.tipoAperturaTanque.val();
+        		  
+        		  if(tipoApTanque == 1){
+        			  
+        			  var filas = moduloActual.obj.grupoAperturaTanques;
+        			  var numTanques = filas.getForms().length;
+        			  for(var j = 0; j < numTanques; j++){
+        				  	var formularioTanque= filas.getForm(j);
+        				  	var cmpIdTanque=formularioTanque.find("input[elemento-grupo='idTanques']");
+  							var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
+  							var cmpDespTemp=formularioTanque.find("input[elemento-grupo='desp']");
+  							var nombreProductoTanque = cmpProductoTanque.val();
+  							var idTanque = cmpIdTanque.val();
+  							var checkTemp = cmpDespTemp.prop('checked');
+  							
+  							console.log(cmpProductosTanques.val() + ' ' + nombreProductoTanque);
+  							console.log(cmpIdTanques.val() + ' ' + idTanque);
+  							console.log(checkTemp)
+  							if(cmpProductosTanques.val() == nombreProductoTanque && cmpIdTanques.val() != idTanque && checkTemp){  								
+  								moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede desplegar más de un tanque para el producto " + nombreProductoTanque+ ". Corrija su selección o verifique el diseño de la Estación de Servicio");
+  								cmpDesp.prop('checked', false);
+  								break;
+  							}
+        			  }
+        		  }
+        		  
+        	  }
+          });
+//      	Fin Agregado por req 9000003068=================
         },
       });
     
@@ -911,7 +966,120 @@ $(document).ready(function() {
       },
     }); 
     
-    
+//	Inicio Agregado por req 9000003068===============
+	this.obj.btnConfirmGuardarApertura = $("#btnConfirmGuardarApertura");
+	
+	this.obj.btnConfirmGuardarApertura.on('click', function(e) {
+		
+		var valido = 0;
+		
+        var filasPrincipal = moduloActual.obj.grupoAperturaTanques;
+		  var numTanques = filasPrincipal.getForms().length;
+		  for(var j = 0; j < numTanques; j++){
+			  	var formularioTanques= filasPrincipal.getForm(j);
+				var cmpProductosTanques = formularioTanques.find("input[elemento-grupo='productosTanques']");
+				var cmpIdTanques = formularioTanques.find("input[elemento-grupo='idTanques']");
+				var cmpDesp = formularioTanques.find("input[elemento-grupo='desp']");
+				
+				console.log('cmpDesp:' + cmpDesp.prop('checked'));
+				  var check = cmpDesp.prop('checked');
+				  
+				  if(check){
+					  console.log(moduloActual.obj.tipoAperturaTanque.val());
+					  var tipoApTanque = moduloActual.obj.tipoAperturaTanque.val();
+					  
+					  if(tipoApTanque == 1){
+						  
+						  var filas = moduloActual.obj.grupoAperturaTanques;
+						  var numTanquesTemp = filas.getForms().length;
+						  for(var j = 0; j < numTanquesTemp; j++){
+								var formularioTanque= filas.getForm(j);
+								var cmpIdTanque=formularioTanque.find("input[elemento-grupo='idTanques']");
+								var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
+								var cmpDespTemp=formularioTanque.find("input[elemento-grupo='desp']");
+								var nombreProductoTanque = cmpProductoTanque.val();
+								var idTanque = cmpIdTanque.val();
+								var checkTemp = cmpDespTemp.prop('checked');
+								
+								console.log(cmpProductosTanques.val() + ' ' + nombreProductoTanque);
+								console.log(cmpIdTanques.val() + ' ' + idTanque);
+								console.log(checkTemp)
+								if(cmpProductosTanques.val() == nombreProductoTanque && cmpIdTanques.val() != idTanque && checkTemp){  								
+									moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede desplegar más de un tanque para el producto " + nombreProductoTanque+ ". Corrija su selección o verifique el diseño de la Estación de Servicio");
+									valido = 1;
+									break;
+								}
+						  }
+					  }
+					  
+				  }
+		  }
+		
+		
+	  
+	  if (valido == 0){
+		  var filas = moduloActual.obj.grupoAperturaTanques;
+			
+			$.ajax({
+			    type: constantes.PETICION_TIPO_GET,
+			    url: "./producto/listarPorOperacion",
+			    contentType: "application/json",
+			    data: {
+			    	filtroOperacion : moduloActual.obj.filtroOperacion.val(),
+			    	filtroEstacion: moduloActual.obj.filtroEstacion.val(),
+			    	filtroEstado: constantes.ESTADO_ACTIVO,		    	
+			        paginacion:0
+			    },
+			    success: function(respuesta) {
+			    	
+			    	var encontrado;
+			    	var mensaje = "";
+			    	var resultados= respuesta.contenido.carga;
+			    	
+			    	resultados.forEach(function(element) {
+			    		
+			    		encontrado = 0;
+			    		var numTanques = filas.getForms().length;
+			    		for(var j = 0; j < numTanques; j++){
+							var formularioTanque= filas.getForm(j);
+							var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
+							var nombreProductoTanque = cmpProductoTanque.val();
+							
+							console.log(element.nombre + ' ' + nombreProductoTanque);
+							
+							if(element.nombre == nombreProductoTanque){
+								encontrado = 1;
+								break;
+							}
+						}
+			    		
+			    		if(encontrado == 0){
+			    			mensaje = mensaje + element.nombre + ","
+			    		}
+		    		});
+			    	
+			    	if(mensaje != ""){
+				    	mesaje = mensaje.substring(0, mensaje.length - 1);
+				    	console.log('mensaje: ' + mensaje)
+				    	$("#cmpMensajeConfirmGuardarApertura").text("Los productos " + mensaje + " no tienen tanque asignado. ¿Desea continuar? Esta configuración es irreversible");
+			    		$("#frmConfirmarGuardarApertura").show();
+			    	}else{
+			    		console.log('1 botonGuardarApertura');
+			    		moduloActual.botonGuardarApertura();
+			    		console.log('2 botonGuardarApertura');
+			    	}
+			
+			    },
+			    error: function(xhr,estado,error) {
+			      
+			    }
+			  });  
+	  }
+
+		
+		
+	});
+//	Fin Agregado por req 9000003068=================
 
   };
   
@@ -1169,8 +1337,14 @@ $(document).ready(function() {
 	var numeroContometros = 0;
 	var numeroTanques = 0;
 	
+//	Inicio Agregado por req 9000003068===============
+	referenciaModulo.obj.tipoAperturaTanque.val(registro.estacion.tipoAperturaTanque);
+	console.log('registro.estacion.tipoAperturaTanque: ' + registro.estacion.tipoAperturaTanque);
+//	Fin Agregado por req 9000003068=================
+	
 	if(registro.registroNuevo == false){
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
+				
 		referenciaModulo.obj.cmpAperturaFechaJornada.text(utilitario.retornarSumaRestaFechas(1, utilitario.formatearFecha(registro.fechaOperativa)));
 		referenciaModulo.obj.cmpObservacionApertura.val("");
 		if (registro.contometroJornada != null){
@@ -1188,6 +1362,9 @@ $(document).ready(function() {
 	      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
 	      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
 	      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
+	      
+	      console.log("3a:" + contador)
+
 	      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
 	      formulario.find("input[elemento-grupo='lecturaInicial']").val(registro.contometroJornada[contador].lecturaFinal);
 	    }

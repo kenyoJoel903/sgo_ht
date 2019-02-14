@@ -132,7 +132,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 								<input id="detalleFechaPlanificacion" type="text" class="form-control alert-danger espaciado input-sm text-uppercase text-center" readonly/>
 							</B></FONT></div>
 						</div>
-						<div  class="col-md-12">
+<!-- 						Se cambio col-md-12 por col-md-13 -->
+						<div  class="col-md-13">
 							<table id="tablaDetalleDiaOperativo" class="sgo-table table table-striped" width="100%">
 			       				<thead>
 			          					<tr>

@@ -34,6 +34,7 @@ import sgo.datos.JornadaDao;
 import sgo.datos.MuestreoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.OperarioDao;
+import sgo.datos.PerfilHorarioDao;
 import sgo.datos.ProductoDao;
 import sgo.datos.TanqueDao;
 import sgo.datos.TanqueJornadaDao;
@@ -51,6 +52,7 @@ import sgo.entidad.Muestreo;
 import sgo.entidad.Operacion;
 import sgo.entidad.Operario;
 import sgo.entidad.ParametrosListar;
+import sgo.entidad.PerfilHorario;
 import sgo.entidad.Producto;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
@@ -100,6 +102,11 @@ public class JornadaControlador {
 	private OperarioDao dOperario;
 	@Autowired
 	private DiaOperativoDao dDiaOperativo;
+	
+//	Inicio agregado por requerimiento 9000003068=============
+	 @Autowired
+	 private PerfilHorarioDao dPerfilHorario;
+//		Fin agregado por requerimiento 9000003068========
 	
 	private DataSourceTransactionManager transaccion;//Gestor de la transaccion
 	/** Nombre de la clase. */
@@ -698,6 +705,12 @@ public class JornadaControlador {
 			parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
 		}
 		
+//		Inicio agregado por req 9000003068====================================================================================================
+		
+		validaPerfilHorarioEnEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")), locale);
+		
+//		Fin agregado por req 9000003068===========================================================================================================
+		
 		parametros.setFiltroEstado(Jornada.ESTADO_ABIERTO);
 		oRespuesta = dJornada.recuperarRegistros(parametros);
 		if (oRespuesta.estado == false) {
@@ -844,7 +857,39 @@ public class JornadaControlador {
 	  	}
 	  return oRespuesta;
 	 }
-
+	
+//	Inicio agregado por req 9000003068====================================================================================================
+	private int validaPerfilHorarioEnEstacion(int idEstacion, Locale locale) throws Exception{
+		RespuestaCompuesta respuesta = dEstacion.recuperarRegistro(idEstacion);
+		if (respuesta.estado == false || respuesta.contenido.carga.size() == 0) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		Estacion estacionTemp = (Estacion) respuesta.contenido.carga.get(0);
+		int idPerfilHorarioTemp = estacionTemp.getPerfilHorario().getId();
+		
+		if(idPerfilHorarioTemp == 0){
+			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique",null,locale));
+		}
+		
+		respuesta = dPerfilHorario.recuperarRegistro(idPerfilHorarioTemp);
+		if (respuesta.estado == false || respuesta.contenido.carga.size() == 0) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		PerfilHorario perfilHorarioTemp = (PerfilHorario) respuesta.contenido.carga.get(0);
+		
+		if(perfilHorarioTemp == null){
+			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique",null,locale));
+		}
+		
+		if(perfilHorarioTemp.getEstado() == PerfilHorario.ESTADO_INACTIVO){
+			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene asociado un perfil de turno que se encuentra inactivo, por favor verifique",null,locale));
+		}
+		
+		return perfilHorarioTemp.getId();
+	}
+//	Fin agregado por req 9000003068====================================================================================================
 	
 	@RequestMapping(value = URL_GUARDAR_RELATIVA ,method = RequestMethod.POST)
 	public @ResponseBody RespuestaCompuesta guardarRegistro(@RequestBody Jornada eJornada,HttpServletRequest peticionHttp,Locale locale){		 
@@ -928,26 +973,38 @@ public class JornadaControlador {
 			
 			//TODO
 			//validacion de producto por tanque
-			ParametrosListar argumentosProd = new ParametrosListar();
-			//argumentosProd.setFiltroOperacion(eJornada.get)
-			argumentosProd.setFiltroEstacion(eJornada.getIdEstacion());
-			RespuestaCompuesta listaProdPorEstacion = dProducto.recuperarRegistrosPorOperacion(argumentosProd);
-			for (int b = 0; b < listaProdPorEstacion.contenido.carga.size(); b++) {
-				Producto prodEstacion =(Producto) listaProdPorEstacion.contenido.carga.get(b);
-				int atencionProducto = 0;
-				
-				for (int a = 0; a < tanqueApertura.size(); a++) {
-					int idProd = tanqueApertura.get(a).getIdProducto();
-					
-					if(idProd == prodEstacion.getId()){
-						atencionProducto++;
-					}
-				}
-
-				if(atencionProducto == 0){
-					throw new Exception(gestorDiccionario.getMessage("sgo.jornada.soloUnTanquePorProducto", new Object[] {  prodEstacion.getNombre() }, locale));
-				}
-			}
+//			Inicio comentado por req 9000003068====================================================================================================
+//			ParametrosListar argumentosProd = new ParametrosListar();
+//			//argumentosProd.setFiltroOperacion(eJornada.get)
+//			argumentosProd.setFiltroEstacion(eJornada.getIdEstacion());
+//			RespuestaCompuesta listaProdPorEstacion = dProducto.recuperarRegistrosPorOperacion(argumentosProd);
+//			for (int b = 0; b < listaProdPorEstacion.contenido.carga.size(); b++) {
+//				Producto prodEstacion =(Producto) listaProdPorEstacion.contenido.carga.get(b);
+//				int atencionProducto = 0;
+//				
+//				for (int a = 0; a < tanqueApertura.size(); a++) {
+//					int idProd = tanqueApertura.get(a).getIdProducto();
+//					
+//					if(idProd == prodEstacion.getId()){
+//						atencionProducto++;
+//					}
+//				}
+//
+//				if(atencionProducto == 0){
+//					throw new Exception(gestorDiccionario.getMessage("sgo.jornada.soloUnTanquePorProducto", new Object[] {  prodEstacion.getNombre() }, locale));
+//				}
+//			}
+//			Fin comentado por req 9000003068===========================================================================================================
+			
+//			Inicio agregado por req 9000003068====================================================================================================
+			
+			int idPerfilHorarioTemp = validaPerfilHorarioEnEstacion(eJornada.getIdEstacion(), locale);
+			
+			PerfilHorario perfilHorario = new PerfilHorario();
+			perfilHorario.setId(idPerfilHorarioTemp);
+			eJornada.setPerfilHorario(perfilHorario);
+			
+//			Fin agregado por req 9000003068===========================================================================================================
 		
         	eJornada.setActualizadoEl(Calendar.getInstance().getTime().getTime());
             eJornada.setActualizadoPor(principal.getID()); 

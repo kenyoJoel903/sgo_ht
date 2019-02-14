@@ -962,7 +962,8 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     count(t3.id_despacho) AS total_despachos,
     t1.observacion,
     t4.nombre_perfil,
-    t4.id_perfil_horario
+    t4.id_perfil_horario,
+	t2.tipo_apertura_tanque
    FROM sgo.jornada t1
      JOIN sgo.estacion t2 ON t1.id_estacion = t2.id_estacion
      JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
@@ -975,7 +976,7 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     t1.creado_el, t1.creado_por, t1.actualizado_por, t1.actualizado_el, 
     t1.ip_creacion, t1.ip_actualizacion, u1.identidad, u2.identidad, 
     t1.operario1, t1.operario2, t1.observacion,
-    t4.nombre_perfil, t4.id_perfil_horario
+    t4.nombre_perfil, t4.id_perfil_horario, t2.tipo_apertura_tanque
     ;
 
 ALTER TABLE sgo.v_jornada

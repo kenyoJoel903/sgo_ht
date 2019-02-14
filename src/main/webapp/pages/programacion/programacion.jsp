@@ -322,16 +322,16 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 			      				<td class="celda-detalle" style="width:26%;" >
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->
 <!-- 			      				<span id="cmpFormularioClienteOperacion" class="espaciado input-sm text-uppercase"> 	</span> -->
-			      					<input id="cmpFormularioClienteOperacion" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+			      					<input id="cmpFormularioClienteOperacion" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 			      				</td>
 			      				<td></td>
 			      				<td class="celda-detalle" style="width:10%;"><label>Planta Despacho:</label></td>
 			      				<td class="celda-detalle" style="width:20%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->
 <!-- 			      				<span id="cmpFormularioPlantaDespacho" class="espaciado input-sm text-uppercase"></span> -->
-									<input id="cmpFormularioPlantaDespacho" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+									<input id="cmpFormularioPlantaDespacho" type="text" class="form-control espaciado input-sm text-uppercase text-left" readonly/>
 			      				</td>
-			      				<td></td>
+<!-- 			      	Comentado por 9000003068			<td></td> -->
 			      				<td class="celda-detalle" style="width:10%;"><label>F. Planificada:</label> </td>
 			      				<td class="celda-detalle"  style="width:7%;"><B>
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->			      				
@@ -354,9 +354,9 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 										<option value="" selected="selected">Seleccionar</option>
 									</select> 
 								</td>
-								<td></td>
-								<td class="celda-detalle" colspan="2"><label class="etiqueta-titulo-horizontal">Orden de compra:</label></td>
-								<td class="celda-detalle" colspan="3">
+<!-- 				Comentado por 		9000003068		<td></td> -->
+								<td class="celda-detalle" colspan="1"><label class="etiqueta-titulo-horizontal">Orden de compra:</label></td>
+								<td class="celda-detalle" colspan="4">
 									<input id="cmpFormularioOrdenCompra" name="cmpFormularioOrdenCompra" value="" maxlength="20" class="form-control input-sm text-left" />
 								</td>								
 			      				</tr>
@@ -376,7 +376,7 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 	      														readonly="readonly"
 	      														type="text" 
 	      														class="form-control input-sm text-right"></td>
-	      							<td></td>
+<!-- 	      			Comentado por 	9000003068			<td></td> -->
 	      														
 <!-- 			      				se cambia Cisternas Planificadas por C.Planificados por req 9000003068-->
 	      							<td><label class="etiqueta-titulo-horizontal">C.Planificados:&nbsp;</label></td>
@@ -559,14 +559,14 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 <!-- 			      				<span id="cmpCompletarPlantaDespacho" class="espaciado input-sm text-uppercase" readonly /> -->
 			      					<input id="cmpCompletarPlantaDespacho" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
 			      				</td>
-			      				<td></td>
+<!-- 			    Comentado por   	9000003068			<td></td> -->
 			      				<td class="celda-detalle" style="width:10%;"><label class="etiqueta-titulo-horizontal">F. Planificada: </label> </td>
 			      				<td class="celda-detalle"  style="width:7%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->			      					
 <!-- 			      				<span id="cmpCompletarFechaDescarga" type="text" class="form-control alert-danger text-center espaciado input-sm text-uppercase" readonly /> -->
 			      					<input id="cmpCompletarFechaDescarga" type="text" class="form-control alert-danger espaciado input-sm text-uppercase text-center" readonly/>
 			      				</td>
-			      				<td></td>
+<!-- 			se comenta por req       9000003068				<td></td> -->
 			      				<td class="celda-detalle" style="width:10%;"><label class="etiqueta-titulo-horizontal">F. Carga: </label> </td>
 			      				<td class="celda-detalle"  style="width:7%;">
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->			      				
@@ -577,11 +577,13 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 <!-- 			      			Fin se modifican los width de los td por req 9000003068 -->
 			      				<tr> 
 			      				<td class="celda-detalle" style="width:10%;"><label class="etiqueta-titulo-horizontal">Transportista: </label></td>
-			      				<td colspan="3" class="celda-detalle">
+<!-- 			      			se modifican colspan a 4 -->
+			      				<td colspan="4" class="celda-detalle">
 									<input id="cmpCompletarTransportista" name="cmpCompletarTransportista" value="" readonly class="form-control input-sm text-left" />
 								</td>
 								<td class="celda-detalle" style="width:10%;"><label class="etiqueta-titulo-horizontal">Orden de compra: </label></td>
-								<td colspan="3" class="celda-detalle">
+<!-- 			      			se modifican colspan a 4 -->									
+								<td colspan="4" class="celda-detalle">
 									<input id="cmpCompletarOrdenCompra" name="cmpCompletarOrdenCompra" class="form-control input-sm text-left" maxlength="20" value="" />
 								</td>								
 			      				</tr>			      				

@@ -184,7 +184,8 @@ var cacheDescarga={
             <i class="fa fa-refresh fa-spin"></i>
         </div>
       </div>
-      <div class="box box-default">
+<!-- 			  se agrego style="background-color:#DBF3DF" por req 9000003068 -->
+      <div class="box box-default" style="background-color:#DBF3DF">
         <div class="box-header">
         </div>
         <div class="box-header">
@@ -408,7 +409,7 @@ var cacheDescarga={
               </td> 
             </tr>
           </table>
-          <table id="tablaCompartimentoDespacho" style="width:100%;border:0px;border-spacing: 2px;border-collapse:separate;">
+          <table id="tablaCompartimentoDespacho" style="width:100%;border:0px;border-spacing: 2px;border-collapse:separate;background-color:#FFFF00">
             <thead>
             <tr> 
               <td colspan="2" style="width:10%;" class="celda-titulo-vertical text-center">Compartimento</td>
@@ -1099,7 +1100,7 @@ var cacheDescarga={
 						<table class="sgo-simple-table table table-condensed">
 			      			<thead>
 			      				<tr>
-			      				<td class="celda-detalle" style="width:10%;"> <label class="etiqueta-titulo-horizontal">Cliente: </label>					</td>
+			      				<td class="celda-detalle" style="width:10%;"> <label class="etiqueta-titulo-horizontal">Cliente / Operación: </label>					</td>
 			      				<td class="celda-detalle" style="width:25%;"> 
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->			      				
 <!-- 			      					<span class="input-sm text-uppercase" id='cmpEventoCliente'></span>	 -->
@@ -1130,7 +1131,7 @@ var cacheDescarga={
 			      				<td class="celda-detalle" style="width:25%;"> 
 <!-- 			      				se comento span y se agrego input por req 9000003068 -->				      				
 <!-- 			      					<span class="input-sm text-uppercase" id='cmpEventoNumeroOrdenCompra'></span> -->
-			      					<input id="cmpEventoNumeroOrdenCompra" type="text" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
+			      					<input id="cmpEventoNumeroOrdenCompra" type="hidden" class="form-control espaciado input-sm text-uppercase text-center" readonly/>
 			      				</td>
 			      				<td class="celda-detalle" style="width:10%;"> <label class="etiqueta-titulo-horizontal">Cisterna/Tracto: </label>				</td>
 			      				<td class="celda-detalle" style="width:10%;"> 
