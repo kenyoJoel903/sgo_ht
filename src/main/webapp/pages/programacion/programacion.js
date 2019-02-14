@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	
   var moduloActual = new moduloProgramacion();
   moduloActual.urlBase='programacion';
   moduloActual.SEPARADOR_MILES = ",";

@@ -39,8 +39,8 @@ function moduloTurno() {
 	this.urlBase='';  
 	this.mensajeEsMostrado=false;
 	this.idRegistro = 0;
-	this.reglasValidacionFormulario={};
-	this.mensajesValidacionFormulario={};
+	this.reglasValidacionFormulario = {};
+	this.mensajesValidacionFormulario = {};
 	this.idJornada = 0;
 
 	//para la grilla de la jornada
@@ -70,6 +70,8 @@ function moduloTurno() {
 			return configuracion._iDisplayStart + meta.row + 1;
 		}
 	}];
+	
+	this.obj.modalCargarArchivoContometros = $("#modalCargarArchivoContometros");
 };
 
 moduloTurno.prototype.mostrarDepuracion = function(mensaje) {
@@ -267,7 +269,7 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   });
   
   this.obj.btnCargarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
-	  referenciaModulo.botonCargarArchivoContometros();		
+	  referenciaModulo.modalCargarArchivoContometros();		
   });
 
 };
@@ -1182,7 +1184,7 @@ moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
 	window.open(referenciaModulo.GENERAR_PLANTILLA_CONTOMETROS + "?idTurno=" + referenciaModulo.obj.idTurnoSeleccionado);
 };
 
-moduloTurno.prototype.botonCargarArchivoContometros = function() {
+moduloTurno.prototype.procesarCargarArchivoContometros = function() {
 
     var fileUpload = $("#fileUpload")[0];
 
@@ -1242,3 +1244,6 @@ moduloTurno.prototype.botonCargarArchivoContometros = function() {
 	
 };
 
+moduloTurno.prototype.modalCargarArchivoContometros = function() {
+	moduloActual.obj.modalCargarArchivoContometros.modal("show");
+};

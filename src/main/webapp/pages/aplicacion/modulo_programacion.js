@@ -1,4 +1,5 @@
 function moduloProgramacion (){
+	
   this.obj={};
   this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA;
   this.TOPES_PAGINACION = constantes.TOPES_PAGINACION;
@@ -27,16 +28,30 @@ function moduloProgramacion (){
   this.ordenGrilla=[[ 1, 'asc' ]];
   this.columnasGrilla=[{ "data": null} ];//Target 0
   // this.cmpFitlroEstado.val("2");
-  this.definicionColumnas=[{"targets": 0, "searchable": false, "orderable": false, "visible":false, "render": function (datos, tipo, fila, meta) {  var configuracion =meta.settings;
-                                                                            return configuracion._iDisplayStart + meta.row + 1;
-                                                                            }   }];  
+  this.definicionColumnas=[{
+	  "targets": 0, 
+	  "searchable": false, 
+	  "orderable": false, 
+	  "visible":false, 
+	  "render": function (datos, tipo, fila, meta) {
+		  var configuracion =meta.settings;
+          return configuracion._iDisplayStart + meta.row + 1;
+      }
+  }];  
   this.columnasGrillaDetalleProgramacion={};
   this.definicionColumnasDetalleProgramacion=[];
   this.ordenGrillaDetalleProgramacion=[[ 1, 'asc' ]];
   this.columnasGrillaDetalleProgramacion=[{ "data": null} ];//Target 0
-  this.definicionColumnasDetalleProgramacion=[{ "targets": 0, "searchable": false, "orderable": false, "visible":false, "render": function ( datos, tipo, fila, meta ) { var configuracion =meta.settings;
-                                                                                          return configuracion._iDisplayStart + meta.row + 1;
-                                                                                        }   }];
+  this.definicionColumnasDetalleProgramacion=[{
+	  "targets": 0,
+	  "searchable": false, 
+	  "orderable": false, 
+	  "visible":false, 
+	  "render": function ( datos, tipo, fila, meta ) {
+		  var configuracion =meta.settings;
+		  return configuracion._iDisplayStart + meta.row + 1;
+	  }
+  }];
   
   // Atenci�n Ticket 9000002608
   this.detalle_volumen= null;

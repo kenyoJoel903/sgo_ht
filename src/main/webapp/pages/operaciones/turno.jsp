@@ -13,22 +13,9 @@
 <link href="tema/table-scroll/css/table-scroll.css" rel="stylesheet" type="text/css"/>
 <link href="tema/table-scroll/css/turno.css" rel="stylesheet" type="text/css"/>
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
-
-
-<div id="dvExcel"></div>
-
-
-
-
-
-
-
-
-
-
+<!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script> -->
 
 <div class="content-wrapper">
 
@@ -477,3 +464,26 @@
 	</div>
 	</section>
 </div>
+
+<div id="modalCargarArchivoContometros" class="modal" data-keyboard="false" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">
+					<%=mapaValores.get("TITULO_VENTANA_MODAL") %>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<p><%=mapaValores.get("MENSAJE_CAMBIAR_ESTADO") %></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+				<button id="btnConfirmarModificarEstado" type="button" class="btn btn-primary">Cargar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
