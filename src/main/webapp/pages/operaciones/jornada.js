@@ -1687,6 +1687,11 @@ $(document).ready(function() {
 	    // datos para la jornada
 	    eRegistro.id = parseInt(referenciaModulo.obj.idJornada);
 	    eRegistro.estado = parseInt(constantes.TIPO_JORNADA_CERRADO);
+	    
+//	    Inicio Agregado por req 9000003068
+	    eRegistro.idEstacion = parseInt(referenciaModulo.obj.filtroEstacion.val());
+//	    Fin Agregado por req 9000003068
+	    
 	    eRegistro.fechaOperativa = utilitario.formatearStringToDate(referenciaModulo.obj.cmpCierreFechaJornada.text());
 	    eRegistro.observacion = referenciaModulo.obj.cmpObservacionCierre.val().toUpperCase();
 
