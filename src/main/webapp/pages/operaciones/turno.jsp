@@ -18,9 +18,9 @@
 
 <div class="content-wrapper">
 
-  <section class="content-header">
-    <h1>Turno / <small id="tituloSeccion"><%=mapaValores.get("TITULO_LISTADO_REGISTROS")%></small></h1>
-  </section>
+	<section class="content-header">
+    	<h1>Turno / <small id="tituloSeccion"><%=mapaValores.get("TITULO_LISTADO_REGISTROS")%></small></h1>
+  	</section>
 
   <section class="content">
     <div class="row">
@@ -475,8 +475,11 @@
 			</div>
 			<div class="modal-body">
 			
-				<div id="message" class="callout callout-danger" style="display: none;"></div>
-			
+				<div class="callout callout-danger" style="display: none;"></div>
+				<div class="callout callout-warning" style="display: none;">
+					<i class="fa fa-fw fa-spin fa-refresh"></i> Inicio de validación...
+				</div>
+				
 				<table class="sgo-simple-table table table-condensed">
 					<thead>
 						<tr>
@@ -501,7 +504,7 @@
 							</td>
 							<td class="celda-detalle">
 								<span 
-									class="form-control alert-success text-center espaciado input-sm text-uppercase" 
+									class="form-control alert-primary text-center espaciado input-sm text-uppercase" 
 									style="width:50%;"
 									id="cmpDiaOperativoCierre">
 									02/08/2019 17:17

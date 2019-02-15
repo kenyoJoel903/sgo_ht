@@ -615,6 +615,7 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	this.obj.grupoCierre.removeAllForms(); 
 	referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
 	referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
+	referenciaModulo.obj.countListContometro = registro.length;
 	//this.obj.grupoCierre.getOptions().maxFormsCount = 5; // CAMBIAR ROW JAFETH
 	
 	for (var contador = 0; contador < numeroDetalles; contador++) {      

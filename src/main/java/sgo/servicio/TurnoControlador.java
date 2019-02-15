@@ -850,7 +850,7 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
  * @return
  */
 @RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
-public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
+public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
 	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
@@ -930,7 +930,10 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 		
 		Contenido<DetalleTurno> content = new Contenido<DetalleTurno>();
 		content.carga = listDetalleTurno;
-		respuesta.contenido = content;  
+		content.totalRegistros = listDetalleTurno.size();
+		content.totalEncontrados = listDetalleTurno.size();
+		
+		respuesta.contenido = content;
      	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
 
 	} catch (Exception e) {
@@ -1333,8 +1336,7 @@ public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletR
          */
 		int i = 1;
 		ArrayList<DetalleTurno> listDetalleTurno = (ArrayList<DetalleTurno>) respuestaDetalleTurno.contenido.getCarga();
-		ArrayList<HashMap<?,?>> hmRegistros = null;
-		hmRegistros = new  ArrayList<HashMap<?,?>>();
+		ArrayList<HashMap<?,?>> listaRegistros = new  ArrayList<HashMap<?,?>>();
 		
 		for (DetalleTurno iDT : listDetalleTurno) {
 			HashMap<String, String> hm = new HashMap<String, String>();
@@ -1343,7 +1345,7 @@ public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletR
 			hm.put("producto", iDT.getProducto().getNombre());
 			hm.put("lectura_inicial", Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
 			hm.put("lectura_final", "");
-			hmRegistros.add(hm);
+			listaRegistros.add(hm);
 			i++;
 		}
 		
@@ -1353,7 +1355,7 @@ public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletR
 		ArrayList<CabeceraReporte> listaCamposCabecera = this.cabeceraPlantillaContometros();
 		
 		ByteArrayOutputStream baos = uReporteador.generarPlantillaContometros(
-		    hmRegistros, 
+			listaRegistros, 
 		    listaCampos, 
 		    listaCamposCabecera,
 		    "Plantilla Contómetros"
@@ -1392,31 +1394,31 @@ private ArrayList<CabeceraReporte> cabeceraPlantillaContometros() {
         listaCr = new ArrayList<CabeceraReporte>();
 
         cr = new CabeceraReporte();
-        cr.setEtiqueta("Secuencia");
+        cr.setEtiqueta("secuencia");
         cr.setColspan(2);
         cr.setRowspan(1);
         listaCr.add(cr);
 
         cr = new CabeceraReporte();
-        cr.setEtiqueta("Contómetro");
+        cr.setEtiqueta("contometro");
         cr.setColspan(2);
         cr.setRowspan(1);
         listaCr.add(cr);
         
         cr = new CabeceraReporte();
-        cr.setEtiqueta("Producto");
+        cr.setEtiqueta("producto");
         cr.setColspan(2);
         cr.setRowspan(1);
         listaCr.add(cr);
         
         cr = new CabeceraReporte();
-        cr.setEtiqueta("Lectura Inicial");
+        cr.setEtiqueta("lectura_inicial");
         cr.setColspan(2);
         cr.setRowspan(1);
         listaCr.add(cr);
         
         cr = new CabeceraReporte();
-        cr.setEtiqueta("Lectura_Final");
+        cr.setEtiqueta("lectura_final");
         cr.setColspan(2);
         cr.setRowspan(1);
         listaCr.add(cr);
