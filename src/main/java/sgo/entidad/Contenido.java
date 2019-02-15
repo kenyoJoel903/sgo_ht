@@ -6,6 +6,7 @@ public class Contenido<T> {
 	public List<T> carga;
 	public int totalEncontrados;
 	public int totalRegistros;
+	public int validacionExcelRows;
 	public String sEcho;
 	
 	public  List<T> getCarga(){

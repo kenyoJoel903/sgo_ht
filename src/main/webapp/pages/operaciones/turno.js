@@ -602,33 +602,32 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id);
 	    formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);  	  
 	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id);
-	    //formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
 	    formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);  
+	    //formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
 	}
 };
 
 //llena el formularo de contometro jornada
 moduloActual.llenarFormularioCierre = function(registro) {
 	
-	var referenciaModulo = this;
+	var _this = this;
 	var numeroDetalles = registro.length;
 	this.obj.grupoCierre.removeAllForms(); 
-	referenciaModulo.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
-	referenciaModulo.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
-	referenciaModulo.obj.countListContometro = registro.length;
-	//this.obj.grupoCierre.getOptions().maxFormsCount = 5; // CAMBIAR ROW JAFETH
+	_this.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
+	_this.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
+	_this.obj.countListContometro = registro.length;
 	
 	for (var contador = 0; contador < numeroDetalles; contador++) {      
 		moduloActual.obj.grupoCierre.addForm();
-		var formulario = moduloActual.obj.grupoCierre.getForm(contador);
+		var form = moduloActual.obj.grupoCierre.getForm(contador);
 
-		formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
-		formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
-		formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-		formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
-		//formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
-		formulario.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);
-		formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
+		form.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
+		form.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
+		form.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
+		form.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+		form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);
+		form.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
+		//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
 	}
 };
 

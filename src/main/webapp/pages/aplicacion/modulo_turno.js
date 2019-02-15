@@ -368,38 +368,38 @@ moduloTurno.prototype.recuperarTanquesDespachando= function() {
 
 moduloTurno.prototype.recuperarRegistro = function() {
 	
-	  var referenciaModulo = this;
-	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Procesando petici\u00f3n...");
+	  var _this = this;
+	  _this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Procesando petici\u00f3n...");
 	  
 	  $.ajax({
 	      type: constantes.PETICION_TIPO_GET,
-	      url: referenciaModulo.URL_RECUPERAR, 
-	      contentType: referenciaModulo.TIPO_CONTENIDO, 
+	      url: _this.URL_RECUPERAR, 
+	      contentType: _this.TIPO_CONTENIDO, 
 	      data: {
-	    	  ID: parseInt(referenciaModulo.obj.idTurnoSeleccionado)
+	    	  ID: parseInt(_this.obj.idTurnoSeleccionado)
 	      },
 	      beforeSend: function() {
 	    	  //$('#GrupoCierre').html('<tr id="GrupoCierre_noforms_template"><td>xxxxxxxxxx</td></tr>');
 	      },
 	      success: function(respuesta) {
 				if (!respuesta.estado) {
-					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+					_this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 				} else {
 
-					if (referenciaModulo.modoEdicion == constantes.MODO_CIERRE_TURNO) {
-						referenciaModulo.recuperarTanquesDespachando();
-						referenciaModulo.llenarFormularioCierre(respuesta.contenido.carga);
-					} else if(referenciaModulo.modoEdicion == constantes.MODO_VER_TURNO) {
-						referenciaModulo.llenarDetalles(respuesta.contenido.carga);
-						referenciaModulo.obj.ocultaContenedorVistaTurno.hide();
+					if (_this.modoEdicion == constantes.MODO_CIERRE_TURNO) {
+						_this.recuperarTanquesDespachando();
+						_this.llenarFormularioCierre(respuesta.contenido.carga);
+					} else if(_this.modoEdicion == constantes.MODO_VER_TURNO) {
+						_this.llenarDetalles(respuesta.contenido.carga);
+						_this.obj.ocultaContenedorVistaTurno.hide();
 					}
 					
-					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
+					_this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
 				}
 	      },                  
 	      error: function() {
-	        referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Hubo un error en la petici\u00f3n");
-	        //referenciaModulo.obj.ocultaContenedorApertura.show();
+	        _this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Hubo un error en la petici\u00f3n");
+	        //_this.obj.ocultaContenedorApertura.show();
 	      }
 	  });
 };
@@ -1196,9 +1196,14 @@ moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
  * Open modal
  */
 moduloTurno.prototype.modalCargarArchivoContometros = function() {
+	$("#modalEstacionCierre").val(this.obj.estacionSeleccionado);
+	$("#modalClienteCierre").val(this.obj.operacionSeleccionado + "/" + this.obj.clienteSeleccionado);
+	$("#modalDiaOperativoCierre").val(this.obj.fechaOperativaSeleccionado + " " + this.obj.horaInicioFinTurnoSeleccionado);
+	
 	$("#fileUpload").val("");
     $(".callout-warning").hide();
     $(".callout-danger").html("").hide();
+    this.obj.btnProcesarArchivoContometros.prop('disabled', false);
 	this.obj.modalCargarArchivoContometros.modal("show");
 };
 
@@ -1208,7 +1213,8 @@ moduloTurno.prototype.modalCargarArchivoContometros = function() {
 moduloTurno.prototype.procesarArchivoContometros = function() {
 
     var _this = this;
-    _this.excelRows = 0;
+    _this.excelRowsObj = null;
+    _this.excelRowsCount = 0;
     _this.errorsLecturaFinal = [];
     
     _this.messageError = $(".callout-danger");
@@ -1217,8 +1223,7 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     _this.messageWarning.show();
     _this.fileUpload = $("#fileUpload");
     _this.fileFirstElement = _this.fileUpload[0];
-    
-    console.log(" ********** procesarArchivoContometros ********* ");
+    _this.obj.btnProcesarArchivoContometros.prop('disabled', true);
     
     if (_this.fileFirstElement.files.length == 0) {
     	
@@ -1226,6 +1231,7 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     	items.push($('<li/>').text("No se encontró el archivo indicado, por favor verifique."));
     	_this.messageError.html(items).show();
     	_this.messageWarning.hide();
+    	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
     	
     	return false;
     }
@@ -1237,6 +1243,7 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     	items.push($('<li/>').text("Suba un archivo excel valido."));
     	_this.messageError.html(items).show();
     	_this.messageWarning.hide();
+    	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
     	
     	return false;
     }
@@ -1247,57 +1254,57 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     	items.push($('<li/>').text("Este navegador no soporta HTML5."));
     	_this.messageError.html(items);
     	_this.messageWarning.hide();
+    	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
     	
     	return false;
     }
     
-    getExcelRows(_this.fileFirstElement);
+    /**
+     * Set Excel Rows Object
+     */
+    setExcelRowsObject(_this.fileFirstElement);
     
     setTimeout(function() {
         
-        if (_this.excelRows != _this.obj.countListContometro) {
+        if (_this.excelRowsCount != _this.obj.countListContometro) {
         	
         	var items = [];
-        	items.push($('<li/>').text("Número de contómetros en archivo (" + _this.excelRows + "), no coincide con la lista (" + _this.obj.countListContometro + "), por favor verifique."));
+        	items.push($('<li/>').text("Número de contómetros en archivo (" + _this.excelRowsCount + "), no coincide con la lista (" + _this.obj.countListContometro + "), por favor verifique."));
         	_this.messageError.html(items).show();
         	_this.messageWarning.hide();
+        	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
         	
         	return false;
         }
 
-        validateLecturaFinal(_this.fileFirstElement);
+        validateLecturaFinal();
         
         setTimeout(function() {
         	
-        	console.log(" _this.errorsLecturaFinal.length ::: " + _this.errorsLecturaFinal.length);
-
             if (_this.errorsLecturaFinal.length > 0) {
-            	_this.messageError.html(_this.errorsLecturaFinal);
+            	_this.messageError.html(_this.errorsLecturaFinal).show();
             	_this.messageWarning.hide();
+            	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
             	
             	return false;
             }
+            
+            processExcel();
+            
+            _this.fileUpload.val("");
+            _this.messageWarning.hide();
+            _this.obj.modalCargarArchivoContometros.modal("hide");
         	
         }, 2000);
-        
 
-        
-        
-        
-//        processExcelReader(_this.fileFirstElement);
-//        
-//        _this.fileUpload.val("");
-//        _this.messageWarning.hide();
-//        _this.obj.modalCargarArchivoContometros.modal("hide");
-    	
-    }, 2000);
+    }, 2500);
     
     
     
     /**
      * FUNCTIONS
      */
-    function validateLecturaFinal(fileUpload) {
+    function setExcelRowsObject(fileUpload) {
 
     	try {
     	
@@ -1306,33 +1313,11 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 	        //For Browsers other than IE.
 	        if (reader.readAsBinaryString) {
 	            reader.onload = function (e) {
-	            	
-	            	// PROCESS
 	            	var data = e.target.result;
 	    		    var workbook = XLSX.read(data, {type: 'binary'});
 	    		    var firstSheet = workbook.SheetNames[0];
-	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-	    		    
-	    		    console.log(" *********** validateLecturaFinal ************ ");
-	    		    
-	    		    var items = [];
-	    		    for (var i = 0; i < excelRows.length; i++) {
-	    		    	
-	    		    	var lecturaInicial = parseFloat(excelRows[i].LECTURA_INICIAL).toFixed(6);
-	    		    	var lecturaFinal = parseFloat(excelRows[i].LECTURA_FINAL).toFixed(6);
-	    		    	
-	    		    	if (isNaN(lecturaInicial) || isNaN(lecturaFinal)) {
-	    		    		
-	    		    	}
-	    		    	
-	    		    	console.log("LECTURA_INICIAL ::: " + excelRows[i].LECTURA_INICIAL + " -- LECTURA_FINAL ::: " + excelRows[i].LECTURA_FINAL);
-	    		    	console.log("lecturaInicial ::: " + lecturaInicial + " -- lecturaFinal ::: " + lecturaFinal);
-	    		    	
-	    		    	if (lecturaFinal < lecturaInicial) {
-	    		    		items.push($('<li/>').text("Para el contómetro '" + excelRows[i].CONTOMETRO + "' la lectura final es menor que la lectura inicial."));
-	    		    	}
-	    		    }
-	    		    _this.errorsLecturaFinal = items;
+	    		    _this.excelRowsObj = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	    		    _this.excelRowsCount = _this.excelRowsObj.length;
 	            };
 	            reader.readAsBinaryString(fileUpload.files[0]);
 	        } else {
@@ -1341,15 +1326,15 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 	            reader.onload = function (e) {
 	                var data = "";
 	                var bytes = new Uint8Array(e.target.result);
+	                
 	                for (var i = 0; i < bytes.byteLength; i++) {
 	                    data += String.fromCharCode(bytes[i]);
 	                }
 
-	                // PROCESS
 	    		    var workbook = XLSX.read(data, {type: 'binary'});
 	    		    var firstSheet = workbook.SheetNames[0];
-	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-	    		    _this.excelRows = excelRows.length;
+	    		    _this.excelRowsObj = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	    		    _this.excelRowsCount = _this.excelRowsObj.length;
 	            };
 	            reader.readAsArrayBuffer(fileUpload.files[0]);
 	        }
@@ -1359,91 +1344,53 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     	};
     }
     
-    function getExcelRows(fileUpload) {
+    function validateLecturaFinal() {
 
     	try {
     	
-	        var reader = new FileReader();
-	
-	        //For Browsers other than IE.
-	        if (reader.readAsBinaryString) {
-	            reader.onload = function (e) {
-	            	
-	            	// PROCESS
-	            	var data = e.target.result;
-	    		    var workbook = XLSX.read(data, {type: 'binary'});
-	    		    var firstSheet = workbook.SheetNames[0];
-	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-	    		    _this.excelRows = excelRows.length;
-	            };
-	            reader.readAsBinaryString(fileUpload.files[0]);
-	        } else {
-	        	
-	            //For IE Browser.
-	            reader.onload = function (e) {
-	                var data = "";
-	                var bytes = new Uint8Array(e.target.result);
-	                for (var i = 0; i < bytes.byteLength; i++) {
-	                    data += String.fromCharCode(bytes[i]);
-	                }
-
-	                // PROCESS
-	    		    var workbook = XLSX.read(data, {type: 'binary'});
-	    		    var firstSheet = workbook.SheetNames[0];
-	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-	    		    _this.excelRows = excelRows.length;
-	            };
-	            reader.readAsArrayBuffer(fileUpload.files[0]);
-	        }
+		    var items = [];
+		    var errorCount = 0;
+		    for (var i = 0; i < _this.excelRowsObj.length; i++) {
+		    	
+		    	var secuencia = _this.excelRowsObj[i].SECUENCIA.trim();
+		    	var contometro = _this.excelRowsObj[i].CONTOMETRO.trim();
+		    	var lecturaInicial = parseFloat(_this.excelRowsObj[i].LECTURA_INICIAL).toFixed(6);
+		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(6);
+		    	
+		    	if (isNaN(lecturaInicial) || isNaN(lecturaFinal) || lecturaFinal <= 0) {
+		    		continue;
+		    	}
+		    	
+		    	if (lecturaFinal < lecturaInicial) {
+		    		items.push($('<li/>').text("(" + secuencia + ") Para el contómetro '" + contometro + "' la lectura final es menor que la lectura inicial."));
+		    		errorCount++;
+		    		
+			    	if (errorCount == 3) {
+			    		break;
+			    	}
+		    	}
+		    }
+		    
+		    _this.errorsLecturaFinal = items;
         
     	} catch (error) {
     		
     	};
     }
 	
-    function processExcelReader(fileUpload) {
-    	
-    	try {
-    	
-	        var reader = new FileReader();
-	
-	        //For Browsers other than IE.
-	        if (reader.readAsBinaryString) {
-	            reader.onload = function (e) {
-	            	processExcel(e.target.result);
-	            };
-	            reader.readAsBinaryString(fileUpload.files[0]);
-	        } else {
-	        	
-	            //For IE Browser.
-	            reader.onload = function (e) {
-	                var data = "";
-	                var bytes = new Uint8Array(e.target.result);
-	                for (var i = 0; i < bytes.byteLength; i++) {
-	                    data += String.fromCharCode(bytes[i]);
-	                }
-	                processExcel(data);
-	            };
-	            reader.readAsArrayBuffer(fileUpload.files[0]);
-	        }
-        
-    	} catch (error) {
-    		
-    	};
-    }
-	
-	function processExcel(data) {
+	function processExcel() {
 		
     	try {
 
-		    var workbook = XLSX.read(data, {
-		        type: 'binary'
-		    });
-		    var firstSheet = workbook.SheetNames[0];
-		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-
-		    for (var i = 0; i < excelRows.length; i++) {
-		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(excelRows[i].LECTURA_FINAL);
+		    for (var i = 0; i < _this.excelRowsObj.length; i++) {
+		    	
+		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(6);
+		    	
+		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
+		    		continue;
+		    	}
+		    	
+		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(lecturaFinal);
 		    }
 	    
     	} catch (error) {

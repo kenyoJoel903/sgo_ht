@@ -1152,3 +1152,10 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
         VALUES('/admin/turno/generarPlantillaContometros', 10, 255, '/turno', 2, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_CONTOMETROS'), 'Generar Plantilla Contometros', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+        -- ******************* PROGRAMA 2019-02-15 15:23 ******************************
+INSERT INTO sgo.parametro 
+(valor, alias, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES 
+(5, 'VALIDACION_EXCEL_ROW', 1549984064053, 2, 2, 1549984064053, '127.0.0.1', '127.0.0.1');

@@ -853,7 +853,7 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
 public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
 	
 	RespuestaCompuesta respuesta = null;
-	AuthenticatedUserDetails principal = null;
+	AuthenticatedUserDetails principal = null; 
 	
 	try { 
 		
@@ -927,11 +927,24 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID, Locale locale) 
 	        listDetalleTurno.set(i, iDT);
 	        i++;
         }
+        
+        /**
+         * Traer valor de tabla 'parametro'
+         */
+        ParametrosListar parametros = new ParametrosListar();
+		parametros.setFiltroParametro(Parametro.ALIAS_VALIDACION_EXCEL_ROW);
+		respuesta = dParametro.recuperarRegistros(parametros);
+	    if (!respuesta.estado) {
+	    	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+	    }
+	    
+		Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
 		
 		Contenido<DetalleTurno> content = new Contenido<DetalleTurno>();
 		content.carga = listDetalleTurno;
 		content.totalRegistros = listDetalleTurno.size();
 		content.totalEncontrados = listDetalleTurno.size();
+		content.validacionExcelRows = eParametro.getValorInt();
 		
 		respuesta.contenido = content;
      	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);

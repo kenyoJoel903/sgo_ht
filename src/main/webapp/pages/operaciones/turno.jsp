@@ -487,7 +487,7 @@
 								<label>Operación / Cliente:</label>
 							</td>
 							<td class="celda-detalle">
-								<span id="cmpClienteCierre">KIO / GRIFO KIO</span>
+								<span id="modalClienteCierre"></span>
 							</td>
 						</tr>
 						<tr>
@@ -495,7 +495,7 @@
 								<label>Estación:</label>
 							</td>
 							<td class="celda-detalle">
-								<span id="cmpEstacionCierre">ESTACION KIO</span>
+								<span id="modalEstacionCierre"></span>
 							</td>
 						</tr>
 						<tr>
@@ -506,9 +506,7 @@
 								<span 
 									class="form-control alert-primary text-center espaciado input-sm text-uppercase" 
 									style="width:50%;"
-									id="cmpDiaOperativoCierre">
-									02/08/2019 17:17
-								</span>
+									id="modalDiaOperativoCierre"></span>
 							</td>
 						</tr>
 						<tr>
