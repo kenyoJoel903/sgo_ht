@@ -25,6 +25,7 @@ public class Turno extends EntidadBase {
   private int numeroOrden;
   private int horaInicioTurno;
   private int horaFinTurno;
+  private int validacionExcelRows;
 
   private Jornada jornada;
   private PerfilHorario perfilHorario;
@@ -200,6 +201,12 @@ public PerfilDetalleHorario getPerfilDetalleHorario() {
 }
 public void setPerfilDetalleHorario(PerfilDetalleHorario perfilDetalleHorario) {
 	this.perfilDetalleHorario = perfilDetalleHorario;
+}
+public int getValidacionExcelRows() {
+	return validacionExcelRows;
+}
+public void setValidacionExcelRows(int validacionExcelRows) {
+	this.validacionExcelRows = validacionExcelRows;
 }
 
 }

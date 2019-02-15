@@ -281,27 +281,27 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
 
 moduloTurno.prototype.inicializaApertura = function(registro, valor) {
 	
-	var referenciaModulo = this;
+	var _this = this;
   
 	try { 
-		referenciaModulo.modoEdicion = constantes.MODO_APERTURA_TURNO;
-		referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_TURNO_APERTURA);
-		referenciaModulo.obj.ocultaContenedorApertura.show();
-		referenciaModulo.obj.cntTabla.hide();
-		referenciaModulo.obj.cntCierre.hide();
-		referenciaModulo.obj.cntVistaDetalleTurno.hide();
-		referenciaModulo.obj.cntApertura.show();    
-		referenciaModulo.datosCabecera(registro);
-		referenciaModulo.recuperarTanquesDespachando();
+		_this.modoEdicion = constantes.MODO_APERTURA_TURNO;
+		_this.obj.tituloSeccion.text(cadenas.TITULO_TURNO_APERTURA);
+		_this.obj.ocultaContenedorApertura.show();
+		_this.obj.cntTabla.hide();
+		_this.obj.cntCierre.hide();
+		_this.obj.cntVistaDetalleTurno.hide();
+		_this.obj.cntApertura.show();    
+		_this.datosCabecera(registro);
+		_this.recuperarTanquesDespachando();
 		
 		if (valor == 2) {
-			referenciaModulo.llenarAperturaContometroJornada(registro);
+			_this.llenarAperturaContometroJornada(registro);
 		}else{
-			referenciaModulo.llenarApertura(registro);
+			_this.llenarApertura(registro);
 		}
 		
-		referenciaModulo.desactivarBotones();
-		referenciaModulo.obj.ocultaContenedorApertura.hide();
+		_this.desactivarBotones();
+		_this.obj.ocultaContenedorApertura.hide();
 	} catch(error){
 		console.log(error.message);
 	}
@@ -379,7 +379,7 @@ moduloTurno.prototype.recuperarRegistro = function() {
 	    	  ID: parseInt(_this.obj.idTurnoSeleccionado)
 	      },
 	      beforeSend: function() {
-	    	  //$('#GrupoCierre').html('<tr id="GrupoCierre_noforms_template"><td>xxxxxxxxxx</td></tr>');
+	    	  _this.obj.grupoCierre.removeAllForms(); // JAFETH
 	      },
 	      success: function(respuesta) {
 				if (!respuesta.estado) {
@@ -406,40 +406,41 @@ moduloTurno.prototype.recuperarRegistro = function() {
 	
 moduloTurno.prototype.botonCierre = function() {
 	
-	var referenciaModulo = this;
+	var _this = this;
 	
 	try {
 		
 		$.ajax({
 			type: constantes.PETICION_TIPO_GET,
-			url: referenciaModulo.URL_RECUPERAR_CIERRE, 
-			contentType: referenciaModulo.TIPO_CONTENIDO, 
+			url: _this.URL_RECUPERAR_CIERRE, 
+			contentType: _this.TIPO_CONTENIDO, 
 			data: {
-				idTurno: referenciaModulo.obj.idTurnoSeleccionado
+				idTurno: _this.obj.idTurnoSeleccionado
 			}, 
 			success: function(response) {
 				if (!response.estado) {
-					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, response.mensaje);
+					_this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, response.mensaje);
 				} else {
-					referenciaModulo.datosCabecera(response.contenido.carga);
+					_this.obj.validacionExcelRows = response.contenido.carga[0].validacionExcelRows;
+					_this.datosCabecera(response.contenido.carga);
 				}
 			},                  
 			error: function() {
-				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Hubo un error en la petici\u00f3n");
+				_this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Hubo un error en la petici\u00f3n");
 			}
 		});
 		
-		referenciaModulo.modoEdicion = constantes.MODO_CIERRE_TURNO;
-		referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_TURNO_CERRAR);
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.CERRAR_DETALLE_PROGRAMACION);
-		referenciaModulo.obj.ocultaContenedorCierre.show();
-		referenciaModulo.obj.cntTabla.hide();		
-		referenciaModulo.obj.cntApertura.hide();
-		referenciaModulo.obj.cntVistaDetalleTurno.hide();
-		referenciaModulo.obj.cntCierre.show();		
-	    //referenciaModulo.datosCabecera();
-	    referenciaModulo.recuperarRegistro();
-	    referenciaModulo.obj.ocultaContenedorCierre.hide();
+		_this.modoEdicion = constantes.MODO_CIERRE_TURNO;
+		_this.obj.tituloSeccion.text(cadenas.TITULO_TURNO_CERRAR);
+		_this.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.CERRAR_DETALLE_PROGRAMACION);
+		_this.obj.ocultaContenedorCierre.show();
+		_this.obj.cntTabla.hide();		
+		_this.obj.cntApertura.hide();
+		_this.obj.cntVistaDetalleTurno.hide();
+		_this.obj.cntCierre.show();		
+	    //_this.datosCabecera();
+	    _this.recuperarRegistro();
+	    _this.obj.ocultaContenedorCierre.hide();
 	} catch(error){
 		console.log(error.message);
 	}
@@ -1196,9 +1197,9 @@ moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
  * Open modal
  */
 moduloTurno.prototype.modalCargarArchivoContometros = function() {
-	$("#modalEstacionCierre").val(this.obj.estacionSeleccionado);
-	$("#modalClienteCierre").val(this.obj.operacionSeleccionado + "/" + this.obj.clienteSeleccionado);
-	$("#modalDiaOperativoCierre").val(this.obj.fechaOperativaSeleccionado + " " + this.obj.horaInicioFinTurnoSeleccionado);
+	$("#modalEstacionCierre").html(this.obj.estacionSeleccionado);
+	$("#modalClienteCierre").html(this.obj.operacionSeleccionado + " / " + this.obj.clienteSeleccionado);
+	$("#modalDiaOperativoCierre").html(this.obj.fechaOperativaSeleccionado + " " + this.obj.horaInicioFinTurnoSeleccionado);
 	
 	$("#fileUpload").val("");
     $(".callout-warning").hide();
@@ -1215,7 +1216,7 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     var _this = this;
     _this.excelRowsObj = null;
     _this.excelRowsCount = 0;
-    _this.errorsLecturaFinal = [];
+    _this.errorsValidation = [];
     
     _this.messageError = $(".callout-danger");
     _this.messageWarning = $(".callout-warning");
@@ -1227,9 +1228,9 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     
     if (_this.fileFirstElement.files.length == 0) {
     	
-    	var items = [];
-    	items.push($('<li/>').text("No se encontró el archivo indicado, por favor verifique."));
-    	_this.messageError.html(items).show();
+    	var errors = [];
+    	errors.push($('<li/>').text("No se encontró el archivo indicado, por favor verifique."));
+    	_this.messageError.html(errors).show();
     	_this.messageWarning.hide();
     	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
     	
@@ -1239,9 +1240,9 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     var allowedExtensions = new Array("xlsx", "xls");
 	if (allowedExtensions.indexOf(_this.fileFirstElement.value.toLowerCase().split('.').pop()) < 0) {
     	
-    	var items = [];
-    	items.push($('<li/>').text("Suba un archivo excel valido."));
-    	_this.messageError.html(items).show();
+    	var errors = [];
+    	errors.push($('<li/>').text("Suba un archivo excel valido."));
+    	_this.messageError.html(errors).show();
     	_this.messageWarning.hide();
     	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
     	
@@ -1250,9 +1251,9 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     	
     if (typeof (FileReader) == "undefined") {
     	
-    	var items = [];
-    	items.push($('<li/>').text("Este navegador no soporta HTML5."));
-    	_this.messageError.html(items);
+    	var errors = [];
+    	errors.push($('<li/>').text("Este navegador no soporta HTML5."));
+    	_this.messageError.html(errors);
     	_this.messageWarning.hide();
     	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
     	
@@ -1268,9 +1269,9 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
         
         if (_this.excelRowsCount != _this.obj.countListContometro) {
         	
-        	var items = [];
-        	items.push($('<li/>').text("Número de contómetros en archivo (" + _this.excelRowsCount + "), no coincide con la lista (" + _this.obj.countListContometro + "), por favor verifique."));
-        	_this.messageError.html(items).show();
+        	var errors = [];
+        	errors.push($('<li/>').text("Número de contómetros en archivo (" + _this.excelRowsCount + "), no coincide con la lista (" + _this.obj.countListContometro + "), por favor verifique."));
+        	_this.messageError.html(errors).show();
         	_this.messageWarning.hide();
         	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
         	
@@ -1281,25 +1282,39 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
         
         setTimeout(function() {
         	
-            if (_this.errorsLecturaFinal.length > 0) {
-            	_this.messageError.html(_this.errorsLecturaFinal).show();
+            if (_this.errorsValidation.length > 0) {
+            	_this.messageError.html(_this.errorsValidation).show();
             	_this.messageWarning.hide();
             	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
             	
             	return false;
             }
             
-            processExcel();
+            validateExisteContometro();
             
-            _this.fileUpload.val("");
-            _this.messageWarning.hide();
-            _this.obj.modalCargarArchivoContometros.modal("hide");
+            setTimeout(function() {
+            	
+                if (_this.errorsValidation.length > 0) {
+                	_this.messageError.html(_this.errorsValidation).show();
+                	_this.messageWarning.hide();
+                	_this.obj.btnProcesarArchivoContometros.prop('disabled', false);
+                	
+                	return false;
+                }
+                
+                /**
+                 * PROCESS EXCEL
+                 */
+                processExcel();
+                _this.fileUpload.val("");
+                _this.messageWarning.hide();
+                _this.obj.modalCargarArchivoContometros.modal("hide");
+            	
+            }, 2000);
         	
         }, 2000);
 
     }, 2500);
-    
-    
     
     /**
      * FUNCTIONS
@@ -1347,14 +1362,16 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     function validateLecturaFinal() {
 
     	try {
-    	
-		    var items = [];
-		    var errorCount = 0;
+			
+		    var errors = [];
+		    var errorsCount = 0;
+		    _this.errorsValidation = [];
+		    
 		    for (var i = 0; i < _this.excelRowsObj.length; i++) {
 		    	
 		    	var secuencia = _this.excelRowsObj[i].SECUENCIA.trim();
 		    	var contometro = _this.excelRowsObj[i].CONTOMETRO.trim();
-		    	var lecturaInicial = parseFloat(_this.excelRowsObj[i].LECTURA_INICIAL).toFixed(6);
+		    	var lecturaInicial = parseFloat(_this.obj.listCronometro[i].lectura_inicial);
 		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(6);
 		    	
 		    	if (isNaN(lecturaInicial) || isNaN(lecturaFinal) || lecturaFinal <= 0) {
@@ -1362,16 +1379,51 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		    	}
 		    	
 		    	if (lecturaFinal < lecturaInicial) {
-		    		items.push($('<li/>').text("(" + secuencia + ") Para el contómetro '" + contometro + "' la lectura final es menor que la lectura inicial."));
-		    		errorCount++;
+		    		errors.push($('<li/>').text("(" + secuencia + ") Para el contómetro '" + contometro + "' la lectura final es menor que la lectura inicial."));
+		    		errorsCount++;
 		    		
-			    	if (errorCount == 3) {
+			    	if (errorsCount == _this.obj.validacionExcelRows) {
 			    		break;
 			    	}
 		    	}
 		    }
 		    
-		    _this.errorsLecturaFinal = items;
+		    _this.errorsValidation = errors;
+        
+    	} catch (error) {
+    		
+    	};
+    }
+    
+    function validateExisteContometro() {
+
+    	try {
+			
+		    var errors = [];
+		    var errorsCount = 0;
+		    var contometroAliasArray = [];
+		    _this.errorsValidation = [];
+		    
+		    for (var i = 0; i < _this.obj.listCronometro.length; i++) {
+		    	contometroAliasArray.push(_this.obj.listCronometro[i].contometro_alias.trim());
+		    }
+		    
+		    for (var i = 0; i < _this.excelRowsObj.length; i++) {
+		    	
+		    	var secuencia = _this.excelRowsObj[i].SECUENCIA.trim();
+		    	var contometro = _this.excelRowsObj[i].CONTOMETRO.trim();
+
+		    	if (contometroAliasArray.indexOf(contometro) < 0) {
+		    		errors.push($('<li/>').text("(" + secuencia + ") No se encontró el contómetro '" + contometro + "' en la grilla, por favor verifique."));
+		    		errorsCount++;
+		    		
+			    	if (errorsCount == _this.obj.validacionExcelRows) {
+			    		break;
+			    	}
+		    	}
+		    }
+		    
+		    _this.errorsValidation = errors;
         
     	} catch (error) {
     		
@@ -1384,13 +1436,17 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 
 		    for (var i = 0; i < _this.excelRowsObj.length; i++) {
 		    	
-		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(6);
+		    	var lecturaInicial = parseFloat(_this.obj.listCronometro[i].lectura_inicial);
+		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);;
 		    	
 		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
 		    		continue;
 		    	}
 		    	
+		    	var diferencia = (lecturaFinal - lecturaInicial).toFixed(_this.obj.numeroDecimalesContometro);
+		    	
 		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(lecturaFinal);
+		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val(diferencia);
 		    }
 	    
     	} catch (error) {
