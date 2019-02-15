@@ -930,27 +930,22 @@ public class Reporteador {
 public ByteArrayOutputStream generarPlantillaContometros(
 	ArrayList<HashMap<?, ?>> listaRegistros, 
 	ArrayList<Campo> listaCampos, 
-	ArrayList<CabeceraReporte> camposCabecera,
+	ArrayList<CabeceraReporte> listaCamposCabecera,
 	String tituloReporte
 ) {
 
 Campo campo = null;
 String valorCampo = "";
-int numeroCampos = 0;
-int numeroRegistros = 0;
 HashMap<?, ?> hmRegistro = null;
 ByteArrayOutputStream archivo = null;
 
   try {
 
     TimeZone.setDefault(TimeZone.getTimeZone("America/Lima"));
-    numeroCampos = listaCampos.size();
-    numeroRegistros = listaRegistros.size();
-
     HSSFWorkbook workbook = new HSSFWorkbook();
     HSSFSheet worksheet = workbook.createSheet(tituloReporte);  
 
-    ArrayList<String> listaValores=null;
+    ArrayList<String> listaValores = null;
     listaValores = new ArrayList<String>();
     CabeceraReporte campoCabecera = null;
     int fila = 0; 
@@ -960,11 +955,10 @@ ByteArrayOutputStream archivo = null;
     /**
      * HEADER
      */
-    numeroRegistros = camposCabecera.size();
     row = worksheet.createRow(fila);
 
-    for (int indice = 0; indice < numeroRegistros; indice++) {
-        campoCabecera = camposCabecera.get(indice);
+    for (int indice = 0; indice < listaCamposCabecera.size(); indice++) {
+        campoCabecera = listaCamposCabecera.get(indice);
         valorCampo = campoCabecera.getEtiqueta().toUpperCase();     
         cell = row.createCell(indice);
         cell.setCellValue(valorCampo);	
@@ -973,17 +967,16 @@ ByteArrayOutputStream archivo = null;
     /**
      * BODY
      */
-    numeroRegistros = listaRegistros.size();
     listaValores = new ArrayList<String>();
 
-    for (int contador = 0; contador < numeroRegistros; contador++) {
+    for (int contador = 0; contador < listaRegistros.size(); contador++) {
         hmRegistro = listaRegistros.get(contador);
         listaValores.clear();
         valorCampo = "";
         fila++;
         row = worksheet.createRow(fila);
         
-        for (int indice = 0; indice < numeroCampos; indice++) {
+        for (int indice = 0; indice < listaCampos.size(); indice++) {
         	
             campo = (Campo) listaCampos.get(indice);
             

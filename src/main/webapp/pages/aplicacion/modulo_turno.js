@@ -39,8 +39,8 @@ function moduloTurno() {
 	this.urlBase='';  
 	this.mensajeEsMostrado=false;
 	this.idRegistro = 0;
-	this.reglasValidacionFormulario={};
-	this.mensajesValidacionFormulario={};
+	this.reglasValidacionFormulario = {};
+	this.mensajesValidacionFormulario = {};
 	this.idJornada = 0;
 
 	//para la grilla de la jornada
@@ -70,6 +70,8 @@ function moduloTurno() {
 			return configuracion._iDisplayStart + meta.row + 1;
 		}
 	}];
+	
+	this.obj.modalCargarArchivoContometros = $("#modalCargarArchivoContometros");
 };
 
 moduloTurno.prototype.mostrarDepuracion = function(mensaje) {
@@ -190,6 +192,7 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.btnCerrarVistaTurno=$("#btnCerrarVistaTurno");
   this.obj.btnPlantillaContometros = $("#btnPlantillaContometros");
   this.obj.btnCargarArchivoContometros = $("#btnCargarArchivoContometros");
+  this.obj.btnProcesarArchivoContometros = $("#btnProcesarArchivoContometros");
 
   //para guardar los datos de la jornada seleccionada
   this.obj.idJornadaSeleccionada=$("#idJornadaSeleccionada");
@@ -267,7 +270,11 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   });
   
   this.obj.btnCargarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
-	  referenciaModulo.botonCargarArchivoContometros();		
+	  referenciaModulo.modalCargarArchivoContometros();		
+  });
+  
+  this.obj.btnProcesarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.procesarArchivoContometros();		
   });
 
 };
@@ -370,7 +377,10 @@ moduloTurno.prototype.recuperarRegistro = function() {
 	      contentType: referenciaModulo.TIPO_CONTENIDO, 
 	      data: {
 	    	  ID: parseInt(referenciaModulo.obj.idTurnoSeleccionado)
-	      }, 
+	      },
+	      beforeSend: function() {
+	    	  //$('#GrupoCierre').html('<tr id="GrupoCierre_noforms_template"><td>xxxxxxxxxx</td></tr>');
+	      },
 	      success: function(respuesta) {
 				if (!respuesta.estado) {
 					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
@@ -1136,7 +1146,7 @@ moduloTurno.prototype.validaPermisos= function() {
 	
   var referenciaModulo = this;
   
-  try{
+  try {
 	  referenciaModulo.obj.ocultaContenedorTabla.show();
 	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
 	  
@@ -1182,62 +1192,263 @@ moduloTurno.prototype.botonGenerarPlantillaContometros = function() {
 	window.open(referenciaModulo.GENERAR_PLANTILLA_CONTOMETROS + "?idTurno=" + referenciaModulo.obj.idTurnoSeleccionado);
 };
 
-moduloTurno.prototype.botonCargarArchivoContometros = function() {
+/**
+ * Open modal
+ */
+moduloTurno.prototype.modalCargarArchivoContometros = function() {
+	$("#fileUpload").val("");
+    $(".callout-warning").hide();
+    $(".callout-danger").html("").hide();
+	this.obj.modalCargarArchivoContometros.modal("show");
+};
 
-    var fileUpload = $("#fileUpload")[0];
+/**
+ * Process excel
+ */
+moduloTurno.prototype.procesarArchivoContometros = function() {
 
-    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
-    if (!regex.test(fileUpload.value.toLowerCase())) {
-    	alert("Suba un archivo excel valido.");
+    var _this = this;
+    _this.excelRows = 0;
+    _this.errorsLecturaFinal = [];
+    
+    _this.messageError = $(".callout-danger");
+    _this.messageWarning = $(".callout-warning");
+    _this.messageError.html("").hide();
+    _this.messageWarning.show();
+    _this.fileUpload = $("#fileUpload");
+    _this.fileFirstElement = _this.fileUpload[0];
+    
+    console.log(" ********** procesarArchivoContometros ********* ");
+    
+    if (_this.fileFirstElement.files.length == 0) {
+    	
+    	var items = [];
+    	items.push($('<li/>').text("No se encontró el archivo indicado, por favor verifique."));
+    	_this.messageError.html(items).show();
+    	_this.messageWarning.hide();
+    	
+    	return false;
+    }
+
+    var allowedExtensions = new Array("xlsx", "xls");
+	if (allowedExtensions.indexOf(_this.fileFirstElement.value.toLowerCase().split('.').pop()) < 0) {
+    	
+    	var items = [];
+    	items.push($('<li/>').text("Suba un archivo excel valido."));
+    	_this.messageError.html(items).show();
+    	_this.messageWarning.hide();
+    	
     	return false;
     }
     	
     if (typeof (FileReader) == "undefined") {
-    	alert("Este navegador no soporta HTML5.");
+    	
+    	var items = [];
+    	items.push($('<li/>').text("Este navegador no soporta HTML5."));
+    	_this.messageError.html(items);
+    	_this.messageWarning.hide();
+    	
     	return false;
     }
+    
+    getExcelRows(_this.fileFirstElement);
+    
+    setTimeout(function() {
+        
+        if (_this.excelRows != _this.obj.countListContometro) {
+        	
+        	var items = [];
+        	items.push($('<li/>').text("Número de contómetros en archivo (" + _this.excelRows + "), no coincide con la lista (" + _this.obj.countListContometro + "), por favor verifique."));
+        	_this.messageError.html(items).show();
+        	_this.messageWarning.hide();
+        	
+        	return false;
+        }
 
-    var reader = new FileReader();
+        validateLecturaFinal(_this.fileFirstElement);
+        
+        setTimeout(function() {
+        	
+        	console.log(" _this.errorsLecturaFinal.length ::: " + _this.errorsLecturaFinal.length);
 
-    //For Browsers other than IE.
-    if (reader.readAsBinaryString) {
-        reader.onload = function (e) {
-            ProcessExcel(e.target.result);
-        };
-        reader.readAsBinaryString(fileUpload.files[0]);
-    } else {
-    	
-        //For IE Browser.
-        reader.onload = function (e) {
-            var data = "";
-            var bytes = new Uint8Array(e.target.result);
-            for (var i = 0; i < bytes.byteLength; i++) {
-                data += String.fromCharCode(bytes[i]);
+            if (_this.errorsLecturaFinal.length > 0) {
+            	_this.messageError.html(_this.errorsLecturaFinal);
+            	_this.messageWarning.hide();
+            	
+            	return false;
             }
-            ProcessExcel(data);
-        };
-        reader.readAsArrayBuffer(fileUpload.files[0]);
+        	
+        }, 2000);
+        
+
+        
+        
+        
+//        processExcelReader(_this.fileFirstElement);
+//        
+//        _this.fileUpload.val("");
+//        _this.messageWarning.hide();
+//        _this.obj.modalCargarArchivoContometros.modal("hide");
+    	
+    }, 2000);
+    
+    
+    
+    /**
+     * FUNCTIONS
+     */
+    function validateLecturaFinal(fileUpload) {
+
+    	try {
+    	
+	        var reader = new FileReader();
+	
+	        //For Browsers other than IE.
+	        if (reader.readAsBinaryString) {
+	            reader.onload = function (e) {
+	            	
+	            	// PROCESS
+	            	var data = e.target.result;
+	    		    var workbook = XLSX.read(data, {type: 'binary'});
+	    		    var firstSheet = workbook.SheetNames[0];
+	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	    		    
+	    		    console.log(" *********** validateLecturaFinal ************ ");
+	    		    
+	    		    var items = [];
+	    		    for (var i = 0; i < excelRows.length; i++) {
+	    		    	
+	    		    	var lecturaInicial = parseFloat(excelRows[i].LECTURA_INICIAL).toFixed(6);
+	    		    	var lecturaFinal = parseFloat(excelRows[i].LECTURA_FINAL).toFixed(6);
+	    		    	
+	    		    	if (isNaN(lecturaInicial) || isNaN(lecturaFinal)) {
+	    		    		
+	    		    	}
+	    		    	
+	    		    	console.log("LECTURA_INICIAL ::: " + excelRows[i].LECTURA_INICIAL + " -- LECTURA_FINAL ::: " + excelRows[i].LECTURA_FINAL);
+	    		    	console.log("lecturaInicial ::: " + lecturaInicial + " -- lecturaFinal ::: " + lecturaFinal);
+	    		    	
+	    		    	if (lecturaFinal < lecturaInicial) {
+	    		    		items.push($('<li/>').text("Para el contómetro '" + excelRows[i].CONTOMETRO + "' la lectura final es menor que la lectura inicial."));
+	    		    	}
+	    		    }
+	    		    _this.errorsLecturaFinal = items;
+	            };
+	            reader.readAsBinaryString(fileUpload.files[0]);
+	        } else {
+	        	
+	            //For IE Browser.
+	            reader.onload = function (e) {
+	                var data = "";
+	                var bytes = new Uint8Array(e.target.result);
+	                for (var i = 0; i < bytes.byteLength; i++) {
+	                    data += String.fromCharCode(bytes[i]);
+	                }
+
+	                // PROCESS
+	    		    var workbook = XLSX.read(data, {type: 'binary'});
+	    		    var firstSheet = workbook.SheetNames[0];
+	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	    		    _this.excelRows = excelRows.length;
+	            };
+	            reader.readAsArrayBuffer(fileUpload.files[0]);
+	        }
+        
+    	} catch (error) {
+    		
+    	};
     }
     
-    $("#fileUpload").val("");
+    function getExcelRows(fileUpload) {
 
-	function ProcessExcel(data) {
+    	try {
+    	
+	        var reader = new FileReader();
+	
+	        //For Browsers other than IE.
+	        if (reader.readAsBinaryString) {
+	            reader.onload = function (e) {
+	            	
+	            	// PROCESS
+	            	var data = e.target.result;
+	    		    var workbook = XLSX.read(data, {type: 'binary'});
+	    		    var firstSheet = workbook.SheetNames[0];
+	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	    		    _this.excelRows = excelRows.length;
+	            };
+	            reader.readAsBinaryString(fileUpload.files[0]);
+	        } else {
+	        	
+	            //For IE Browser.
+	            reader.onload = function (e) {
+	                var data = "";
+	                var bytes = new Uint8Array(e.target.result);
+	                for (var i = 0; i < bytes.byteLength; i++) {
+	                    data += String.fromCharCode(bytes[i]);
+	                }
+
+	                // PROCESS
+	    		    var workbook = XLSX.read(data, {type: 'binary'});
+	    		    var firstSheet = workbook.SheetNames[0];
+	    		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+	    		    _this.excelRows = excelRows.length;
+	            };
+	            reader.readAsArrayBuffer(fileUpload.files[0]);
+	        }
+        
+    	} catch (error) {
+    		
+    	};
+    }
+	
+    function processExcelReader(fileUpload) {
+    	
+    	try {
+    	
+	        var reader = new FileReader();
+	
+	        //For Browsers other than IE.
+	        if (reader.readAsBinaryString) {
+	            reader.onload = function (e) {
+	            	processExcel(e.target.result);
+	            };
+	            reader.readAsBinaryString(fileUpload.files[0]);
+	        } else {
+	        	
+	            //For IE Browser.
+	            reader.onload = function (e) {
+	                var data = "";
+	                var bytes = new Uint8Array(e.target.result);
+	                for (var i = 0; i < bytes.byteLength; i++) {
+	                    data += String.fromCharCode(bytes[i]);
+	                }
+	                processExcel(data);
+	            };
+	            reader.readAsArrayBuffer(fileUpload.files[0]);
+	        }
+        
+    	} catch (error) {
+    		
+    	};
+    }
+	
+	function processExcel(data) {
 		
-	    //Read the Excel File data.
-	    var workbook = XLSX.read(data, {
-	        type: 'binary'
-	    });
-	
-	    //Fetch the name of First Sheet.
-	    var firstSheet = workbook.SheetNames[0];
-	
-	    //Read all rows from First Sheet into an JSON array.
-	    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-	
-	    //Add the data rows from Excel file.
-	    for (var i = 0; i < excelRows.length; i++) {
-	    	$("#GrupoCierre_" + i + "_LecturaFinal").val(excelRows[i].LECTURA_FINAL);
-	    }
+    	try {
+
+		    var workbook = XLSX.read(data, {
+		        type: 'binary'
+		    });
+		    var firstSheet = workbook.SheetNames[0];
+		    var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+
+		    for (var i = 0; i < excelRows.length; i++) {
+		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(excelRows[i].LECTURA_FINAL);
+		    }
+	    
+    	} catch (error) {
+    		
+    	};
 	}
 	
 };

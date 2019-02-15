@@ -5354,6 +5354,12 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 	color: inherit
 }
 
+.alert-primary {
+	color: white;
+	background-color: #3c8dbc;
+    border-color: #367fa9;
+}
+
 .alert-success {
 	color: #3c763d;
 	background-color: #dff0d8;
