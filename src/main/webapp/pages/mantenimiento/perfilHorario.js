@@ -232,7 +232,7 @@ $(document).ready(function(){
 		    	if(cmpHoraInicio.val() == '') return "En el turno No. " + cmpNumeroOrden.val() + ", Debe llenar la Hora Inicio";
 		    	if(cmpHoraFin.val() == '') return "En el turno No. " + cmpNumeroOrden.val() + ", Debe llenar la Hora Fin";
 		    	
-		    	if(cmpHoraFin.val() <= cmpHoraInicio.val()) return "En el turno No. " + cmpNumeroOrden.val() + ", la hora de inicio debe ser menor a la hora fin";
+//		    	if(cmpHoraFin.val() <= cmpHoraInicio.val()) return "En el turno No. " + cmpNumeroOrden.val() + ", la hora de inicio debe ser menor a la hora fin";
 			}
 			
 			return "";

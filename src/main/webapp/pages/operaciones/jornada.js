@@ -1924,6 +1924,32 @@ $(document).ready(function() {
 	  filaTanque.append(g_tr);
     }
     
+//    Inicio Agregado por 9000003068
+    var indiceMuestreo 	= 0;
+    var filaMuestreo 	= $('#lista_muestras_producto');
+    //detalle de muestras
+    if (registro.muestreo != null){
+    	indiceMuestreo = registro.muestreo.length;
+    }
+    $('#lista_muestras_producto').html("");
+    g_tr = '<thead><tr><th class="text-center">Hora             </th>' +
+    				  '<th class="text-center">Producto			</th>' + 
+    				  '<th class="text-center">API 60F       	</th>' + 
+    				  '<th class="text-center">Temperatura		</th>' + 
+    				  '<th class="text-center">Factor       	</th></tr></thead>'; 
+    filaMuestreo.append(g_tr);
+    for(var k = 0; k < indiceMuestreo; k++){ 	
+      
+      g_tr  = '<tr><td class="text-center">'+utilitario.formatearTimestampToString(registro.muestreo[k].horaMuestreo)  	+ '</td>' + // hora
+    		'    <td class="text-left">'  +registro.muestreo[k].producto.nombre   										+ '</td>' + // producto
+    		'    <td class="text-right">' +registro.muestreo[k].apiMuestreo.toFixed(2)  								+ '</td>' + // api
+    		'    <td class="text-right">' +registro.muestreo[k].temperaturaMuestreo.toFixed(2)							+ '</td>' + // temperatura
+    		'    <td class="text-right">' +registro.muestreo[k].factorMuestreo.toFixed(6)								+ '</td></tr>'; // factor
+
+      filaMuestreo.append(g_tr);
+    }
+//    Fin Agregado por
+    
     // detalle de bitacora
     $('#lista_bitacora').html("");
     g_tr  = '<tr><td class="text-left" style="background-color: #FFC05A; color: #fbf9f6; font-weight:bold;"> Creado Por: 			</td>   <td class="text-left">' +registro.usuarioCreacion 	+ '</td>' + 
@@ -2098,6 +2124,11 @@ $(document).ready(function() {
     try {
 	  // datos para la jornada
 	  eRegistro.id = parseInt(referenciaModulo.obj.idJornada);
+	  
+//	    Inicio Agregado por req 9000003068
+	    eRegistro.idEstacion = parseInt(referenciaModulo.obj.filtroEstacion.val());
+//	    Fin Agregado por req 9000003068
+	    
 	  eRegistro.estado = parseInt(moduloActual.obj.cmpMuestreoEstado);
 	  eRegistro.fechaOperativa = utilitario.formatearStringToDate(referenciaModulo.obj.cmpMuestreoFechaJornada.text());
       eRegistro.contometroJornada = [];
