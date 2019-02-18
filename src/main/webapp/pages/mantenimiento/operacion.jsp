@@ -4,15 +4,14 @@
 <%@ page import="sgo.entidad.Transportista"%>
 <%@ page import="sgo.entidad.Planta"%>
 <%@ page import="java.util.HashMap"%>
-<%
-HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); 
-%>
-<!-- Contenedor de pagina-->
+<% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
+
 <div class="content-wrapper">
-  <!-- Cabecera de pagina -->
-  <section class="content-header">
-    <h1>Operaciones / <small id="tituloSeccion"><%=mapaValores.get("TITULO_LISTADO_REGISTROS")%></small></h1>
+
+	<section class="content-header">
+    	<h1>Operaciones / <small id="tituloSeccion"><%=mapaValores.get("TITULO_LISTADO_REGISTROS")%></small></h1>
 	</section>
+	
 	<section class="content" id="cntInterface">
 		<div class="row">
 			<div class="col-xs-12">
@@ -153,10 +152,20 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 					<%	} %>
 				  </select>
               </div>
+              
               <div class="form-group">
                 <label>ETA</label>
                 <input name="cmpETA" id="cmpETA" type="text" class="form-control input-sm" placeholder="Ingresar el tiempo estimado de llegada" required maxlength="2"/>
               </div>
+              
+              <div class="form-group">
+              	<label>Considerar como volumen descargado</label>
+                <select id="cmpTipoVolumenDescargado" name="cmpTipoVolumenDescargado" class="form-control input-sm" style="width: 100%">
+					<option value="1">Volumen descargado por cisterna(s)</option>
+					<option value="2">Volumen recibido en el tanque</option>
+				</select>
+              </div>
+              
               <div class="form-group">
                 <label>Tipo de registro Tanque en Descarga</label>
                 <select id="cmpTipoRegistroTanqueDescarga" name="cmpTipoRegistroTanqueDescarga" class="form-control input-sm" style="width: 100%">
@@ -164,6 +173,7 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 					<option value="2">Solo seleccionar Tanque</option>
 				</select>
               </div>
+              
                <div class="form-group">
                 <label>Para:</label>
                 <FONT COLOR=red><B><label>(Max. 250 caracteres). Los correos deben ser separadaos por ";".</label></B></FONT>
@@ -179,7 +189,9 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
               <table class="sgo-simple-table table table-condensed" style="width:100%;">
       			<thead>
       				<tr>
-      					<td class="celda-cabecera-detalle"><label class="etiqueta-titulo-horizontal">Transportistas</label></td>
+      					<td class="celda-cabecera-detalle">
+      						<label class="etiqueta-titulo-horizontal">Transportistas</label>
+     					</td>
       				</tr>
       			</thead>
       			<tbody id="GrupoTransportista">

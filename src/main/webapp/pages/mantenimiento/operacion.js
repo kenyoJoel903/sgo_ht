@@ -1,14 +1,15 @@
-$(document).ready(function(){
+$(document).ready(function() {
+	
   var moduloActual = new moduloBase();  
   moduloActual.urlBase='operacion';
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
   
-//Agregado por req 9000002570====================
+  //Agregado por req 9000002570====================
   moduloActual.URL_RECUPERAR_ETAPA = moduloActual.urlBase + '/recuperarEtapas';
   moduloActual.URL_GUARDAR_ETAPAS = moduloActual.urlBase + '/crearEtapas';
-//===============================================
+  //===============================================
   
   moduloActual.URL_ELIMINAR = moduloActual.urlBase + '/eliminar';
   moduloActual.URL_GUARDAR = moduloActual.urlBase + '/crear';
@@ -59,21 +60,6 @@ $(document).ready(function(){
     							  number: "El campo ETA solo debe contener caracteres numericos" },
     cmpCorreoPara:				{ required:  "El campo es obligatorio" }
   };
-  
- /* moduloActual.inicializarFormularioPrincipal= function(){  
-    var ref=this;
-      ref.obj.frmPrincipal.validate({
-      rules: ref.reglasValidacionFormulario,
-      messages: ref.mensajesValidacionFormulario,
-      submitHandler: function(form) {
-      // form.submit();
-      },
-      showErrors: function(errorMap, errorList) {
-        ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Your form contains " + this.numberOfInvalids() + " errors, see details below.");
-        //this.defaultShowErrors();
-      }      
-    });
-  };*/
   
   moduloActual.inicializarCampos= function(){
     //Campos de formulario
@@ -181,22 +167,18 @@ $(document).ready(function(){
 	        	  var idEtapaTemp = $(formularioNuevo).find("[elemento-grupo='idEtapa']").val();
 	        	  
 	        	  var estadoTemp = $(formularioNuevo).find("[elemento-grupo='estadoEtapa']").val();
-	        	  
-//	        	  if(estadoTemp === 'ACTIVO'){
-//	        		  moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"Debe Inactivar el registro antes de eliminarlo.");
-//	        	  }else{
-			  	      var numeroEtapas = moduloActual.obj.grupoEtapa.getForms().length;
-			  	      for(var i = 0; i < numeroEtapas; i++){
-				    	  var fila = moduloActual.obj.grupoEtapa.getForm(i);
-				    	  var indiceTemp = fila.attr('id').substring(19);
-				    	  console.log("indiceTemp: " + indiceTemp);
-				    	  if(indiceTemp === moduloActual.indiceFormulario){
-				    		  indiceEliminar = i;
-				    		  break;
-				    	  }
-				      }
 
-			  	      console.log("idEtapaTemp: " + idEtapaTemp);
+		  	      var numeroEtapas = moduloActual.obj.grupoEtapa.getForms().length;
+		  	      for(var i = 0; i < numeroEtapas; i++){
+			    	  var fila = moduloActual.obj.grupoEtapa.getForm(i);
+			    	  var indiceTemp = fila.attr('id').substring(19);
+			    	  
+			    	  if(indiceTemp === moduloActual.indiceFormulario){
+			    		  indiceEliminar = i;
+			    		  break;
+			    	  }
+			      }
+
 		        	  if(idEtapaTemp === '0' || idEtapaTemp === null){
 		        		  moduloActual.obj.grupoEtapa.removeForm(indiceEliminar);
 		        	  }else{
@@ -240,9 +222,8 @@ $(document).ready(function(){
 		      				  moduloActual.mostrarDepuracion(error.message);
 		      			  }
 		        	  }
-//	        	  }
 
-	          } catch(error){
+	          } catch(error) {
 	            console.log(error.message);
 	          
 	          };
@@ -287,10 +268,8 @@ $(document).ready(function(){
     				    	  moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
     				      } else { 				    	
     			        	  var cambiaEstadoTemp = $(formularioNuevo).find("[elemento-grupo='estadoEtapa']");
-    			        	  
-    			        	  console.log(cambiaEstadoTemp.val());
-    			        	  
     			        	  var btnCambiaEstadoTemp = $(formularioNuevo).find("[elemento-grupo='botonCambiarEstado']");
+    			        	  
     			        	  if(cambiaEstadoTemp.val() == "ACTIVO"){
     			        		  cambiaEstadoTemp.val('INACTIVO');
     			        		  btnCambiaEstadoTemp.html('<i class="fa fa-cloud-upload"></i>');
@@ -299,7 +278,6 @@ $(document).ready(function(){
     			        		  btnCambiaEstadoTemp.html('<i class="fa fa-cloud-download"></i>');
     			        	  }
     			        	  
-    			        	  console.log(cambiaEstadoTemp.val());
     			        	  moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
     				      };
     				      $("#ocultaContenedorEtapas").hide();
@@ -357,28 +335,25 @@ $(document).ready(function(){
     this.obj.btnRefrescarEtapa.on("click", function(){
     	
     	try {
+    		
 	    	var numeroEtapas = moduloActual.obj.grupoEtapa.getForms().length;
+	    	
 	    	for(var i = 0; i < numeroEtapas-1; i++){
-	    		console.log("i: " + i);
+
 	    		var fila = moduloActual.obj.grupoEtapa.getForm(i);
 	    		var orden = fila.find("[elemento-grupo='ordenEtapa']");
-	    		console.log("1 orden: " + orden.val());
-	    		
 	    		var id 		= fila.find("[elemento-grupo='idEtapa']");
     			var nombre 	= fila.find("[elemento-grupo='nombreEtapa']");
     			var estado 	= fila.find("[elemento-grupo='estadoEtapa']");
-    			
     			var disableNombre = nombre.prop('disabled');
     			var disableOrden = orden.prop('disabled'); 
     			
 	    		var indiceSiguiente = i + 1;
 
     			for(var j = indiceSiguiente; j<numeroEtapas; j++){
-    				
-    				console.log("j: " + j);
+
     				var cambioFila = moduloActual.obj.grupoEtapa.getForm(j);
     				var cambioOrden = cambioFila.find("[elemento-grupo='ordenEtapa']");
-    				console.log("cambioOrden: " + cambioOrden.val());
     				
     				if(parseInt(orden.val()) > parseInt(cambioOrden.val())){
 
@@ -408,20 +383,13 @@ $(document).ready(function(){
     					orden.prop('disabled', disableCambioOrden);
     					disableNombre = disableCambioNombre;
     					disableOrden = disableCambioOrden;
-    					
-    					
-    					console.log("2 orden: " + orden.val());
     				}
-
     			}
-
 	    	}
-        }catch(error){
+        } catch(error) {
         	console.log(error.message);
     	};
-    	
     });
-    //=============================================================
     
     //Campos de vista
     this.obj.vistaId=$("#vistaId");
@@ -571,9 +539,8 @@ $(document).ready(function(){
 			  
 			  eRegistro.etapas.push(etapa);
 		  }
-		  
-		  console.log("eRegistro -------- > " + eRegistro);
-	  }catch(error){
+
+	  }catch(error) {
 		  console.log(error.message);
 	  }
 
@@ -704,35 +671,36 @@ $(document).ready(function(){
   };
 
   moduloActual.iniciarGuardar = function(){
-	  var ref=this;
-	  console.log("ref.obj.cmpIdRefDestMercaderia  " + ref.obj.cmpIdRefDestMercaderia.val() );
-	  console.log("ref.obj.cmpIdRefPlantaRecepcion  " + ref.obj.cmpIdRefPlantaRecepcion.val() );
+	  var ref = this;
+
 	  try {
 		  if((ref.obj.cmpIdRefDestMercaderia.val().trim() == "") && (ref.obj.cmpIdRefPlantaRecepcion.val().trim() == "")){
-			  console.log("primer if");
 	    		ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe informar el campo Referencia Planta Recepcion o el campo Referencia Destinatario Mercaderia.");
-	    	}
-	    	else if((ref.obj.cmpIdRefDestMercaderia.val().trim() != "") && (ref.obj.cmpIdRefPlantaRecepcion.val().trim() != "")){
-	    		console.log("segundo if");
+	    	} else if((ref.obj.cmpIdRefDestMercaderia.val().trim() != "") && (ref.obj.cmpIdRefPlantaRecepcion.val().trim() != "")){
 	    		ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Solo debe informar el campo Referencia Planta Recepcion o el campo Referencia Destinatario Mercaderia; no ambos.");
-	    	}
-	    	else{
-	    		console.log("else");
+	    	} else {
 			    if (ref.modoEdicion == constantes.MODO_NUEVO){
 			    	ref.guardarRegistro();
 			    } else if  (ref.modoEdicion == constantes.MODO_ACTUALIZAR){
 			    	ref.actualizarRegistro();
 			    }
 	    	}
-	  } catch(error){
+	  } catch(error) {
 		  ref.mostrarDepuracion(error.message);
 	  };
 	};
   
-  moduloActual.recuperarValores = function(registro){
+  moduloActual.recuperarValores = function(registro) {
+	  
     var eRegistro = {};
-    var ref=this;
+    var ref = this;
+    
     try {
+    	
+    	console.log(" ******** recuperarValores ******* ");
+    	console.dir(ref.obj);
+    	
+    	
 		eRegistro.id = parseInt(ref.idRegistro);
 		eRegistro.nombre = ref.obj.cmpNombre.val().toUpperCase();
 		eRegistro.alias = ref.obj.cmpAlias.val().toUpperCase();
@@ -747,21 +715,21 @@ $(document).ready(function(){
 		eRegistro.indicadorTipoRegistroTanque = parseInt(ref.obj.cmpTipoRegistroTanqueDescarga.val());
 		eRegistro.correoPara = ref.obj.cmpCorreoPara.val();
 		eRegistro.correoCC = ref.obj.cmpCorreoCC.val();
-
+		eRegistro.tipoVolumenDescargado = parseInt(ref.obj.cmpTipoVolumenDescargado.val());
+		
 		console.dir("eRegistro -------- > " + eRegistro);
 		
 		eRegistro.transportistas=[];   
 	    var numeroFormularios = ref.obj.grupoTransportista.getForms().length;
 	    for(var contador = 0;contador < numeroFormularios; contador++){
-		    var transportista={};
+		    var transportista = {};
 		    var formulario = ref.obj.grupoTransportista.getForm(contador);
 		    var cmpIdTransportista = formulario.find("select[elemento-grupo='idTransportista']");
-		    console.log("cmpIdTransportista " + cmpIdTransportista.val());
+
 		    transportista.id = parseInt(cmpIdTransportista.val());
-		    console.log(transportista);
 		    eRegistro.transportistas.push(transportista);
 	    }
-		console.log(eRegistro);
+
     }  catch(error){
       console.log(error.message);
     }

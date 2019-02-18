@@ -396,6 +396,7 @@ $(document).ready(function() {
         afterAdd: function(origen, formularioNuevo) {
         	
         	var cmpElementoLecturaFinal = $(formularioNuevo).find("input[elemento-grupo='lecturaFinal']");
+        	cmpElementoLecturaFinal.attr('maxlength','14');
         	cmpElementoLecturaFinal.inputmask('decimal', {
         		//digits: 2, // Se comento para la cantidad de decimales especificada en el Módulo de Estaciones de Servicios.
         		groupSeparator: ',',

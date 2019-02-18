@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sgo.datos.BitacoraDao;
 import sgo.datos.ClienteDao;
-import sgo.datos.CompartimentoDao;
 import sgo.datos.DiaOperativoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.EnlaceDao;
@@ -37,7 +36,6 @@ import sgo.datos.PlantaDao;
 import sgo.datos.TransportistaDao;
 import sgo.datos.TransportistaOperacionDao;
 import sgo.entidad.Bitacora;
-import sgo.entidad.Compartimento;
 import sgo.entidad.Operacion;
 import sgo.entidad.Enlace;
 import sgo.entidad.MenuGestor;
@@ -71,7 +69,6 @@ public class OperacionControlador {
  private PlantaDao dPlantas; 
  @Autowired
  private TransportistaOperacionDao dTransportistaOperacion;
- 
  
  @Autowired
  private ClienteDao dCliente;
@@ -520,11 +517,18 @@ public class OperacionControlador {
 		return respuesta;
 	 
  }
- //===============================================================================
 
+ /**
+  * 
+  * @param eOperacion
+  * @param peticionHttp
+  * @param locale
+  * @return
+  */
  @RequestMapping(value = URL_GUARDAR_RELATIVA, method = RequestMethod.POST)
  public @ResponseBody
  RespuestaCompuesta guardarRegistro(@RequestBody Operacion eOperacion, HttpServletRequest peticionHttp, Locale locale) {
+	 
   RespuestaCompuesta respuesta = null;
   AuthenticatedUserDetails principal = null;
   Bitacora eBitacora = null;
@@ -535,7 +539,9 @@ public class OperacionControlador {
   String ClaveGenerada = "";
   ArrayList<String> para = new ArrayList<String>();
   ArrayList<String> cc = new ArrayList<String>();
+  
   try {
+	  
    // Inicia la transaccion
    this.transaccion = new DataSourceTransactionManager(dOperacion.getDataSource());
    definicionTransaccion = new DefaultTransactionDefinition();
@@ -543,17 +549,20 @@ public class OperacionControlador {
    eBitacora = new Bitacora();
    // Recuperar el usuario actual
    principal = this.getCurrentUser();
+   
    // Recuperar el enlace de la accion
    respuesta = dEnlace.recuperarRegistro(URL_GUARDAR_COMPLETA);
    if (respuesta.estado == false) {
     throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
    }
+   
    Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
    // Verificar si cuenta con el permiso necesario
    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
     throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
    }
- //valida los datos que vienen del formulario
+   
+   //valida los datos que vienen del formulario
    Respuesta validacion = Utilidades.validacionXSS(eOperacion, gestorDiccionario, locale);
    if (validacion.estado == false) {
 	   respuesta = new RespuestaCompuesta();
@@ -564,17 +573,18 @@ public class OperacionControlador {
    if (direccionIp == null) {
     direccionIp = peticionHttp.getRemoteAddr();
    }
+   
    eOperacion.setActualizadoEl(Calendar.getInstance().getTime().getTime());
    eOperacion.setActualizadoPor(principal.getID());
    eOperacion.setCreadoEl(Calendar.getInstance().getTime().getTime());
    eOperacion.setCreadoPor(principal.getID());
    eOperacion.setIpActualizacion(direccionIp);
    eOperacion.setIpCreacion(direccionIp);
-   // Para asignar el estado activo cuando es un registro nuevo.
-   eOperacion.setEstado(Constante.ESTADO_ACTIVO);
+   eOperacion.setEstado(Constante.ESTADO_ACTIVO); // Para asignar el estado activo cuando es un registro nuevo.
    
- //esto para armar el arraylist de los correos PARA
-   if(!eOperacion.getCorreoPara().trim().isEmpty()){
+   //esto para armar el arraylist de los correos PARA
+   if (!eOperacion.getCorreoPara().trim().isEmpty()) {
+	   
 	   String[] temp = eOperacion.getCorreoPara().split(";");
 	   for (String correoPara : temp) {
 			if(correoPara.trim().length() > 0){
@@ -582,6 +592,7 @@ public class OperacionControlador {
 				System.out.println("correoPara.trim():"+correoPara.trim());
 			}
 	   }
+	   
 	   //Valido los correos PARA
 	   if(!Utilidades.validaEmail(para)){
 		   throw new Exception("El campo Para es incorrecto. Favor verifique.");
@@ -591,7 +602,7 @@ public class OperacionControlador {
    }
    
    //esto para armar el arraylist de los correos CC
-   if(!eOperacion.getCorreoCC().trim().isEmpty()){
+   if (!eOperacion.getCorreoCC().trim().isEmpty()) {
 		String[] temp = eOperacion.getCorreoCC().split(";");
 		for (String correoCC : temp) {
 			if(correoCC.trim().length() > 0){
@@ -605,7 +616,7 @@ public class OperacionControlador {
 		}
 	}
    
- //validamos que los transportistas no se repitan
+   //validamos que los transportistas no se repitan
    if(!eOperacion.getTransportistas().isEmpty()){
 	   for(int i= 0; i < eOperacion.getTransportistas().size(); i++){
 		   for (int j = 0; j < eOperacion.getTransportistas().size(); j++){
@@ -617,14 +628,16 @@ public class OperacionControlador {
 		   }
 	   }
    } else {
-		throw new Exception("No hay Transportistas para la Operación. Favor verifique.");
+	   throw new Exception("No hay Transportistas para la Operación. Favor verifique.");
    }
    
    respuesta = dOperacion.guardarRegistro(eOperacion);
+   
    // Verifica si la accion se ejecuto de forma satisfactoria
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
+   if (!respuesta.estado) {
+	   throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
    }
+   
    int OperacionCreada = Integer.parseInt(respuesta.valor);
    ClaveGenerada = respuesta.valor;
    // Guardar en la bitacora
@@ -639,31 +652,42 @@ public class OperacionControlador {
    eBitacora.setRealizadoEl(eOperacion.getCreadoEl());
    eBitacora.setRealizadoPor(eOperacion.getCreadoPor());
    respuesta = dBitacora.guardarRegistro(eBitacora);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+   
+   if (!respuesta.estado) {
+	   throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
    }
+   
    TransportistaOperacion eTransportistaOperacion = null;
    for(Transportista transportista : eOperacion.getTransportistas()){
 	   eTransportistaOperacion = new TransportistaOperacion();
 	   eTransportistaOperacion.setIdTransportista(transportista.getId());
 	   eTransportistaOperacion.setIdOperacion(OperacionCreada);
 	   respuesta = dTransportistaOperacion.guardarRegistro(eTransportistaOperacion);
-    if (respuesta.estado == false) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
-    }
+	   
+	   if (respuesta.estado == false) {
+		   throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+	   }
    }
 	   
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.guardarExitoso",
-     new Object[] { eOperacion.getFechaCreacion().substring(0, 9), eOperacion.getFechaCreacion().substring(10), principal.getIdentidad() }, locale);
+   respuesta.mensaje = gestorDiccionario.getMessage(
+	   "sgo.guardarExitoso",
+	   new Object[] { 
+		   eOperacion.getFechaCreacion().substring(0, 9), 
+		   eOperacion.getFechaCreacion().substring(10), 
+		   principal.getIdentidad()
+	   }, 
+	   locale
+   );
    this.transaccion.commit(estadoTransaccion);
-  } catch (Exception ex) {
-   //ex.printStackTrace();
-   Utilidades.gestionaError(ex, sNombreClase, "guardarRegistro");
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-   this.transaccion.rollback(estadoTransaccion);
+   
+  } catch (Exception e) {
+	  Utilidades.gestionaError(e, sNombreClase, "guardarRegistro");
+	  respuesta.estado = false;
+	  respuesta.contenido = null;
+	  respuesta.mensaje = e.getMessage();
+	  this.transaccion.rollback(estadoTransaccion);
   }
+  
   return respuesta;
  }
 

@@ -1,14 +1,12 @@
 package sgo.entidad;
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-
 import sgo.utilidades.Constante;
 
-public class EntidadBase implements Serializable{
-	/**
-	 * 
-	 */
+public class EntidadBase implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	protected int actualizadoPor;
 	protected long actualizadoEl;
@@ -17,7 +15,8 @@ public class EntidadBase implements Serializable{
 	protected String usuarioActualizacion;
 	protected String usuarioCreacion;	
 	protected String ipCreacion;
-	protected String ipActualizacion;	
+	protected String ipActualizacion;
+	protected int tipoVolumenDescargado;
 
 	protected int formatoFecha=Constante.TIPO_FORMATO_FECHA_DDMMYYYY;
 	
@@ -97,28 +96,15 @@ public class EntidadBase implements Serializable{
 	public void setUsuarioCreacion(String usuarioCreacion) {
 		this.usuarioCreacion = usuarioCreacion;
 	}
-	
-	/**
-	 * @return the _actualizadoPor
-	 */
 	public int getActualizadoPor() {
 		return actualizadoPor;
 	}
-	/**
-	 * @param _actualizadoPor the _actualizadoPor to set
-	 */
 	public void setActualizadoPor(int _actualizadoPor) {
 		this.actualizadoPor = _actualizadoPor;
 	}
-	/**
-	 * @return the _actualizadoEl
-	 */
 	public long getActualizadoEl() {
 		return actualizadoEl;
 	}
-	/**
-	 * @param _actualizadoEl the _actualizadoEl to set
-	 */
 	public void setActualizadoEl(long _actualizadoEl) {
 		this.actualizadoEl = _actualizadoEl;
 	}
@@ -135,4 +121,17 @@ public class EntidadBase implements Serializable{
 	public void setCreadoEl(long creadoEl) {
 		this.creadoEl = creadoEl;
 	}
+
+	public int getTipoVolumenDescargado() {
+		return tipoVolumenDescargado;
+	}
+
+	public void setTipoVolumenDescargado(int tipoVolumenDescargado) {
+		this.tipoVolumenDescargado = tipoVolumenDescargado;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
 }

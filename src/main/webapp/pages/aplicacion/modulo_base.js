@@ -1,4 +1,5 @@
-function moduloBase (){
+function moduloBase () {
+	
   this.obj={};
   this.SEPARADOR_MILES=",";
   this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA;
@@ -623,35 +624,37 @@ moduloBase.prototype.verRegistro= function(){
 
 moduloBase.prototype.guardarRegistro= function(){
 	var referenciaModulo = this;
+	
 	try {
 		if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")){
 			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
-		} else if (referenciaModulo.obj.frmPrincipal.valid()){
-	    referenciaModulo.obj.ocultaContenedorFormulario.show();
+		} else if (referenciaModulo.obj.frmPrincipal.valid()) {
+			
+			referenciaModulo.obj.ocultaContenedorFormulario.show();
 			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 			var eRegistro = referenciaModulo.recuperarValores();
+			
 			$.ajax({
-	      type: constantes.PETICION_TIPO_POST,
-	      url: referenciaModulo.URL_GUARDAR, 
-	      contentType: referenciaModulo.TIPO_CONTENIDO, 
-	      data: JSON.stringify(eRegistro),	
-	      success: function(respuesta) {
-	        if (!respuesta.estado) {
-	          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-	        } else {
-	          referenciaModulo.iniciarListado(respuesta.mensaje);
-	        }
-	        referenciaModulo.obj.ocultaContenedorFormulario.hide();
-	      },			    		    
-	      error: function() {
-	        referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-	      }
+				type: constantes.PETICION_TIPO_POST,
+				url: referenciaModulo.URL_GUARDAR, 
+				contentType: referenciaModulo.TIPO_CONTENIDO, 
+				data: JSON.stringify(eRegistro),	
+				success: function(respuesta) {
+					if (!respuesta.estado) {
+						referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
+					} else {
+						referenciaModulo.iniciarListado(respuesta.mensaje);
+					}
+					referenciaModulo.obj.ocultaContenedorFormulario.hide();
+				},			    		    
+				error: function() {
+					referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
+				}
 			});
-		} 
-		else {
-	    referenciaModulo.obj.ocultaContenedorFormulario.hide();
+		} else {
+			referenciaModulo.obj.ocultaContenedorFormulario.hide();
 		}
-	} catch(error){
+	} catch(error) {
 	    referenciaModulo.mostrarDepuracion(error.message);
 	};
 };
