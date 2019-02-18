@@ -513,6 +513,7 @@ moduloBase.prototype.recuperarRegistro = function() {
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
 	    	} else {		 
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
+	    		
 	    		if (referenciaModulo.modoEdicion == constantes.MODO_ACTUALIZAR){
 	    			referenciaModulo.llenarFormulario(respuesta.contenido.carga[0]);
 	    			referenciaModulo.obj.ocultaContenedorFormulario.hide();

@@ -106,15 +106,15 @@
               <div class="form-group">
                 <label>Cliente</label>                
                     <%
-                    String seleccionado="selected='selected'";
-                    ArrayList<?> listadoClientes = (ArrayList<?>) request.getAttribute("listadoClientes");               
-                    int numeroClientes = listadoClientes.size();
-                    Cliente eCliente=null;                    
+	                    String seleccionado="selected='selected'";
+	                    ArrayList<?> listadoClientes = (ArrayList<?>) request.getAttribute("listadoClientes");               
+	                    int numeroClientes = listadoClientes.size();
+	                    Cliente eCliente = null;                    
                     %>
                     <select id="cmpIdCliente" name="cmpIdCliente" class="form-control input-sm" style="width: 100%">
                     <option></option>
                     <%
-                    for(int contador=0; contador < numeroClientes; contador++){ 
+                    for (int contador=0; contador < numeroClientes; contador++) { 
                      eCliente =(Cliente) listadoClientes.get(contador);
                     %>
                     <option <%=seleccionado%> value='<%=eCliente.getId()%>'><%=eCliente.getRazonSocial().trim()  %></option>
@@ -231,22 +231,24 @@
         </div>
       </div>
     </div>
-    <div class="row" id="cntVistaRegistro" style="display:none;">
-      <div class="col-md-12">
+    
+<div class="row" id="cntVistaRegistro" style="display:none;">
+    <div class="col-md-12">
         <div class="box box-default">
-          <div class="box-body">
-            <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;">
-            </table>
-          </div>
-			<div class="box-footer">
-            <button id="btnCerrarVista"  class="btn btn-danger btn-sm"><%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%></button>
-          </div>
-          <div class="overlay" id="ocultaContenedorVista">
-            <i class="fa fa-refresh fa-spin"></i>
-          </div>
+            <div class="box-body">
+                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
+            </div>
+            <div class="box-footer">
+                <button id="btnCerrarVista"  class="btn btn-danger btn-sm">
+                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%>
+                </button>
+            </div>
+            <div class="overlay" id="ocultaContenedorVista">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
         </div>
-      </div>
     </div>
+</div>
     
     <%-- Inicio Agregado por 9000002570 --%>
     <div class="row" id="cntFrmEtapas" style="display:none;">

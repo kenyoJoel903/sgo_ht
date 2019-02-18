@@ -75,20 +75,22 @@ $(document).ready(function() {
             $(this).val('');
         }
     });
-    this.obj.cmpCorreoPara=$("#cmpCorreoPara");
-    this.obj.cmpCorreoCC=$("#cmpCorreoCC");
-    this.obj.cmpETA=$("#cmpETA");
+    this.obj.cmpCorreoPara = $("#cmpCorreoPara");
+    this.obj.cmpCorreoCC = $("#cmpCorreoCC");
+    this.obj.cmpETA = $("#cmpETA");
+    this.obj.cmpTipoVolumenDescargado = $("#cmpTipoVolumenDescargado");    
     this.obj.cmpETA.inputmask("integer");
     this.obj.cmpETA.css("text-align", "left");
-    this.idTransportista=$("#idTransportista");
-    this.obj.cmpTipoRegistroTanqueDescarga=$("#cmpTipoRegistroTanqueDescarga");
-    this.obj.cmpTipoRegistroTanqueDescarga.nombreControl="cmpTipoRegistroTanqueDescarga"; 
-    this.obj.cmpPlantaDespacho=$("#cmpPlantaDespacho");
+    this.idTransportista = $("#idTransportista");
+    this.obj.cmpTipoRegistroTanqueDescarga = $("#cmpTipoRegistroTanqueDescarga");
+    this.obj.cmpTipoRegistroTanqueDescarga.nombreControl = "cmpTipoRegistroTanqueDescarga"; 
+    this.obj.cmpPlantaDespacho = $("#cmpPlantaDespacho");
     this.obj.cmpPlantaDespacho.tipoControl="select2";
     this.obj.cmpPlantaDespacho.nombreControl="cmpPlantaDespacho"; 
     this.obj.cmpPlantaDespacho.select2({placeholder: "Seleccionar...", allowClear: false}); 
     this.obj.cmpVolumenPromedioCisterna=$("#cmpVolumenPromedioCisterna");
     this.obj.cmpVolumenPromedioCisterna.inputmask('decimal', {digits: 2, groupSeparator:moduloActual.SEPARADOR_MILES,autoGroup:true,groupSize:3});
+    
     //esto para alinear a la izquierda un decimal
     this.obj.cmpVolumenPromedioCisterna.css("text-align", "left");
     this.obj.cmpSincronizadoEl=$("#cmpSincronizadoEl");
@@ -546,7 +548,6 @@ $(document).ready(function() {
 
 	  return eRegistro;
   };
-//===================================================================
 
   moduloActual.llenarFormulario = function(registro) {
 
@@ -564,30 +565,34 @@ $(document).ready(function() {
     
     $(cmpPlantaDespacho).find("option:selected").val(registro.plantaDespacho.id);
 	$(cmpPlantaDespacho).val(registro.plantaDespacho.id).trigger('change');
-	
+	$(cmpTipoVolumenDescargado).val(registro.tipoVolumenDescargado).trigger('change');
 	$(cmpTipoRegistroTanqueDescarga).val(registro.indicadorTipoRegistroTanque).change();
 
-    var elemento=constantes.PLANTILLA_OPCION_SELECTBOX;
+    var elemento = constantes.PLANTILLA_OPCION_SELECTBOX;
     elemento = elemento.replace(constantes.ID_OPCION_CONTENEDOR, registro.cliente.id);
-    elemento = elemento.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.cliente.razonSocial);
+    elemento = elemento.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.cliente.razonSocial);
     this.obj.cmpIdCliente.empty().append(elemento).val(registro.cliente.id).trigger('change');
 
     if (registro.transportistas != null) {
         var numeroTransportistas = registro.transportistas.length;
         this.obj.grupoTransportista.removeAllForms();
+        
         for(var contador=0; contador < numeroTransportistas;contador++){
-          this.obj.grupoTransportista.addForm();
-          var formulario= this.obj.grupoTransportista.getForm(contador);
-          formulario.find("select[elemento-grupo='idTransportista']").val(registro.transportistas[contador].id).trigger('change');
+        	this.obj.grupoTransportista.addForm();
+        	var formulario= this.obj.grupoTransportista.getForm(contador);
+        	formulario.find("select[elemento-grupo='idTransportista']").val(registro.transportistas[contador].id).trigger('change');
         }
     } else {
     	this.obj.grupoTransportista.removeAllForms();
     }
-
   };
 
-  moduloActual.llenarDetalles = function(registro){
-    this.idRegistro= registro.id;    
+  moduloActual.llenarDetalles = function(registro) {
+	  
+	  
+	  console.dir(registro);
+	  
+    this.idRegistro = registro.id;    
     this.obj.vistaId.text(registro.id);
     this.obj.vistaNombre.text(registro.nombre);
     this.obj.vistaAlias.text(registro.alias);
@@ -631,6 +636,8 @@ $(document).ready(function() {
     g_tr = '<tr><td> Planta de despacho:</td><td>' + registro.plantaDespacho.descripcion + '</td></tr>';
     grilla.append(g_tr);
     g_tr = '<tr><td> ETA:</td><td>' + registro.eta + '</td></tr>';
+    grilla.append(g_tr);
+    g_tr = '<tr><td> Considerar volumen descargado:</td><td>' + registro.eta + '</td></tr>';
     grilla.append(g_tr);
     g_tr = '<tr><td> Tipo de registro Tanque en Descarga:</td><td>' + utilitario.tipoRegistroTanque(registro.indicadorTipoRegistroTanque) + '</td></tr>';
     grilla.append(g_tr);
@@ -698,9 +705,7 @@ $(document).ready(function() {
     try {
     	
     	console.log(" ******** recuperarValores ******* ");
-    	console.dir(ref.obj);
-    	
-    	
+
 		eRegistro.id = parseInt(ref.idRegistro);
 		eRegistro.nombre = ref.obj.cmpNombre.val().toUpperCase();
 		eRegistro.alias = ref.obj.cmpAlias.val().toUpperCase();
@@ -717,7 +722,7 @@ $(document).ready(function() {
 		eRegistro.correoCC = ref.obj.cmpCorreoCC.val();
 		eRegistro.tipoVolumenDescargado = parseInt(ref.obj.cmpTipoVolumenDescargado.val());
 		
-		console.dir("eRegistro -------- > " + eRegistro);
+		console.dir(eRegistro);
 		
 		eRegistro.transportistas=[];   
 	    var numeroFormularios = ref.obj.grupoTransportista.getForms().length;
