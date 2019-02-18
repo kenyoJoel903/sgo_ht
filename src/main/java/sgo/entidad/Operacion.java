@@ -10,6 +10,8 @@ import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
 
 public class Operacion extends EntidadBase {
+	
+	private static final long serialVersionUID = 1L;
 	private int id_operacion;
 	private int id_cliente;
 	private String nombre;
@@ -28,6 +30,7 @@ public class Operacion extends EntidadBase {
 	private ArrayList<Transportista> transportistas;
 	private String correoPara;
 	private String correoCC;
+	private int volumenDescargado;
 	
 	//Agregado por req 9000002570====================
 	private ArrayList<OperacionEtapaRuta> etapas;
@@ -384,6 +387,14 @@ public String getCorreoCC() {
 public void setCorreoCC(String correoCC) {
 	this.correoCC = correoCC;
 }
- 
+
+public int getVolumenDescargado() {
+	return volumenDescargado;
+}
+
+public void setVolumenDescargado(int volumenDescargado) {
+	this.volumenDescargado = volumenDescargado;
+}
+
 
 }

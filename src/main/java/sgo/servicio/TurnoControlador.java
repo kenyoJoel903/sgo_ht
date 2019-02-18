@@ -853,7 +853,7 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
 public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
 	
 	RespuestaCompuesta respuesta = null;
-	AuthenticatedUserDetails principal = null;
+	AuthenticatedUserDetails principal = null; 
 	
 	try { 
 		
@@ -1264,6 +1264,19 @@ public @ResponseBody RespuestaCompuesta recuperarCierre(HttpServletRequest httpR
         perfilHorario.setLstDetalles(lstDetalles);
         
         eTurno.setPerfilHorario(perfilHorario);
+        
+        /**
+         * Traer valor de tabla 'parametro'
+         */
+        ParametrosListar parametros = new ParametrosListar();
+		parametros.setFiltroParametro(Parametro.ALIAS_VALIDACION_EXCEL_ROW);
+		respuesta = dParametro.recuperarRegistros(parametros);
+	    if (!respuesta.estado) {
+	    	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+	    }
+	    
+		Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
+		eTurno.setValidacionExcelRows(eParametro.getValorInt());
 
         /**
          * Guarda todo en la respuesta

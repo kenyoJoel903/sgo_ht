@@ -23,6 +23,7 @@ public class Parametro extends EntidadBase {
 	public static final String ALIAS_DIRECTORIO_ARCHIVOS = "DIRECTORIO_ARCHIVOS";
 	public static final String ALIAS_PERIODO_NOTIFICACION = "PERIODO_NOTIFICACION";
 	public static final String ALIAS_CONTOMETRO_REGISTROS = "CONTOMETRO_REGISTROS";
+	public static final String ALIAS_VALIDACION_EXCEL_ROW = "VALIDACION_EXCEL_ROW";
 	
 	//SEGURIDAD LOGIN
 	public static final String ALIAS_MAX_CAMBIO_CLAVE = "MAX_CAMBIO_CLAVE";

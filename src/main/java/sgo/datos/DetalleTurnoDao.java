@@ -246,7 +246,7 @@ public class DetalleTurnoDao {
         consultaSQL.append(" WHERE ");
         consultaSQL.append(NOMBRE_CAMPO_CLAVE_TURNO);
         consultaSQL.append("=?");
-        consultaSQL.append(" ORDER BY t1.alias_contometro DESC ");
+        consultaSQL.append(" ORDER BY t1.alias_contometro ASC ");
 
         listaRegistros = jdbcTemplate.query(consultaSQL.toString(), new Object[] {idTurno}, new DetalleTurnoMapper());
         contenido.totalRegistros=listaRegistros.size();

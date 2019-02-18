@@ -214,20 +214,24 @@
 					    <table class="grupo-apertura table-scroll sgo-simple-table table table-condensed">
 			      			<thead>
 			      				<tr>
-				      				<td><label class="text-left">Cont&oacute;metro</label></td>
-									<td><label class="text-left">Producto</label></td>
-									<td><label class="text-left">Lectura Inicial</label></td>
+			      					<td><label>Secuencia</label></td>
+				      				<td><label>Cont&oacute;metro</label></td>
+									<td><label>Producto</label></td>
+									<td><label>Lectura Inicial</label></td>
 			      				</tr>
 			      			</thead>
 			      			<tbody id="GrupoApertura" style="<%=tableAttributes.getBodyStyle() %>">
 			      				<tr id="GrupoApertura_template">
-			      					<td class="celda-detalle" style="width:30%;">				
+			      					<td class="celda-detalle">				
+			      						<input elemento-grupo="secuencia" id="GrupoApertura_#index#_Secuencia" name="programacion[detalle][#index#][secuencia]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
+			      					</td>
+			      					<td class="celda-detalle">				
 			      						<input elemento-grupo="contometro" id="GrupoApertura_#index#_Contometro" name="programacion[detalle][#index#][id_contometro]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
 			      					</td>
-			      					<td class="celda-detalle" style="width:50%;">
+			      					<td class="celda-detalle">
 										<input elemento-grupo="producto" id="GrupoApertura_#index#_Producto" name="programacion[detalle][#index#][id_producto]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
 			      					</td>
-			      					<td class="celda-detalle" style="width:20%;">
+			      					<td class="celda-detalle">
 										<input elemento-grupo="lecturaInicial" id="GrupoApertura_#index#_LecturaInicial" name="programacion[detalle][#index#][lectura_inicial]" readonly="readonly" type="text" class="form-control input-sm text-left"/>
 			      					</td>
 			      				</tr>
@@ -306,28 +310,32 @@
 					    <table class="grupo-cierre table-scroll sgo-simple-table table table-condensed">
 			      			<thead>
 			      				<tr>
-				      				<td><label class="text-left">Cont&oacute;metro</label></td>
-									<td><label class="text-left">Producto</label></td>
-									<td><label class="text-center">Lectura Inicial</label></td>
-									<td><label class="text-center">Lectura Final</label></td>
-									<td><label class="text-center">Dif. Vol. Encontrado</label></td>
+				      				<td><label>Secuencia</label></td>
+				      				<td><label>Cont&oacute;metro</label></td>
+									<td><label>Producto</label></td>
+									<td><label>Lectura Inicial</label></td>
+									<td><label>Lectura Final</label></td>
+									<td><label>Dif. Vol. Encontrado</label></td>
 			      				</tr>
 			      			</thead>
 			      			<tbody id="GrupoCierre" style="<%=tableAttributes.getBodyStyle() %>">
 			      				<tr id="GrupoCierre_template">
-			      					<td class="celda-detalle" style="width:28%;">				
+			      					<td class="celda-detalle">				
+			      						<input elemento-grupo="secuencia" id="GrupoCierre_#index#_Secuencia" name="cierre[detalle][#index#][secuencia]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
+			      					</td>
+			      					<td class="celda-detalle">				
 			      						<input elemento-grupo="contometro" id="GrupoCierre_#index#_Contometro" name="cierre[detalle][#index#][id_contometro]" type="text" readonly="readonly" class="form-control input-sm text-left"/>
 			      					</td>
-			      					<td class="celda-detalle" style="width:27%;">
+			      					<td class="celda-detalle">
 									 <input elemento-grupo="producto" id="GrupoCierre_#index#_Producto" name="cierre[detalle][#index#][id_producto]" type="text" class="form-control input-sm text-left" readonly="readonly"/>
 			      					</td>
-			      					<td class="celda-detalle" style="width:15%;">
+			      					<td class="celda-detalle">
 										<input elemento-grupo="lecturaInicial" id="GrupoCierre_#index#_LecturaInicial" name="cierre[detalle][#index#][lectura_inicial]" type="text" readonly="readonly"  class="form-control input-sm text-left"/>
 			      					</td>
-			      					<td class="celda-detalle" style="width:15%;">
+			      					<td class="celda-detalle">
 										<input elemento-grupo="lecturaFinal" id="GrupoCierre_#index#_LecturaFinal" name="cierre[detalle][#index#][lectura_final]" maxlength="8" type="text" class="form-control input-sm text-left"/>
 			      					</td>
-			      					<td class="celda-detalle" style="width:15%;">
+			      					<td class="celda-detalle">
 										<input elemento-grupo="lecturaDifVolEncontrado" id="GrupoCierre_#index#_LecturaDifVolEncontrado" name="cierre[detalle][#index#][lectura_dif_vol_encontrado]" readonly="readonly" type="text" class="form-control input-sm text-left"/>
 			      					</td>
 			      				</tr>
@@ -475,8 +483,8 @@
 			</div>
 			<div class="modal-body">
 			
-				<div class="callout callout-danger" style="display: none;"></div>
-				<div class="callout callout-warning" style="display: none;">
+				<div class="callout callout-danger callout-width" style="display: none;"></div>
+				<div class="callout callout-warning callout-width" style="display: none;">
 					<i class="fa fa-fw fa-spin fa-refresh"></i> Inicio de validación...
 				</div>
 				
@@ -487,7 +495,7 @@
 								<label>Operación / Cliente:</label>
 							</td>
 							<td class="celda-detalle">
-								<span id="cmpClienteCierre">KIO / GRIFO KIO</span>
+								<span id="modalClienteCierre"></span>
 							</td>
 						</tr>
 						<tr>
@@ -495,7 +503,7 @@
 								<label>Estación:</label>
 							</td>
 							<td class="celda-detalle">
-								<span id="cmpEstacionCierre">ESTACION KIO</span>
+								<span id="modalEstacionCierre"></span>
 							</td>
 						</tr>
 						<tr>
@@ -505,10 +513,7 @@
 							<td class="celda-detalle">
 								<span 
 									class="form-control alert-primary text-center espaciado input-sm text-uppercase" 
-									style="width:50%;"
-									id="cmpDiaOperativoCierre">
-									02/08/2019 17:17
-								</span>
+									id="modalDiaOperativoCierre"></span>
 							</td>
 						</tr>
 						<tr>

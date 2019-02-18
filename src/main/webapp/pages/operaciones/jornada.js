@@ -269,6 +269,7 @@ $(document).ready(function() {
 	        return registro.nombreCompletoOperario || registro.text;
 	    },
     });
+    
     this.obj.GrupoAperturaContometros = $('#GrupoAperturaContometros').sheepIt({
         separator: '',
         allowRemoveLast: true,
@@ -280,10 +281,10 @@ $(document).ready(function() {
         iniFormsCount: 0,
         
         //Se agrego esta linea por el problema de los contometros en la apertura de jornado 
-        //TODO colocar incidencia o requerimiento
+        //colocar incidencia o requerimiento
         maxFormsCount: 500,
         afterAdd: function(origen, formularioNuevo) {
-        	console.log("afterAdd");
+
           var cmpIdContometros=$(formularioNuevo).find("input[elemento-grupo='idContometros']");
           var cmpContometros=$(formularioNuevo).find("input[elemento-grupo='contometros']");
           var cmpProductoContometro=$(formularioNuevo).find("select[elemento-grupo='productosContometros']");
@@ -417,19 +418,7 @@ $(document).ready(function() {
         	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(29);
         	  moduloActual.calcularFactorCorreccion(cmpApi60.val(), cmpTemperatura.val(), "grupoAperturaTanques", indiceFormulario);
           });
-          
-         /* cmpTemperatura.on("change",function(){
-        	  console.log("entra en cmpTemperatura change");
-            var idElemento = $(this).attr("id");
-            moduloActual.calcularFactor(idElemento);
-          });
-         
-          cmpApi60.on("change",function(){
-        	  console.log("entra en cmpApi60 change");
-            var idElemento = $(this).attr("id");
-            moduloActual.calcularFactor(idElemento);
-          });*/
-          
+
           cmpProductosTanques.on('change', function(e){
         	var formulario = moduloActual.obj.grupoAperturaTanques.getForm(($(formularioNuevo).attr('id')).substring(29));  
         	formulario.find("input[elemento-grupo='medidaInicial']").val(""); // volumen_temperatura_observada
@@ -442,11 +431,11 @@ $(document).ready(function() {
           
 //      	Inicio Agregado por req 9000003068===============
           cmpDesp.on('click', function(e){
-        	  console.log('cmpDesp:' + cmpDesp.prop('checked'));
+
         	  var check = cmpDesp.prop('checked');
         	  
         	  if(check){
-        		  console.log(moduloActual.obj.tipoAperturaTanque.val());
+
         		  var tipoApTanque = moduloActual.obj.tipoAperturaTanque.val();
         		  
         		  if(tipoApTanque == 1){
@@ -461,10 +450,7 @@ $(document).ready(function() {
   							var nombreProductoTanque = cmpProductoTanque.val();
   							var idTanque = cmpIdTanque.val();
   							var checkTemp = cmpDespTemp.prop('checked');
-  							
-  							console.log(cmpProductosTanques.val() + ' ' + nombreProductoTanque);
-  							console.log(cmpIdTanques.val() + ' ' + idTanque);
-  							console.log(checkTemp)
+
   							if(cmpProductosTanques.val() == nombreProductoTanque && cmpIdTanques.val() != idTanque && checkTemp){  								
   								moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede desplegar más de un tanque para el producto " + nombreProductoTanque+ ". Corrija su selección o verifique el diseño de la Estación de Servicio");
   								cmpDesp.prop('checked', false);
@@ -981,11 +967,10 @@ $(document).ready(function() {
 				var cmpIdTanques = formularioTanques.find("input[elemento-grupo='idTanques']");
 				var cmpDesp = formularioTanques.find("input[elemento-grupo='desp']");
 				
-				console.log('cmpDesp:' + cmpDesp.prop('checked'));
 				  var check = cmpDesp.prop('checked');
 				  
 				  if(check){
-					  console.log(moduloActual.obj.tipoAperturaTanque.val());
+
 					  var tipoApTanque = moduloActual.obj.tipoAperturaTanque.val();
 					  
 					  if(tipoApTanque == 1){
@@ -1000,10 +985,7 @@ $(document).ready(function() {
 								var nombreProductoTanque = cmpProductoTanque.val();
 								var idTanque = cmpIdTanque.val();
 								var checkTemp = cmpDespTemp.prop('checked');
-								
-								console.log(cmpProductosTanques.val() + ' ' + nombreProductoTanque);
-								console.log(cmpIdTanques.val() + ' ' + idTanque);
-								console.log(checkTemp)
+
 								if(cmpProductosTanques.val() == nombreProductoTanque && cmpIdTanques.val() != idTanque && checkTemp){  								
 									moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede desplegar más de un tanque para el producto " + nombreProductoTanque+ ". Corrija su selección o verifique el diseño de la Estación de Servicio");
 									valido = 1;
@@ -1044,9 +1026,7 @@ $(document).ready(function() {
 							var formularioTanque= filas.getForm(j);
 							var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
 							var nombreProductoTanque = cmpProductoTanque.val();
-							
-							console.log(element.nombre + ' ' + nombreProductoTanque);
-							
+
 							if(element.nombre == nombreProductoTanque){
 								encontrado = 1;
 								break;
@@ -1060,13 +1040,10 @@ $(document).ready(function() {
 			    	
 			    	if(mensaje != ""){
 				    	mesaje = mensaje.substring(0, mensaje.length - 1);
-				    	console.log('mensaje: ' + mensaje)
 				    	$("#cmpMensajeConfirmGuardarApertura").text("Los productos " + mensaje + " no tienen tanque asignado. ¿Desea continuar? Esta configuración es irreversible");
 			    		$("#frmConfirmarGuardarApertura").show();
 			    	}else{
-			    		console.log('1 botonGuardarApertura');
 			    		moduloActual.botonGuardarApertura();
-			    		console.log('2 botonGuardarApertura');
 			    	}
 			
 			    },
@@ -1118,7 +1095,7 @@ $(document).ready(function() {
 		  parametros.apiCorregido=apiCorregido;
 		  parametros.temperatura=temperatura;
 		  parametros.volumenObservado = 0;
-		  console.log(parametros);
+
 		  $.ajax({
 		    type: constantes.PETICION_TIPO_GET,
 		    url: '../admin/formula/recuperar-factor-correccion',
@@ -1129,7 +1106,6 @@ $(document).ready(function() {
 		        ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede calcular el factor");
 		      } else {
 		        var registro = respuesta.contenido.carga[0];
-		        console.log(registro);
 		        factorCorreccion = registro.factorCorreccion;
 
 		        if (nombreSheepit == "grupoAperturaTanques"){
@@ -1202,7 +1178,7 @@ $(document).ready(function() {
 				parametros.filtroModulo = "JORNADA";
 			    parametros.filtroTanque = parseInt(formulario.find("input[elemento-grupo='idTanqueJornadaCierre']").val());
 			    parametros.filtroCentimetros = parseInt(formulario.find("input[elemento-grupo='medidaFinalTanque']").val()); 
-			    console.log(parametros);
+	
 			    $.ajax({
 			      type: constantes.PETICION_TIPO_GET,
 			      url:'./aforo-tanque/interpolacion', 
@@ -1339,7 +1315,6 @@ $(document).ready(function() {
 	
 //	Inicio Agregado por req 9000003068===============
 	referenciaModulo.obj.tipoAperturaTanque.val(registro.estacion.tipoAperturaTanque);
-	console.log('registro.estacion.tipoAperturaTanque: ' + registro.estacion.tipoAperturaTanque);
 //	Fin Agregado por req 9000003068=================
 	
 	if(registro.registroNuevo == false){
@@ -1362,8 +1337,6 @@ $(document).ready(function() {
 	      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
 	      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
 	      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
-	      
-	      console.log("3a:" + contador)
 
 	      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
 	      formulario.find("input[elemento-grupo='lecturaInicial']").val(registro.contometroJornada[contador].lecturaFinal);
@@ -1461,7 +1434,7 @@ $(document).ready(function() {
     var eRegistro = {};
     var referenciaModulo=this;
     try {
-    	console.log(referenciaModulo.obj.cmpAperturaFechaJornada.text());
+
 	    // datos para la jornada
 	    eRegistro.id = parseInt(referenciaModulo.idRegistro);
 	    eRegistro.idEstacion = parseInt(referenciaModulo.obj.filtroEstacion.val());
@@ -1524,7 +1497,7 @@ $(document).ready(function() {
 
 	        eRegistro.tanqueJornada.push(tanqueJornada);
 	      }
-	console.log(eRegistro);
+
     }  catch(error){
       console.log(error.message);
     }
@@ -1532,10 +1505,9 @@ $(document).ready(function() {
   };
 
   // ==============================================Formulario Cierre ============================================
-  moduloActual.llenarFormularioCierre = function(registro){
-	  var referenciaModulo = this;
-	  console.log("==============================================Formulario Cierre ============================================");
-
+  moduloActual.llenarFormularioCierre = function(registro) {
+	  
+	var referenciaModulo = this;
 	var numeroContometros = 0;
 	var numeroTanques = 0;
 	var numeroProductos = 0;
@@ -1619,9 +1591,7 @@ $(document).ready(function() {
 	      formularioCierreTanque.find("input[elemento-grupo='volAguaFinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenAguaFinal.toFixed(2));
 	      formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', false);
 	      formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false);
-	      
-	      console.log(registro.tanqueJornadaCierre[cont].medidaFinal);
-	       
+
 	      if(registro.tanqueJornadaCierre[cont].horaFinal == null){
 	    	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").prop('disabled', false);
 	    	  formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").prop('disabled', false);
@@ -1698,7 +1668,7 @@ $(document).ready(function() {
 	    eRegistro.contometroJornada = [];
 	    // datos para los contometros de la jornada
 	    var numeroContometros = referenciaModulo.obj.GrupoCierreContometros.getForms().length;
-	    console.log("numeroContometros " + numeroContometros);
+
 	      for(var contador = 0; contador < numeroContometros; contador++){
 	        var contometroJornada = {};
 	        var formularioContometro = referenciaModulo.obj.GrupoCierreContometros.getForm(contador);
@@ -1726,7 +1696,7 @@ $(document).ready(function() {
 	      eRegistro.tanqueJornada = [];
 	      // datos para los contometros de la jornada
 	      var numeroTanques = referenciaModulo.obj.GrupoCierreTanques.getForms().length;
-	      console.log("numeroTanques " + numeroTanques)
+
 	      for(var contador = 0; contador < numeroTanques; contador++){
 	        var tanqueJornada = {};
 	        var formularioTanque = referenciaModulo.obj.GrupoCierreTanques.getForm(contador);
@@ -1788,7 +1758,7 @@ $(document).ready(function() {
 	      eRegistro.muestreo = [];
 	      // datos para los contometros de la jornada
 	      var numeroMuestreos = referenciaModulo.obj.GrupoCierreProducto.getForms().length;
-	      console.log("numeroMuestreos " + numeroMuestreos);
+
 	      for(var i = 0; i < numeroMuestreos; i++){
 	        var muestreo = {};
 	        var formularioTanque = referenciaModulo.obj.GrupoCierreProducto.getForm(i);
@@ -1808,7 +1778,7 @@ $(document).ready(function() {
 	        muestreo.origen = 2; // ORIGEN_CIERRE
 	        eRegistro.muestreo.push(muestreo);
 	      }
-	console.log(eRegistro);
+
     }  catch(error){
       console.log(error.message);
     }
@@ -1859,7 +1829,7 @@ $(document).ready(function() {
     	indiceTanque = registro.tanqueJornada.length;
     }
     $('#lista_tanque_jornada').html("");
-    console.log(registro.tanqueJornada.length);
+
     if(indiceTanque == 0){
     	g_tr  = '<tr><td class="text-left">'  + "No se encontraron Tanques" + '</td></tr>'; 
     	filaTanque.append(g_tr);
@@ -1965,9 +1935,7 @@ $(document).ready(function() {
 // ==============================================Formulario Cambio Tanque  ============================================
   moduloActual.llenarFormularioCambioTanque = function(registro){
 	var referenciaModulo = this;
-	console.log("=================================== Formulario Cambio de Tanque =======================================");
-//    console.log(registro);
-//	var numeroTanques = 0;
+
     referenciaModulo.obj.cmpCambioTanqueEstacion.text(registro.estacion.nombre);
     referenciaModulo.obj.cmpCambioTanqueFechaJornada.text(utilitario.formatearFecha(registro.fechaOperativa));
     referenciaModulo.obj.cmpCambioTanqueOperador1.text(registro.operario1.nombreCompletoOperario);
@@ -1978,7 +1946,7 @@ $(document).ready(function() {
   moduloActual.recuperarValoresCambioTanque = function(registro){
     var eRegistro = {};
     var referenciaModulo=this;
-    console.log("entra en recuperarValoresCambioTanqueFinal");
+
     eRegistro.idJornada = parseInt(referenciaModulo.obj.idJornada);
     eRegistro.tanqueJornadaFinal = [];
 	eRegistro.tanqueJornadaInicial = [];
@@ -2004,20 +1972,12 @@ $(document).ready(function() {
           var cmpFactorFinal 				= formulario.find("input[elemento-grupo='factorFinal']");
           var cmpVol60Final 				= formulario.find("input[elemento-grupo='vol60Final']");
           var cmpVolAguaFinal 				= formulario.find("input[elemento-grupo='volAguaFinal']");
-      //    var cmpFsFinal = formulario.find("input[elemento-grupo='fsFinal']");
-      //    var cmpDespFinal = formulario.find("input[elemento-grupo='despFinal']");
-          
 
           tanqueJornadaFinal.idTjornada 	= parseInt(cmpIdTanqueJornadaFinal.val());
           tanqueJornadaFinal.idTanque 		= parseInt(cmpIdTanqueFinal.val());
           tanqueJornadaFinal.descripcionTanque	= cmpDescripcionTanqueFinal.val();
           tanqueJornadaFinal.idJornada 		= parseInt(referenciaModulo.obj.idJornada);
           tanqueJornadaFinal.idProducto 	= parseInt(cmpIdProductoFinal.val());
-
-          
-  		console.log("cmpDescripcionTanqueFinal " + cmpDescripcionTanqueFinal.val());
-  		console.log("cmpHoraFinal " + cmpHoraFinal.val());
-  		
           tanqueJornadaFinal.horaFinal=utilitario.formatearStringToDateHour(cmpHoraFinal.val());
           tanqueJornadaFinal.medidaFinal = parseFloat(cmpMedidaFinal.val().replace(moduloActual.SEPARADOR_MILES,""));
           tanqueJornadaFinal.volumenObservadoFinal = parseFloat(cmpVolObsFinal.val().replace(moduloActual.SEPARADOR_MILES,""));
@@ -2049,20 +2009,13 @@ $(document).ready(function() {
           var cmpTemperaturaInicial 		= formulario.find("input[elemento-grupo='temperaturaInicial']");
           var cmpFactorInicial 				= formulario.find("input[elemento-grupo='factorInicial']");
           var cmpVol60Inicial 				= formulario.find("input[elemento-grupo='vol60Inicial']");
-      //    var cmpFsInicial = formulario.find("input[elemento-grupo='fsInicial']");
-      //    var cmpDespInicial = formulario.find("input[elemento-grupo='despInicial']");
-          
+
           tanqueJornadaInicial.idTjornada 			= parseInt(cmpIdTanqueJornadaInicial.val());
           tanqueJornadaInicial.idTanque 			= parseInt(cmpIdTanqueInicial.val());
           tanqueJornadaInicial.descripcionTanque 	= cmpDescripcionTanqueInicial.val();
           tanqueJornadaInicial.idJornada			= parseInt(referenciaModulo.obj.idJornada);
           tanqueJornadaInicial.idProducto			= parseInt(cmpIdProductoInicial.val());
-
-		console.log("cmpDescripcionTanqueInicial " + cmpDescripcionTanqueInicial.val());
-		console.log("cmpHoraInicial " + cmpHoraInicial.val());
-		
-		  tanqueJornadaInicial.horaInicial   = utilitario.formatearStringToDateHour(cmpHoraInicial.val());
-            
+		  tanqueJornadaInicial.horaInicial   = utilitario.formatearStringToDateHour(cmpHoraInicial.val()); 
           tanqueJornadaInicial.medidaInicial = parseFloat(cmpMedidaInicial.val().replace(moduloActual.SEPARADOR_MILES,""));
           tanqueJornadaInicial.volumenObservadoInicial = parseFloat(cmpVolObsInicial.val().replace(moduloActual.SEPARADOR_MILES,""));
           tanqueJornadaInicial.apiCorregidoInicial = parseFloat(cmpApi60Inicial.val().replace(moduloActual.SEPARADOR_MILES,""));
@@ -2071,7 +2024,7 @@ $(document).ready(function() {
           tanqueJornadaInicial.volumenCorregidoInicial = parseFloat(cmpVol60Inicial.val().replace(moduloActual.SEPARADOR_MILES,""));
           eRegistro.tanqueJornadaInicial.push(tanqueJornadaInicial);
 		}
-		console.log(eRegistro);
+
     }  catch(error){
       console.log(error.message);
     } 
@@ -2119,8 +2072,8 @@ $(document).ready(function() {
 
   moduloActual.recuperarValoresMuestreo = function(registro){
     var eRegistro = {};
-    console.log("entra en recuperarValoresMuestreo");
     var referenciaModulo=this;
+    
     try {
 	  // datos para la jornada
 	  eRegistro.id = parseInt(referenciaModulo.obj.idJornada);
@@ -2151,13 +2104,6 @@ $(document).ready(function() {
 
 		muestreo.id = parseInt(id.val());
 		muestreo.idJornada = parseInt(referenciaModulo.obj.idJornada);
-		
-		console.log("cmpHoraMuestra " + cmpHoraMuestra.val());
-		console.log("cmpIdProducto " + cmpIdProducto.val());
-		console.log("cmpApi " + cmpApi.val());
-		
-		
-
         muestreo.productoMuestreado = parseInt(cmpIdProducto.val());
         muestreo.apiMuestreo = parseFloat(cmpApi.val().replace(moduloActual.SEPARADOR_MILES,""));
         muestreo.temperaturaMuestreo = parseFloat(cmpTemperatura.val().replace(moduloActual.SEPARADOR_MILES,""));
@@ -2167,7 +2113,7 @@ $(document).ready(function() {
         muestreo.origen = 1; // ORIGEN_MUESTREO
         eRegistro.muestreo.push(muestreo);
       }
-      console.log(eRegistro);
+ 
 	}  catch(error){
 	  console.log(error.message);
 	}
