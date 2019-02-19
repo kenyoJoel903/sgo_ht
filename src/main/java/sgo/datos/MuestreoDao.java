@@ -279,13 +279,14 @@ public class MuestreoDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta eliminarRegistroPorHoraMuestreo(int idJornada, Timestamp horaMuestreo){
+	//Se agrego parametro idProducto por req 9000003068 en params y en el sql tambien
+	public RespuestaCompuesta eliminarRegistroPorHoraMuestreo(int idJornada, Timestamp horaMuestreo, int idProducto){
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		int rowsAffected=0;	
 		String sql="";
-		Object[] params = {idJornada, horaMuestreo};
+		Object[] params = {idJornada, horaMuestreo, idProducto};
 		try {
-			sql="DELETE FROM " + NOMBRE_TABLA + " WHERE id_jornada = ? and hora_muestreo = ? ";
+			sql="DELETE FROM " + NOMBRE_TABLA + " WHERE id_jornada = ? and hora_muestreo = ? and producto_muestreado = ? ";
         	rowsAffected = jdbcTemplate.update(sql, params);
         	respuesta.estado = true;
 			/*if (rowsAffected==1){

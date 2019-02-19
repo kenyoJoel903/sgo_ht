@@ -1,6 +1,8 @@
 package sgo.servicio;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import sgo.datos.BitacoraDao;
 import sgo.datos.ContometroDao;
 import sgo.datos.ContometroJornadaDao;
@@ -34,6 +38,7 @@ import sgo.datos.JornadaDao;
 import sgo.datos.MuestreoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.OperarioDao;
+import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PerfilHorarioDao;
 import sgo.datos.ProductoDao;
 import sgo.datos.TanqueDao;
@@ -52,6 +57,7 @@ import sgo.entidad.Muestreo;
 import sgo.entidad.Operacion;
 import sgo.entidad.Operario;
 import sgo.entidad.ParametrosListar;
+import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Producto;
 import sgo.entidad.Respuesta;
@@ -62,8 +68,6 @@ import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class JornadaControlador {
@@ -106,6 +110,9 @@ public class JornadaControlador {
 //	Inicio agregado por requerimiento 9000003068=============
 	 @Autowired
 	 private PerfilHorarioDao dPerfilHorario;
+	 
+	 @Autowired
+	 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
 //		Fin agregado por requerimiento 9000003068========
 	
 	private DataSourceTransactionManager transaccion;//Gestor de la transaccion
@@ -1271,17 +1278,25 @@ public class JornadaControlador {
             
             //Se quito del for y se agrego aqui por incidencia 7000002340=====================================================
    		    //primero eliminamos los registros que hayan sido muestreados al cerrar la jornada (si los hubiera)
-	        long time = eJornada.getFechaOperativa().getTime();
-	      	Timestamp diaHoradeCierre = new Timestamp(time);
-	      	diaHoradeCierre.setHours(23);
-	      	diaHoradeCierre.setMinutes(59);
-	      	diaHoradeCierre.setSeconds(59);
-	      	
-        	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre);
-        	if (respuestaEliminaMuestreo.estado == false) {
-				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
-			}
+            //Comentado por req 9000003068====================================================================================
+//	        long time = eJornada.getFechaOperativa().getTime();
+//	      	Timestamp diaHoradeCierre = new Timestamp(time);
+//	      	diaHoradeCierre.setHours(23);
+//	      	diaHoradeCierre.setMinutes(59);
+//	      	diaHoradeCierre.setSeconds(59);
+//	      	
+//        	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre);
+//        	if (respuestaEliminaMuestreo.estado == false) {
+//				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
+//			}
         	//================================================================================================================
+        	//================================================================================================================
+            
+//          Inicio Agregado por req 9000003068==================================================
+            
+            Timestamp diaHoradeCierre = obtenerDiaHoraCierre(eJornada.getIdEstacion(), eJornada.getFechaOperativa().getTime(), locale);
+            
+//          Fin Agregado por req 9000003068==================================================
 
             RespuestaCompuesta respuestaMuestreoJornada = null;
             //esto para actualizar los tanques de la jornada
@@ -1299,6 +1314,7 @@ public class JornadaControlador {
 //                	diaHoradeCierre.setMinutes(59);
 //                	diaHoradeCierre.setSeconds(59);
                 	//==================================================================================================
+            		
                 	eMuestreoJornada.setHoraMuestreo(diaHoradeCierre);
                 	
 	            	Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
@@ -1317,6 +1333,15 @@ public class JornadaControlador {
 //	    		    if (validaFechas == false) {
 //						throw new Exception("La Fecha de Hora Final del muestreo debe ser igual a la fecha del dÃƒÂ­a operativo: " + Utilidades.convierteDateAString(eJornada.getFechaOperativa(), Constante.FORMATO_FECHA_DDMMYYYY) );
 //					}
+	    		    
+//            		Inicio Agregado por req 9000003068==================================
+                	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre, eMuestreoJornada.getProductoMuestreado());
+                	if (respuestaEliminaMuestreo.estado == false) {
+        				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
+        			}
+            		
+            		
+//            		Fin Agregado por req 9000003068=====================================
 	    		    
 	            	respuestaMuestreoJornada = dMuestreo.guardarRegistro(eMuestreoJornada);
 					if (respuestaMuestreoJornada.estado == false) {
@@ -1337,6 +1362,11 @@ public class JornadaControlador {
 		              	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
 		            }
             	} else {
+            		
+//                  Inicio Agregado por req 9000003068==================================================            		
+            		validarMuestreoEnRango(eJornada.getIdEstacion(), eJornada.getFechaOperativa(), eMuestreoJornada.getHoraMuestreo(), locale);
+//                  Fin Agregado por req 9000003068==================================================            		
+            		
             		if(Utilidades.esValido(eMuestreoJornada.getId()) && eMuestreoJornada.getId() > 0){
             			Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
     	    		    if (validacion.estado == false) {
@@ -1418,6 +1448,112 @@ public class JornadaControlador {
 		}
 		return respuesta;
 	}
+	
+//  Inicio Agregado por req 9000003068==================================================            		
+	private void validarMuestreoEnRango(int idEstacion, Date fechaOperativa, Timestamp fechaMuestreo, Locale locale) throws Exception{
+		
+		Date fechaOperativaTemp = new Date(fechaOperativa.getTime());
+		Timestamp fechaJornadaInicio = new Timestamp(fechaOperativaTemp.getTime());
+		
+		List<PerfilDetalleHorario> lstPerfilDetalleHorario = obtenerLstPerfilDetalleHorarioPorIdEstacion(idEstacion, locale);
+		
+		//El primer turno
+		PerfilDetalleHorario perfilDetalleHorarioTemp = lstPerfilDetalleHorario.get(0);
+		
+		String horInicio = perfilDetalleHorarioTemp.getHoraInicioTurno();
+		
+		String hora[] = horInicio.split(":");
+		
+		fechaJornadaInicio.setHours(Integer.parseInt(hora[0]));
+		fechaJornadaInicio.setMinutes(Integer.parseInt(hora[1]));
+		fechaJornadaInicio.setSeconds(00);
+		
+		for(int i = 0; i < lstPerfilDetalleHorario.size(); i++){
+			PerfilDetalleHorario ph = lstPerfilDetalleHorario.get(i);
+			
+			String horaInicio = ph.getHoraInicioTurno().replace(":", "");
+			String horaFin = ph.getHoraFinTurno().replace(":", "");
+			
+			if(Integer.parseInt(horaInicio) > Integer.parseInt(horaFin)){
+				 Calendar calendar = Calendar.getInstance();
+			     calendar.setTime(fechaOperativaTemp); 
+			     calendar.add(Calendar.DAY_OF_YEAR, 1);  
+			     fechaOperativaTemp.setTime(calendar.getTimeInMillis());
+			}
+		}
+		
+		Timestamp fechaJornadaFin = new Timestamp(fechaOperativaTemp.getTime());
+		
+		//El ultimo turno
+		perfilDetalleHorarioTemp = lstPerfilDetalleHorario.get(lstPerfilDetalleHorario.size() - 1);
+		
+		String horFin = perfilDetalleHorarioTemp.getHoraFinTurno();
+		
+		hora = horFin.split(":");
+		
+		fechaJornadaFin.setHours(Integer.parseInt(hora[0]));
+		fechaJornadaFin.setMinutes(Integer.parseInt(hora[1]));
+		fechaJornadaFin.setSeconds(59);
+		
+		if(fechaMuestreo.before(fechaJornadaInicio) || fechaMuestreo.after(fechaJornadaFin)){
+			throw new Exception("Fecha y hora (" + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(fechaMuestreo) + ") está fuera de horario de jornada, por favor verifique");
+		}
+		
+		
+		
+	}
+	
+	private List<PerfilDetalleHorario> obtenerLstPerfilDetalleHorarioPorIdEstacion(int idEstacion, Locale locale) throws Exception{
+		RespuestaCompuesta respuesta = dEstacion.recuperarRegistro(idEstacion);
+		if (respuesta.estado == false || respuesta.contenido.carga.size() == 0) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		Estacion estacionTemp = (Estacion) respuesta.contenido.carga.get(0);
+		int idPerfilHorarioTemp = estacionTemp.getPerfilHorario().getId();
+		
+		if(idPerfilHorarioTemp == 0){
+			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique",null,locale));
+		}
+		
+		respuesta = dPerfilHorario.recuperarRegistro(idPerfilHorarioTemp);
+		if (respuesta.estado == false || respuesta.contenido.carga.size() == 0) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		PerfilHorario perfilHorarioTemp = (PerfilHorario) respuesta.contenido.carga.get(0);
+		
+		respuesta = dPerfilDetalleHorario.recuperarRegistros(perfilHorarioTemp.getId());
+		if (respuesta.estado == false || respuesta.contenido.carga.size() == 0) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		List<PerfilDetalleHorario> lstPerfilDetalleHorario = (List<PerfilDetalleHorario>) respuesta.contenido.carga;
+		
+		return lstPerfilDetalleHorario;
+	}
+
+	private Timestamp obtenerDiaHoraCierre(int idEstacion, long time, Locale locale) throws Exception{
+		
+		Timestamp diaHoradeCierre = new Timestamp(time);
+		
+		List<PerfilDetalleHorario> lstPerfilDetalleHorario = obtenerLstPerfilDetalleHorarioPorIdEstacion(idEstacion, locale);
+		
+		//El ultimo turno
+		PerfilDetalleHorario perfilDetalleHorarioTemp = lstPerfilDetalleHorario.get(lstPerfilDetalleHorario.size() - 1);
+		
+		String horFin = perfilDetalleHorarioTemp.getHoraFinTurno();
+		
+		String hora[] = horFin.split(":");
+		
+      	diaHoradeCierre.setHours(Integer.parseInt(hora[0]));
+      	diaHoradeCierre.setMinutes(Integer.parseInt(hora[1]));
+      	diaHoradeCierre.setSeconds(59);
+
+		return diaHoradeCierre;
+		
+	}
+//  Fin Agregado por req 9000003068==================================================
 
 	@RequestMapping(value = URL_ELIMINAR_MUESTREO_JORNADA_RELATIVA ,method = RequestMethod.POST)
 	public @ResponseBody RespuestaCompuesta eliminarMuestreo(@RequestBody Muestreo eMuestreo, HttpServletRequest peticionHttp,Locale locale){

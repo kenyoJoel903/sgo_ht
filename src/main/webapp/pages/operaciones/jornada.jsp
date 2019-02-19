@@ -821,6 +821,15 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 				<table id="lista_tanque_jornada" class="sgo-table table table-striped"  style="width:100%;"></table>
 			</div>
 			<br />
+			
+<!-- 			Inicio Agregado por 9000003068 -->
+			<label><B>Muestras Por Producto </B></label>
+            <div class="box-body with-border">
+				<table id="lista_muestras_producto" class="sgo-table table table-striped"  style="width:100%;"></table>
+			</div>
+			<br />
+<!-- 			Fin Agregado por 9000003068 -->
+			
 			<label>Observaciones</label>
                           <table class="sgo-simple-table table table-condensed">
                             <thead>
