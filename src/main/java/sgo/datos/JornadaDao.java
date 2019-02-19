@@ -155,6 +155,7 @@ public class JornadaDao {
 			
 //			Inicio Agregado por req 9000003068===============
 			consultaSQL.append("t1.tipo_apertura_tanque,");
+			consultaSQL.append("t1.numero_decimales_contometro,");
 //			Fin Agregado por req 9000003068=================
 			
 			consultaSQL.append("t1.total_despachos,");
@@ -240,6 +241,7 @@ public class JornadaDao {
 			
 //			Inicio Agregado por req 9000003068===============
 			consultaSQL.append("t1.tipo_apertura_tanque,");
+			consultaSQL.append("t1.numero_decimales_contometro,");
 //			Fin Agregado por req 9000003068=================
 			
 			consultaSQL.append("t1.ip_actualizacion");

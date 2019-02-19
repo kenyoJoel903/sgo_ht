@@ -54,6 +54,7 @@ public class JornadaMapper implements RowMapper<Jornada> {
 			
 //			Inicio Agregado por req 9000003068===============		
 			eEstacion.setTipoAperturaTanque(rs.getInt("tipo_apertura_tanque"));
+			eEstacion.setNumeroDecimalesContometro(rs.getInt("numero_decimales_contometro"));
 //			Fin Agregado por req 9000003068=================
 			
 			eJornada.setEstacion(eEstacion);
