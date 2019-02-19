@@ -31,6 +31,7 @@ import sgo.datos.DiaOperativoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.EnlaceDao;
 import sgo.datos.PlantaDao;
+import sgo.datos.ProductoDao;
 import sgo.datos.TransportistaDao;
 import sgo.datos.TransportistaOperacionDao;
 import sgo.entidad.Bitacora;
@@ -67,7 +68,8 @@ public class OperacionControlador {
  private PlantaDao dPlantas; 
  @Autowired
  private TransportistaOperacionDao dTransportistaOperacion;
- 
+ @Autowired
+ private ProductoDao dProducto;
  @Autowired
  private ClienteDao dCliente;
 
@@ -84,7 +86,9 @@ public class OperacionControlador {
  private static final String URL_ACTUALIZAR_RELATIVA = "/operacion/actualizar";
  private static final String URL_RECUPERAR_COMPLETA = "/admin/operacion/recuperar";
  private static final String URL_RECUPERAR_RELATIVA = "/operacion/recuperar";
- 
+ private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/recuperaProductosEquivalentes";
+ private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/recuperaProductosEquivalentes";
+
 //Agregado por req 9000002570==================== 
  private static final String URL_RECUPERAR_ETAPAS_COMPLETA = "/admin/operacion/recuperarEtapas";
  private static final String URL_RECUPERAR_ETAPAS_RELATIVA = "/operacion/recuperarEtapas";
@@ -144,6 +148,7 @@ public class OperacionControlador {
 
  @RequestMapping(URL_GESTION_RELATIVA)
  public ModelAndView mostrarFormulario(Locale locale) {
+	 
   ModelAndView vista = null;
   AuthenticatedUserDetails principal = null;
   ArrayList<?> listaEnlaces = null;
@@ -152,8 +157,11 @@ public class OperacionControlador {
   ArrayList<?> listadoClientes = null;
   ArrayList<?> listadoTransportistas = null;
   ArrayList<?> listadoPlantas = null;
+  ArrayList<?> listProductosSecundarios = null;
   HashMap<String, String> mapaValores = null;
+  
   try {
+	  
    principal = this.getCurrentUser();
    respuesta = menu.Generar(principal.getRol().getId(), URL_GESTION_COMPLETA);
    if (respuesta.estado == false) {
@@ -186,24 +194,34 @@ public class OperacionControlador {
    parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
    respuesta = dPlantas.recuperarRegistros(parametros);
    if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
    }
    listadoPlantas = (ArrayList<?>) respuesta.contenido.carga;
    
+   parametros = new ParametrosListar();
+   parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
+   respuesta = dProducto.recuperarRegistros(parametros);
+   if (!respuesta.estado) {
+	   throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
+   }
+   listProductosSecundarios = (ArrayList<?>) respuesta.contenido.carga;
+   
    mapaValores = recuperarMapaValores(locale);
    vista = new ModelAndView("plantilla");
-   vista.addObject("vistaJSP", "mantenimiento/operacion.jsp");
+   vista.addObject("vistaJSP", "mantenimiento/operacion.jsp"); 
    vista.addObject("vistaJS", "mantenimiento/operacion.js");
    vista.addObject("identidadUsuario", principal.getIdentidad());
    vista.addObject("menu", listaEnlaces);
    vista.addObject("listadoClientes", listadoClientes);
    vista.addObject("listadoTransportistas", listadoTransportistas);
    vista.addObject("listadoPlantas", listadoPlantas);
-   
+   vista.addObject("listProductosSecundarios", listProductosSecundarios);
    vista.addObject("mapaValores", mapaValores);
-  } catch (Exception ex) {
+   
+  } catch (Exception e) {
 
   }
+  
   return vista;
  }
 
@@ -293,7 +311,6 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	return respuesta;
 
 }
- 
  
  /**
   * 
@@ -956,4 +973,55 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  private AuthenticatedUserDetails getCurrentUser() {
   return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
  }
+ 
+ /**
+  * 
+  * @param ID
+  * @param locale
+  * @return
+  */
+ @RequestMapping(value = URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.GET) 
+ public @ResponseBody
+ RespuestaCompuesta recuperaProductosEquivalentes(int ID, Locale locale) {
+
+ 	RespuestaCompuesta respuesta = null;
+ 	AuthenticatedUserDetails principal = null;
+
+ 	try {
+
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+
+ 		// Recuperar el registro
+ 		respuesta = dOperacion.recuperarRegistro(ID);
+ 		
+ 		// Verifica el resultado de la accion
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
+ }
+ 
 }

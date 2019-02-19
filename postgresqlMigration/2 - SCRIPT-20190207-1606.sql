@@ -1198,3 +1198,17 @@ CREATE OR REPLACE VIEW sgo.v_operacion AS
      JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
      JOIN sgo.cliente t4 ON t1.id_cliente = t4.id_cliente
      LEFT JOIN sgo.planta t5 ON t1.planta_despacho_defecto = t5.id_planta;
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-19 1605 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_RECUPERAR_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/recuperaProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'), 'Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+

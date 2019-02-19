@@ -536,4 +536,5 @@ public class ProductoControlador {
 	private  AuthenticatedUserDetails getCurrentUser(){
 		return  (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
+	
 }

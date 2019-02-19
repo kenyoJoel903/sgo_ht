@@ -5,6 +5,7 @@ $(document).ready(function() {
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
+  moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/recuperaProductosEquivalentes';
   
   //Agregado por req 9000002570====================
   moduloActual.URL_RECUPERAR_ETAPA = moduloActual.urlBase + '/recuperarEtapas';
@@ -95,11 +96,22 @@ $(document).ready(function() {
     //esto para alinear a la izquierda un decimal
     this.obj.cmpVolumenPromedioCisterna.css("text-align", "left");
     this.obj.cmpSincronizadoEl=$("#cmpSincronizadoEl");
+    
     this.obj.cmpIdCliente=$("#cmpIdCliente");
     this.obj.cmpIdCliente.tipoControl="select2";  
     this.obj.cmpIdCliente.nombreControl="cmpIdCliente"; 
-    this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false}); 
-    this.obj.btnAgregarTransportista=$("#btnAgregarTransportista");
+    this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false});
+    
+    this.obj.cmpProductosSecundarios = $("#cmpProductosSecundarios");
+    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
+    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosSecundarios"; 
+    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
+    
+    this.obj.btnAgregarTransportista = $("#btnAgregarTransportista");
+    this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
+    this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
+    this.obj.btnCerrarProductosEquivalentes = $("#btnCerrarProductosEquivalentes");
+    this.obj.ocultaContenedorProductosEquivalentes = $("#ocultaContenedorProductosEquivalentes");
     
     //Campos Agregados por 9000002570=========================
     this.obj.btnAgregarEtapa=$("#btnAgregarEtapa");
@@ -135,7 +147,7 @@ $(document).ready(function() {
     
     this.obj.grupoTransportista.addForm();
 
-    this.obj.btnAgregarTransportista.on("click",function(){
+    this.obj.btnAgregarTransportista.on("click", function(){
     	try {
     		moduloActual.obj.grupoTransportista.addForm();
     	} catch(error) {
@@ -143,8 +155,12 @@ $(document).ready(function() {
     	};
     });
     
-    this.obj.btnProductosEquivalentes.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+    this.obj.btnProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
     	moduloActual.productosEquivalentes();		
+    });
+    
+    this.obj.btnCerrarProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.cerrarProductosEquivalentes();
     });
     
     //Campos Agregados por 9000002570=========================
@@ -419,7 +435,6 @@ $(document).ready(function() {
     this.obj.vistaActualizadoEl=$("#vistaActualizadoEl");
     this.obj.vistaIpCreacion=$("#vistaIpCreacion");
     this.obj.vistaIpActualizacion=$("#vistaIpActualizacion");
-    this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
     
     //Campos Agregados por 9000002570=========================
     this.obj.cmpOperaciones=$("#cmpOperaciones");
@@ -747,13 +762,65 @@ $(document).ready(function() {
   };
   
   moduloActual.productosEquivalentes = function() {
-		
-		var _this = this;
 
-		console.log(" ******** productosEquivalentes /////// "); // JAFETH
-		  
-		referenciaModulo.obj.cntProductosEquivalentes.show();
+	console.log(" ::::::::: productosEquivalentes ::::::::: ");
+	
+	$.ajax({
+	    type: constantes.PETICION_TIPO_GET,
+	    url: moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES, 
+	    contentType: moduloActual.TIPO_CONTENIDO, 
+	    data: {
+	    	ID: moduloActual.idRegistro
+	    },	
+	    success: function(respuesta) {
+	    	if (!respuesta.estado) {
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+	    	} else {		 
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
+	    		
+    			console.dir(respuesta);
+	    		
+	    		moduloActual.obj.cntProductosEquivalentes.show();
+	    		moduloActual.obj.cntTabla.hide();
+	    		moduloActual.obj.ocultaContenedorProductosEquivalentes.hide();
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Se recupero el formulario de Productos Equivalentes");
+			}
+	    },			    		    
+	    error: function(xhr, status, error) {
+	    	moduloActual.mostrarErrorServidor(xhr, status, error);
+	    }
+	});
+  };
+  
+  moduloActual.cerrarProductosEquivalentes = function() {
+		
+	  moduloActual.obj.tituloSeccion.text(cadenas.TITULO_LISTADO_REGISTROS); 
+	  moduloActual.obj.cntProductosEquivalentes.hide();
+		
+//		this.obj.cntVistaRegistro.hide();
+//		this.obj.ocultaContenedorVista.show();
+		
+	  moduloActual.obj.cntTabla.show();
+	  moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Se cerró la vista de Productos Equivalentes");
+  };
+  
+  moduloActual.desactivarBotones = function() {
+	moduloActual.obj.btnModificarEstado.html(constantes.BOTON_ACTIVAR + constantes.TITULO_ACTIVAR_REGISTRO);
+	moduloActual.obj.btnModificar.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnModificarEstado.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnEtapas.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnVer.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnProductosEquivalentes.addClass(constantes.CSS_CLASE_DESHABILITADA);
+  };
+  
+  moduloBase.prototype.activarBotones = function() {	  
+	  moduloActual.obj.btnModificar.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnModificarEstado.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnVer.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnEtapas.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnProductosEquivalentes.removeClass(constantes.CSS_CLASE_DESHABILITADA);
   };
   
   moduloActual.inicializar();
+  
 });

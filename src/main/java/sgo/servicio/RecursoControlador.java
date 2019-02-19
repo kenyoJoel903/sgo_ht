@@ -17,9 +17,11 @@ public class RecursoControlador {
  private static final String URL_GESTION_RELATIVA="/recursos.js";
  
  @RequestMapping(URL_GESTION_RELATIVA)
- public ModelAndView mostrarFormulario( Locale locale){
-  ModelAndView vista =null;
+ public ModelAndView mostrarFormulario( Locale locale) {
+	 
+  ModelAndView vista = null;
   HashMap<String, String> hmRecursos = new HashMap<String,String>();
+  
   try {
    //Recursos
    hmRecursos.put("CERRAR_VISTA", gestorDiccionario.getMessage("sgo.cerrarVista",null,locale));
@@ -41,14 +43,11 @@ public class RecursoControlador {
    hmRecursos.put("ERROR_VALORES_FORMULARIO", gestorDiccionario.getMessage("sgo.erroValoresFormulario",null,locale));
    hmRecursos.put("LISTADO_RECUPERA_EXITOSO", gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale));
 
-   
-   //
    hmRecursos.put("TITULO_AGREGAR_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioAgregar",null,locale));
    hmRecursos.put("TITULO_MODIFICA_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioEditar",null,locale));
    hmRecursos.put("TITULO_DETALLE_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioVer",null,locale));
    hmRecursos.put("TITULO_LISTADO_REGISTROS", gestorDiccionario.getMessage("sgo.tituloFormularioListado",null,locale));
-   
-   
+
    hmRecursos.put("MENSAJE_CAMBIAR_REGISTRO", gestorDiccionario.getMessage("sgo.mensajeCambiarEstado",null,locale));
    hmRecursos.put("MENSAJE_ERROR_POR_LONGITUD", gestorDiccionario.getMessage("sgo.errorLongitudJustificacion",null,locale));
    hmRecursos.put("MENSAJE_ERROR_CODIGO_AUTORIZACION", gestorDiccionario.getMessage("sgo.errorCodigoAutorizacion",null,locale));
@@ -139,8 +138,8 @@ public class RecursoControlador {
    
    vista = new ModelAndView("recursos");
    vista.addObject("recursos",hmRecursos);
- } catch(Exception ex){
-   ex.printStackTrace();
+ } catch(Exception e){
+   e.printStackTrace();
  }
  return vista;
  }

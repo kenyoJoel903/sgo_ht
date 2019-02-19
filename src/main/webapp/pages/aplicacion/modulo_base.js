@@ -145,7 +145,6 @@ moduloBase.prototype.inicializarControlesGenericos=function(){
   this.obj.frmConfirmarEliminar=$("#frmConfirmarEliminar");
   this.obj.ocultaContenedorTabla=$("#ocultaContenedorTabla");
   this.obj.ocultaContenedorFormulario=$("#ocultaContenedorFormulario");
-  this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
   
   //Agregado por req 9000002570=========
   this.obj.ocultaContenedorEtapas=$("#ocultaContenedorEtapas");
@@ -333,8 +332,8 @@ moduloBase.prototype.iniciarGuardarEtapas=function(){
 	  try {
 		  referenciaModulo.obj.frmConfirmarGuardarEtapas.modal("hide");
 		  referenciaModulo.guardarRegistrosEtapas();
-	  } catch(error){
-	    referenciaModulo.mostrarDepuracion(error.message);
+	  } catch(error) {
+		  referenciaModulo.mostrarDepuracion(error.message);
 	  };
 };
 //===============================================
@@ -446,19 +445,21 @@ moduloBase.prototype.inicializarGrilla=function(){
 	});	
 	
 	$('#tablaPrincipal tbody').on(referenciaModulo.NOMBRE_EVENTO_CLICK, 'tr', function () {
-		if (referenciaModulo.obj.datClienteApi.data().length > 0){
-        var indiceFila = referenciaModulo.obj.datClienteApi.row( this ).index();
-        var idRegistro = referenciaModulo.obj.datClienteApi.cell(indiceFila,1).data();
-		    if ( $(this).hasClass('selected') ) {
-		        $(this).removeClass('selected');
-            referenciaModulo.desactivarBotones();
-        } else {
-		        referenciaModulo.obj.datClienteApi.$('tr.selected').removeClass('selected');
-		        $(this).addClass('selected');
-            referenciaModulo.idRegistro=idRegistro;		
-            referenciaModulo.grillaDespuesSeleccionar(indiceFila);
-            referenciaModulo.activarBotones();
-        }
+		
+		if (referenciaModulo.obj.datClienteApi.data().length > 0) {
+	        var indiceFila = referenciaModulo.obj.datClienteApi.row( this ).index();
+	        var idRegistro = referenciaModulo.obj.datClienteApi.cell(indiceFila, 1).data();
+	        
+			if ( $(this).hasClass('selected') ) {
+			    $(this).removeClass('selected');
+	            referenciaModulo.desactivarBotones();
+	        } else {
+			    referenciaModulo.obj.datClienteApi.$('tr.selected').removeClass('selected');
+			    $(this).addClass('selected');
+	            referenciaModulo.idRegistro=idRegistro;		
+	            referenciaModulo.grillaDespuesSeleccionar(indiceFila);
+	            referenciaModulo.activarBotones();
+	        }
 		}
 	});
 };
@@ -484,7 +485,7 @@ moduloBase.prototype.activarBotones=function(){
   //===============================================
 };
 
-moduloBase.prototype.desactivarBotones=function(){
+moduloBase.prototype.desactivarBotones=function() {
   this.obj.btnModificarEstado.html(constantes.BOTON_ACTIVAR + constantes.TITULO_ACTIVAR_REGISTRO);
   this.obj.btnModificar.addClass(constantes.CSS_CLASE_DESHABILITADA);
   this.obj.btnModificarEstado.addClass(constantes.CSS_CLASE_DESHABILITADA);
