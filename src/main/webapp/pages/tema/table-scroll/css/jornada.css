@@ -1,0 +1,44 @@
+@CHARSET "ISO-8859-1";
+
+/**
+* TABLA GRUPO APERTURA Agregado por req 9000003068
+*/
+table.grupo-apertura-contometros
+{
+	width: 100%;
+}
+
+
+table.grupo-apertura-contometros thead tr td:nth-child(1)
+{
+	width: 10% !important;    
+}
+
+table.grupo-apertura-contometros thead tr td:nth-child(2)
+{
+	width: 70% !important;    
+}
+
+table.grupo-cierre-contometros
+{
+	width: 100%;
+}
+
+table.grupo-cierre-contometros thead tr td:nth-child(1)
+{
+	width: 14.5% !important;    
+}
+
+
+table.grupo-cierre-contometros thead tr td:nth-child(2)
+{
+	width: 38.7% !important;    
+}
+
+table.grupo-cierre-contometros thead tr td:nth-child(3),
+table.grupo-cierre-contometros thead tr td:nth-child(4),
+table.grupo-cierre-contometros thead tr td:nth-child(5)
+{
+	width: 14.5% !important;    
+}
+

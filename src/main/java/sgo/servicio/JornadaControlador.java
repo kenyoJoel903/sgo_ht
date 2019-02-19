@@ -38,6 +38,7 @@ import sgo.datos.JornadaDao;
 import sgo.datos.MuestreoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.OperarioDao;
+import sgo.datos.ParametroDao;
 import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PerfilHorarioDao;
 import sgo.datos.ProductoDao;
@@ -56,12 +57,14 @@ import sgo.entidad.MenuGestor;
 import sgo.entidad.Muestreo;
 import sgo.entidad.Operacion;
 import sgo.entidad.Operario;
+import sgo.entidad.Parametro;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Producto;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
+import sgo.entidad.TableAttributes;
 import sgo.entidad.Tanque;
 import sgo.entidad.TanqueJornada;
 import sgo.entidad.Turno;
@@ -113,6 +116,9 @@ public class JornadaControlador {
 	 
 	 @Autowired
 	 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
+	 
+	@Autowired
+	private ParametroDao dParametro;
 //		Fin agregado por requerimiento 9000003068========
 	
 	private DataSourceTransactionManager transaccion;//Gestor de la transaccion
@@ -232,6 +238,20 @@ public class JornadaControlador {
 				throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
 			}
 			listaEstaciones = (ArrayList<?>) respuesta.contenido.carga;
+			
+//			Inicio Agregado por req 9000003068=============================================
+			parametros = new ParametrosListar();
+			parametros.setFiltroParametro(Parametro.ALIAS_CONTOMETRO_REGISTROS);
+			respuesta = dParametro.recuperarRegistros(parametros);
+		    if (!respuesta.estado) {
+		    	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		    }
+		    
+			Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
+
+			TableAttributes tableAttributes = new TableAttributes();
+			tableAttributes.setBodyStyle("height: " + eParametro.getValorInt() * 25 + "px !important;");
+//			Fin Agregado por req 9000003068=============================================
 
 			mapaValores = recuperarMapaValores(locale);
 			
@@ -240,6 +260,11 @@ public class JornadaControlador {
 			vista.addObject("vistaJS","operaciones/jornada.js");
 			vista.addObject("identidadUsuario",principal.getIdentidad());
 			vista.addObject("menu",listaEnlaces);
+			
+//			Inicio Agregado por req 9000003068=============================================
+			vista.addObject("tableAttributes", tableAttributes);
+//			Fin Agregado por req 9000003068=============================================
+			
 			vista.addObject("operaciones", listaOperaciones);
 			vista.addObject("estaciones", listaEstaciones);
 			vista.addObject("mapaValores",mapaValores);
@@ -382,7 +407,10 @@ public class JornadaControlador {
             parametros = new ParametrosListar();
             parametros.setIdJornada(ID);
             parametros.setPaginacion(Constante.SIN_PAGINACION);
-            parametros.setCampoOrdenamiento("id");
+            
+//            se cambia id por alias por req 9000003068
+            parametros.setCampoOrdenamiento("alias");
+            
 			parametros.setSentidoOrdenamiento("asc");
             //recuperamos los contometros de la jornada
 			respuesta = dContometroJornada.recuperarRegistros(parametros);
@@ -819,7 +847,11 @@ public class JornadaControlador {
 			 parametros3.setFiltroEstacion(parametros.getFiltroEstacion());
 			 parametros3.setFiltroEstado(Constante.ESTADO_ACTIVO);
 			 parametros3.setPaginacion(Constante.SIN_PAGINACION);
-			 parametros3.setCampoOrdenamiento("id");
+			 
+//			 Inicio Se cambia id por alias por req 9000003068
+			 parametros3.setCampoOrdenamiento("alias");
+//			 Fin Se cambia id por alias por req 9000003068
+			 
 			 parametros3.setSentidoOrdenamiento("asc");
 			 //para asignar la estaciÃ¯Â¿Â½n a la jornada
 			 oRespuesta = dEstacion.recuperarRegistro(parametros.getFiltroEstacion());
