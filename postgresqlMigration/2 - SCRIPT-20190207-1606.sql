@@ -1196,5 +1196,3 @@ CREATE OR REPLACE VIEW sgo.v_operacion AS
      JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
      JOIN sgo.cliente t4 ON t1.id_cliente = t4.id_cliente
      LEFT JOIN sgo.planta t5 ON t1.planta_despacho_defecto = t5.id_planta;
-
-     consultaSQL.append("t1.tipo_volumen_descargado");

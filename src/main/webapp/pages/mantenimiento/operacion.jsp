@@ -48,8 +48,14 @@
 			              <a id="btnModificarEstado" class="btn btn-default btn-sm disabled espaciado"><i class="fa fa-cloud-upload"></i>  <%=mapaValores.get("ETIQUETA_BOTON_ACTIVAR")%></a>
 			              <a id="btnVer" class="btn btn-default btn-sm disabled espaciado"><i class="fa fa-search"></i>  <%=mapaValores.get("ETIQUETA_BOTON_VER")%></a>
 			              <%--Inicio Agregado por 9000002570 --%>
-			              <a id="btnEtapas" class="btn btn-default btn-sm disabled espaciado"><%=mapaValores.get("ETIQUETA_BOTON_ETAPAS")%></a>
+			              <a id="btnEtapas" class="btn btn-default btn-sm disabled espaciado">
+			              	<%=mapaValores.get("ETIQUETA_BOTON_ETAPAS")%>
+		              	  </a>
 			              <%--Fin Agregado por 9000002570 --%>
+			              
+			              <a id="btnProductosEquivalentes" class="btn btn-default btn-sm espaciado">
+			              	<%=mapaValores.get("BOTON_PRODUCTOS_EQUIVALENTES")%>
+		              	  </a>
 						</div>
 					</div>
           <div class="box-body">
@@ -364,3 +370,24 @@
     <%-- Fin Agregado por 9000002570 --%>
   </section>
 </div>
+
+<div class="row" id="formProductosEquivalentes" style="display:none;">
+    <div class="col-md-12">
+        <div class="box box-default">
+            <div class="box-body">
+                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
+            </div>
+            <div class="box-footer">
+                <button id="btnCerrarVista" class="btn btn-danger btn-sm">
+                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%>
+                </button>
+            </div>
+            <div class="overlay" id="ocultaContenedorVista">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -3,7 +3,6 @@ package sgo.utilidades;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Locale;
 
 import javax.sql.DataSource;
@@ -28,6 +26,7 @@ import sgo.entidad.Respuesta;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
  * Clase base para hacer las validaciones.
  * 
@@ -673,6 +672,19 @@ public static boolean strToBool(String s) {
 	
     try { 
     	out = Boolean.valueOf(s);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
+public static boolean intToBool(int i) {
+	
+	boolean out = false;
+	
+    try { 
+    	out = i > 0;
     } catch(Exception e) { 
     	e.getStackTrace();
     }

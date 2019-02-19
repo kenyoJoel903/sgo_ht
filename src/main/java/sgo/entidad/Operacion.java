@@ -53,6 +53,8 @@ public class Operacion extends EntidadBase {
 	static final int MAXIMA_LONGITUD_VOLUMEN_PROM_CISTERNA=13;
 	static final int MAXIMA_LONGITUD_CORREO_PARA=250;
 	static final int MAXIMA_LONGITUD_CORREO_CC=250;
+	public static final int VOLUMEN_DESCARGADO_CISTERNA = 1;
+	public static final int VOLUMEN_RECIBIDO_EN_TANQUE = 2;
 
 	/**
 	 * @return the eta

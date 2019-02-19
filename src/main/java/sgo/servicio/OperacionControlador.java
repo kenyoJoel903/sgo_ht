@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-//9000002843 unused import antlr.collections.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sgo.datos.BitacoraDao;
@@ -72,7 +70,7 @@ public class OperacionControlador {
  
  @Autowired
  private ClienteDao dCliente;
- //
+
  private DataSourceTransactionManager transaccion;
  /** Nombre de la clase. */
  private static final String sNombreClase = "OperacionControlador";
@@ -104,38 +102,43 @@ public class OperacionControlador {
  private static final String URL_ACTUALIZAR_ESTADO_RELATIVA = "/operacion/actualizarEstado";
 
  private HashMap<String, String> recuperarMapaValores(Locale locale) {
+	 
   HashMap<String, String> mapaValores = new HashMap<String, String>();
+  
   try {
-   mapaValores.put("ESTADO_ACTIVO", String.valueOf(Constante.ESTADO_ACTIVO));
-   mapaValores.put("ESTADO_INACTIVO", String.valueOf(Constante.ESTADO_INACTIVO));
-   mapaValores.put("FILTRO_TODOS", String.valueOf(Constante.FILTRO_TODOS));
-   mapaValores.put("TEXTO_INACTIVO", gestorDiccionario.getMessage("sgo.estadoInactivo", null, locale));
-   mapaValores.put("TEXTO_ACTIVO", gestorDiccionario.getMessage("sgo.estadoActivo", null, locale));
-   mapaValores.put("TEXTO_TODOS", gestorDiccionario.getMessage("sgo.filtroTodos", null, locale));
-   mapaValores.put("TITULO_AGREGAR_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioAgregar", null, locale));
-   mapaValores.put("TITULO_MODIFICA_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioEditar", null, locale));
-   mapaValores.put("TITULO_DETALLE_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioVer", null, locale));
-   mapaValores.put("TITULO_LISTADO_REGISTROS", gestorDiccionario.getMessage("sgo.tituloFormularioListado", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_CERRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCerrar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_GUARDAR", gestorDiccionario.getMessage("sgo.etiquetaBotonGuardar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_AGREGAR", gestorDiccionario.getMessage("sgo.etiquetaBotonAgregar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_MODIFICAR", gestorDiccionario.getMessage("sgo.etiquetaBotonModificar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_VER", gestorDiccionario.getMessage("sgo.etiquetaBotonVer", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_FILTRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonFiltrar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_ACTIVAR", gestorDiccionario.getMessage("sgo.etiquetaBotonActivar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_CANCELAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCancelar", null, locale));
-   mapaValores.put("ETIQUETA_BOTON_CONFIRMAR", gestorDiccionario.getMessage("sgo.etiquetaBotonConfirmar", null, locale));
-   mapaValores.put("MENSAJE_CAMBIAR_ESTADO", gestorDiccionario.getMessage("sgo.mensajeCambiarEstado", null, locale));
-   mapaValores.put("MENSAJE_CARGANDO", gestorDiccionario.getMessage("sgo.mensajeCargando", null, locale));
-   mapaValores.put("TITULO_VENTANA_MODAL", gestorDiccionario.getMessage("sgo.tituloVentanaModal", null, locale));
+	  
+	   mapaValores.put("ESTADO_ACTIVO", String.valueOf(Constante.ESTADO_ACTIVO));
+	   mapaValores.put("ESTADO_INACTIVO", String.valueOf(Constante.ESTADO_INACTIVO));
+	   mapaValores.put("FILTRO_TODOS", String.valueOf(Constante.FILTRO_TODOS));
+	   mapaValores.put("TEXTO_INACTIVO", gestorDiccionario.getMessage("sgo.estadoInactivo", null, locale));
+	   mapaValores.put("TEXTO_ACTIVO", gestorDiccionario.getMessage("sgo.estadoActivo", null, locale));
+	   mapaValores.put("TEXTO_TODOS", gestorDiccionario.getMessage("sgo.filtroTodos", null, locale));
+	   mapaValores.put("TITULO_AGREGAR_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioAgregar", null, locale));
+	   mapaValores.put("TITULO_MODIFICA_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioEditar", null, locale));
+	   mapaValores.put("TITULO_DETALLE_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioVer", null, locale));
+	   mapaValores.put("TITULO_LISTADO_REGISTROS", gestorDiccionario.getMessage("sgo.tituloFormularioListado", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_CERRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCerrar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_GUARDAR", gestorDiccionario.getMessage("sgo.etiquetaBotonGuardar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_AGREGAR", gestorDiccionario.getMessage("sgo.etiquetaBotonAgregar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_MODIFICAR", gestorDiccionario.getMessage("sgo.etiquetaBotonModificar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_VER", gestorDiccionario.getMessage("sgo.etiquetaBotonVer", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_FILTRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonFiltrar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_ACTIVAR", gestorDiccionario.getMessage("sgo.etiquetaBotonActivar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_CANCELAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCancelar", null, locale));
+	   mapaValores.put("ETIQUETA_BOTON_CONFIRMAR", gestorDiccionario.getMessage("sgo.etiquetaBotonConfirmar", null, locale));
+	   mapaValores.put("MENSAJE_CAMBIAR_ESTADO", gestorDiccionario.getMessage("sgo.mensajeCambiarEstado", null, locale));
+	   mapaValores.put("MENSAJE_CARGANDO", gestorDiccionario.getMessage("sgo.mensajeCargando", null, locale));
+	   mapaValores.put("TITULO_VENTANA_MODAL", gestorDiccionario.getMessage("sgo.tituloVentanaModal", null, locale));
+	   mapaValores.put("BOTON_PRODUCTOS_EQUIVALENTES", gestorDiccionario.getMessage("sgo.botonProductosEquivalentes", null, locale));
+	   
+	   //Agregado por req 9000002570==============================================================
+	   mapaValores.put("ETIQUETA_BOTON_ETAPAS", gestorDiccionario.getMessage("sgo.etiquetaBotonEtapas", null, locale));
+	   //=========================================================================================
    
-   //Agregado por req 9000002570==============================================================
-   mapaValores.put("ETIQUETA_BOTON_ETAPAS", gestorDiccionario.getMessage("sgo.etiquetaBotonEtapas", null, locale));
-   //=========================================================================================
-   
-  } catch (Exception ex) {
+  } catch (Exception e) {
 
   }
+  
   return mapaValores;
  }
 
@@ -204,80 +207,94 @@ public class OperacionControlador {
   return vista;
  }
 
- @RequestMapping(value = URL_LISTAR_RELATIVA, method = RequestMethod.GET)
- public @ResponseBody
- RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  ParametrosListar parametros = null;
-  AuthenticatedUserDetails principal = null;
-  try {
-   // Recuperar el usuario actual
-   principal = this.getCurrentUser();
-   // Recuperar el enlace de la accion
-   respuesta = dEnlace.recuperarRegistro(URL_LISTAR_COMPLETA);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   // Verificar si cuenta con el permiso necesario
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   // Recuperar parametros
-   parametros = new ParametrosListar();
-   if (httpRequest.getParameter("paginacion") != null) {
-    parametros.setPaginacion(Integer.parseInt(httpRequest.getParameter("paginacion")));
-   }
+/**
+ * 
+ * @param httpRequest
+ * @param locale
+ * @return
+ */
+@RequestMapping(value = URL_LISTAR_RELATIVA, method = RequestMethod.GET)
+public @ResponseBody
+RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale locale) {
+	
+	RespuestaCompuesta respuesta = null;
+	ParametrosListar parametros = null;
+	AuthenticatedUserDetails principal = null;
+	
+	try {
+	
+	    // Recuperar el usuario actual
+	    principal = this.getCurrentUser();
+	    // Recuperar el enlace de la accion
+	    respuesta = dEnlace.recuperarRegistro(URL_LISTAR_COMPLETA);
+	    if (respuesta.estado == false) {
+	        throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+	    }
+	
+	    Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+	    // Verificar si cuenta con el permiso necesario
+	    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+	        throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+	    }
+	
+	    // Recuperar parametros
+	    parametros = new ParametrosListar();
+	    if (httpRequest.getParameter("paginacion") != null) {
+	    	parametros.setPaginacion(Integer.parseInt(httpRequest.getParameter("paginacion")));
+	    }
+	
+	    if (httpRequest.getParameter("registrosxPagina") != null) {
+	        parametros.setRegistrosxPagina(Integer.parseInt(httpRequest.getParameter("registrosxPagina")));
+	    }
+	
+	    if (httpRequest.getParameter("inicioPagina") != null) {
+	        parametros.setInicioPaginacion(Integer.parseInt(httpRequest.getParameter("inicioPagina")));
+	    }
+	
+	    if (httpRequest.getParameter("campoOrdenamiento") != null) {
+	        parametros.setCampoOrdenamiento((httpRequest.getParameter("campoOrdenamiento")));
+	    }
+	
+	    if (httpRequest.getParameter("sentidoOrdenamiento") != null) {
+	        parametros.setSentidoOrdenamiento((httpRequest.getParameter("sentidoOrdenamiento")));
+	    }
+	
+	    if (httpRequest.getParameter("valorBuscado") != null) {
+	        parametros.setValorBuscado((httpRequest.getParameter("valorBuscado")));
+	    }
+	    if (httpRequest.getParameter("txtFiltro") != null) {
+	        // Agregado por incidencia 7000002193
+	        String s_aux = httpRequest.getParameter("txtFiltro");
+	        s_aux = java.net.URLDecoder.decode(s_aux, "UTF-8");
+	        s_aux = s_aux.replace("'", "\\'");
+	        parametros.setTxtFiltro(s_aux);
+	    }
+	
+	    parametros.setFiltroEstado(Constante.FILTRO_TODOS);
+	    if (httpRequest.getParameter("filtroEstado") != null) {
+	        parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
+	    }
+	
+	    if (httpRequest.getParameter("idCliente") != null) {
+	        parametros.setIdCliente(Integer.parseInt(httpRequest.getParameter("idCliente")));
+	    }
+	    
+	    // Recuperar registros
+	    respuesta = dOperacion.recuperarRegistros(parametros);
+	    respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
+	
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    respuesta.estado = false;
+	    respuesta.contenido = null;
+	    respuesta.mensaje = e.getMessage();
+	}
 
-   if (httpRequest.getParameter("registrosxPagina") != null) {
-    parametros.setRegistrosxPagina(Integer.parseInt(httpRequest.getParameter("registrosxPagina")));
-   }
+	return respuesta;
 
-   if (httpRequest.getParameter("inicioPagina") != null) {
-    parametros.setInicioPaginacion(Integer.parseInt(httpRequest.getParameter("inicioPagina")));
-   }
-
-   if (httpRequest.getParameter("campoOrdenamiento") != null) {
-    parametros.setCampoOrdenamiento((httpRequest.getParameter("campoOrdenamiento")));
-   }
-
-   if (httpRequest.getParameter("sentidoOrdenamiento") != null) {
-    parametros.setSentidoOrdenamiento((httpRequest.getParameter("sentidoOrdenamiento")));
-   }
-
-   if (httpRequest.getParameter("valorBuscado") != null) {
-    parametros.setValorBuscado((httpRequest.getParameter("valorBuscado")));
-   }
-   if (httpRequest.getParameter("txtFiltro") != null) {
-	// Agregado por incidencia 7000002193
-	String s_aux = httpRequest.getParameter("txtFiltro");
-	System.out.println("s_aux1: " + s_aux);
-	s_aux = java.net.URLDecoder.decode(s_aux, "UTF-8");
-	System.out.println("s_aux2: " + s_aux);
-	// ===============================================
-	s_aux = s_aux.replace("'", "\\'");
-	parametros.setTxtFiltro(s_aux);
-   }
-   parametros.setFiltroEstado(Constante.FILTRO_TODOS);
-   if (httpRequest.getParameter("filtroEstado") != null) {
-    parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
-   }
-
-   if (httpRequest.getParameter("idCliente") != null) {
-    parametros.setIdCliente(Integer.parseInt(httpRequest.getParameter("idCliente")));
-   }
-   // Recuperar registros
-   respuesta = dOperacion.recuperarRegistros(parametros);
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
-  } catch (Exception ex) {
-   ex.printStackTrace();
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
- }
-
+}
+ 
+ 
  /**
   * 
   * @param ID
@@ -812,7 +829,7 @@ public class OperacionControlador {
 
    respuesta = dOperacion.actualizarRegistro(eOperacion);
    if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
    }
    // Guardar en la bitacora
    ObjectMapper mapper = new ObjectMapper();

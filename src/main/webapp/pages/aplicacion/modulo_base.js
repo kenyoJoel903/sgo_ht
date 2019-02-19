@@ -145,6 +145,7 @@ moduloBase.prototype.inicializarControlesGenericos=function(){
   this.obj.frmConfirmarEliminar=$("#frmConfirmarEliminar");
   this.obj.ocultaContenedorTabla=$("#ocultaContenedorTabla");
   this.obj.ocultaContenedorFormulario=$("#ocultaContenedorFormulario");
+  this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
   
   //Agregado por req 9000002570=========
   this.obj.ocultaContenedorEtapas=$("#ocultaContenedorEtapas");
@@ -189,7 +190,7 @@ moduloBase.prototype.inicializarControlesGenericos=function(){
   this.obj.cmpFiltroTabla=$("#cmpFiltroTabla");
   this.obj.cmpFiltroTipoFecha=$("#cmpFiltroTipoFecha");	
   //Eventos para Botones
-  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){ 
+  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() { 
 	if (!referenciaModulo.validaFormularioXSS("#frmBuscar")){
 	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
 	} else {
@@ -198,37 +199,37 @@ moduloBase.prototype.inicializarControlesGenericos=function(){
   	}
   });
 
-  this.obj.btnListar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnListar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
   referenciaModulo.modoEdicion=constantes.MODO_LISTAR;
   referenciaModulo.listarRegistros();
   });
 
-  this.obj.btnAgregar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnAgregar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
   referenciaModulo.iniciarAgregar();
   });
 
-  this.obj.btnModificar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnModificar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
   referenciaModulo.iniciarModificar();
   });
 
-  this.obj.btnVer.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
-  referenciaModulo.iniciarVer();		
+  this.obj.btnVer.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.iniciarVer();		
   });
   
   //Agregado por req 9000002570=========================================
-  this.obj.btnEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.iniciarEtapas();		
   });
   
-  this.obj.btnCancelarEtapa.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCancelarEtapa.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.iniciarCancelarEtapa();
   });
   
-  this.obj.btnGuardarEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnGuardarEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.solicitarGuardarEtapas();
   });
   
-  this.obj.btnConfirmarGuardarEstado.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnConfirmarGuardarEstado.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.iniciarGuardarEtapas();
   });
   //====================================================================
@@ -285,7 +286,7 @@ moduloBase.prototype.iniciarAgregar= function(){
 };
 
 moduloBase.prototype.iniciarModificar= function(){
-  var referenciaModulo=this;  
+  var referenciaModulo = this;  
   referenciaModulo.modoEdicion=constantes.MODO_ACTUALIZAR;
   referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_MODIFICA_REGISTRO);
   referenciaModulo.obj.cntTabla.hide();
@@ -295,8 +296,8 @@ moduloBase.prototype.iniciarModificar= function(){
   referenciaModulo.recuperarRegistro();
 };
 
-moduloBase.prototype.iniciarVer= function(){
-  var referenciaModulo=this;
+moduloBase.prototype.iniciarVer= function() {
+  var referenciaModulo = this;
   referenciaModulo.modoEdicion=constantes.MODO_VER;
   referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_DETALLE_REGISTRO);
   referenciaModulo.obj.cntTabla.hide();
@@ -308,7 +309,7 @@ moduloBase.prototype.iniciarVer= function(){
 
 //Agregado por req 9000002570====================
 moduloBase.prototype.iniciarEtapas= function(){
-	  var referenciaModulo=this;
+	  var referenciaModulo = this;
 	  referenciaModulo.modoEdicion=constantes.MODO_ETAPAS;
 	  referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_ETAPAS_REGISTRO);
 	  referenciaModulo.obj.cntTabla.hide();

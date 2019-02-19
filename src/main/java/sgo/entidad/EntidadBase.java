@@ -17,6 +17,7 @@ public class EntidadBase implements Serializable {
 	protected String ipCreacion;
 	protected String ipActualizacion;
 	protected int tipoVolumenDescargado;
+	protected String tipoVolumenDescargadotxt;
 
 	protected int formatoFecha=Constante.TIPO_FORMATO_FECHA_DDMMYYYY;
 	
@@ -132,6 +133,14 @@ public class EntidadBase implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getTipoVolumenDescargadotxt() {
+		return tipoVolumenDescargadotxt;
+	}
+
+	public void setTipoVolumenDescargadotxt(String tipoVolumenDescargadotxt) {
+		this.tipoVolumenDescargadotxt = tipoVolumenDescargadotxt;
 	}
 	
 }

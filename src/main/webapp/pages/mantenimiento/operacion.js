@@ -29,7 +29,7 @@ $(document).ready(function() {
   moduloActual.definicionColumnas.push({"targets": 5,"searchable" : false,"orderable" : true,"visible" : true});
   moduloActual.definicionColumnas.push({"targets": 6,"searchable" : false,"orderable" : true,"visible" : true,"render" : utilitario.formatearEstado});
   
-  moduloActual.reglasValidacionFormulario={
+  moduloActual.reglasValidacionFormulario = {
     cmpNombre: 				   	{required: true, maxlength: 150 },
     cmpAlias:   				{required: true, maxlength: 150 },
     //cmpIdRefPlantaRecepcion:   	{required: true, maxlength: 20  },
@@ -42,7 +42,7 @@ $(document).ready(function() {
     cmpCorreoPara: 				{required: true}
   };
   
-  moduloActual.mensajesValidacionFormulario={
+  moduloActual.mensajesValidacionFormulario = {
     cmpNombre: 					{ required:  "El campo es obligatorio",
     				  			  maxlength: "El campo debe contener 150 caracteres como maximo." },
     cmpAlias: 					{ required:  "El campo es obligatorio",
@@ -61,7 +61,8 @@ $(document).ready(function() {
     cmpCorreoPara:				{ required:  "El campo es obligatorio" }
   };
   
-  moduloActual.inicializarCampos= function(){
+  moduloActual.inicializarCampos= function() {
+	  
     //Campos de formulario
     this.obj.cmpNombre=$("#cmpNombre");
     this.obj.cmpAlias=$("#cmpAlias");
@@ -135,11 +136,15 @@ $(document).ready(function() {
     this.obj.grupoTransportista.addForm();
 
     this.obj.btnAgregarTransportista.on("click",function(){
-      try {
-        moduloActual.obj.grupoTransportista.addForm();
-      } catch(error){
-      	moduloActual.mostrarDepuracion(error.message);
-      };
+    	try {
+    		moduloActual.obj.grupoTransportista.addForm();
+    	} catch(error) {
+    		moduloActual.mostrarDepuracion(error.message);
+    	};
+    });
+    
+    this.obj.btnProductosEquivalentes.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.productosEquivalentes();		
     });
     
     //Campos Agregados por 9000002570=========================
@@ -414,6 +419,7 @@ $(document).ready(function() {
     this.obj.vistaActualizadoEl=$("#vistaActualizadoEl");
     this.obj.vistaIpCreacion=$("#vistaIpCreacion");
     this.obj.vistaIpActualizacion=$("#vistaIpActualizacion");
+    this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
     
     //Campos Agregados por 9000002570=========================
     this.obj.cmpOperaciones=$("#cmpOperaciones");
@@ -434,8 +440,10 @@ $(document).ready(function() {
 		}
   };
 
-  moduloActual.iniciarAgregar= function(){  
-    var ref=this;
+  moduloActual.iniciarAgregar= function() {
+	  
+    var ref = this;
+    
     try {
       ref.modoEdicion=constantes.MODO_NUEVO;
       ref.obj.tituloSeccion.text(cadenas.TITULO_AGREGAR_REGISTRO);
@@ -589,9 +597,6 @@ $(document).ready(function() {
 
   moduloActual.llenarDetalles = function(registro) {
 	  
-	  
-	  console.dir(registro);
-	  
     this.idRegistro = registro.id;    
     this.obj.vistaId.text(registro.id);
     this.obj.vistaNombre.text(registro.nombre);
@@ -637,7 +642,7 @@ $(document).ready(function() {
     grilla.append(g_tr);
     g_tr = '<tr><td> ETA:</td><td>' + registro.eta + '</td></tr>';
     grilla.append(g_tr);
-    g_tr = '<tr><td> Considerar volumen descargado:</td><td>' + registro.eta + '</td></tr>';
+    g_tr = '<tr><td> Considerar volumen descargado:</td><td>' + registro.tipoVolumenDescargadotxt + '</td></tr>';
     grilla.append(g_tr);
     g_tr = '<tr><td> Tipo de registro Tanque en Descarga:</td><td>' + utilitario.tipoRegistroTanque(registro.indicadorTipoRegistroTanque) + '</td></tr>';
     grilla.append(g_tr);
@@ -646,7 +651,7 @@ $(document).ready(function() {
     g_tr = '<tr><td> CC:</td><td>' + registro.correoCC + '</td></tr>';
     grilla.append(g_tr);
     
-    if(indice > 0){
+    if (indice > 0) {
     	g_tr = '<tr><td> Transportistas: </td><td>' +registro.transportistas[0].razonSocial+ '</td></tr>';
 		grilla.append(g_tr);
 		
@@ -655,8 +660,7 @@ $(document).ready(function() {
 			g_tr = '<tr><td></td><td>' +descripcion+ '</td></tr>';
 			grilla.append(g_tr);
 		}
-    }
-    else{
+    } else {
     	var g_tr = '<tr><td> Transportistas: </td><td></td></tr> ';  
     	grilla.append(g_tr);
     }
@@ -740,6 +744,15 @@ $(document).ready(function() {
     }
 
     return eRegistro;
+  };
+  
+  moduloActual.productosEquivalentes = function() {
+		
+		var _this = this;
+
+		console.log(" ******** productosEquivalentes /////// "); // JAFETH
+		  
+		referenciaModulo.obj.cntProductosEquivalentes.show();
   };
   
   moduloActual.inicializar();
