@@ -1156,8 +1156,47 @@ INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permis
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_CONTOMETROS'), 'Generar Plantilla Contometros', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
-        -- ******************* PROGRAMA 2019-02-15 15:23 ******************************
+-- ******************* PROGRAMA 2019-02-15 15:23 ******************************
 INSERT INTO sgo.parametro 
 (valor, alias, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
 VALUES 
 (5, 'VALIDACION_EXCEL_ROW', 1549984064053, 2, 2, 1549984064053, '127.0.0.1', '127.0.0.1');
+
+
+
+-- ******************* PROGRAMA 2019-02-18 17:00 ******************************
+CREATE OR REPLACE VIEW sgo.v_operacion AS
+ SELECT t1.id_operacion,
+    t1.nombre,
+    t1.alias,
+    t1.id_cliente,
+    t1.referencia_planta_recepcion,
+    t1.referencia_destinatario_mercaderia,
+    t1.volumen_promedio_cisterna,
+    t1.fecha_inicio_planificacion,
+    t1.eta_origen,
+    t1.planta_despacho_defecto,
+    t1.estado,
+    t1.creado_el,
+    t1.creado_por,
+    t1.actualizado_por,
+    t1.actualizado_el,
+    t1.ip_creacion,
+    t1.ip_actualizacion,
+    t4.razon_social AS razon_social_cliente,
+    t4.nombre_corto AS nombre_corto_cliente,
+    u1.identidad AS usuario_creacion,
+    u2.identidad AS usuario_actualizacion,
+    t5.descripcion AS descripcion_planta_despacho,
+    t1.correopara,
+    t1.correocc,
+    t1.indicador_tipo_registro_tanque,
+    t4.estado AS estado_cliente,
+    t1.tipo_volumen_descargado
+   FROM sgo.operacion t1
+     JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
+     JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
+     JOIN sgo.cliente t4 ON t1.id_cliente = t4.id_cliente
+     LEFT JOIN sgo.planta t5 ON t1.planta_despacho_defecto = t5.id_planta;
+
+     consultaSQL.append("t1.tipo_volumen_descargado");

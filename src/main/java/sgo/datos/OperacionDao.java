@@ -180,6 +180,7 @@ public class OperacionDao {
 			consultaSQL.append("t1.correopara,");
 			consultaSQL.append("t1.correocc,");
 			consultaSQL.append("t1.estado_cliente,");
+			consultaSQL.append("t1.tipo_volumen_descargado,");
 			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");
@@ -348,10 +349,12 @@ public class OperacionDao {
 			consultaSQL.append("t1.actualizado_por,");
 			consultaSQL.append("t1.actualizado_el,");	
 			consultaSQL.append("t1.usuario_creacion,");
-			consultaSQL.append("t1.usuario_actualizacion,");
+			consultaSQL.append("t1.usuario_actualizacion,"); 
 			consultaSQL.append("t1.ip_creacion,");
 			consultaSQL.append("t1.ip_actualizacion,");
-			consultaSQL.append("0 AS estado_cliente");
+			consultaSQL.append("0 AS estado_cliente,");
+			consultaSQL.append("t1.tipo_volumen_descargado");
+
 			consultaSQL.append(" FROM ");				
 			consultaSQL.append(NOMBRE_VISTA);
 			consultaSQL.append(" t1 ");
@@ -405,7 +408,7 @@ public class OperacionDao {
 	public RespuestaCompuesta guardarRegistro(Operacion operacion) {
 		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
-		StringBuilder consultaSQL= new StringBuilder();
+		StringBuilder consultaSQL = new StringBuilder();
 		KeyHolder claveGenerada = null;
 		int cantidadFilasAfectadas = 0;
 		
@@ -423,29 +426,29 @@ public class OperacionDao {
 			consultaSQL.append(" :PlantaDespacho, :Estado, :CorreoPara, :CorreoCC, :CreadoEl, :CreadoPor, :ActualizadoPor, ");
 			consultaSQL.append(" :ActualizadoEl, :IpCreacion, :IpActualizacion, :TipoVolumenDescargado) ");
 			
-			MapSqlParameterSource listaParametros = new MapSqlParameterSource();   
-			listaParametros.addValue("Nombre", operacion.getNombre());
-			listaParametros.addValue("Alias", operacion.getAlias());
-			listaParametros.addValue("IdCliente", operacion.getIdCliente());
-			listaParametros.addValue("Referencia_planta_recepcion", operacion.getReferenciaPlantaRecepcion());
-			listaParametros.addValue("Referencia_destinatario_mercaderia", operacion.getReferenciaDestinatarioMercaderia());
-			listaParametros.addValue("FechaInicioPlanificacion", operacion.getFechaInicioPlanificacion());
-			listaParametros.addValue("Volumen_promedio_cisterna", operacion.getVolumenPromedioCisterna());
-			listaParametros.addValue("ETA", operacion.getEta());
-			listaParametros.addValue("IndicadorTipoRegistroTanque", operacion.getIndicadorTipoRegistroTanque());
-			listaParametros.addValue("PlantaDespacho", operacion.getIdPlantaDespacho());
-			listaParametros.addValue("Estado", operacion.getEstado());
-			listaParametros.addValue("CorreoPara", operacion.getCorreoPara());
-			listaParametros.addValue("CorreoCC", operacion.getCorreoCC());
-			listaParametros.addValue("CreadoEl", operacion.getCreadoEl());
-			listaParametros.addValue("CreadoPor", operacion.getCreadoPor());
-			listaParametros.addValue("ActualizadoPor", operacion.getActualizadoPor());
-			listaParametros.addValue("ActualizadoEl", operacion.getActualizadoEl());
-			listaParametros.addValue("IpCreacion", operacion.getIpCreacion());
-			listaParametros.addValue("IpActualizacion", operacion.getIpActualizacion());
-			listaParametros.addValue("TipoVolumenDescargado", operacion.getTipoVolumenDescargado());
+			MapSqlParameterSource parametro = new MapSqlParameterSource();   
+			parametro.addValue("Nombre", operacion.getNombre());
+			parametro.addValue("Alias", operacion.getAlias());
+			parametro.addValue("IdCliente", operacion.getIdCliente());
+			parametro.addValue("Referencia_planta_recepcion", operacion.getReferenciaPlantaRecepcion());
+			parametro.addValue("Referencia_destinatario_mercaderia", operacion.getReferenciaDestinatarioMercaderia());
+			parametro.addValue("FechaInicioPlanificacion", operacion.getFechaInicioPlanificacion());
+			parametro.addValue("Volumen_promedio_cisterna", operacion.getVolumenPromedioCisterna());
+			parametro.addValue("ETA", operacion.getEta());
+			parametro.addValue("IndicadorTipoRegistroTanque", operacion.getIndicadorTipoRegistroTanque());
+			parametro.addValue("PlantaDespacho", operacion.getIdPlantaDespacho());
+			parametro.addValue("Estado", operacion.getEstado());
+			parametro.addValue("CorreoPara", operacion.getCorreoPara());
+			parametro.addValue("CorreoCC", operacion.getCorreoCC());
+			parametro.addValue("CreadoEl", operacion.getCreadoEl());
+			parametro.addValue("CreadoPor", operacion.getCreadoPor());
+			parametro.addValue("ActualizadoPor", operacion.getActualizadoPor());
+			parametro.addValue("ActualizadoEl", operacion.getActualizadoEl());
+			parametro.addValue("IpCreacion", operacion.getIpCreacion());
+			parametro.addValue("IpActualizacion", operacion.getIpActualizacion());
+			parametro.addValue("TipoVolumenDescargado", operacion.getTipoVolumenDescargado());
 
-			SqlParameterSource namedParameters = listaParametros;
+			SqlParameterSource namedParameters = parametro;
 			/*Ejecuta la consulta y retorna las filas afectadas*/
 			claveGenerada = new GeneratedKeyHolder();
 			cantidadFilasAfectadas = namedJdbcTemplate.update(
@@ -476,10 +479,12 @@ public class OperacionDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta actualizarRegistro(Operacion operacion){
+	public RespuestaCompuesta actualizarRegistro(Operacion operacion) {
+		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
-		StringBuilder consultaSQL= new StringBuilder();
-		int cantidadFilasAfectadas=0;
+		StringBuilder consultaSQL = new StringBuilder();
+		int cantidadFilasAfectadas = 0;
+		
 		try {
 			consultaSQL.append("UPDATE ");
 			consultaSQL.append(NOMBRE_TABLA);
@@ -496,49 +501,59 @@ public class OperacionDao {
 			consultaSQL.append("planta_despacho_defecto=:PlantaDespacho,");
 			consultaSQL.append("correoPara=:CorreoPara,");
 			consultaSQL.append("correoCC=:CorreoCC,");
+			consultaSQL.append("tipo_volumen_descargado = :TipoVolumenDescargado,"); 
+			
 			//Valores Auditoria
-			consultaSQL.append("actualizado_por=:ActualizadoPor,");
-			consultaSQL.append("actualizado_el=:ActualizadoEl,");
-			consultaSQL.append("ip_actualizacion=:IpActualizacion");
+			consultaSQL.append("actualizado_por = :ActualizadoPor,");
+			consultaSQL.append("actualizado_el = :ActualizadoEl,");
+			consultaSQL.append("ip_actualizacion = :IpActualizacion");
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=:Id");
-			MapSqlParameterSource listaParametros= new MapSqlParameterSource();
-			listaParametros.addValue("Nombre", operacion.getNombre());
-			listaParametros.addValue("IdCliente", operacion.getIdCliente());
-			listaParametros.addValue("Alias", operacion.getAlias());
-			listaParametros.addValue("Referencia_planta_recepcion", operacion.getReferenciaPlantaRecepcion());
-			listaParametros.addValue("Referencia_destinatario_mercaderia", operacion.getReferenciaDestinatarioMercaderia());
-			listaParametros.addValue("FechaInicioPlanificacion", operacion.getFechaInicioPlanificacion());
-			listaParametros.addValue("Volumen_promedio_cisterna", operacion.getVolumenPromedioCisterna());
-			listaParametros.addValue("ETA", operacion.getEta());
-			listaParametros.addValue("IndicadorTipoRegistroTanque", operacion.getIndicadorTipoRegistroTanque());
-			listaParametros.addValue("PlantaDespacho", operacion.getIdPlantaDespacho());
-			listaParametros.addValue("CorreoPara", operacion.getCorreoPara());
-			listaParametros.addValue("CorreoCC", operacion.getCorreoCC());
+			
+			MapSqlParameterSource parametro = new MapSqlParameterSource();
+			parametro.addValue("Nombre", operacion.getNombre());
+			parametro.addValue("IdCliente", operacion.getIdCliente());
+			parametro.addValue("Alias", operacion.getAlias());
+			parametro.addValue("Referencia_planta_recepcion", operacion.getReferenciaPlantaRecepcion());
+			parametro.addValue("Referencia_destinatario_mercaderia", operacion.getReferenciaDestinatarioMercaderia());
+			parametro.addValue("FechaInicioPlanificacion", operacion.getFechaInicioPlanificacion());
+			parametro.addValue("Volumen_promedio_cisterna", operacion.getVolumenPromedioCisterna());
+			parametro.addValue("ETA", operacion.getEta());
+			parametro.addValue("IndicadorTipoRegistroTanque", operacion.getIndicadorTipoRegistroTanque());
+			parametro.addValue("PlantaDespacho", operacion.getIdPlantaDespacho());
+			parametro.addValue("CorreoPara", operacion.getCorreoPara());
+			parametro.addValue("CorreoCC", operacion.getCorreoCC());
+			parametro.addValue("TipoVolumenDescargado", operacion.getTipoVolumenDescargado());
+			
 			//Valores Auditoria
-			listaParametros.addValue("ActualizadoEl", operacion.getActualizadoEl());
-			listaParametros.addValue("ActualizadoPor", operacion.getActualizadoPor());
-			listaParametros.addValue("IpActualizacion", operacion.getIpActualizacion());
-			listaParametros.addValue("Id", operacion.getId());
-			SqlParameterSource namedParameters= listaParametros;
+			parametro.addValue("ActualizadoEl", operacion.getActualizadoEl());
+			parametro.addValue("ActualizadoPor", operacion.getActualizadoPor());
+			parametro.addValue("IpActualizacion", operacion.getIpActualizacion());
+			parametro.addValue("Id", operacion.getId());
+			
+			SqlParameterSource namedParameters = parametro;
 			/*Ejecuta la consulta y retorna las filas afectadas*/
-			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);		
-			if (cantidadFilasAfectadas>1){
-				respuesta.error= Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-				respuesta.estado=false;
+			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);
+			
+			if (cantidadFilasAfectadas > 1) {
+				respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+				respuesta.estado = false;
 				return respuesta;
 			}
-			respuesta.estado=true;
-		} catch (DataIntegrityViolationException excepcionIntegridadDatos){
-			excepcionIntegridadDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-			respuesta.estado=false;
-		} catch (DataAccessException excepcionAccesoDatos){
-			excepcionAccesoDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
+			
+			respuesta.estado = true;
+			
+		} catch (DataIntegrityViolationException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+			respuesta.estado = false;
+		} catch (DataAccessException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	
@@ -787,6 +802,7 @@ public class OperacionDao {
 			consultaSQL.append("t1.correopara,");
 			consultaSQL.append("t1.correocc,");
 			consultaSQL.append("0 AS estado_cliente,");
+			consultaSQL.append("t1.tipo_volumen_descargado,");
 			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");

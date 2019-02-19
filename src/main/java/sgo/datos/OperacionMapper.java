@@ -8,7 +8,9 @@ import sgo.entidad.Cliente;
 import sgo.entidad.Operacion;
 import sgo.entidad.Planta;
 import sgo.utilidades.Utilidades;
-public class OperacionMapper implements RowMapper<Operacion>{
+
+public class OperacionMapper implements RowMapper<Operacion> {
+	
 	public Operacion mapRow(ResultSet rs, int arg1) throws SQLException 
 	{
 		Operacion eOperacion = null;
@@ -32,7 +34,8 @@ public class OperacionMapper implements RowMapper<Operacion>{
 			eOperacion.setEstado(rs.getInt("estado"));		
 			eOperacion.setCorreoPara(Utilidades.cleanXSS(rs.getString("correoPara")));
 			eOperacion.setCorreoCC(Utilidades.cleanXSS(rs.getString("correoCC")));
-			
+			eOperacion.setTipoVolumenDescargado(rs.getInt("tipo_volumen_descargado"));
+
 			//Parametros de auditoria
 			eOperacion.setCreadoPor(rs.getInt("creado_por"));
 			eOperacion.setCreadoEl(rs.getLong("creado_el"));

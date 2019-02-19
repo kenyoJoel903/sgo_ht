@@ -278,38 +278,52 @@ public class OperacionControlador {
   return respuesta;
  }
 
+ /**
+  * 
+  * @param ID
+  * @param locale
+  * @return
+  */
  @RequestMapping(value = URL_RECUPERAR_RELATIVA, method = RequestMethod.GET)
  public @ResponseBody
  RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  AuthenticatedUserDetails principal = null;
-  try {
-   // Recupera el usuario actual
-   principal = this.getCurrentUser();
-   // Recuperar el enlace de la accion
-   respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   // Verificar si cuenta con el permiso necesario
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   // Recuperar el registro
-   respuesta = dOperacion.recuperarRegistro(ID);
-   // Verifica el resultado de la accion
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-   }
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
-  } catch (Exception ex) {
-   ex.printStackTrace();
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
+
+ 	RespuestaCompuesta respuesta = null;
+ 	AuthenticatedUserDetails principal = null;
+
+ 	try {
+
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
+ 		if (respuesta.estado == false) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+
+ 		// Recuperar el registro
+ 		respuesta = dOperacion.recuperarRegistro(ID);
+ 		// Verifica el resultado de la accion
+ 		if (respuesta.estado == false) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
  }
  
 //Agregado por req 9000002570======================================================
@@ -553,13 +567,13 @@ public class OperacionControlador {
    // Recuperar el enlace de la accion
    respuesta = dEnlace.recuperarRegistro(URL_GUARDAR_COMPLETA);
    if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
    }
    
    Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
    // Verificar si cuenta con el permiso necesario
    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
    }
    
    //valida los datos que vienen del formulario
@@ -571,7 +585,7 @@ public class OperacionControlador {
    // Actualiza los datos de auditoria local
    direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
    if (direccionIp == null) {
-    direccionIp = peticionHttp.getRemoteAddr();
+	   direccionIp = peticionHttp.getRemoteAddr();
    }
    
    eOperacion.setActualizadoEl(Calendar.getInstance().getTime().getTime());
@@ -665,7 +679,7 @@ public class OperacionControlador {
 	   respuesta = dTransportistaOperacion.guardarRegistro(eTransportistaOperacion);
 	   
 	   if (respuesta.estado == false) {
-		   throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+		   throw new Exception(gestorDiccionario.getMessage("sgo.guardarTransportistaFallido", null, locale));
 	   }
    }
 	   
@@ -810,8 +824,9 @@ public class OperacionControlador {
    eBitacora.setRealizadoEl(eOperacion.getActualizadoEl());
    eBitacora.setRealizadoPor(eOperacion.getActualizadoPor());
    respuesta = dBitacora.guardarRegistro(eBitacora);
+   
    if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
    }
    
    parametros = new ParametrosListar();
