@@ -290,7 +290,50 @@ $(document).ready(function() {
           var cmpProductoContometro=$(formularioNuevo).find("select[elemento-grupo='productosContometros']");
           var cmpLecturaInicial=$(formularioNuevo).find("input[elemento-grupo='lecturaInicial']");
 
-          cmpLecturaInicial.inputmask('decimal', {digits: 0, groupSeparator:',',autoGroup:true,groupSize:3});
+//          Inicio Comentado por req 9000003068==================================================
+//          cmpLecturaInicial.inputmask('decimal', {digits: 0, groupSeparator:',',autoGroup:true,groupSize:3});
+//          Fin Comentado por req 9000003068==================================================
+          
+//          Inicio Agregado por req 9000003068==================================================
+          cmpLecturaInicial.attr('maxlength','14');
+          cmpLecturaInicial.inputmask('decimal', {
+        	  groupSeparator: ',',
+        	  autoGroup: true,
+        	  groupSize: 3,
+          });
+          cmpLecturaInicial.keyup(delay(function(e) {
+    		var num = $(this).val();
+    		num = trailingZeros(num);
+    		$(this).val(num);
+          }, 900));
+          
+      		function trailingZeros(num) {
+	    		
+	    		console.log("trailingZeros ::: " + moduloActual.obj.numeroDecimalesContometro);
+	    		
+	    		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
+	    		
+	    		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
+	    			return num;
+	    		}
+	    		  
+	    		var result = num.toString().split(".");
+	    		
+	    		var integer = result[0];
+	    		var decimal = result[1];
+	    		
+	    		if (decimal.length > decimalesContometro) {
+	    			return integer + "." + decimal.substring(0, decimalesContometro);
+	    		}
+	    		
+	    		while (decimal.length < decimalesContometro) {
+	    			decimal = decimal + "0";
+	    		}
+	
+	    		return integer + "." + decimal;
+			}
+//          Fin Agregado por req 9000003068==================================================
+          
           cmpProductoContometro.tipoControl="select2";
           moduloActual.obj.cmpSelect2Producto=$(formularioNuevo).find("select[elemento-grupo='productosContometros']").select2({
     	  ajax: {
@@ -528,7 +571,9 @@ $(document).ready(function() {
           var cmpDiferencia=$(formularioNuevo).find("input[elemento-grupo='diferencia']");
           var cmpServicio=$(formularioNuevo).find("input[elemento-grupo='servicio']");
 
-          cmpLecturaFinal.inputmask('decimal', {digits: 0});
+          //Inicio Comentado por req 9000003068========================
+//          cmpLecturaFinal.inputmask('decimal', {digits: 0});
+          //Fin Comentado por req 9000003068========================
           
           cmpLecturaFinal.on("input",function(){
             try{
@@ -1038,8 +1083,8 @@ $(document).ready(function() {
 			    		}
 		    		});
 			    	
-			    	if(mensaje != ""){
-				    	mesaje = mensaje.substring(0, mensaje.length - 1);
+			    	if(mensaje != ""){			    		
+			    		mensaje = mensaje.substring(0, mensaje.length - 1);
 				    	$("#cmpMensajeConfirmGuardarApertura").text("Los productos " + mensaje + " no tienen tanque asignado. ¿Desea continuar? Esta configuración es irreversible");
 			    		$("#frmConfirmarGuardarApertura").show();
 			    	}else{
@@ -1304,6 +1349,7 @@ $(document).ready(function() {
     // para cambio muestreo
     this.obj.cmpMuestreoCliente.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente'));
     this.obj.cmpMuestreoOperacion.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion'));
+    
   };
 	  
 // =========================================================== Formulario Apertura ================================================================
@@ -1315,6 +1361,8 @@ $(document).ready(function() {
 	
 //	Inicio Agregado por req 9000003068===============
 	referenciaModulo.obj.tipoAperturaTanque.val(registro.estacion.tipoAperturaTanque);
+	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
+	console.log(registro.estacion.numeroDecimalesContometro);
 //	Fin Agregado por req 9000003068=================
 	
 	if(registro.registroNuevo == false){
@@ -1339,7 +1387,13 @@ $(document).ready(function() {
 	      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
 
 	      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
-	      formulario.find("input[elemento-grupo='lecturaInicial']").val(registro.contometroJornada[contador].lecturaFinal);
+	      
+//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
+//	      se agrega lecIni y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val
+	      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
+	      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
+	      
+//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
 	    }
 	    
 	    if (registro.tanqueJornada != null){
@@ -1503,6 +1557,41 @@ $(document).ready(function() {
     }
     return eRegistro;
   };
+  
+//Inicio agregamos por req 9000003068
+  moduloActual.trailingZerosGlobal = function(num) {
+		
+		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
+		
+		console.log("decimalesContometro ::: " + decimalesContometro);
+		console.log("num1: " + num);
+		
+		if(decimalesContometro == 0) decimalesContometro = 2;	// 2 sera decimales por defecto
+		
+		if (!num.toString().includes(".")){
+			num = num + ".0";
+		}
+		
+		console.log("num2: " + num);
+		  
+		var result = num.toString().split(".");
+		
+		var integer = result[0];
+		var decimal = result[1];
+		
+		console.log("integer: " + result[0]);
+		console.log("decimal: " + result[1]);
+		if (decimal.length > decimalesContometro) {
+			return integer + "." + decimal.substring(0, decimalesContometro);
+		}
+		
+		while (decimal.length < decimalesContometro) {
+			decimal = decimal + "0";
+		}
+
+		return integer + "." + decimal;
+	}
+//    Fin agregamos por req 9000003068
 
   // ==============================================Formulario Cierre ============================================
   moduloActual.llenarFormularioCierre = function(registro) {
@@ -1516,6 +1605,12 @@ $(document).ready(function() {
 		referenciaModulo.obj.cmpCierreOperador1.text(registro.operario1.nombreCompletoOperario);
 		referenciaModulo.obj.cmpCierreOperador2.text(registro.operario2.nombreCompletoOperario);
 		referenciaModulo.obj.cmpObservacionCierre.val(registro.observacion);
+		
+		
+//		Inicio Agregado por req 9000003068===============	
+		referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
+		console.log("numeroDecimalesContometro:: " + registro.estacion.numeroDecimalesContometro);
+//		Fin Agregado por req 9000003068=================
 
 		if (registro.contometroJornada != null){
 	    	numeroContometros = registro.contometroJornada.length;
@@ -1529,9 +1624,22 @@ $(document).ready(function() {
 	      formulario.find("input[elemento-grupo='contometrosCierre']").val(registro.contometroJornada[contador].contometro.alias);
 	      formulario.find("input[elemento-grupo='idCierreProductoContometro']").val(registro.contometroJornada[contador].producto.id);	      
 	      formulario.find("input[elemento-grupo='cierreProductoContometro']").val(registro.contometroJornada[contador].producto.nombre);
-	      formulario.find("input[elemento-grupo='lecturaInicial']").val(registro.contometroJornada[contador].lecturaInicial);
-	      formulario.find("input[elemento-grupo='lecturaFinal']").val(registro.contometroJornada[contador].lecturaFinal);
-	      var diferencia = parseFloat(registro.contometroJornada[contador].lecturaFinal) - parseFloat(registro.contometroJornada[contador].lecturaInicial);
+	      
+//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
+//	      se agrega lecIni lecFin y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val y formulario.find("input[elemento-grupo='lecturaFinal']").val
+	      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
+	      var lecFin = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinal);
+	      
+	      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
+	      formulario.find("input[elemento-grupo='lecturaFinal']").val(lecFin);
+	      
+	      var diferencia = parseFloat(lecFin) - parseFloat(lecIni);
+//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
+	      
+//	      Inicio Comentado por req 9000003068
+//	      var diferencia = parseFloat(registro.contometroJornada[contador].lecturaFinal) - parseFloat(registro.contometroJornada[contador].lecturaInicial);
+//	      Fin Comentado por req 9000003068
+	      
 	      formulario.find("input[elemento-grupo='diferencia']").val(diferencia);
 	      formulario.find("checkbox[elemento-grupo='servicio']").val(registro.contometroJornada[contador].estadoServicio);
 	    }
@@ -2043,6 +2151,11 @@ $(document).ready(function() {
 	referenciaModulo.obj.cmpMuestreoOperador2.text(registro.operario2.nombreCompletoOperario);
 	moduloActual.obj.cmpMuestreoEstado = registro.estado;
 	
+//	Inicio Agregado por req 9000003068===============	
+	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
+	console.log(registro.estacion.numeroDecimalesContometro);
+//	Fin Agregado por req 9000003068=================
+	
 	if (registro.muestreo != null){
     	numeroMuestreo = registro.muestreo.length;
     }
@@ -2179,7 +2292,19 @@ moduloActual.resetearFormularioMuestreo= function(){
   moduloActual.obj.cmpOperador1.empty().append(elemento1).val(0).trigger('change');
   moduloActual.obj.cmpOperador2.empty().append(elemento1).val(0).trigger('change');
 };
-	
+
+//Inicio Agregado por req 9000003068===========================
+function delay(callback, ms) {
+    var timer = 0;
+    return function() {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            callback.apply(context, args);
+        }, ms || 0);
+    };
+}
+//Fin Agregado por req 9000003068===========================	
   moduloActual.inicializar();
   
 });
