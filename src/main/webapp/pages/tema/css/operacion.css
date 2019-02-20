@@ -1,0 +1,62 @@
+select.products {
+	width: 90%;
+}
+
+td.celda-detalle {
+	padding: 2px;
+}
+
+#cntProductosEquivalentes input.form-control {
+	width: 100% !important;
+	display: inline-block;
+}
+
+table.productos {
+	width: 100%;
+}
+
+table.productos i.fa-remove {
+	color: red;
+	cursor: help;
+}
+
+table.productos i.fa-check {
+	color: green;
+	cursor: help;
+}
+
+table.productos thead tr th
+{
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    border-top: 1px solid #6e6e6e !important; 
+    border-bottom: 1px solid #6e6e6e;
+}
+
+table.productos thead tr th label
+{
+	margin-top: 3px;
+	margin-bottom: 3px !important; 
+}
+
+table.productos thead
+{
+    background-color: #FFC05A;
+    color: white;
+}
+
+table.productos thead tr th:nth-child(1)
+{
+    border-left: 1px solid #6e6e6e;
+}
+
+table.productos thead tr th:nth-child(4)
+{
+    border-right: 1px solid #6e6e6e;
+}
+
+
+    
+
+    

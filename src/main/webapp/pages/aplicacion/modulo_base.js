@@ -674,12 +674,15 @@ moduloBase.prototype.iniciarListado= function(mensaje){
 	};
 };
 
-moduloBase.prototype.actualizarRegistro= function(){
+moduloBase.prototype.actualizarRegistro= function() {
+	
   //Ocultar alertas de mensaje
   var referenciaModulo = this;
-  if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")){
+  
+  if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,  cadenas.ERROR_VALORES_FORMULARIO);
-	} else if (referenciaModulo.obj.frmPrincipal.valid()){
+	} else if (referenciaModulo.obj.frmPrincipal.valid()) {
+		
     referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
     referenciaModulo.obj.ocultaContenedorFormulario.show();
     var eRegistro = referenciaModulo.recuperarValores();

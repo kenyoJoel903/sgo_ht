@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,6 +41,8 @@ import sgo.entidad.Enlace;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.OperacionEtapaRuta;
 import sgo.entidad.ParametrosListar;
+import sgo.entidad.ProductoEquivalente;
+import sgo.entidad.ProductoEquivalenteJson;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.entidad.Transportista;
@@ -88,6 +91,8 @@ public class OperacionControlador {
  private static final String URL_RECUPERAR_RELATIVA = "/operacion/recuperar";
  private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/recuperaProductosEquivalentes";
  private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/recuperaProductosEquivalentes";
+ private static final String URL_GUARDAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/guardarProductosEquivalentes";
+ private static final String URL_GUARDAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/guardarProductosEquivalentes";
 
 //Agregado por req 9000002570==================== 
  private static final String URL_RECUPERAR_ETAPAS_COMPLETA = "/admin/operacion/recuperarEtapas";
@@ -906,67 +911,69 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  @RequestMapping(value = URL_ACTUALIZAR_ESTADO_RELATIVA, method = RequestMethod.POST)
  public @ResponseBody
  RespuestaCompuesta actualizarEstadoRegistro(@RequestBody Operacion eEntidad, HttpServletRequest peticionHttp, Locale locale) {
+	 
   RespuestaCompuesta respuesta = null;
   AuthenticatedUserDetails principal = null;
   TransactionDefinition definicionTransaccion = null;
   TransactionStatus estadoTransaccion = null;
   Bitacora eBitacora = null;
   String direccionIp = "";
+  
   try {
-   // Inicia la transaccion
-   this.transaccion = new DataSourceTransactionManager(dOperacion.getDataSource());
-   definicionTransaccion = new DefaultTransactionDefinition();
-   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
-   eBitacora = new Bitacora();
-   // Recuperar el usuario actual
-   principal = this.getCurrentUser();
-   // Recuperar el enlace de la accion
-   respuesta = dEnlace.recuperarRegistro(URL_ACTUALIZAR_ESTADO_COMPLETA);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   // Verificar si cuenta con el permiso necesario
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   // Auditoria local (En el mismo registro)
-   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
-   if (direccionIp == null) {
-    direccionIp = peticionHttp.getRemoteAddr();
-   }
-   eEntidad.setActualizadoEl(Calendar.getInstance().getTime().getTime());
-   eEntidad.setActualizadoPor(principal.getID());
-   eEntidad.setIpActualizacion(direccionIp);
-   respuesta = dOperacion.ActualizarEstadoRegistro(eEntidad);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
-   }
-   // Guardar en la bitacora
-   ObjectMapper mapper = new ObjectMapper();
-   eBitacora.setUsuario(principal.getNombre());
-   eBitacora.setAccion(URL_ACTUALIZAR_ESTADO_COMPLETA);
-   eBitacora.setTabla(OperacionDao.NOMBRE_TABLA);
-   eBitacora.setIdentificador(String.valueOf(eEntidad.getId()));
-   eBitacora.setContenido(mapper.writeValueAsString(eEntidad));
-   eBitacora.setRealizadoEl(eEntidad.getActualizadoEl());
-   eBitacora.setRealizadoPor(eEntidad.getActualizadoPor());
-   respuesta = dBitacora.guardarRegistro(eBitacora);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
-   }
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso",
-     new Object[] { eEntidad.getFechaActualizacion().substring(0, 9), eEntidad.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);
-   ;
-   this.transaccion.commit(estadoTransaccion);
-  } catch (Exception ex) {
-   //ex.printStackTrace();
-   Utilidades.gestionaError(ex, sNombreClase, "actualizarEstadoRegistro");
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-   this.transaccion.rollback(estadoTransaccion);
+	   // Inicia la transaccion
+	   this.transaccion = new DataSourceTransactionManager(dOperacion.getDataSource());
+	   definicionTransaccion = new DefaultTransactionDefinition();
+	   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
+	   eBitacora = new Bitacora();
+	   // Recuperar el usuario actual
+	   principal = this.getCurrentUser();
+	   // Recuperar el enlace de la accion
+	   respuesta = dEnlace.recuperarRegistro(URL_ACTUALIZAR_ESTADO_COMPLETA);
+	   if (respuesta.estado == false) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+	   }
+	   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+	   // Verificar si cuenta con el permiso necesario
+	   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+	   }
+	   // Auditoria local (En el mismo registro)
+	   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
+	   if (direccionIp == null) {
+	    direccionIp = peticionHttp.getRemoteAddr();
+	   }
+	   eEntidad.setActualizadoEl(Calendar.getInstance().getTime().getTime());
+	   eEntidad.setActualizadoPor(principal.getID());
+	   eEntidad.setIpActualizacion(direccionIp);
+	   respuesta = dOperacion.ActualizarEstadoRegistro(eEntidad);
+	   if (respuesta.estado == false) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
+	   }
+	   // Guardar en la bitacora
+	   ObjectMapper mapper = new ObjectMapper();
+	   eBitacora.setUsuario(principal.getNombre());
+	   eBitacora.setAccion(URL_ACTUALIZAR_ESTADO_COMPLETA);
+	   eBitacora.setTabla(OperacionDao.NOMBRE_TABLA);
+	   eBitacora.setIdentificador(String.valueOf(eEntidad.getId()));
+	   eBitacora.setContenido(mapper.writeValueAsString(eEntidad));
+	   eBitacora.setRealizadoEl(eEntidad.getActualizadoEl());
+	   eBitacora.setRealizadoPor(eEntidad.getActualizadoPor());
+	   respuesta = dBitacora.guardarRegistro(eBitacora);
+	   if (respuesta.estado == false) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+	   }
+	   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso",
+	     new Object[] { eEntidad.getFechaActualizacion().substring(0, 9), eEntidad.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);
+	   ;
+	   this.transaccion.commit(estadoTransaccion);
+  } catch (Exception e) {
+	   Utilidades.gestionaError(e, sNombreClase, "actualizarEstadoRegistro");
+	   respuesta.estado = false;
+	   respuesta.contenido = null;
+	   respuesta.mensaje = e.getMessage();
+	   this.transaccion.rollback(estadoTransaccion);
   }
+  
   return respuesta;
  }
 
@@ -1023,5 +1030,66 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 
  	return respuesta;
  }
+
+ /**
+  * 
+  * @param ID
+  * @param locale
+  * @return
+  */
+ @RequestMapping(value = URL_GUARDAR_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.POST) 
+ public @ResponseBody
+ RespuestaCompuesta guardarProductosEquivalentes(@RequestBody ProductoEquivalente entity, HttpServletRequest request, Locale locale) {
+
+ 	RespuestaCompuesta respuesta = null;
+ 	AuthenticatedUserDetails principal = null;
+
+ 	try {
+ 		
+ 		String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+ 		
+ 		
+ 		
+
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_GUARDAR_PRODUCTOS_EQUIVALENTES_COMPLETA);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+
+ 		// Recuperar el registro
+ 		//respuesta = dOperacion.recuperarRegistro(ID);
+ 		
+ 		// Verifica el resultado de la accion
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
  
 }

@@ -1,11 +1,12 @@
 $(document).ready(function() {
 	
   var moduloActual = new moduloBase();  
-  moduloActual.urlBase='operacion';
+  moduloActual.urlBase = 'operacion';
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
   moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/recuperaProductosEquivalentes';
+  moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/guardarProductosEquivalentes';
   
   //Agregado por req 9000002570====================
   moduloActual.URL_RECUPERAR_ETAPA = moduloActual.urlBase + '/recuperarEtapas';
@@ -102,15 +103,22 @@ $(document).ready(function() {
     this.obj.cmpIdCliente.nombreControl="cmpIdCliente"; 
     this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false});
     
-    this.obj.cmpProductosSecundarios = $("#cmpProductosSecundarios");
-    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
-    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosSecundarios"; 
-    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
+//    this.obj.cmpProductosSecundarios = $("select.products");
+//    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
+//    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosPrincipales"; 
+//    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
+    
+//    this.obj.cmpProductosSecundarios = $(".cmpProductosSecundarios");
+//    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
+//    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosSecundarios"; 
+//    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
     
     this.obj.btnAgregarTransportista = $("#btnAgregarTransportista");
     this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
     this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
     this.obj.btnCerrarProductosEquivalentes = $("#btnCerrarProductosEquivalentes");
+    this.obj.btnAgregarTrEquivalencia = $("#btnAgregarTrEquivalencia");
+    this.obj.btnGuardarEquivalencia = $("#btnGuardarEquivalencia");
     this.obj.ocultaContenedorProductosEquivalentes = $("#ocultaContenedorProductosEquivalentes");
     
     //Campos Agregados por 9000002570=========================
@@ -162,6 +170,16 @@ $(document).ready(function() {
     this.obj.btnCerrarProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
     	moduloActual.cerrarProductosEquivalentes();
     });
+    
+    this.obj.btnAgregarTrEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.agregarTrEquivalencia();		
+    });
+    
+    this.obj.btnGuardarEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.guardarEquivalencia();		
+    });
+    
+    
     
     //Campos Agregados por 9000002570=========================
     //SheepIt etapas
@@ -722,8 +740,6 @@ $(document).ready(function() {
     var ref = this;
     
     try {
-    	
-    	console.log(" ******** recuperarValores ******* ");
 
 		eRegistro.id = parseInt(ref.idRegistro);
 		eRegistro.nombre = ref.obj.cmpNombre.val().toUpperCase();
@@ -740,8 +756,6 @@ $(document).ready(function() {
 		eRegistro.correoPara = ref.obj.cmpCorreoPara.val();
 		eRegistro.correoCC = ref.obj.cmpCorreoCC.val();
 		eRegistro.tipoVolumenDescargado = parseInt(ref.obj.cmpTipoVolumenDescargado.val());
-		
-		console.dir(eRegistro);
 		
 		eRegistro.transportistas=[];   
 	    var numeroFormularios = ref.obj.grupoTransportista.getForms().length;
@@ -762,8 +776,6 @@ $(document).ready(function() {
   };
   
   moduloActual.productosEquivalentes = function() {
-
-	console.log(" ::::::::: productosEquivalentes ::::::::: ");
 	
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
@@ -777,8 +789,8 @@ $(document).ready(function() {
 	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	} else {		 
 	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
-	    		
-    			console.dir(respuesta);
+    			
+    			$("#cntProductosEquivalentes input.operacion").val(respuesta.contenido.carga[0].nombre);
 	    		
 	    		moduloActual.obj.cntProductosEquivalentes.show();
 	    		moduloActual.obj.cntTabla.hide();
@@ -821,6 +833,56 @@ $(document).ready(function() {
 	  moduloActual.obj.btnProductosEquivalentes.removeClass(constantes.CSS_CLASE_DESHABILITADA);
   };
   
+  moduloActual.agregarTrEquivalencia = function() {
+      $tableClone = $('table.productos-clone').find('tbody');
+      $trNew = $tableClone.find('tr:last').clone();
+
+      $table = $('table.productos').find('tbody');
+      $table.append($trNew);
+  };
+  
+  moduloActual.guardarEquivalencia = function() {
+	  
+	  console.log(" ::::::::: guardarEquivalencia ::::::::: ");
+	  
+	  var productos = new Array();
+	  
+	  $("table.productos tbody tr").each (function(index, value) {
+		  var obj = new Object();
+		  obj.productoPrincipal = $(this).find("td").eq(0).find("option:selected").val();;
+		  obj.productoSecundario = $(this).find("td").eq(1).find("option:selected").val();;
+		  productos.push(obj);
+	  });
+	  
+	  //productos = (JSON.stringify(productos));
+	  
+	  console.dir(productos);
+	  
+	  
+	  $.ajax({
+			type: constantes.PETICION_TIPO_POST,
+			url: moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES, 
+			contentType: moduloActual.TIPO_CONTENIDO, 
+			//data: JSON.stringify(productos),	
+			data: {
+				idOperacion: moduloActual.idRegistro
+			},
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+				} else {	 
+
+					
+					//moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Se recupero el formulario de Productos Equivalentes");
+				}
+			},			    		    
+			error: function(xhr, status, error) {
+				moduloActual.mostrarErrorServidor(xhr, status, error);
+			}
+		});
+	  
+  };
+
   moduloActual.inicializar();
   
 });

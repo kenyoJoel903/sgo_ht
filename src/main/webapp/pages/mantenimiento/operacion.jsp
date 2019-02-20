@@ -7,6 +7,9 @@
 <%@ page import="sgo.entidad.Transportista" %>
 <% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
 
+<link href="tema/css/switch.css" rel="stylesheet" type="text/css"/>
+<link href="tema/css/operacion.css" rel="stylesheet" type="text/css"/>
+
 <div class="content-wrapper">
 
 	<section class="content-header">
@@ -265,10 +268,10 @@
 
 					<div class="form-group">
 						<label class="etiqueta-titulo-horizontal">Operaci&oacute;n</label>
-						<input type="text" class="form-control text-uppercase input-sm" readonly="readonly">
+						<input type="text" class="operacion form-control text-uppercase input-sm" readonly="readonly">
 					</div>
 
-					<table class="sgo-simple-table table table-condensed" border="1">
+					<table class="productos sgo-simple-table table table-condensed">
 						<thead>
 							<tr>
 								<th>
@@ -280,12 +283,18 @@
 								<th>
 									<label>Estado</label>
 								</th>
+								<th></th>
 							</tr>
 					    </thead>
-					    <tbody>
-					        <tr>
+					    <tbody></tbody>
+					</table>
+					
+				    <table class="productos-clone" style="display: none">
+				        <tbody>
+							<tr>
 					            <td class="celda-detalle">
-					                <select id="cmpProductosSecundarios" name="cmpProductosSecundarios" class="form-control input-sm" style="width: 100%">
+					                <select class="cmpProductosPrincipales products form-control input-sm">
+					                	<option value="">[Seleccione]</option>
 					                    <%
 						                    ArrayList<?> listProductosSecundarios = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
 											
@@ -297,33 +306,45 @@
 					            	</select>
 					            </td>
 					            <td class="celda-detalle">
-					                <select id="cmpProductosSecundarios" name="cmpProductosSecundarios" class="form-control input-sm" style="width: 100%">
+					                <select class="cmpProductosSecundarios products form-control input-sm">
+					                	<option value="">[Seleccione]</option>
 					                    <%
-						                    ArrayList<?> listProductosSecundarios = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
+						                    ArrayList<?> listProductosSecundarios2 = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
 											
-						                    for (int i=0; i < listProductosSecundarios.size(); i++) { 
-						                    	Producto eProducto = (Producto) listProductosSecundarios.get(i);
+						                    for (int i=0; i < listProductosSecundarios2.size(); i++) { 
+						                    	Producto eProducto = (Producto) listProductosSecundarios2.get(i);
 					                    %>
 					                	<option value="<%=eProducto.getId() %>"><%=eProducto.getNombre().trim() %></option>
 					                	<% } %>
 					            	</select>
 					            </td>
 					            <td class="celda-detalle">
-									<div class="callout callout-success">Activo</div>
+					            	<input type="text" class="form-control text-uppercase input-sm" readonly="readonly" value="Activo">
+									
+									<!--  
+									<label class="switch">
+										<input name="xxx" type="CheckBox" value="1">
+										<span class="slider round bg-yellow-slider"></span>
+                            		</label>
+                            		-->
+					            </td>
+					            <td class="celda-detalle pull-right">
+					            	<i class="fa fa-fw fa-remove"></i>
+					            	<i class="fa fa-fw fa-check"></i>
 					            </td>
 					        </tr>
-					    </tbody>
-					</table>
+				        </tbody>
+				    </table>
 
 	            </div>
 	            <div class="box-footer">
 	                <button id="btnCerrarProductosEquivalentes" class="btn btn-danger btn-sm">
 	                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR") %>
 	                </button>
-	                <button id="btnXXXXXX" class="btn btn-primary btn-sm">
+	                <button id="btnGuardarEquivalencia" class="btn btn-primary btn-sm">
 	                    Guardar
 	                </button>
-	                <button id="btnXXXXXX" class="btn btn-success btn-sm">
+	                <button id="btnAgregarTrEquivalencia" class="btn btn-success btn-sm">
 	                    <i class="fa fa-fw fa-plus"></i> Agregar Equivalencia
 	                </button>
 	            </div>
