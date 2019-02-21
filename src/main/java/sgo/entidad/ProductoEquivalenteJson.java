@@ -3,24 +3,26 @@ package sgo.entidad;
 public class ProductoEquivalenteJson extends EntidadBase {
 	
 	private static final long serialVersionUID = 1L;
-	private String productoPrincipal;
-	private String productoSecundario;
+	private int productoPrincipal;
+	private int productoSecundario;
 	
-	public String getProductoPrincipal() {
+	public int getProductoPrincipal() {
 		return productoPrincipal;
 	}
-	public void setProductoPrincipal(String productoPrincipal) {
+	public void setProductoPrincipal(int productoPrincipal) {
 		this.productoPrincipal = productoPrincipal;
 	}
-	public String getProductoSecundario() {
+	public int getProductoSecundario() {
 		return productoSecundario;
 	}
-	public void setProductoSecundario(String productoSecundario) {
+	public void setProductoSecundario(int productoSecundario) {
 		this.productoSecundario = productoSecundario;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
+
 	
 	
 }

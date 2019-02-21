@@ -27,10 +27,11 @@ public class Operacion extends EntidadBase {
 	private int indicador_tipo_registro_tanque;
 	private int idPlantaDespacho;
 	private Planta plantaDespacho;
-	private ArrayList<Transportista> transportistas;
 	private String correoPara;
 	private String correoCC;
 	private int volumenDescargado;
+	private ArrayList<Transportista> transportistas;
+	private ArrayList<ProductoEquivalente> listProductoEquivalente;
 	
 	//Agregado por req 9000002570====================
 	private ArrayList<OperacionEtapaRuta> etapas;
@@ -398,5 +399,12 @@ public void setVolumenDescargado(int volumenDescargado) {
 	this.volumenDescargado = volumenDescargado;
 }
 
+public ArrayList<ProductoEquivalente> getListProductoEquivalente() {
+	return listProductoEquivalente;
+}
+
+public void setListProductoEquivalente(ArrayList<ProductoEquivalente> listProductoEquivalente) {
+	this.listProductoEquivalente = listProductoEquivalente;
+}
 
 }

@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,9 +33,11 @@ import sgo.datos.OperacionDao;
 import sgo.datos.EnlaceDao;
 import sgo.datos.PlantaDao;
 import sgo.datos.ProductoDao;
+import sgo.datos.ProductoEquivalenteDao;
 import sgo.datos.TransportistaDao;
 import sgo.datos.TransportistaOperacionDao;
 import sgo.entidad.Bitacora;
+import sgo.entidad.Contenido;
 import sgo.entidad.Operacion;
 import sgo.entidad.Enlace;
 import sgo.entidad.MenuGestor;
@@ -47,9 +49,11 @@ import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.entidad.Transportista;
 import sgo.entidad.TransportistaOperacion;
+import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
+
 
 @Controller
 public class OperacionControlador {
@@ -65,6 +69,8 @@ public class OperacionControlador {
  private DiaOperativoDao dDiaOperativo;
  @Autowired
  private OperacionDao dOperacion;
+ @Autowired
+ private ProductoEquivalenteDao dProductoEquivalente;
  @Autowired
  private TransportistaDao dTransportistas; 
  @Autowired
@@ -89,10 +95,12 @@ public class OperacionControlador {
  private static final String URL_ACTUALIZAR_RELATIVA = "/operacion/actualizar";
  private static final String URL_RECUPERAR_COMPLETA = "/admin/operacion/recuperar";
  private static final String URL_RECUPERAR_RELATIVA = "/operacion/recuperar";
- private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/recuperaProductosEquivalentes";
- private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/recuperaProductosEquivalentes";
+ private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/recuperarProductosEquivalentes";
+ private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/recuperarProductosEquivalentes";
  private static final String URL_GUARDAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/guardarProductosEquivalentes";
  private static final String URL_GUARDAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/guardarProductosEquivalentes";
+ private static final String URL_UPDATE_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/updateProductosEquivalentes";
+ private static final String URL_UPDATE_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/updateProductosEquivalentes";
 
 //Agregado por req 9000002570==================== 
  private static final String URL_RECUPERAR_ETAPAS_COMPLETA = "/admin/operacion/recuperarEtapas";
@@ -109,6 +117,8 @@ public class OperacionControlador {
  
  private static final String URL_ACTUALIZAR_ESTADO_COMPLETA = "/admin/operacion/actualizarEstado";
  private static final String URL_ACTUALIZAR_ESTADO_RELATIVA = "/operacion/actualizarEstado";
+ 
+ private static final int PRIMER_ROW = 0;
 
  private HashMap<String, String> recuperarMapaValores(Locale locale) {
 	 
@@ -890,9 +900,10 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	   eTransportistaOperacion.setIdTransportista(transportista.getId());
 	   eTransportistaOperacion.setIdOperacion(eOperacion.getId());
 	   respuesta = dTransportistaOperacion.guardarRegistro(eTransportistaOperacion);
-    if (respuesta.estado == false) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
-    }
+	   
+	    if (respuesta.estado == false) {
+	     throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+	    }
    }
 		   
    respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { eOperacion.getFechaActualizacion().substring(0, 9), eOperacion.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);;
@@ -932,16 +943,19 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	   if (respuesta.estado == false) {
 	    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 	   }
+	   
 	   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 	   // Verificar si cuenta con el permiso necesario
 	   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
 	    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
 	   }
+	   
 	   // Auditoria local (En el mismo registro)
 	   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
 	   if (direccionIp == null) {
 	    direccionIp = peticionHttp.getRemoteAddr();
 	   }
+	   
 	   eEntidad.setActualizadoEl(Calendar.getInstance().getTime().getTime());
 	   eEntidad.setActualizadoPor(principal.getID());
 	   eEntidad.setIpActualizacion(direccionIp);
@@ -949,6 +963,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	   if (respuesta.estado == false) {
 	    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
 	   }
+	   
 	   // Guardar en la bitacora
 	   ObjectMapper mapper = new ObjectMapper();
 	   eBitacora.setUsuario(principal.getNombre());
@@ -959,13 +974,21 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	   eBitacora.setRealizadoEl(eEntidad.getActualizadoEl());
 	   eBitacora.setRealizadoPor(eEntidad.getActualizadoPor());
 	   respuesta = dBitacora.guardarRegistro(eBitacora);
+	   
 	   if (respuesta.estado == false) {
-	    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+		   throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
 	   }
+	   
 	   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso",
-	     new Object[] { eEntidad.getFechaActualizacion().substring(0, 9), eEntidad.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);
-	   ;
+		   new Object[] {
+			   eEntidad.getFechaActualizacion().substring(0, 9), 
+			   eEntidad.getFechaActualizacion().substring(10), 
+			   principal.getIdentidad()
+			}, 
+	   locale);
+	   
 	   this.transaccion.commit(estadoTransaccion);
+	   
   } catch (Exception e) {
 	   Utilidades.gestionaError(e, sNombreClase, "actualizarEstadoRegistro");
 	   respuesta.estado = false;
@@ -975,6 +998,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
   }
   
   return respuesta;
+  
  }
 
  private AuthenticatedUserDetails getCurrentUser() {
@@ -989,7 +1013,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
   */
  @RequestMapping(value = URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.GET) 
  public @ResponseBody
- RespuestaCompuesta recuperaProductosEquivalentes(int ID, Locale locale) {
+ RespuestaCompuesta recuperarProductosEquivalentes(int idOperacion, Locale locale) {
 
  	RespuestaCompuesta respuesta = null;
  	AuthenticatedUserDetails principal = null;
@@ -1012,13 +1036,31 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		}
 
  		// Recuperar el registro
- 		respuesta = dOperacion.recuperarRegistro(ID);
+ 		respuesta = dOperacion.recuperarRegistro(idOperacion);
  		
- 		// Verifica el resultado de la accion
  		if (!respuesta.estado) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
  		
+ 		List<Operacion> listOperacion = (List<Operacion>) respuesta.contenido.getCarga();
+ 		Operacion eOperacion = (Operacion) listOperacion.get(PRIMER_ROW);
+ 		
+ 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistroPorOperacion(idOperacion);
+ 		
+ 		if (!respuestaProdEquivalente.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		ArrayList<ProductoEquivalente> listProductoEquivalente = (ArrayList<ProductoEquivalente>) respuestaProdEquivalente.getContenido().getCarga();
+ 		eOperacion.setListProductoEquivalente(listProductoEquivalente);
+
+ 		listOperacion.set(PRIMER_ROW, eOperacion);
+ 		
+ 		Contenido<Operacion> contenido = new Contenido<Operacion>();
+        contenido.carga = listOperacion;
+        respuesta.contenido = contenido;
+		contenido.totalRegistros = listOperacion.size();
+		contenido.totalEncontrados = listOperacion.size();
  		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
 
  	} catch (Exception e) {
@@ -1033,7 +1075,8 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 
  /**
   * 
-  * @param ID
+  * @param entity
+  * @param request
   * @param locale
   * @return
   */
@@ -1046,11 +1089,6 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 
  	try {
  		
- 		String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
- 		
- 		
- 		
-
  		// Recupera el usuario actual
  		principal = this.getCurrentUser();
  		
@@ -1061,19 +1099,31 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		}
 
  		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		
  		// Verificar si cuenta con el permiso necesario
  		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
  		}
 
- 		// Recuperar el registro
- 		//respuesta = dOperacion.recuperarRegistro(ID);
- 		
- 		// Verifica el resultado de la accion
- 		if (!respuesta.estado) {
- 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		String direccionIp = request.getHeader("X-FORWARDED-FOR");
+ 		if (direccionIp == null) {
+ 			direccionIp = request.getRemoteAddr();
  		}
+
+ 		entity.setCreadoEl(Calendar.getInstance().getTime().getTime());
+ 		entity.setCreadoPor(principal.getID());
+ 		entity.setIpCreacion(direccionIp);
+ 		entity.setEstado(Constante.ESTADO_ACTIVO); 
  		
+ 		ArrayList<ProductoEquivalenteJson> productos = entity.getProductos();
+
+ 		for (ProductoEquivalenteJson peEntity : productos) {
+ 			respuesta = dProductoEquivalente.guardarRegistro(entity, peEntity);
+ 	 		if (!respuesta.estado) {
+ 	 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 	 		}
+ 		}
+
  		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
 
  	} catch (Exception e) {
@@ -1085,11 +1135,57 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 
  	return respuesta;
  }
- 
- 
- 
- 
- 
+
+ /**
+  * 
+  * @param entity
+  * @param request
+  * @param locale
+  * @return
+  */
+ @RequestMapping(value = URL_UPDATE_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.POST) 
+ public @ResponseBody
+ RespuestaCompuesta updateProductosEquivalentes(@RequestBody ProductoEquivalente entity, HttpServletRequest request, Locale locale) {
+
+ 	RespuestaCompuesta respuesta = null;
+ 	AuthenticatedUserDetails principal = null;
+
+ 	try {
+ 		
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_UPDATE_PRODUCTOS_EQUIVALENTES_COMPLETA);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+
+ 		if (entity.getEstado() == Constante.ESTADO_ACTIVO) {
+ 			entity.setEstado(Constante.ESTADO_INACTIVO);
+ 		} else if (entity.getEstado() == Constante.ESTADO_INACTIVO) {
+ 			entity.setEstado(Constante.ESTADO_ACTIVO);
+		}
+ 		
+ 		respuesta = dProductoEquivalente.updateRegistro(entity);
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
+ }
  
  
 }

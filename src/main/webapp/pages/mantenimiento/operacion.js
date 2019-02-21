@@ -5,8 +5,9 @@ $(document).ready(function() {
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
-  moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/recuperaProductosEquivalentes';
+  moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/recuperarProductosEquivalentes';
   moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/guardarProductosEquivalentes';
+  moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/updateProductosEquivalentes';
   
   //Agregado por req 9000002570====================
   moduloActual.URL_RECUPERAR_ETAPA = moduloActual.urlBase + '/recuperarEtapas';
@@ -164,7 +165,7 @@ $(document).ready(function() {
     });
     
     this.obj.btnProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
-    	moduloActual.productosEquivalentes();		
+    	moduloActual.recuperarProductosEquivalentes();		
     });
     
     this.obj.btnCerrarProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
@@ -176,10 +177,20 @@ $(document).ready(function() {
     });
     
     this.obj.btnGuardarEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
-    	moduloActual.guardarEquivalencia();		
+    	moduloActual.guardarProductoEquivalencia();	
     });
     
+    $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'button.btn-remove-row', function() {
+    	$(this).closest('tr').remove();
+    });
     
+    $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'input.update-producto-equivalente', function() {
+    	
+    	var checked = $(this).is(':checked');
+    	var idProductoEquivalencia = $(this).data("producto-equivalencia");
+    	
+    	moduloActual.updateProductoEquivalencia(idProductoEquivalencia, checked);
+    });
     
     //Campos Agregados por 9000002570=========================
     //SheepIt etapas
@@ -289,9 +300,10 @@ $(document).ready(function() {
         	  
         	  var estado;
         	  var cambiaEstadoTemp = $(formularioNuevo).find("[elemento-grupo='estadoEtapa']");
+        	  
         	  if(cambiaEstadoTemp.val() == "ACTIVO"){
         		  estado = '0';
-        	  }else{
+        	  } else {
         		  estado = '1';
         	  }
         	  
@@ -566,10 +578,10 @@ $(document).ready(function() {
 			  nombreEtapasEnGrilla.push(etapa.nombreEtapa);
 			  
 			  var estadoTemp = formulario.find("input[elemento-grupo='estadoEtapa']").val();
-			  
+
 			  if(estadoTemp === 'ACTIVO'){
 				  etapa.estado = 1;
-			  }else{
+			  } else {
 				  etapa.estado = 0;
 			  }
 			  
@@ -775,23 +787,54 @@ $(document).ready(function() {
     return eRegistro;
   };
   
-  moduloActual.productosEquivalentes = function() {
-	
+  moduloActual.recuperarProductosEquivalentes = function() {
+	  
+    console.log(" ***** recuperarProductosEquivalentes ******** ");
+	  
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES, 
 	    contentType: moduloActual.TIPO_CONTENIDO, 
 	    data: {
-	    	ID: moduloActual.idRegistro
+	    	idOperacion: moduloActual.idRegistro
 	    },	
 	    success: function(respuesta) {
+	    	
 	    	if (!respuesta.estado) {
 	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
-	    	} else {		 
+	    	} else {
+	    		
+	    		console.dir(respuesta.contenido.carga[0].listProductoEquivalente);
+	    		
+	    		var listProductoEquivalente = respuesta.contenido.carga[0].listProductoEquivalente;
+
+	    		$table = $('table.productos').find('tbody');
+	    		$table.empty();
+	    		
+	    		for (var i = 0; i < listProductoEquivalente.length; i++) {
+	    			
+	    			var productoEquivalente = listProductoEquivalente[i];
+	    			
+		    		$tableClone = $('table.productos-edit-clone').find('tbody');
+		    		$trNew = $tableClone.find('tr:last').clone();
+		    		$trNew.find("input.cmpProductosPrincipales").val(productoEquivalente.idProductoPrincipal);
+		    		$trNew.find("input.cmpProductosSecundarios").val(productoEquivalente.idProductoSecundario);
+		    		$trNew.find("input.update-producto-equivalente").attr("data-producto-equivalencia", productoEquivalente.idProductoEquivalencia);
+		    		$trNew.find("input.estado").val("ACTIVO");
+		    		$trNew.find("input.estado").attr("data-producto-equivalencia", productoEquivalente.idProductoEquivalencia);
+		    		$trNew.find("input.update-producto-equivalente").prop("checked", true);
+		    		
+		    		if (productoEquivalente.estado == constantes.ESTADO_INACTIVO) {
+		    			$trNew.find("input.estado").val("INACTIVO");
+		    			$trNew.find("input.update-producto-equivalente").prop("checked", false);
+					}
+
+		    		$table.append($trNew);
+	    		}
+	    		
 	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
     			
     			$("#cntProductosEquivalentes input.operacion").val(respuesta.contenido.carga[0].nombre);
-	    		
 	    		moduloActual.obj.cntProductosEquivalentes.show();
 	    		moduloActual.obj.cntTabla.hide();
 	    		moduloActual.obj.ocultaContenedorProductosEquivalentes.hide();
@@ -836,52 +879,67 @@ $(document).ready(function() {
   moduloActual.agregarTrEquivalencia = function() {
       $tableClone = $('table.productos-clone').find('tbody');
       $trNew = $tableClone.find('tr:last').clone();
-
       $table = $('table.productos').find('tbody');
       $table.append($trNew);
   };
   
-  moduloActual.guardarEquivalencia = function() {
+  moduloActual.guardarProductoEquivalencia = function() {
+
+	  var object = {};
+	  object.idOperacion = moduloActual.idRegistro;
+	  object.productos = [];
 	  
-	  console.log(" ::::::::: guardarEquivalencia ::::::::: ");
-	  
-	  var productos = new Array();
-	  
-	  $("table.productos tbody tr").each (function(index, value) {
-		  var obj = new Object();
-		  obj.productoPrincipal = $(this).find("td").eq(0).find("option:selected").val();;
-		  obj.productoSecundario = $(this).find("td").eq(1).find("option:selected").val();;
-		  productos.push(obj);
+	  $("table.productos tbody tr.new").each(function(index, value) {
+		  var obj = {};
+		  obj.productoPrincipal = $(this).find("td").eq(0).find("option:selected").val();
+		  obj.productoSecundario = $(this).find("td").eq(1).find("option:selected").val();
+		  object.productos.push(obj);
 	  });
-	  
-	  //productos = (JSON.stringify(productos));
-	  
-	  console.dir(productos);
-	  
 	  
 	  $.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES, 
 			contentType: moduloActual.TIPO_CONTENIDO, 
-			//data: JSON.stringify(productos),	
-			data: {
-				idOperacion: moduloActual.idRegistro
-			},
+			data: JSON.stringify(object),
 			success: function(respuesta) {
 				if (!respuesta.estado) {
 					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
-				} else {	 
-
-					
-					//moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Se recupero el formulario de Productos Equivalentes");
+				} else {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Guardado con exito!");
 				}
 			},			    		    
 			error: function(xhr, status, error) {
 				moduloActual.mostrarErrorServidor(xhr, status, error);
 			}
 		});
-	  
   };
+  
+  moduloActual.updateProductoEquivalencia = function(idProductoEquivalencia, checked) {
+
+	  var object = {};
+	  object.estado = checked ? constantes.ESTADO_ACTIVO : constantes.ESTADO_INACTIVO;
+	  object.idProductoEquivalencia = idProductoEquivalencia;
+	  
+	  $.ajax({
+			type: constantes.PETICION_TIPO_POST,
+			url: moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES, 
+			contentType: moduloActual.TIPO_CONTENIDO, 
+			data: JSON.stringify(object),
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+				} else {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Estado actualizado con exito!");
+					
+					$('input[data-producto-equivalencia="' + idProductoEquivalencia + '"]').val(checked ? "ACTIVO" : "INACTIVO");
+				}
+			},			    		    
+			error: function(xhr, status, error) {
+				moduloActual.mostrarErrorServidor(xhr, status, error);
+			}
+		});
+  };
+
 
   moduloActual.inicializar();
   

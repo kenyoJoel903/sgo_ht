@@ -315,14 +315,16 @@ public class OperacionDao {
 	}
 	//==================================================
 	
-	public RespuestaCompuesta recuperarRegistro(int ID){
+	public RespuestaCompuesta recuperarRegistro(int ID) {
+		
 		StringBuilder consultaSQL= new StringBuilder();	
 		List<TransportistaOperacion> listaTransportistaOpe=new ArrayList<TransportistaOperacion>();
 		ArrayList<Transportista> listaTransportistas = new ArrayList<Transportista>();
 		List<Operacion> listaRegistros=new ArrayList<Operacion>();
 		Contenido<Operacion> contenido = new Contenido<Operacion>();
 		RespuestaCompuesta respuesta= new RespuestaCompuesta();
-		Operacion eOperacion= null;
+		Operacion eOperacion = null;
+		
 		try {
 			consultaSQL.append("SELECT ");
 			consultaSQL.append("t1.id_operacion,");

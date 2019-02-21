@@ -274,15 +274,11 @@
 					<table class="productos sgo-simple-table table table-condensed">
 						<thead>
 							<tr>
-								<th>
-									<label>Productos Principales</label>
-								</th>
-								<th>
-									<label>Productos Secundarios</label>
-								</th>
-								<th>
-									<label>Estado</label>
-								</th>
+								<th><label>Productos Principales</label></th>
+								<th><label>Productos Secundarios</label></th>
+								<th><label>Estado</label></th>
+								<th></th>
+								<th></th>
 								<th></th>
 							</tr>
 					    </thead>
@@ -291,7 +287,7 @@
 					
 				    <table class="productos-clone" style="display: none">
 				        <tbody>
-							<tr>
+							<tr class="new">
 					            <td class="celda-detalle">
 					                <select class="cmpProductosPrincipales products form-control input-sm">
 					                	<option value="">[Seleccione]</option>
@@ -320,17 +316,43 @@
 					            </td>
 					            <td class="celda-detalle">
 					            	<input type="text" class="form-control text-uppercase input-sm" readonly="readonly" value="Activo">
-									
-									<!--  
+					            </td>
+					            <td class="celda-detalle"></td>
+					            <td class="celda-detalle" align="center">
+									<button class="btn btn-danger btn-xs btn-remove-row" type="button">
+										<i class="fa fa-fw fa-trash-o"></i>
+									</button>
+					            </td>
+					            <td class="celda-detalle" align="center">
+					            	<i class="fa fa-fw fa-remove" style="display: none"></i>
+					            	<i class="fa fa-fw fa-check" style="display: none"></i>
+					            </td>
+					        </tr>
+				        </tbody>
+				    </table>
+				    
+				    <table class="productos-edit-clone" style="display: none">
+				        <tbody>
+							<tr>
+					            <td class="celda-detalle">
+					            	<input type="text" class="cmpProductosPrincipales form-control input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle">
+					            	<input type="text" class="cmpProductosSecundarios form-control input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle">
+					            	<input type="text" class="estado form-control text-uppercase input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle" align="center">
 									<label class="switch">
-										<input name="xxx" type="CheckBox" value="1">
+										<input class="update-producto-equivalente" type="checkbox">
 										<span class="slider round bg-yellow-slider"></span>
                             		</label>
-                            		-->
 					            </td>
-					            <td class="celda-detalle pull-right">
-					            	<i class="fa fa-fw fa-remove"></i>
-					            	<i class="fa fa-fw fa-check"></i>
+					            <td class="celda-detalle"></td>
+					            <td class="celda-detalle" align="center">
+					            	<i class="fa fa-fw fa-remove" style="display: none"></i>
+					            	<i class="fa fa-fw fa-check" style="display: none"></i>
 					            </td>
 					        </tr>
 				        </tbody>

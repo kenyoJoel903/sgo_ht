@@ -1,4 +1,4 @@
---inicio agregar tablas=================================================================================================
+--inicio agregar tablas==
 --producto_equivalente
 CREATE SEQUENCE sgo.secuencia_id_producto_equivalencia
     INCREMENT 1
@@ -10,6 +10,7 @@ CREATE SEQUENCE sgo.secuencia_id_producto_equivalencia
 ALTER SEQUENCE sgo.secuencia_id_producto_equivalencia
     OWNER TO sgo_user;
 
+-- ALTER TABLE sgo.producto_equivalente ADD COLUMN estado INTEGER DEFAULT 1;
 CREATE TABLE sgo.producto_equivalente(
 	id_producto_equivalencia integer NOT NULL DEFAULT nextval('sgo.secuencia_id_producto_equivalencia'::regclass),
 	id_operacion integer,
@@ -19,6 +20,7 @@ CREATE TABLE sgo.producto_equivalente(
 	creado_el bigint,
     creado_por integer,
 	ip_creacion character varying(40) COLLATE pg_catalog."default",
+    estado integer DEFAULT 1,
 	CONSTRAINT producto_equivalente_pkey PRIMARY KEY (id_producto_equivalencia),
 	CONSTRAINT producto_equivalente_id_operacion_fkey FOREIGN KEY (id_operacion)
         REFERENCES sgo.operacion (id_operacion) MATCH SIMPLE
@@ -1209,7 +1211,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/operacion/recuperaProductosEquivalentes', 10, 255, '/operacion', 2, 
+        VALUES('/admin/operacion/recuperarProductosEquivalentes', 10, 255, '/operacion', 2, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'), 'Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
@@ -1224,4 +1226,40 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
         VALUES('/admin/operacion/guardarProductosEquivalentes', 10, 255, '/operacion', 2, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'), 'Guardar Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+-- ******************* TURNOS JORNADA 2019-02-21 1424 ******************************
+CREATE OR REPLACE VIEW sgo.v_producto_equivalente AS
+ SELECT 
+    t1.id_producto_equivalencia,
+    t1.id_operacion,
+    t1.id_producto_principal,
+    t1.id_producto_secundario,
+    t1.centimetros,
+    t1.creado_el,
+    t1.creado_por,
+    t1.ip_creacion,
+    t1.estado,
+    t2.nombre AS nombre_producto_principal,
+    t3.nombre AS nombre_producto_secundario
+   FROM sgo.producto_equivalente t1
+   JOIN sgo.producto t2 ON t2.id_producto = t1.id_producto_principal
+   JOIN sgo.producto t3 ON t3.id_producto = t1.id_producto_secundario
+   ;
+
+ALTER TABLE sgo.v_producto_equivalente
+    OWNER TO sgo_user;
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-21 1424 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_UPDATE_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/updateProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'), 'Update Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 

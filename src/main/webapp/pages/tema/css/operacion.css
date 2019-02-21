@@ -1,13 +1,9 @@
-select.products {
-	width: 90%;
-}
-
 td.celda-detalle {
 	padding: 2px;
 }
 
-#cntProductosEquivalentes input.form-control {
-	width: 100% !important;
+#cntProductosEquivalentes input.operacion {
+	width: 60% !important;
 	display: inline-block;
 }
 
@@ -18,11 +14,13 @@ table.productos {
 table.productos i.fa-remove {
 	color: red;
 	cursor: help;
+    font-size: 1.5em !important;
 }
 
 table.productos i.fa-check {
 	color: green;
 	cursor: help;
+	font-size: 1.5em !important;
 }
 
 table.productos thead tr th
@@ -46,17 +44,44 @@ table.productos thead
     color: white;
 }
 
+table.productos tbody tr
+{
+	height: 30px;
+}
+
 table.productos thead tr th:nth-child(1)
 {
     border-left: 1px solid #6e6e6e;
 }
 
-table.productos thead tr th:nth-child(4)
+table.productos thead tr th:nth-child(6)
 {
     border-right: 1px solid #6e6e6e;
 }
 
+table.productos tbody tr td:nth-child(1) select,
+table.productos tbody tr td:nth-child(2) select
+{
+    width: 90%;
+}
 
-    
+table.productos tbody tr td:nth-child(3) input
+{
+	width: 90%;
+}
 
+table.productos tbody tr td:nth-child(4)
+{
+	width: 5%;
+}
+
+table.productos tbody tr td:nth-child(5)
+{
+	width: 3%;
+}
+   
+table.productos tbody tr td:nth-child(6)
+{
+	width: 3%;
+}
     
