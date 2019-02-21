@@ -782,6 +782,7 @@ $(document).ready(function(){
   	  this.obj.cmpFormularioOperacion.val($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion'));
   	  this.obj.cmpFormularioEstacion.val(moduloActual.obj.estacionSeleccionado);
   	  this.obj.cmpFormularioFechaJornada.val(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));
+  	  this.obj.cmpFormularioFechaJornada.text(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));	//Agregado por HT correccion 9000003068
 //	  ====================================================================================================================================== 
       
   	  referenciaModulo.recuperarTurno();
@@ -957,6 +958,12 @@ $(document).ready(function(){
 	    eRegistro.idContometro = parseInt(referenciaModulo.obj.cmpIdContometro.val());
 	    eRegistro.estado = parseInt(constantes.ESTADO_ACTIVO);
 	    eRegistro.tipoRegistro = moduloActual.obj.cmpTipoRegistro;
+	    
+	    console.log(referenciaModulo.obj.cmpFormularioFechaJornada.text());
+	    console.log(referenciaModulo.obj.cmpHoraInicio.val());
+	    console.log(referenciaModulo.obj.cmpHoraFin.val());
+	    console.log(utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraInicio.val()));
+	    console.log(utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraFin.val()));
 	    
 	    eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraInicio.val());
 	    eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraFin.val());

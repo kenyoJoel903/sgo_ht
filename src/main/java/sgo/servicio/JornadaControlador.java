@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import sgo.datos.BitacoraDao;
 import sgo.datos.ContometroDao;
 import sgo.datos.ContometroJornadaDao;
+import sgo.datos.DespachoDao;
 import sgo.datos.DetalleTurnoDao;
 import sgo.datos.DiaOperativoDao;
 import sgo.datos.EnlaceDao;
@@ -49,6 +50,7 @@ import sgo.entidad.Bitacora;
 import sgo.entidad.Contenido;
 import sgo.entidad.Contometro;
 import sgo.entidad.ContometroJornada;
+import sgo.entidad.Despacho;
 import sgo.entidad.DetalleTurno;
 import sgo.entidad.Enlace;
 import sgo.entidad.Estacion;
@@ -70,6 +72,7 @@ import sgo.entidad.TanqueJornada;
 import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
+import sgo.utilidades.Formula;
 import sgo.utilidades.Utilidades;
 
 @Controller
@@ -119,6 +122,9 @@ public class JornadaControlador {
 	 
 	@Autowired
 	private ParametroDao dParametro;
+	
+	@Autowired
+	private DespachoDao dDespacho;
 //		Fin agregado por requerimiento 9000003068========
 	
 	private DataSourceTransactionManager transaccion;//Gestor de la transaccion
@@ -1372,8 +1378,11 @@ public class JornadaControlador {
         				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
         			}
             		
-            		
 //            		Fin Agregado por req 9000003068=====================================
+                	
+//                  Inicio Agregado por req 9000003068==================================================
+            		setearVolumenCorregido(eJornada.getId(), locale);
+//                  Fin Agregado por req 9000003068==================================================
 	    		    
 	            	respuestaMuestreoJornada = dMuestreo.guardarRegistro(eMuestreoJornada);
 					if (respuestaMuestreoJornada.estado == false) {
@@ -2063,5 +2072,86 @@ public @ResponseBody RespuestaCompuesta registrarCambioTanqueJornada(@RequestBod
 	}
 	return respuesta;
   }
+  
+//  Inicio Agregado por req 9000003068======================================
+  private void setearVolumenCorregido(int idJornada, Locale locale) throws Exception{
+	  ParametrosListar parametros;
+	  RespuestaCompuesta respuesta;
+	  
+	  parametros  = new ParametrosListar();
+	  parametros.setIdJornada(idJornada);
+	  respuesta = dDespacho.recuperarRegistros(parametros);
+	  
+	  if (respuesta.estado == false){  
+		  throw new Exception("Error al recuperar despachos de la jornada");
+	  }
+	  
+	  List<Despacho> lstDespacho = (List<Despacho>) respuesta.contenido.carga;
+	  
+	  parametros  = new ParametrosListar();
+	  parametros.setIdJornada(idJornada);
+	  parametros.setCampoOrdenamiento("horaMuestreo");
+	  parametros.setSentidoOrdenamiento("ASC");
+	  respuesta = dMuestreo.recuperarRegistros(parametros);
+	  
+	  if (respuesta.estado == false){  
+		  throw new Exception("Error al recuperar muestreos de la jornada");
+	  }
+	  
+	  List<Muestreo> lstMuestreo = (List<Muestreo>) respuesta.contenido.carga;
+	  
+	  for(Despacho desp : lstDespacho){
+		  
+		  float apiDesp = desp.getApiCorregido();
+		  float tempDesp = desp.getTemperatura();
+		  
+		  if( (apiDesp == 0 && tempDesp == 0 && desp.getFlagCalculoCorregido() == 0) 
+				  || (apiDesp != 0 && tempDesp != 0 && desp.getFlagCalculoCorregido() == 2)){
+			  
+			  System.out.println("desp.id: " + desp.getId());
+			  Muestreo mues = obtenerMuestreoMasProximo(lstMuestreo, desp.getFechaHoraFin(), desp.getIdProducto());
+			  
+			  if(mues != null){
+				  float apiCorregido = mues.getApiMuestreo();
+				  float temperaturaCentro = mues.getTemperaturaMuestreo();
+				  
+				  float factorCorreccion = (float) Formula.calcularFactorCorreccion(apiCorregido, temperaturaCentro);
+				  
+				  float volCorregido = desp.getVolumenObservado() * factorCorreccion;
+				  
+				  desp.setApiCorregido(apiCorregido);
+				  desp.setTemperatura(temperaturaCentro);
+				  desp.setFactorCorreccion(factorCorreccion);
+				  desp.setVolumenCorregido(volCorregido);
+				  desp.setFlagCalculoCorregido(2);
+				  
+				  respuesta = dDespacho.actualizarRegistro(desp);
+		          if (respuesta.estado==false){     	
+		        	  throw new Exception(gestorDiccionario.getMessage("Error al actualizar los despachos",null,locale));
+		          }
+				  
+			  }
+			  
+		  }
+		  
+	  }
+	    
+  }
+  
+  private Muestreo obtenerMuestreoMasProximo(List<Muestreo> lstMuestreo, Timestamp fechaDespacho, int idProducto){
+	  
+	  for(Muestreo mues : lstMuestreo){
+		  
+		  if(mues.getProductoMuestreado() == idProducto && !fechaDespacho.after(mues.getHoraMuestreo())){
+			  System.out.println("mues.id: " + mues.getId());
+			  return mues;
+		  }
+		  
+	  }
+	  
+	  return null;
+	  
+  }
+//  Fin Agregado por req 9000003068=========================================
   
 }
