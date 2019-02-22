@@ -1,14 +1,19 @@
 package sgo.datos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.jdbc.core.RowMapper;
 
 import sgo.entidad.Cliente;
 import sgo.entidad.Operacion;
 import sgo.entidad.Planta;
 import sgo.utilidades.Utilidades;
-public class OperacionMapper implements RowMapper<Operacion>{
+
+public class OperacionMapper implements RowMapper<Operacion> {
+	
 	public Operacion mapRow(ResultSet rs, int arg1) throws SQLException 
 	{
 		Operacion eOperacion = null;
@@ -32,7 +37,14 @@ public class OperacionMapper implements RowMapper<Operacion>{
 			eOperacion.setEstado(rs.getInt("estado"));		
 			eOperacion.setCorreoPara(Utilidades.cleanXSS(rs.getString("correoPara")));
 			eOperacion.setCorreoCC(Utilidades.cleanXSS(rs.getString("correoCC")));
+			eOperacion.setTipoVolumenDescargado(rs.getInt("tipo_volumen_descargado"));
 			
+			if (rs.getInt("tipo_volumen_descargado") == Operacion.VOLUMEN_DESCARGADO_CISTERNA) {
+				eOperacion.setTipoVolumenDescargadotxt("Volumen descargado por cisterna(s).");
+			} else if (rs.getInt("tipo_volumen_descargado") == Operacion.VOLUMEN_RECIBIDO_EN_TANQUE) {
+				eOperacion.setTipoVolumenDescargadotxt("Volumen recibido en el tanque.");
+			}
+
 			//Parametros de auditoria
 			eOperacion.setCreadoPor(rs.getInt("creado_por"));
 			eOperacion.setCreadoEl(rs.getLong("creado_el"));
@@ -55,9 +67,10 @@ public class OperacionMapper implements RowMapper<Operacion>{
 			eCliente.setEstado(rs.getInt("estado_cliente"));
 			eOperacion.setCliente(eCliente);
 			
-		} catch(Exception ex){
-			ex.printStackTrace();
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
+		
 		return eOperacion;
 	}
 }

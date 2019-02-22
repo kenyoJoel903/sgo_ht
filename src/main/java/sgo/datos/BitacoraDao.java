@@ -208,11 +208,13 @@ public class BitacoraDao {
 			return respuesta;
 		}	
 	
-	public RespuestaCompuesta guardarRegistro(Bitacora bitacora){
+	public RespuestaCompuesta guardarRegistro(Bitacora bitacora) {
+		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		StringBuilder sbSQL= new StringBuilder();
 		KeyHolder claveGenerada = null;
-		int rowsAffected=0;
+		int rowsAffected = 0;
+		
 		try {
 			sbSQL.append("INSERT INTO ");
 			sbSQL.append(NOMBRE_TABLA);
@@ -227,28 +229,36 @@ public class BitacoraDao {
 			mapParameters.addValue("RealizadoPor", bitacora.getRealizadoPor());
 			mapParameters.addValue("Contenido", bitacora.getContenido());
 			
-			SqlParameterSource namedParameters= mapParameters;
+			SqlParameterSource namedParameters = mapParameters;
 			/*Ejecuta la consulta y retorna las filas afectadas*/
 			claveGenerada = new GeneratedKeyHolder();
-			rowsAffected= namedJdbcTemplate.update(sbSQL.toString(),namedParameters,claveGenerada,new String[] {NOMBRE_CAMPO_CLAVE});		
-			if (rowsAffected>1){
-				respuesta.mensaje="Mas filas afectadas";
-				respuesta.estado=false;
+			rowsAffected = namedJdbcTemplate.update(
+				sbSQL.toString(),
+				namedParameters,
+				claveGenerada,
+				new String[] {NOMBRE_CAMPO_CLAVE}
+			);	
+			
+			if (rowsAffected > 1) {
+				respuesta.mensaje = "Mas filas afectadas";
+				respuesta.estado = false;
 				return respuesta;
 			}
-			respuesta.mensaje="OK";
-			respuesta.estado=true;
-			respuesta.valor= claveGenerada.getKey().toString();
+			
+			respuesta.mensaje = "OK";
+			respuesta.estado = true;
+			respuesta.valor = claveGenerada.getKey().toString();
 
-		} catch (DataIntegrityViolationException daEx){
-			daEx.printStackTrace();
-			respuesta.mensaje=daEx.getMessage();
-			respuesta.estado=false;
-		} catch (DataAccessException daEx){
-			daEx.printStackTrace();
-			respuesta.mensaje=daEx.getMessage();
-			respuesta.estado=false;
+		} catch (DataIntegrityViolationException e){
+			e.printStackTrace();
+			respuesta.mensaje = e.getMessage();
+			respuesta.estado = false;
+		} catch (DataAccessException e){
+			e.printStackTrace();
+			respuesta.mensaje = e.getMessage();
+			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}	
 	

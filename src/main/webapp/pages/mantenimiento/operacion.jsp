@@ -1,10 +1,14 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="sgo.entidad.Cliente"%>
-<%@ page import="sgo.entidad.Transportista"%>
-<%@ page import="sgo.entidad.Planta"%>
-<%@ page import="java.util.HashMap"%>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="sgo.entidad.Cliente" %>
+<%@ page import="sgo.entidad.Planta" %>
+<%@ page import="sgo.entidad.Producto" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="sgo.entidad.Transportista" %>
 <% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
+
+<link href="tema/css/switch.css" rel="stylesheet" type="text/css"/>
+<link href="tema/css/operacion.css" rel="stylesheet" type="text/css"/>
 
 <div class="content-wrapper">
 
@@ -48,8 +52,14 @@
 			              <a id="btnModificarEstado" class="btn btn-default btn-sm disabled espaciado"><i class="fa fa-cloud-upload"></i>  <%=mapaValores.get("ETIQUETA_BOTON_ACTIVAR")%></a>
 			              <a id="btnVer" class="btn btn-default btn-sm disabled espaciado"><i class="fa fa-search"></i>  <%=mapaValores.get("ETIQUETA_BOTON_VER")%></a>
 			              <%--Inicio Agregado por 9000002570 --%>
-			              <a id="btnEtapas" class="btn btn-default btn-sm disabled espaciado"><%=mapaValores.get("ETIQUETA_BOTON_ETAPAS")%></a>
+			              <a id="btnEtapas" class="btn btn-default btn-sm disabled espaciado">
+			              	<%=mapaValores.get("ETIQUETA_BOTON_ETAPAS")%>
+		              	  </a>
 			              <%--Fin Agregado por 9000002570 --%>
+			              
+			              <a id="btnProductosEquivalentes" class="btn btn-default btn-sm disabled espaciado">
+			              	<%=mapaValores.get("BOTON_PRODUCTOS_EQUIVALENTES")%>
+		              	  </a>
 						</div>
 					</div>
           <div class="box-body">
@@ -94,6 +104,7 @@
       <div class="col-md-12">
         <div class="box box-default">
           <div class="box-body">
+          
             <form id="frmPrincipal" role="form">
                <div class="form-group">
                 <label>Nombre (Max. 150 caracteres)</label>
@@ -106,15 +117,15 @@
               <div class="form-group">
                 <label>Cliente</label>                
                     <%
-                    String seleccionado="selected='selected'";
-                    ArrayList<?> listadoClientes = (ArrayList<?>) request.getAttribute("listadoClientes");               
-                    int numeroClientes = listadoClientes.size();
-                    Cliente eCliente=null;                    
+	                    String seleccionado="selected='selected'";
+	                    ArrayList<?> listadoClientes = (ArrayList<?>) request.getAttribute("listadoClientes");               
+	                    int numeroClientes = listadoClientes.size();
+	                    Cliente eCliente = null;                    
                     %>
                     <select id="cmpIdCliente" name="cmpIdCliente" class="form-control input-sm" style="width: 100%">
                     <option></option>
                     <%
-                    for(int contador=0; contador < numeroClientes; contador++){ 
+                    for (int contador=0; contador < numeroClientes; contador++) { 
                      eCliente =(Cliente) listadoClientes.get(contador);
                     %>
                     <option <%=seleccionado%> value='<%=eCliente.getId()%>'><%=eCliente.getRazonSocial().trim()  %></option>
@@ -231,22 +242,140 @@
         </div>
       </div>
     </div>
-    <div class="row" id="cntVistaRegistro" style="display:none;">
-      <div class="col-md-12">
-        <div class="box box-default">
-          <div class="box-body">
-            <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;">
-            </table>
-          </div>
-			<div class="box-footer">
-            <button id="btnCerrarVista"  class="btn btn-danger btn-sm"><%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%></button>
-          </div>
-          <div class="overlay" id="ocultaContenedorVista">
-            <i class="fa fa-refresh fa-spin"></i>
-          </div>
-        </div>
-      </div>
-    </div>
+	    
+	<div class="row" id="cntVistaRegistro" style="display:none;">
+	    <div class="col-md-12">
+	        <div class="box box-default">
+	            <div class="box-body">
+	                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
+	            </div>
+	            <div class="box-footer">
+	                <button id="btnCerrarVista"  class="btn btn-danger btn-sm">
+	                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%>
+	                </button>
+	            </div>
+	            <div class="overlay" id="ocultaContenedorVista">
+	                <i class="fa fa-refresh fa-spin"></i>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<div class="row" id="cntProductosEquivalentes" style="display:none;">
+	    <div class="col-md-12">
+	        <div class="box box-default">
+	            <div class="box-body">
+
+					<div class="form-group">
+						<label class="etiqueta-titulo-horizontal">Operaci&oacute;n</label>
+						<input type="text" class="operacion form-control text-uppercase input-sm" readonly="readonly">
+					</div>
+
+					<table class="productos sgo-simple-table table table-condensed">
+						<thead>
+							<tr>
+								<th><label>Productos Principales</label></th>
+								<th><label>Productos Secundarios</label></th>
+								<th><label>Estado</label></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+					    </thead>
+					    <tbody></tbody>
+					</table>
+					
+				    <table class="productos-clone" style="display: none">
+				        <tbody>
+							<tr class="new">
+					            <td class="celda-detalle">
+					                <select class="cmpProductosPrincipales products form-control input-sm">
+					                	<option value="">[Seleccione]</option>
+					                    <%
+						                    ArrayList<?> listProductosSecundarios = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
+											
+						                    for (int i=0; i < listProductosSecundarios.size(); i++) { 
+						                    	Producto eProducto = (Producto) listProductosSecundarios.get(i);
+					                    %>
+					                	<option value="<%=eProducto.getId() %>"><%=eProducto.getNombre().trim() %></option>
+					                	<% } %>
+					            	</select>
+					            </td>
+					            <td class="celda-detalle">
+					                <select class="cmpProductosSecundarios products form-control input-sm">
+					                	<option value="">[Seleccione]</option>
+					                    <%
+						                    ArrayList<?> listProductosSecundarios2 = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
+											
+						                    for (int i=0; i < listProductosSecundarios2.size(); i++) { 
+						                    	Producto eProducto = (Producto) listProductosSecundarios2.get(i);
+					                    %>
+					                	<option value="<%=eProducto.getId() %>"><%=eProducto.getNombre().trim() %></option>
+					                	<% } %>
+					            	</select>
+					            </td>
+					            <td class="celda-detalle">
+					            	<input type="text" class="form-control text-uppercase input-sm" readonly="readonly" value="Activo">
+					            </td>
+					            <td class="celda-detalle"></td>
+					            <td class="celda-detalle" align="center">
+									<button class="btn btn-danger btn-xs btn-remove-row" type="button">
+										<i class="fa fa-fw fa-trash-o"></i>
+									</button>
+					            </td>
+					            <td class="celda-detalle" align="center">
+					            	<i class="fa fa-fw fa-remove" style="display: none"></i>
+					            	<i class="fa fa-fw fa-check" style="display: none"></i>
+					            </td>
+					        </tr>
+				        </tbody>
+				    </table>
+				    
+				    <table class="productos-edit-clone" style="display: none">
+				        <tbody>
+							<tr>
+					            <td class="celda-detalle">
+					            	<input type="text" class="cmpProductosPrincipales form-control input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle">
+					            	<input type="text" class="cmpProductosSecundarios form-control input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle">
+					            	<input type="text" class="estado form-control text-uppercase input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle" align="center">
+									<label class="switch">
+										<input class="update-producto-equivalente" type="checkbox">
+										<span class="slider round bg-yellow-slider"></span>
+                            		</label>
+					            </td>
+					            <td class="celda-detalle"></td>
+					            <td class="celda-detalle" align="center">
+					            	<i class="fa fa-fw fa-remove" style="display: none"></i>
+					            	<i class="fa fa-fw fa-check" style="display: none"></i>
+					            </td>
+					        </tr>
+				        </tbody>
+				    </table>
+
+	            </div>
+	            <div class="box-footer">
+	                <button id="btnCerrarProductosEquivalentes" class="btn btn-danger btn-sm">
+	                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR") %>
+	                </button>
+	                <button id="btnGuardarEquivalencia" class="btn btn-primary btn-sm">
+	                    Guardar
+	                </button>
+	                <button id="btnAgregarTrEquivalencia" class="btn btn-success btn-sm">
+	                    <i class="fa fa-fw fa-plus"></i> Agregar Equivalencia
+	                </button>
+	            </div>
+	            <div class="overlay" id="ocultaContenedorProductosEquivalentes">
+	                <i class="fa fa-refresh fa-spin"></i>
+	            </div>
+	        </div>
+	    </div>
+	</div>
     
     <%-- Inicio Agregado por 9000002570 --%>
     <div class="row" id="cntFrmEtapas" style="display:none;">
@@ -360,5 +489,11 @@
     	</div>
     </div>
     <%-- Fin Agregado por 9000002570 --%>
+    
   </section>
 </div>
+
+
+
+
+

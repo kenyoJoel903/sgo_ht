@@ -189,7 +189,7 @@ moduloBase.prototype.inicializarControlesGenericos=function(){
   this.obj.cmpFiltroTabla=$("#cmpFiltroTabla");
   this.obj.cmpFiltroTipoFecha=$("#cmpFiltroTipoFecha");	
   //Eventos para Botones
-  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){ 
+  this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() { 
 	if (!referenciaModulo.validaFormularioXSS("#frmBuscar")){
 	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
 	} else {
@@ -198,37 +198,37 @@ moduloBase.prototype.inicializarControlesGenericos=function(){
   	}
   });
 
-  this.obj.btnListar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnListar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
   referenciaModulo.modoEdicion=constantes.MODO_LISTAR;
   referenciaModulo.listarRegistros();
   });
 
-  this.obj.btnAgregar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnAgregar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
   referenciaModulo.iniciarAgregar();
   });
 
-  this.obj.btnModificar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnModificar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
   referenciaModulo.iniciarModificar();
   });
 
-  this.obj.btnVer.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
-  referenciaModulo.iniciarVer();		
+  this.obj.btnVer.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.iniciarVer();		
   });
   
   //Agregado por req 9000002570=========================================
-  this.obj.btnEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.iniciarEtapas();		
   });
   
-  this.obj.btnCancelarEtapa.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnCancelarEtapa.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.iniciarCancelarEtapa();
   });
   
-  this.obj.btnGuardarEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnGuardarEtapas.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.solicitarGuardarEtapas();
   });
   
-  this.obj.btnConfirmarGuardarEstado.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+  this.obj.btnConfirmarGuardarEstado.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.iniciarGuardarEtapas();
   });
   //====================================================================
@@ -285,7 +285,7 @@ moduloBase.prototype.iniciarAgregar= function(){
 };
 
 moduloBase.prototype.iniciarModificar= function(){
-  var referenciaModulo=this;  
+  var referenciaModulo = this;  
   referenciaModulo.modoEdicion=constantes.MODO_ACTUALIZAR;
   referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_MODIFICA_REGISTRO);
   referenciaModulo.obj.cntTabla.hide();
@@ -295,8 +295,8 @@ moduloBase.prototype.iniciarModificar= function(){
   referenciaModulo.recuperarRegistro();
 };
 
-moduloBase.prototype.iniciarVer= function(){
-  var referenciaModulo=this;
+moduloBase.prototype.iniciarVer= function() {
+  var referenciaModulo = this;
   referenciaModulo.modoEdicion=constantes.MODO_VER;
   referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_DETALLE_REGISTRO);
   referenciaModulo.obj.cntTabla.hide();
@@ -308,7 +308,7 @@ moduloBase.prototype.iniciarVer= function(){
 
 //Agregado por req 9000002570====================
 moduloBase.prototype.iniciarEtapas= function(){
-	  var referenciaModulo=this;
+	  var referenciaModulo = this;
 	  referenciaModulo.modoEdicion=constantes.MODO_ETAPAS;
 	  referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_ETAPAS_REGISTRO);
 	  referenciaModulo.obj.cntTabla.hide();
@@ -332,8 +332,8 @@ moduloBase.prototype.iniciarGuardarEtapas=function(){
 	  try {
 		  referenciaModulo.obj.frmConfirmarGuardarEtapas.modal("hide");
 		  referenciaModulo.guardarRegistrosEtapas();
-	  } catch(error){
-	    referenciaModulo.mostrarDepuracion(error.message);
+	  } catch(error) {
+		  referenciaModulo.mostrarDepuracion(error.message);
 	  };
 };
 //===============================================
@@ -445,19 +445,21 @@ moduloBase.prototype.inicializarGrilla=function(){
 	});	
 	
 	$('#tablaPrincipal tbody').on(referenciaModulo.NOMBRE_EVENTO_CLICK, 'tr', function () {
-		if (referenciaModulo.obj.datClienteApi.data().length > 0){
-        var indiceFila = referenciaModulo.obj.datClienteApi.row( this ).index();
-        var idRegistro = referenciaModulo.obj.datClienteApi.cell(indiceFila,1).data();
-		    if ( $(this).hasClass('selected') ) {
-		        $(this).removeClass('selected');
-            referenciaModulo.desactivarBotones();
-        } else {
-		        referenciaModulo.obj.datClienteApi.$('tr.selected').removeClass('selected');
-		        $(this).addClass('selected');
-            referenciaModulo.idRegistro=idRegistro;		
-            referenciaModulo.grillaDespuesSeleccionar(indiceFila);
-            referenciaModulo.activarBotones();
-        }
+		
+		if (referenciaModulo.obj.datClienteApi.data().length > 0) {
+	        var indiceFila = referenciaModulo.obj.datClienteApi.row( this ).index();
+	        var idRegistro = referenciaModulo.obj.datClienteApi.cell(indiceFila, 1).data();
+	        
+			if ( $(this).hasClass('selected') ) {
+			    $(this).removeClass('selected');
+	            referenciaModulo.desactivarBotones();
+	        } else {
+			    referenciaModulo.obj.datClienteApi.$('tr.selected').removeClass('selected');
+			    $(this).addClass('selected');
+	            referenciaModulo.idRegistro=idRegistro;		
+	            referenciaModulo.grillaDespuesSeleccionar(indiceFila);
+	            referenciaModulo.activarBotones();
+	        }
 		}
 	});
 };
@@ -483,7 +485,7 @@ moduloBase.prototype.activarBotones=function(){
   //===============================================
 };
 
-moduloBase.prototype.desactivarBotones=function(){
+moduloBase.prototype.desactivarBotones=function() {
   this.obj.btnModificarEstado.html(constantes.BOTON_ACTIVAR + constantes.TITULO_ACTIVAR_REGISTRO);
   this.obj.btnModificar.addClass(constantes.CSS_CLASE_DESHABILITADA);
   this.obj.btnModificarEstado.addClass(constantes.CSS_CLASE_DESHABILITADA);
@@ -513,6 +515,7 @@ moduloBase.prototype.recuperarRegistro = function() {
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
 	    	} else {		 
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
+	    		
 	    		if (referenciaModulo.modoEdicion == constantes.MODO_ACTUALIZAR){
 	    			referenciaModulo.llenarFormulario(respuesta.contenido.carga[0]);
 	    			referenciaModulo.obj.ocultaContenedorFormulario.hide();
@@ -671,12 +674,15 @@ moduloBase.prototype.iniciarListado= function(mensaje){
 	};
 };
 
-moduloBase.prototype.actualizarRegistro= function(){
+moduloBase.prototype.actualizarRegistro= function() {
+	
   //Ocultar alertas de mensaje
   var referenciaModulo = this;
-  if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")){
+  
+  if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,  cadenas.ERROR_VALORES_FORMULARIO);
-	} else if (referenciaModulo.obj.frmPrincipal.valid()){
+	} else if (referenciaModulo.obj.frmPrincipal.valid()) {
+		
     referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
     referenciaModulo.obj.ocultaContenedorFormulario.show();
     var eRegistro = referenciaModulo.recuperarValores();

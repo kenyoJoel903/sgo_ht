@@ -1,4 +1,4 @@
---inicio agregar tablas=================================================================================================
+--inicio agregar tablas==
 --producto_equivalente
 CREATE SEQUENCE sgo.secuencia_id_producto_equivalencia
     INCREMENT 1
@@ -10,6 +10,7 @@ CREATE SEQUENCE sgo.secuencia_id_producto_equivalencia
 ALTER SEQUENCE sgo.secuencia_id_producto_equivalencia
     OWNER TO sgo_user;
 
+-- ALTER TABLE sgo.producto_equivalente ADD COLUMN estado INTEGER DEFAULT 1;
 CREATE TABLE sgo.producto_equivalente(
 	id_producto_equivalencia integer NOT NULL DEFAULT nextval('sgo.secuencia_id_producto_equivalencia'::regclass),
 	id_operacion integer,
@@ -19,6 +20,7 @@ CREATE TABLE sgo.producto_equivalente(
 	creado_el bigint,
     creado_por integer,
 	ip_creacion character varying(40) COLLATE pg_catalog."default",
+    estado integer DEFAULT 1,
 	CONSTRAINT producto_equivalente_pkey PRIMARY KEY (id_producto_equivalencia),
 	CONSTRAINT producto_equivalente_id_operacion_fkey FOREIGN KEY (id_operacion)
         REFERENCES sgo.operacion (id_operacion) MATCH SIMPLE
@@ -963,7 +965,8 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     t1.observacion,
     t4.nombre_perfil,
     t4.id_perfil_horario,
-	t2.tipo_apertura_tanque
+	t2.tipo_apertura_tanque,
+	t2.numero_decimales_contometro		--> Agregado por HT 19/02/2019 09:56am
    FROM sgo.jornada t1
      JOIN sgo.estacion t2 ON t1.id_estacion = t2.id_estacion
      JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
@@ -977,6 +980,7 @@ CREATE OR REPLACE VIEW sgo.v_jornada AS
     t1.ip_creacion, t1.ip_actualizacion, u1.identidad, u2.identidad, 
     t1.operario1, t1.operario2, t1.observacion,
     t4.nombre_perfil, t4.id_perfil_horario, t2.tipo_apertura_tanque
+	,t2.numero_decimales_contometro		--> Agregado por HT 19/02/2019 09:56am
     ;
 
 ALTER TABLE sgo.v_jornada
@@ -1154,8 +1158,108 @@ INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permis
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_CONTOMETROS'), 'Generar Plantilla Contometros', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
-        -- ******************* PROGRAMA 2019-02-15 15:23 ******************************
+-- ******************* PROGRAMA 2019-02-15 15:23 ******************************
 INSERT INTO sgo.parametro 
 (valor, alias, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
 VALUES 
 (5, 'VALIDACION_EXCEL_ROW', 1549984064053, 2, 2, 1549984064053, '127.0.0.1', '127.0.0.1');
+
+
+
+-- ******************* PROGRAMA 2019-02-18 17:00 ******************************
+CREATE OR REPLACE VIEW sgo.v_operacion AS
+ SELECT t1.id_operacion,
+    t1.nombre,
+    t1.alias,
+    t1.id_cliente,
+    t1.referencia_planta_recepcion,
+    t1.referencia_destinatario_mercaderia,
+    t1.volumen_promedio_cisterna,
+    t1.fecha_inicio_planificacion,
+    t1.eta_origen,
+    t1.planta_despacho_defecto,
+    t1.estado,
+    t1.creado_el,
+    t1.creado_por,
+    t1.actualizado_por,
+    t1.actualizado_el,
+    t1.ip_creacion,
+    t1.ip_actualizacion,
+    t4.razon_social AS razon_social_cliente,
+    t4.nombre_corto AS nombre_corto_cliente,
+    u1.identidad AS usuario_creacion,
+    u2.identidad AS usuario_actualizacion,
+    t5.descripcion AS descripcion_planta_despacho,
+    t1.correopara,
+    t1.correocc,
+    t1.indicador_tipo_registro_tanque,
+    t4.estado AS estado_cliente,
+    t1.tipo_volumen_descargado
+   FROM sgo.operacion t1
+     JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
+     JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
+     JOIN sgo.cliente t4 ON t1.id_cliente = t4.id_cliente
+     LEFT JOIN sgo.planta t5 ON t1.planta_despacho_defecto = t5.id_planta;
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-19 1605 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_RECUPERAR_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/recuperarProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'), 'Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-20 1100 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_GUARDAR_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/guardarProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'), 'Guardar Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+-- ******************* TURNOS JORNADA 2019-02-21 1424 ******************************
+CREATE OR REPLACE VIEW sgo.v_producto_equivalente AS
+ SELECT 
+    t1.id_producto_equivalencia,
+    t1.id_operacion,
+    t1.id_producto_principal,
+    t1.id_producto_secundario,
+    t1.centimetros,
+    t1.creado_el,
+    t1.creado_por,
+    t1.ip_creacion,
+    t1.estado,
+    t2.nombre AS nombre_producto_principal,
+    t3.nombre AS nombre_producto_secundario
+   FROM sgo.producto_equivalente t1
+   JOIN sgo.producto t2 ON t2.id_producto = t1.id_producto_principal
+   JOIN sgo.producto t3 ON t3.id_producto = t1.id_producto_secundario
+   ;
+
+ALTER TABLE sgo.v_producto_equivalente
+    OWNER TO sgo_user;
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-21 1424 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_UPDATE_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/updateProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'), 'Update Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+

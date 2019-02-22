@@ -1,10 +1,13 @@
 $(document).ready(function() {
 	
   var moduloActual = new moduloBase();  
-  moduloActual.urlBase='operacion';
+  moduloActual.urlBase = 'operacion';
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
+  moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/recuperarProductosEquivalentes';
+  moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/guardarProductosEquivalentes';
+  moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/updateProductosEquivalentes';
   
   //Agregado por req 9000002570====================
   moduloActual.URL_RECUPERAR_ETAPA = moduloActual.urlBase + '/recuperarEtapas';
@@ -29,7 +32,7 @@ $(document).ready(function() {
   moduloActual.definicionColumnas.push({"targets": 5,"searchable" : false,"orderable" : true,"visible" : true});
   moduloActual.definicionColumnas.push({"targets": 6,"searchable" : false,"orderable" : true,"visible" : true,"render" : utilitario.formatearEstado});
   
-  moduloActual.reglasValidacionFormulario={
+  moduloActual.reglasValidacionFormulario = {
     cmpNombre: 				   	{required: true, maxlength: 150 },
     cmpAlias:   				{required: true, maxlength: 150 },
     //cmpIdRefPlantaRecepcion:   	{required: true, maxlength: 20  },
@@ -42,7 +45,7 @@ $(document).ready(function() {
     cmpCorreoPara: 				{required: true}
   };
   
-  moduloActual.mensajesValidacionFormulario={
+  moduloActual.mensajesValidacionFormulario = {
     cmpNombre: 					{ required:  "El campo es obligatorio",
     				  			  maxlength: "El campo debe contener 150 caracteres como maximo." },
     cmpAlias: 					{ required:  "El campo es obligatorio",
@@ -61,7 +64,8 @@ $(document).ready(function() {
     cmpCorreoPara:				{ required:  "El campo es obligatorio" }
   };
   
-  moduloActual.inicializarCampos= function(){
+  moduloActual.inicializarCampos= function() {
+	  
     //Campos de formulario
     this.obj.cmpNombre=$("#cmpNombre");
     this.obj.cmpAlias=$("#cmpAlias");
@@ -75,28 +79,48 @@ $(document).ready(function() {
             $(this).val('');
         }
     });
-    this.obj.cmpCorreoPara=$("#cmpCorreoPara");
-    this.obj.cmpCorreoCC=$("#cmpCorreoCC");
-    this.obj.cmpETA=$("#cmpETA");
+    this.obj.cmpCorreoPara = $("#cmpCorreoPara");
+    this.obj.cmpCorreoCC = $("#cmpCorreoCC");
+    this.obj.cmpETA = $("#cmpETA");
+    this.obj.cmpTipoVolumenDescargado = $("#cmpTipoVolumenDescargado");    
     this.obj.cmpETA.inputmask("integer");
     this.obj.cmpETA.css("text-align", "left");
-    this.idTransportista=$("#idTransportista");
-    this.obj.cmpTipoRegistroTanqueDescarga=$("#cmpTipoRegistroTanqueDescarga");
-    this.obj.cmpTipoRegistroTanqueDescarga.nombreControl="cmpTipoRegistroTanqueDescarga"; 
-    this.obj.cmpPlantaDespacho=$("#cmpPlantaDespacho");
+    this.idTransportista = $("#idTransportista");
+    this.obj.cmpTipoRegistroTanqueDescarga = $("#cmpTipoRegistroTanqueDescarga");
+    this.obj.cmpTipoRegistroTanqueDescarga.nombreControl = "cmpTipoRegistroTanqueDescarga"; 
+    this.obj.cmpPlantaDespacho = $("#cmpPlantaDespacho");
     this.obj.cmpPlantaDespacho.tipoControl="select2";
     this.obj.cmpPlantaDespacho.nombreControl="cmpPlantaDespacho"; 
     this.obj.cmpPlantaDespacho.select2({placeholder: "Seleccionar...", allowClear: false}); 
     this.obj.cmpVolumenPromedioCisterna=$("#cmpVolumenPromedioCisterna");
     this.obj.cmpVolumenPromedioCisterna.inputmask('decimal', {digits: 2, groupSeparator:moduloActual.SEPARADOR_MILES,autoGroup:true,groupSize:3});
+    
     //esto para alinear a la izquierda un decimal
     this.obj.cmpVolumenPromedioCisterna.css("text-align", "left");
     this.obj.cmpSincronizadoEl=$("#cmpSincronizadoEl");
+    
     this.obj.cmpIdCliente=$("#cmpIdCliente");
     this.obj.cmpIdCliente.tipoControl="select2";  
     this.obj.cmpIdCliente.nombreControl="cmpIdCliente"; 
-    this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false}); 
-    this.obj.btnAgregarTransportista=$("#btnAgregarTransportista");
+    this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false});
+    
+//    this.obj.cmpProductosSecundarios = $("select.products");
+//    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
+//    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosPrincipales"; 
+//    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
+    
+//    this.obj.cmpProductosSecundarios = $(".cmpProductosSecundarios");
+//    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
+//    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosSecundarios"; 
+//    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
+    
+    this.obj.btnAgregarTransportista = $("#btnAgregarTransportista");
+    this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
+    this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
+    this.obj.btnCerrarProductosEquivalentes = $("#btnCerrarProductosEquivalentes");
+    this.obj.btnAgregarTrEquivalencia = $("#btnAgregarTrEquivalencia");
+    this.obj.btnGuardarEquivalencia = $("#btnGuardarEquivalencia");
+    this.obj.ocultaContenedorProductosEquivalentes = $("#ocultaContenedorProductosEquivalentes");
     
     //Campos Agregados por 9000002570=========================
     this.obj.btnAgregarEtapa=$("#btnAgregarEtapa");
@@ -132,12 +156,40 @@ $(document).ready(function() {
     
     this.obj.grupoTransportista.addForm();
 
-    this.obj.btnAgregarTransportista.on("click",function(){
-      try {
-        moduloActual.obj.grupoTransportista.addForm();
-      } catch(error){
-      	moduloActual.mostrarDepuracion(error.message);
-      };
+    this.obj.btnAgregarTransportista.on("click", function(){
+    	try {
+    		moduloActual.obj.grupoTransportista.addForm();
+    	} catch(error) {
+    		moduloActual.mostrarDepuracion(error.message);
+    	};
+    });
+    
+    this.obj.btnProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.recuperarProductosEquivalentes();		
+    });
+    
+    this.obj.btnCerrarProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.cerrarProductosEquivalentes();
+    });
+    
+    this.obj.btnAgregarTrEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.agregarTrEquivalencia();		
+    });
+    
+    this.obj.btnGuardarEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.guardarProductoEquivalencia();	
+    });
+    
+    $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'button.btn-remove-row', function() {
+    	$(this).closest('tr').remove();
+    });
+    
+    $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'input.update-producto-equivalente', function() {
+    	
+    	var checked = $(this).is(':checked');
+    	var idProductoEquivalencia = $(this).data("producto-equivalencia");
+    	
+    	moduloActual.updateProductoEquivalencia(idProductoEquivalencia, checked);
     });
     
     //Campos Agregados por 9000002570=========================
@@ -248,9 +300,10 @@ $(document).ready(function() {
         	  
         	  var estado;
         	  var cambiaEstadoTemp = $(formularioNuevo).find("[elemento-grupo='estadoEtapa']");
+        	  
         	  if(cambiaEstadoTemp.val() == "ACTIVO"){
         		  estado = '0';
-        	  }else{
+        	  } else {
         		  estado = '1';
         	  }
         	  
@@ -432,8 +485,10 @@ $(document).ready(function() {
 		}
   };
 
-  moduloActual.iniciarAgregar= function(){  
-    var ref=this;
+  moduloActual.iniciarAgregar= function() {
+	  
+    var ref = this;
+    
     try {
       ref.modoEdicion=constantes.MODO_NUEVO;
       ref.obj.tituloSeccion.text(cadenas.TITULO_AGREGAR_REGISTRO);
@@ -523,10 +578,10 @@ $(document).ready(function() {
 			  nombreEtapasEnGrilla.push(etapa.nombreEtapa);
 			  
 			  var estadoTemp = formulario.find("input[elemento-grupo='estadoEtapa']").val();
-			  
+
 			  if(estadoTemp === 'ACTIVO'){
 				  etapa.estado = 1;
-			  }else{
+			  } else {
 				  etapa.estado = 0;
 			  }
 			  
@@ -546,7 +601,6 @@ $(document).ready(function() {
 
 	  return eRegistro;
   };
-//===================================================================
 
   moduloActual.llenarFormulario = function(registro) {
 
@@ -564,30 +618,31 @@ $(document).ready(function() {
     
     $(cmpPlantaDespacho).find("option:selected").val(registro.plantaDespacho.id);
 	$(cmpPlantaDespacho).val(registro.plantaDespacho.id).trigger('change');
-	
+	$(cmpTipoVolumenDescargado).val(registro.tipoVolumenDescargado).trigger('change');
 	$(cmpTipoRegistroTanqueDescarga).val(registro.indicadorTipoRegistroTanque).change();
 
-    var elemento=constantes.PLANTILLA_OPCION_SELECTBOX;
+    var elemento = constantes.PLANTILLA_OPCION_SELECTBOX;
     elemento = elemento.replace(constantes.ID_OPCION_CONTENEDOR, registro.cliente.id);
-    elemento = elemento.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.cliente.razonSocial);
+    elemento = elemento.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.cliente.razonSocial);
     this.obj.cmpIdCliente.empty().append(elemento).val(registro.cliente.id).trigger('change');
 
     if (registro.transportistas != null) {
         var numeroTransportistas = registro.transportistas.length;
         this.obj.grupoTransportista.removeAllForms();
+        
         for(var contador=0; contador < numeroTransportistas;contador++){
-          this.obj.grupoTransportista.addForm();
-          var formulario= this.obj.grupoTransportista.getForm(contador);
-          formulario.find("select[elemento-grupo='idTransportista']").val(registro.transportistas[contador].id).trigger('change');
+        	this.obj.grupoTransportista.addForm();
+        	var formulario= this.obj.grupoTransportista.getForm(contador);
+        	formulario.find("select[elemento-grupo='idTransportista']").val(registro.transportistas[contador].id).trigger('change');
         }
     } else {
     	this.obj.grupoTransportista.removeAllForms();
     }
-
   };
 
-  moduloActual.llenarDetalles = function(registro){
-    this.idRegistro= registro.id;    
+  moduloActual.llenarDetalles = function(registro) {
+	  
+    this.idRegistro = registro.id;    
     this.obj.vistaId.text(registro.id);
     this.obj.vistaNombre.text(registro.nombre);
     this.obj.vistaAlias.text(registro.alias);
@@ -632,6 +687,8 @@ $(document).ready(function() {
     grilla.append(g_tr);
     g_tr = '<tr><td> ETA:</td><td>' + registro.eta + '</td></tr>';
     grilla.append(g_tr);
+    g_tr = '<tr><td> Considerar volumen descargado:</td><td>' + registro.tipoVolumenDescargadotxt + '</td></tr>';
+    grilla.append(g_tr);
     g_tr = '<tr><td> Tipo de registro Tanque en Descarga:</td><td>' + utilitario.tipoRegistroTanque(registro.indicadorTipoRegistroTanque) + '</td></tr>';
     grilla.append(g_tr);
     g_tr = '<tr><td> Para:</td><td>' + registro.correoPara + '</td></tr>';
@@ -639,7 +696,7 @@ $(document).ready(function() {
     g_tr = '<tr><td> CC:</td><td>' + registro.correoCC + '</td></tr>';
     grilla.append(g_tr);
     
-    if(indice > 0){
+    if (indice > 0) {
     	g_tr = '<tr><td> Transportistas: </td><td>' +registro.transportistas[0].razonSocial+ '</td></tr>';
 		grilla.append(g_tr);
 		
@@ -648,8 +705,7 @@ $(document).ready(function() {
 			g_tr = '<tr><td></td><td>' +descripcion+ '</td></tr>';
 			grilla.append(g_tr);
 		}
-    }
-    else{
+    } else {
     	var g_tr = '<tr><td> Transportistas: </td><td></td></tr> ';  
     	grilla.append(g_tr);
     }
@@ -696,11 +752,7 @@ $(document).ready(function() {
     var ref = this;
     
     try {
-    	
-    	console.log(" ******** recuperarValores ******* ");
-    	console.dir(ref.obj);
-    	
-    	
+
 		eRegistro.id = parseInt(ref.idRegistro);
 		eRegistro.nombre = ref.obj.cmpNombre.val().toUpperCase();
 		eRegistro.alias = ref.obj.cmpAlias.val().toUpperCase();
@@ -716,8 +768,6 @@ $(document).ready(function() {
 		eRegistro.correoPara = ref.obj.cmpCorreoPara.val();
 		eRegistro.correoCC = ref.obj.cmpCorreoCC.val();
 		eRegistro.tipoVolumenDescargado = parseInt(ref.obj.cmpTipoVolumenDescargado.val());
-		
-		console.dir("eRegistro -------- > " + eRegistro);
 		
 		eRegistro.transportistas=[];   
 	    var numeroFormularios = ref.obj.grupoTransportista.getForms().length;
@@ -737,5 +787,160 @@ $(document).ready(function() {
     return eRegistro;
   };
   
+  moduloActual.recuperarProductosEquivalentes = function() {
+	  
+    console.log(" ***** recuperarProductosEquivalentes ******** ");
+	  
+	$.ajax({
+	    type: constantes.PETICION_TIPO_GET,
+	    url: moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES, 
+	    contentType: moduloActual.TIPO_CONTENIDO, 
+	    data: {
+	    	idOperacion: moduloActual.idRegistro
+	    },	
+	    success: function(respuesta) {
+	    	
+	    	if (!respuesta.estado) {
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+	    	} else {
+	    		
+	    		console.dir(respuesta.contenido.carga[0].listProductoEquivalente);
+	    		
+	    		var listProductoEquivalente = respuesta.contenido.carga[0].listProductoEquivalente;
+
+	    		$table = $('table.productos').find('tbody');
+	    		$table.empty();
+	    		
+	    		for (var i = 0; i < listProductoEquivalente.length; i++) {
+	    			
+	    			var productoEquivalente = listProductoEquivalente[i];
+	    			
+		    		$tableClone = $('table.productos-edit-clone').find('tbody');
+		    		$trNew = $tableClone.find('tr:last').clone();
+		    		$trNew.find("input.cmpProductosPrincipales").val(productoEquivalente.idProductoPrincipal);
+		    		$trNew.find("input.cmpProductosSecundarios").val(productoEquivalente.idProductoSecundario);
+		    		$trNew.find("input.update-producto-equivalente").attr("data-producto-equivalencia", productoEquivalente.idProductoEquivalencia);
+		    		$trNew.find("input.estado").val("ACTIVO");
+		    		$trNew.find("input.estado").attr("data-producto-equivalencia", productoEquivalente.idProductoEquivalencia);
+		    		$trNew.find("input.update-producto-equivalente").prop("checked", true);
+		    		
+		    		if (productoEquivalente.estado == constantes.ESTADO_INACTIVO) {
+		    			$trNew.find("input.estado").val("INACTIVO");
+		    			$trNew.find("input.update-producto-equivalente").prop("checked", false);
+					}
+
+		    		$table.append($trNew);
+	    		}
+	    		
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
+    			
+    			$("#cntProductosEquivalentes input.operacion").val(respuesta.contenido.carga[0].nombre);
+	    		moduloActual.obj.cntProductosEquivalentes.show();
+	    		moduloActual.obj.cntTabla.hide();
+	    		moduloActual.obj.ocultaContenedorProductosEquivalentes.hide();
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Se recupero el formulario de Productos Equivalentes");
+			}
+	    },			    		    
+	    error: function(xhr, status, error) {
+	    	moduloActual.mostrarErrorServidor(xhr, status, error);
+	    }
+	});
+  };
+  
+  moduloActual.cerrarProductosEquivalentes = function() {
+		
+	  moduloActual.obj.tituloSeccion.text(cadenas.TITULO_LISTADO_REGISTROS); 
+	  moduloActual.obj.cntProductosEquivalentes.hide();
+		
+//		this.obj.cntVistaRegistro.hide();
+//		this.obj.ocultaContenedorVista.show();
+		
+	  moduloActual.obj.cntTabla.show();
+	  moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Se cerró la vista de Productos Equivalentes");
+  };
+  
+  moduloActual.desactivarBotones = function() {
+	moduloActual.obj.btnModificarEstado.html(constantes.BOTON_ACTIVAR + constantes.TITULO_ACTIVAR_REGISTRO);
+	moduloActual.obj.btnModificar.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnModificarEstado.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnEtapas.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnVer.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnProductosEquivalentes.addClass(constantes.CSS_CLASE_DESHABILITADA);
+  };
+  
+  moduloBase.prototype.activarBotones = function() {	  
+	  moduloActual.obj.btnModificar.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnModificarEstado.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnVer.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnEtapas.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnProductosEquivalentes.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+  };
+  
+  moduloActual.agregarTrEquivalencia = function() {
+      $tableClone = $('table.productos-clone').find('tbody');
+      $trNew = $tableClone.find('tr:last').clone();
+      $table = $('table.productos').find('tbody');
+      $table.append($trNew);
+  };
+  
+  moduloActual.guardarProductoEquivalencia = function() {
+
+	  var object = {};
+	  object.idOperacion = moduloActual.idRegistro;
+	  object.productos = [];
+	  
+	  $("table.productos tbody tr.new").each(function(index, value) {
+		  var obj = {};
+		  obj.productoPrincipal = $(this).find("td").eq(0).find("option:selected").val();
+		  obj.productoSecundario = $(this).find("td").eq(1).find("option:selected").val();
+		  object.productos.push(obj);
+	  });
+	  
+	  $.ajax({
+			type: constantes.PETICION_TIPO_POST,
+			url: moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES, 
+			contentType: moduloActual.TIPO_CONTENIDO, 
+			data: JSON.stringify(object),
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+				} else {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Guardado con exito!");
+				}
+			},			    		    
+			error: function(xhr, status, error) {
+				moduloActual.mostrarErrorServidor(xhr, status, error);
+			}
+		});
+  };
+  
+  moduloActual.updateProductoEquivalencia = function(idProductoEquivalencia, checked) {
+
+	  var object = {};
+	  object.estado = checked ? constantes.ESTADO_ACTIVO : constantes.ESTADO_INACTIVO;
+	  object.idProductoEquivalencia = idProductoEquivalencia;
+	  
+	  $.ajax({
+			type: constantes.PETICION_TIPO_POST,
+			url: moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES, 
+			contentType: moduloActual.TIPO_CONTENIDO, 
+			data: JSON.stringify(object),
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+				} else {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Estado actualizado con exito!");
+					
+					$('input[data-producto-equivalencia="' + idProductoEquivalencia + '"]').val(checked ? "ACTIVO" : "INACTIVO");
+				}
+			},			    		    
+			error: function(xhr, status, error) {
+				moduloActual.mostrarErrorServidor(xhr, status, error);
+			}
+		});
+  };
+
+
   moduloActual.inicializar();
+  
 });
