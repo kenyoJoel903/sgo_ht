@@ -184,6 +184,11 @@ public class ProductoEquivalenteDao {
 		return respuesta;
 	}
 	
+	/**
+	 * 
+	 * @param idOperacion
+	 * @return
+	 */
 	public RespuestaCompuesta recuperarRegistroPorOperacion(int idOperacion) {
 		
 			StringBuilder sql = new StringBuilder();		
@@ -213,6 +218,7 @@ public class ProductoEquivalenteDao {
 				sql.append(" WHERE ");
 				sql.append(NOMBRE_CAMPO_CLAVE);
 				sql.append("=?");
+				sql.append(" ORDER BY t1.id_producto_equivalencia ASC ");
 				
 				listaRegistros = jdbcTemplate.query(sql.toString(), new Object[] {idOperacion}, new ProductoEquivalenteMapper());
 				
@@ -360,5 +366,48 @@ public class ProductoEquivalenteDao {
 		return respuesta;
 	}
 	
+	public RespuestaCompuesta existeProductoSecundario(int idOperacion, int idProductoSecundario) {
+		
+		StringBuilder sql = new StringBuilder();	
+		RespuestaCompuesta respuesta = new RespuestaCompuesta();
+		List<ProductoEquivalente> listaRegistros = new ArrayList<ProductoEquivalente>();
+		Contenido<ProductoEquivalente> contenido = new Contenido<ProductoEquivalente>();
+		
+		try {
+			
+			sql.append("SELECT ");
+			sql.append("t1.id_producto_equivalencia,");
+			sql.append("t1.id_operacion,");
+			sql.append("t1.id_producto_principal,");
+			sql.append("t1.nombre_producto_principal,");
+			sql.append("t1.id_producto_secundario,");
+			sql.append("t1.nombre_producto_secundario,");
+			sql.append("t1.centimetros,");
+			sql.append("t1.estado,");
+			
+			//Campos de auditoria
+			sql.append("t1.creado_el,");
+			sql.append("t1.creado_por,");
+			sql.append("t1.ip_creacion");
+			sql.append(" FROM ");				
+			sql.append(NOMBRE_VISTA);
+			sql.append(" t1 ");
+			sql.append(" WHERE ");
+			sql.append(" t1.id_operacion = ? AND t1.id_producto_secundario = ?");
+			
+			listaRegistros = jdbcTemplate.query(sql.toString(), new Object[] {idOperacion, idProductoSecundario}, new ProductoEquivalenteMapper());
+			respuesta.estado = listaRegistros.size() > 0 ? true : false;
+			contenido.carga = listaRegistros;
+			respuesta.contenido = contenido;
+			
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
+			respuesta.contenido = null;
+		}
+		
+		return respuesta;
+	}
 	
 }

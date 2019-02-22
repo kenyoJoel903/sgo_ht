@@ -11,18 +11,6 @@ table.productos {
 	width: 100%;
 }
 
-table.productos i.fa-remove {
-	color: red;
-	cursor: help;
-    font-size: 1.5em !important;
-}
-
-table.productos i.fa-check {
-	color: green;
-	cursor: help;
-	font-size: 1.5em !important;
-}
-
 table.productos thead tr th
 {
     padding: 0;
@@ -36,6 +24,23 @@ table.productos thead tr th label
 {
 	margin-top: 3px;
 	margin-bottom: 3px !important; 
+}
+
+table.productos tbody:before {
+    content: "-";
+    display: block;
+    line-height: 0.3em;
+    color: transparent;
+}
+
+table.productos tbody tr.empty
+{
+    border: 1px solid #6e6e6e;
+}
+
+table.productos tbody tr.empty td.celda-detalle
+{
+    padding: 3px !important;
 }
 
 table.productos thead
@@ -59,15 +64,17 @@ table.productos thead tr th:nth-child(6)
     border-right: 1px solid #6e6e6e;
 }
 
+table.productos tbody tr td:nth-child(1) input,
+table.productos tbody tr td:nth-child(2) input,
 table.productos tbody tr td:nth-child(1) select,
 table.productos tbody tr td:nth-child(2) select
 {
-    width: 90%;
+    width: 450px;
 }
 
 table.productos tbody tr td:nth-child(3) input
 {
-	width: 90%;
+	width: 80%;
 }
 
 table.productos tbody tr td:nth-child(4)
@@ -80,8 +87,33 @@ table.productos tbody tr td:nth-child(5)
 	width: 3%;
 }
    
-table.productos tbody tr td:nth-child(6)
+/* table.productos tbody tr td:nth-child(6)
 {
 	width: 3%;
+}
+table.productos i.fa-remove {
+	color: red;
+	cursor: help;
+    font-size: 1.5em !important;
+}
+
+table.productos i.fa-check {
+	color: green;
+	cursor: help;
+	font-size: 1.5em !important;
+}
+*/
+
+
+/**
+* AdminLTE - override
+*/
+.table>thead>tr>th,
+.table>tbody>tr>th,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>tbody>tr>td,
+.table>tfoot>tr>td {
+    border-top: 0;
 }
     

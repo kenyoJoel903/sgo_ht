@@ -120,9 +120,9 @@ public class EstacionDao {
 				filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTADO + "=" + argumentosListar.getFiltroEstado());
 			}
 			
-		     if(argumentosListar.getFiltroOperacion() != Constante.FILTRO_TODOS){
+		    if(argumentosListar.getFiltroOperacion() != Constante.FILTRO_TODOS){
 		    	 filtrosWhere.add(" t1."+ NOMBRE_CAMPO_FILTRO_OPERACION + "=" + argumentosListar.getFiltroOperacion());
-		     }
+		    }
 		     
 			if (!filtrosWhere.isEmpty()) {
 				consultaSQL.setLength(0);

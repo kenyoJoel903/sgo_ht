@@ -279,7 +279,6 @@
 								<th><label>Estado</label></th>
 								<th></th>
 								<th></th>
-								<th></th>
 							</tr>
 					    </thead>
 					    <tbody></tbody>
@@ -289,20 +288,12 @@
 				        <tbody>
 							<tr class="new">
 					            <td class="celda-detalle">
-					                <select class="cmpProductosPrincipales products form-control input-sm">
-					                	<option value="">[Seleccione]</option>
-					                    <%
-						                    ArrayList<?> listProductosSecundarios = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
-											
-						                    for (int i=0; i < listProductosSecundarios.size(); i++) { 
-						                    	Producto eProducto = (Producto) listProductosSecundarios.get(i);
-					                    %>
-					                	<option value="<%=eProducto.getId() %>"><%=eProducto.getNombre().trim() %></option>
-					                	<% } %>
-					            	</select>
+					                <select class="cmpProductosPrincipales products form-control input-sm"></select>
 					            </td>
 					            <td class="celda-detalle">
-					                <select class="cmpProductosSecundarios products form-control input-sm">
+					                <select 
+
+					                class="cmpProductosSecundarios products form-control input-sm">
 					                	<option value="">[Seleccione]</option>
 					                    <%
 						                    ArrayList<?> listProductosSecundarios2 = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
@@ -314,7 +305,7 @@
 					                	<% } %>
 					            	</select>
 					            </td>
-					            <td class="celda-detalle">
+					            <td class="celda-detalle" align="center">
 					            	<input type="text" class="form-control text-uppercase input-sm" readonly="readonly" value="Activo">
 					            </td>
 					            <td class="celda-detalle"></td>
@@ -322,10 +313,6 @@
 									<button class="btn btn-danger btn-xs btn-remove-row" type="button">
 										<i class="fa fa-fw fa-trash-o"></i>
 									</button>
-					            </td>
-					            <td class="celda-detalle" align="center">
-					            	<i class="fa fa-fw fa-remove" style="display: none"></i>
-					            	<i class="fa fa-fw fa-check" style="display: none"></i>
 					            </td>
 					        </tr>
 				        </tbody>
@@ -340,7 +327,7 @@
 					            <td class="celda-detalle">
 					            	<input type="text" class="cmpProductosSecundarios form-control input-sm" readonly="readonly">
 					            </td>
-					            <td class="celda-detalle">
+					            <td class="celda-detalle" align="center">
 					            	<input type="text" class="estado form-control text-uppercase input-sm" readonly="readonly">
 					            </td>
 					            <td class="celda-detalle" align="center">
@@ -350,10 +337,6 @@
                             		</label>
 					            </td>
 					            <td class="celda-detalle"></td>
-					            <td class="celda-detalle" align="center">
-					            	<i class="fa fa-fw fa-remove" style="display: none"></i>
-					            	<i class="fa fa-fw fa-check" style="display: none"></i>
-					            </td>
 					        </tr>
 				        </tbody>
 				    </table>
