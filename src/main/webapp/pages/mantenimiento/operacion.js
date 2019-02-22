@@ -1,7 +1,5 @@
 $(document).ready(function() {
 	
-	//$("select.cmpProductosSecundarios").select2();
-	
   var moduloActual = new moduloBase();  
   moduloActual.urlBase = 'operacion';
   moduloActual.SEPARADOR_MILES = ",";
@@ -106,16 +104,6 @@ $(document).ready(function() {
     this.obj.cmpIdCliente.nombreControl="cmpIdCliente"; 
     this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false});
     
-//    this.obj.cmpProductosSecundarios = $("select.products");
-//    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
-//    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosPrincipales"; 
-//    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
-    
-//    this.obj.cmpProductosSecundarios = $(".cmpProductosSecundarios");
-//    this.obj.cmpProductosSecundarios.tipoControl = "select2";  
-//    this.obj.cmpProductosSecundarios.nombreControl = "cmpProductosSecundarios"; 
-//    this.obj.cmpProductosSecundarios.select2({placeholder: "Seleccionar...", allowClear: false}); 
-    
     this.obj.btnAgregarTransportista = $("#btnAgregarTransportista");
     this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
     this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
@@ -123,6 +111,8 @@ $(document).ready(function() {
     this.obj.btnAgregarTrEquivalencia = $("#btnAgregarTrEquivalencia");
     this.obj.btnGuardarEquivalencia = $("#btnGuardarEquivalencia");
     this.obj.ocultaContenedorProductosEquivalentes = $("#ocultaContenedorProductosEquivalentes");
+    this.obj.modalEstadoProductoEquivalente = $("#modalEstadoProductoEquivalente");
+    this.obj.btnEstadoProductoEquivalente = $(".btnEstadoProductoEquivalente");
     
     //Campos Agregados por 9000002570=========================
     this.obj.btnAgregarEtapa=$("#btnAgregarEtapa");
@@ -189,9 +179,30 @@ $(document).ready(function() {
     $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'input.update-producto-equivalente', function() {
     	
     	var checked = $(this).is(':checked');
-    	var idProductoEquivalencia = $(this).data("producto-equivalencia");
+    	$(this).prop('checked', true);
+    	var modalBody = moduloActual.obj.modalEstadoProductoEquivalente.find('.modal-body');
+		modalBody.find('p.activar').hide();
+		modalBody.find('p.desactivar').show();
     	
-    	moduloActual.updateProductoEquivalencia(idProductoEquivalencia, checked);
+    	if (checked) {
+    		modalBody.find('p.activar').show();
+    		modalBody.find('p.desactivar').hide();
+    		$(this).prop('checked', false);
+    	}
+    	
+    	moduloActual.obj.updateEstado = {};
+    	moduloActual.obj.updateEstado.checked = checked;
+    	moduloActual.obj.updateEstado.idProductoEquivalencia = $(this).data("producto-equivalencia");
+    	moduloActual.obj.modalEstadoProductoEquivalente.modal('show');
+    });
+    
+    this.obj.btnEstadoProductoEquivalente.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+
+    	var object = {};
+    	object.estado = moduloActual.obj.updateEstado.checked ? constantes.ESTADO_ACTIVO : constantes.ESTADO_INACTIVO;
+    	object.idProductoEquivalencia = moduloActual.obj.updateEstado.idProductoEquivalencia;
+    	
+    	moduloActual.updateProductoEquivalencia(object);
     });
     
     //Campos Agregados por 9000002570=========================
@@ -791,8 +802,6 @@ $(document).ready(function() {
   
   moduloActual.recuperarProductosEquivalentes = function() {
 	  
-    console.log(" ***** recuperarProductosEquivalentes ******** ");
-	  
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES, 
@@ -806,8 +815,6 @@ $(document).ready(function() {
 	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	} else {
 	    		
-	    		//console.dir(respuesta.contenido.carga[0]);
-	    		
 	    		var listProdEquivalente = respuesta.contenido.carga[0].listProductoEquivalente;
 	    		var listProductoPrincipal = respuesta.contenido.carga[0].listProductoPrincipal;
 
@@ -816,24 +823,23 @@ $(document).ready(function() {
 	    		$tableClone = $("table.productos-clone").find("tbody");
 	    		$tableCloneEdit = $("table.productos-edit-clone").find("tbody");
 	    		
-	    		$tableClone.find("select.cmpProductosPrincipales").empty();
-    			$tableClone.find("select.cmpProductosPrincipales").append($("<option>", {
+	    		$cmpProductosPrincipales = $tableClone.find("select.cmpProductosPrincipales");
+	    		$cmpProductosPrincipales.empty();
+	    		$cmpProductosPrincipales.append($("<option>", {
 		    		value: "",
 		    		text: "[Seleccione]"
 	    		}));
     			
 	    		for (var j = 0; j < listProductoPrincipal.length; j++) {
 	    			var prodPrincipal = listProductoPrincipal[j];
-	    			$tableClone.find("select.cmpProductosPrincipales").append($("<option>", {
+	    			$cmpProductosPrincipales.append($("<option>", {
 			    		value: prodPrincipal.id,
 			    		text: prodPrincipal.nombre
 		    		}));
 	    		}
 	    		
-	    		$tableClone.find("select.cmpProductosPrincipales").select2();
-	    		
 	    		if (typeof listProdEquivalente == 'undefined' || listProdEquivalente.length == 0) {
-	    			$table.append('<tr class="empty"><td class="celda-detalle" colspan="6">No se encontro productos asociados.</td></tr>');
+	    			$table.append('<tr class="empty"><td class="celda-detalle" colspan="5">No se encontro productos asociados.</td></tr>');
 	    		}
 	    		
 	    		for (var i = 0; i < listProdEquivalente.length; i++) {
@@ -905,6 +911,9 @@ $(document).ready(function() {
 	  $("tr.empty").remove();
       $tableClone = $('table.productos-clone').find('tbody');
       $trNew = $tableClone.find('tr:last').clone();
+      $trNew.find("select.cmpProductosPrincipales").select2();
+      $trNew.find("select.cmpProductosSecundarios").select2();
+      
       $table = $('table.productos').find('tbody');
       $table.append($trNew);
   };
@@ -942,12 +951,7 @@ $(document).ready(function() {
 	  });
   };
   
-  moduloActual.updateProductoEquivalencia = function(idProductoEquivalencia, checked) {
-
-	  var object = {};
-	  object.estado = checked ? constantes.ESTADO_ACTIVO : constantes.ESTADO_INACTIVO;
-	  object.idProductoEquivalencia = idProductoEquivalencia;
-	  
+  moduloActual.updateProductoEquivalencia = function(object) {
 	  $.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES, 
@@ -956,10 +960,15 @@ $(document).ready(function() {
 			success: function(respuesta) {
 				if (!respuesta.estado) {
 					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+					moduloActual.obj.modalEstadoProductoEquivalente.modal('hide');
 				} else {
 					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Estado actualizado con exito!");
-					
-					$('input[data-producto-equivalencia="' + idProductoEquivalencia + '"]').val(checked ? "ACTIVO" : "INACTIVO");
+			    	moduloActual.obj.updateEstado.checked = null;
+			    	moduloActual.obj.updateEstado.idProductoEquivalencia = null;
+			    	moduloActual.obj.modalEstadoProductoEquivalente.modal('hide');
+			    	
+			    	$('input[type=text][data-producto-equivalencia="' + idProductoEquivalencia + '"]').val(checked ? "ACTIVO" : "INACTIVO");
+			    	$('input[type=checkbox][data-producto-equivalencia="' + idProductoEquivalencia + '"]').prop('checked', checked);
 				}
 			},			    		    
 			error: function(xhr, status, error) {

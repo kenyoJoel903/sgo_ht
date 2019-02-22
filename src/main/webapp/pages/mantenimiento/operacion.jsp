@@ -288,12 +288,10 @@
 				        <tbody>
 							<tr class="new">
 					            <td class="celda-detalle">
-					                <select class="cmpProductosPrincipales products form-control input-sm"></select>
+					                <select class="cmpProductosPrincipales form-control input-sm"></select>
 					            </td>
 					            <td class="celda-detalle">
-					                <select 
-
-					                class="cmpProductosSecundarios products form-control input-sm">
+					                <select class="cmpProductosSecundarios form-control input-sm">
 					                	<option value="">[Seleccione]</option>
 					                    <%
 						                    ArrayList<?> listProductosSecundarios2 = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
@@ -343,14 +341,14 @@
 
 	            </div>
 	            <div class="box-footer">
-	                <button id="btnCerrarProductosEquivalentes" class="btn btn-danger btn-sm">
-	                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR") %>
-	                </button>
 	                <button id="btnGuardarEquivalencia" class="btn btn-primary btn-sm">
-	                    Guardar
+	                    <i class="fa fa-save"></i> Guardar
 	                </button>
-	                <button id="btnAgregarTrEquivalencia" class="btn btn-success btn-sm">
-	                    <i class="fa fa-fw fa-plus"></i> Agregar Equivalencia
+	                <button id="btnAgregarTrEquivalencia" class="btn bg-purple btn-sm">
+	                    <i class="fa fa-plus-circle"></i> Agregar Equivalencia
+	                </button>
+	                <button id="btnCerrarProductosEquivalentes" class="btn btn-danger btn-sm">
+	                    <i class="fa fa-close"></i> <%=mapaValores.get("ETIQUETA_BOTON_CERRAR") %>
 	                </button>
 	            </div>
 	            <div class="overlay" id="ocultaContenedorProductosEquivalentes">
@@ -358,6 +356,33 @@
 	            </div>
 	        </div>
 	    </div>
+	</div>
+	
+	<div id="modalEstadoProductoEquivalente" class="modal" data-keyboard="false" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<strong>SGO - PetroPer&uacute;</strong> / Cambiar estado de Producto Equivalente
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p class="activar" style="display: none;">¿Est&aacute; seguro de que desea activar registro?</p>
+					<p class="desactivar" style="display: none;">¿Est&aacute; seguro de que desea desactivar el registro?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btnEstadoProductoEquivalente btn btn-primary">
+						Si
+					</button>
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">
+						No
+					</button>
+				</div>
+			</div>
+		</div>
 	</div>
     
     <%-- Inicio Agregado por 9000002570 --%>

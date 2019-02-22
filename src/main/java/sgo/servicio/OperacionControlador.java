@@ -1057,7 +1057,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		/**
  		 * Lista de productos equivalentes
  		 */
- 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistroPorOperacion(idOperacion);
+ 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistrosPorOperacion(idOperacion);
  		if (!respuestaProdEquivalente.estado) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
@@ -1217,6 +1217,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 
  	RespuestaCompuesta respuesta = null;
  	AuthenticatedUserDetails principal = null;
+ 	ParametrosListar parametros = null;
 
  	try {
  		
@@ -1242,11 +1243,40 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  			throw new Exception(gestorDiccionario.getMessage("sgo.estadoNoValido", null, locale));
  		}
  		
+ 		/**
+ 		 * Trae el producto equivalente seleccionado.
+ 		 */
+ 		parametros = new ParametrosListar();
+ 		parametros.setFiltroOperacion(entity.getIdOperacion());
+ 		parametros.setIdProductoEquivalencia(entity.getIdProductoEquivalencia());
+ 		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
+
+ 		/**
+ 		 * Validar si existe mas de un registro con la misma asociacion
+ 		 */
+ 		parametros = new ParametrosListar();
+ 		parametros.setIdProductoPrincipal(productoEquivalente.getIdProductoPrincipal());
+ 		parametros.setIdProductoSecundario(productoEquivalente.getIdProductoSecundario());
+ 		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		List<ProductoEquivalente> listProductoEquivalente = (List<ProductoEquivalente>) respuesta.getContenido().getCarga();
+ 		
+ 		if (listProductoEquivalente.size() > 1) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.productoSecundarioUnicoEstado", null, locale));
+ 		}
+ 		
  		respuesta = dProductoEquivalente.updateRegistro(entity);
  		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
 
  	} catch (Exception e) {
- 		e.printStackTrace();
  		respuesta.estado = false;
  		respuesta.contenido = null;
  		respuesta.mensaje = e.getMessage();
@@ -1260,17 +1290,37 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	 Locale locale = new Locale("es", "ES");
 	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
 	 
-	 respuesta = dProductoEquivalente.existeProductoSecundario(entity.getIdOperacion(), peEntity.getProductoSecundario());
-	 if (respuesta.estado) {
+	 try {
+		 
+		 ParametrosListar parametros = new ParametrosListar();
+		 parametros.setFiltroOperacion(entity.getIdOperacion());
+		 parametros.setIdProductoSecundario(peEntity.getProductoSecundario());
+		 respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+		 
+		 if (!respuesta.estado) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 
 		 ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
-		 respuesta.mensaje = gestorDiccionario.getMessage("sgo.productoSecundarioUnico", null, locale);
-		 respuesta.mensaje = respuesta.mensaje.replace("REPLACE_PRODUCT", productoEquivalente.getNombreProductoSecundario());
-		 respuesta.estado = false;
-		 return respuesta;
+		 
+		 if (Utilidades.intToBool(productoEquivalente.getEstado())) {
+			 respuesta.mensaje = gestorDiccionario.getMessage("sgo.productoSecundarioUnico", null, locale);
+			 respuesta.mensaje = respuesta.mensaje.replace("REPLACE_PRODUCT", productoEquivalente.getNombreProductoSecundario());
+			 respuesta.estado = false;
+			 return respuesta;
+		 }
+		 
+		 respuesta.estado = true;
+		 respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+		 
+	 } catch (Exception e) {
+		e.printStackTrace();
+		respuesta.estado = false;
+		respuesta.contenido = null;
+		respuesta.mensaje = e.getMessage();
 	 }
 	 
-	 respuesta.estado = true;
-	 respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
 	 
 	 return respuesta;
  }
