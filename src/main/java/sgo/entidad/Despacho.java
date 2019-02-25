@@ -34,9 +34,24 @@ public class Despacho extends EntidadBase {
 	private Tanque tanque;
 	private Contometro contometro;
 	
+
+//	Inicio Agregado por req 9000003068==========================
+	private int flagCalculoCorregido;
+	
+	public int getFlagCalculoCorregido() {
+		return flagCalculoCorregido;
+	}
+
+	public void setFlagCalculoCorregido(int flagCalculoCorregido) {
+		this.flagCalculoCorregido = flagCalculoCorregido;
+	}
+//	Fin Agregado por req 9000003068=============================
+
+
 	private int id_turno;
 	private int nro_decimales;
 	
+
 	public final static int ESTADO_ACTIVO=1;
 	public final static int ESTADO_INACTIVO=2;
 	public final static int ESTADO_ASIGNADO=3;

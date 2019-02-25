@@ -810,6 +810,7 @@ $(document).ready(function(){
   	  this.obj.cmpFormularioOperacion.val($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion'));
   	  this.obj.cmpFormularioEstacion.val(moduloActual.obj.estacionSeleccionado);
   	  this.obj.cmpFormularioFechaJornada.val(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));
+  	  this.obj.cmpFormularioFechaJornada.text(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));	//Agregado por HT correccion 9000003068
 //	  ====================================================================================================================================== 
       
   	  referenciaModulo.recuperarTurno();
@@ -991,13 +992,14 @@ $(document).ready(function(){
 	    eRegistro.idContometro = parseInt(referenciaModulo.obj.cmpIdContometro.val());
 	    eRegistro.estado = parseInt(constantes.ESTADO_ACTIVO);
 	    eRegistro.tipoRegistro = moduloActual.obj.cmpTipoRegistro;
-	    
-	    //eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraInicio.val());
-	    //eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraFin.val());
+
+//	    Inicio modificado por req 9000003068
 	    eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraInicio.val());
 	    eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraFin.val());
 	    
 	    eRegistro.idTurno = referenciaModulo.obj.idTurno.val();
+//	    Fin modificado por req 9000003068
+
 	    
 	    //eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaInicio.val());
 	    //eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaFin.val());

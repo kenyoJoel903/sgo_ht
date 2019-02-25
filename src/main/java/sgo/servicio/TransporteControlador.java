@@ -182,6 +182,10 @@ public class TransporteControlador {
    
    private static final String URL_GUARDAR_SAP_COMPLETA = "/admin/transporte/guardar-sap";
    private static final String URL_GUARDAR_SAP_RELATIVA = "/transporte/guardar-sap";
+   
+//   Inicio Agregado por 9000003068
+   private static final String VALOR_FIJO_GR = "GR";
+//   Fin Agregado por 9000003068
 
 	private HashMap<String, String> recuperarMapaValores(Locale locale) {
 		HashMap<String, String> mapaValores = new HashMap<String, String>();
@@ -610,10 +614,42 @@ public class TransporteControlador {
             maestroImportacion.setNombrePlantaDespacho(elemento.getNomPlantaDespacho());
             maestroImportacion.setNombrePlantaRecepcion(elemento.getNomPlantaRecepcion());
             maestroImportacion.setNumeroFactura(elemento.getNumeroFac());
-            maestroImportacion.setNumeroGuiaRemision(elemento.getNumeroGR());
+            
+//          Inicio Agregado por 9000003068
+            
+            String numeroGR = elemento.getNumeroGR();
+            if(numeroGR == null || numeroGR.trim().equals("")){
+            	
+            	numeroGR = VALOR_FIJO_GR + " - " + String.format("%03d", idOperacion) + " - " + elemento.getNumeroOC();
+            	
+            }
+            
+            maestroImportacion.setNumeroGuiaRemision(numeroGR);
+            
+//          Fin Agregado por 9000003068
+            
+//          Inicio Comentado por req 9000003068
+//            maestroImportacion.setNumeroGuiaRemision(elemento.getNumeroGR());
+//          Fin Comentado por req 9000003068
+            
             maestroImportacion.setNumeroOrdenEntrega(elemento.getNumeroOC());
             maestroImportacion.setPlacaCisterna(elemento.getPlacaCisterna());
-            maestroImportacion.setPlacaTracto(elemento.getPlacaTracto());
+            
+//          Inicio Comentado por req 9000003068
+//            maestroImportacion.setPlacaTracto(elemento.getPlacaTracto());
+//          Fin Comentado por req 9000003068
+            
+//          Inicio Agregado por 9000003068
+            
+            String placaTracto = elemento.getPlacaTracto();
+            if(placaTracto == null || placaTracto.trim().equals("")){
+            	placaTracto = elemento.getPlacaCisterna();
+            }
+            
+            maestroImportacion.setPlacaTracto(placaTracto);
+//          Fin Agregado por 9000003068
+            
+            
             maestroImportacion.setPrecintosSeguridad(elemento.getPrecintosSeguridadCisterna());
             maestroImportacion.setRazonSocialCliente(elemento.getRazonSocDestinatario());
             maestroImportacion.setRazonSocialTransportista(elemento.getRazonSocialTransportista());

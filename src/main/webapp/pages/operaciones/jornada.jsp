@@ -5,10 +5,18 @@
 <%@ page import="sgo.entidad.Operacion"%>
 <%@ page import="sgo.entidad.Estacion"%>
 <%@ page import="sgo.entidad.Producto"%>
+<%@ page import="sgo.entidad.TableAttributes"%>
 <%@ page import="java.util.HashMap"%>
 <%
 HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); 
 %>
+
+<!-- Inicio agregado por req 9000003068 -->
+<% TableAttributes tableAttributes = (TableAttributes) request.getAttribute("tableAttributes"); %>
+
+<link href="tema/table-scroll/css/table-scroll.css" rel="stylesheet" type="text/css"/>
+<link href="tema/table-scroll/css/jornada.css" rel="stylesheet" type="text/css"/>
+<!-- Fin agregado por req 9000003068 -->
 
 <!-- Contenedor de pagina-->
 <div class="content-wrapper">
@@ -387,16 +395,18 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		                  </thead>
 		                </table>
 		                <label><B>Cont&oacute;metros </B></label>
-<!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 -->
-		                <table class="sgo-simple-table table table-condensed" style="width:100%;  border:1px solid black;background-color:#F2DEF5">
+<!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
+		                <table class="grupo-apertura-contometros table-scroll sgo-simple-table table table-condensed" style="border:1px solid black;background-color:#F2DEF5">
 							<thead>
 							  <tr>
-							  <td><label class="text-center">Cont&oacute;metro	</label></td>
-							  <td><label class="text-center">Producto			</label></td>
-							  <td><label class="text-center">Lectura Inicial	</label></td>
+<!-- 							  se quito los class text-center por req 9000003068-->
+							  <td class="text-center"><label >Cont&oacute;metro	</label></td>
+							  <td class="text-center"><label >Producto			</label></td>
+							  <td class="text-center"><label >Lectura Inicial	</label></td>
 							  </tr>
 							</thead>
-							<tbody id="GrupoAperturaContometros">
+<%-- 							se agrega  style="<%=tableAttributes.getBodyStyle() %>" por req 9000003068--%>
+							<tbody id="GrupoAperturaContometros" style="<%=tableAttributes.getBodyStyle() %>">
 			      				<tr id="GrupoAperturaContometros_template">
 			      					<td class="celda-detalle"  style="width:10%;">
 			      					    <input elemento-grupo="idContometros" id="GrupoAperturaContometros_#index#_IdContometro" name="aperturaContometro[detalle][#index#][idContometro]" type="hidden" disabled class="form-control text-right input-sm"/>
@@ -411,9 +421,11 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
       									<input elemento-grupo="lecturaInicial" id="GrupoAperturaContometros_#index#_LecturaInicial" name="aperturaContometro[detalle][#index#][lecturaInicial]" type="text"  maxlength="8" disabled class="form-control text-right input-sm" />
 									</td>
 								</tr>
-								<tr>
-			      				<td></td>
-			      				</tr>
+<!-- 								Inicio se comenta por req 9000003068 -->
+<!-- 								<tr> -->
+<!-- 			      				<td></td> -->
+<!-- 			      				</tr> -->
+<!-- 								Fin se comenta por req 9000003068 -->
 			      				<tr id="GrupoAperturaContometros_noforms_template">
 			      				<td></td>
 			      				</tr>    
@@ -607,8 +619,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 						</table>
 						<br />
 		                <label><B>Cont&oacute;metros </B></label>
-<!-- 		                se agrego background-color:##F2DEF5 al style por req 9000003068 -->
-		                <table class="sgo-simple-table table table-condensed" style="width:100%;  border:1px solid black;background-color:#F2DEF5">
+<!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
+		                <table class="grupo-cierre-contometros table-scroll sgo-simple-table table table-condensed" style="border:1px solid black;background-color:#F2DEF5">
 							<thead>
 							  <tr>
 							  <td class="celda-detalle text-center"><label>Cont&oacute;metro	</label></td>
@@ -616,10 +628,13 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 							  <td class="celda-detalle text-center"><label>Lectura Inicial		</label></td>
 							  <td class="celda-detalle text-center"><label>Lectura Final		</label></td>
 							  <td class="celda-detalle text-center"><label>Dif. Vol. Encontrado	</label></td>
-							  <td class="celda-detalle text-center"><label>F/S					</label></td>
+							  
+<!-- 							  se quita class por req 9000003068 -->
+							  <td><label>F/S					</label></td>
 							  </tr>
 							</thead>
-							<tbody id="GrupoCierreContometros">
+<%-- 							se agrega  style="<%=tableAttributes.getBodyStyle() %>" por req 9000003068--%>							
+							<tbody id="GrupoCierreContometros" style="<%=tableAttributes.getBodyStyle() %>">
 			      				<tr id="GrupoCierreContometros_template">
 			      					<td class="celda-detalle"  style="width:15%;">
 			      						<input elemento-grupo="idContometroJornadaCierre" id="GrupoCierreContometros_#index#_IdContometroJornadaCierre" name="cierreContometro[detalle][#index#][idContometroJornadaCierre]" type="hidden" disabled class="form-control text-right input-sm"/>
@@ -642,9 +657,11 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
       									<input elemento-grupo="servicio" id="GrupoCierreContometros_#index#_Servicio" name="cierreContometro[detalle][#index#][servicio]" type="checkbox"/>
 									</td>
 								</tr>
-								<tr>
-			      				<td></td>
-			      				</tr>
+<!-- 								Inicio se comenta por req 9000003068 -->
+<!-- 								<tr> -->
+<!-- 			      				<td></td> -->
+<!-- 			      				</tr> -->
+<!-- 								Fin se comenta por req 9000003068 -->
 			      				<tr id="GrupoCierreContometros_noforms_template">
 			      				<td></td>
 			      				</tr>    

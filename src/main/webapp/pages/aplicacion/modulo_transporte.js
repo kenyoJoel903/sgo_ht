@@ -189,6 +189,37 @@ moduloTransporte.prototype.inicializarControlesGenericos=function(){
   this.obj.cmpFechaFinal=$("#cmpFechaFinal");
   this.obj.idCliente=$("#idCliente");
   this.obj.idTransportista=$("#idTransportista");
+  
+//  Inicio se agrega input por 9000003068 G2 Transporte
+  this.obj.cmpSelectorAllSap=$("#cmpSelectorAllSap");
+  this.obj.cmpSelectorAllSap.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+		console.log($("#cmpSelectorAllSap").prop( "checked"));
+		
+		var rowCount = $('#tablaListaSap >tbody >tr').length;
+		console.log("rowCount" + rowCount);
+		
+		if($("#cmpSelectorAllSap").prop( "checked")){
+
+			for(var i = 0; i < rowCount; i++){
+				
+				var deshabilitado = $("#cmpSelectorDetalle" + i).prop("disabled");
+				console.log(i + " " + deshabilitado)				
+				if(!deshabilitado){
+					$("#cmpSelectorDetalle" + i).prop( "checked", true);
+				}
+
+			}
+		
+		}else{
+			
+			for(var i = 0; i < rowCount; i++){
+				$("#cmpSelectorDetalle" + i).prop( "checked", false);
+			}
+			
+		}
+	});
+//  Fin se agrega input por 9000003068 G2 Transporte
+  
   this.estadoDiaOperativo=$("#estadoDiaOperativo");
   this.estadoTransporte=$("#estadoTransporte");  
 //  //Inicializar controles	
@@ -252,6 +283,10 @@ moduloTransporte.prototype.inicializarControlesGenericos=function(){
 	});
 	
 	this.obj.btnImportar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
+//		  Inicio Agregado por req 7000002585
+		  $("#cmpSelectorAllSap").prop( "checked", false);
+//		  Fin Agregado por req 7000002585
+		  
 		referenciaModulo.descripcionPermiso = 'IMPORTAR_TRANSPORTE';
 		referenciaModulo.validaPermisos();
 		//referenciaModulo.mostrarFormularioImportar();
@@ -1395,6 +1430,10 @@ moduloTransporte.prototype.pintarSap= function(registros){
 	  var registro = null;
 	  var clonDetalle=null;
 	  ref.listaMaestroSAP={};
+	  
+//	  Inicio Agregado por req 7000002585
+	  $("#cmpSelectorAllSap").prop( "checked", false);
+//	  Fin Agregado por req 7000002585
 	  try {
 		  $("#tablaListaSap > tbody:first").children().remove();
 		  for(var contador=0;contador<numeroRegistros;contador++){
@@ -1429,8 +1468,15 @@ moduloTransporte.prototype.pintarSap= function(registros){
 			  cmpFechaEmision.attr('id', "cmpFechaEmision" + contador);			  
 			  
 			  var cmpTractoCisterna=clonDetalle.find("#cmpTractoCisterna");
-			  cmpTractoCisterna.text(registro.placaTracto+"-"+registro.placaCisterna);
+//			  se Agrega espacio entre - (guion) por 9000003068 G2 Transporte
+			  cmpTractoCisterna.text(registro.placaTracto+" - "+registro.placaCisterna);
 			  cmpTractoCisterna.attr('id', "cmpTractoCisterna" + contador);
+			  
+//			  Inicio Agregado por 9000003068 G2 Transporte
+			  var cmpConductorSAP=clonDetalle.find("#cmpConductorSAP");
+			  cmpConductorSAP.text(registro.breveteConductor + " - " + registro.nombreConductor);
+			  cmpConductorSAP.attr('id', "cmpConductorSAP" + contador);
+//			  Fin Agregado por 9000003068 G2 Transporte
         
 			  var cmpSCOP=clonDetalle.find("#cmpSCOP");
 			  cmpSCOP.text(registro.codigoScop);
