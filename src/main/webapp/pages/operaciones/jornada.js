@@ -280,9 +280,9 @@ $(document).ready(function() {
         minFormsCount: 0,
         iniFormsCount: 0,
         
-        //Se agrego esta linea por el problema de los contometros en la apertura de jornado 
-        //colocar incidencia o requerimiento
-        maxFormsCount: 500,
+        //cambiado de 500 a 0 agregado maxFormsCount====
+        maxFormsCount: 0,
+        //==============================================
         afterAdd: function(origen, formularioNuevo) {
 
           var cmpIdContometros=$(formularioNuevo).find("input[elemento-grupo='idContometros']");
@@ -559,7 +559,9 @@ $(document).ready(function() {
         allowAddN: true,
         minFormsCount: 0,
         iniFormsCount: 0,
-        maxFormsCount:500,
+        
+//        se agrego maxFormsCount:0 por req 9000003068
+        maxFormsCount:0,
         afterAdd: function(origen, formularioNuevo) {
           var cmpIdContometroJornadaCierre=$(formularioNuevo).find("input[elemento-grupo='idContometroJornadaCierre']");
           var cmpIdContometroCierre=$(formularioNuevo).find("input[elemento-grupo='idContometroCierre']");

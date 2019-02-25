@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -25,14 +26,17 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import sgo.entidad.Producto;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.model.Workbook;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -1019,5 +1023,215 @@ ByteArrayOutputStream archivo = null;
 
     return archivo;
 }
+
+	/**
+	 * 
+	 * @param listaRegistros
+	 * @param listaCampos
+	 * @param camposCabecera
+	 * @param tituloReporte
+	 * @return
+	 */
+	public ByteArrayOutputStream generarPlantillaDespacho(
+		ArrayList<?> listaProductos, 
+		ArrayList<CabeceraReporte> listaCamposCabecera,
+		List<String> datosNotas
+	) {
+	
+		String valorCampo = "";
+		ByteArrayOutputStream archivo = null;
+	
+		try {
+	
+			TimeZone.setDefault(TimeZone.getTimeZone("America/Lima"));
+			HSSFWorkbook workbook = new HSSFWorkbook();
+			HSSFSheet worksheet = workbook.createSheet("Despacho");  
+	
+			ArrayList<String> listaValores = null;
+			listaValores = new ArrayList<String>();
+			CabeceraReporte campoCabecera = null;
+			int fila = 0; 
+			HSSFRow row = null;
+			HSSFCell cell = null;
+	    
+			HSSFCellStyle estiloCab = crearEstiloCabecera(workbook);
+			HSSFCellStyle estiloTexto = crearEstiloTexto(workbook);
+	
+		    /**
+		     * HOJA DESPACHO
+		     */
+		    row = worksheet.createRow(fila);
+		    double[] anchos = {12,15,10,12,12,14,12,12,10,16,15,15,10,12,19,12};
+		    for(int i=0;i<anchos.length;i++){
+		    	worksheet.setColumnWidth(i, calcularAnchoCelda(anchos[i]));
+		    }
+		
+		    for (int indice = 0; indice < listaCamposCabecera.size(); indice++) {
+		        campoCabecera = listaCamposCabecera.get(indice);
+		        valorCampo = campoCabecera.getEtiqueta().toUpperCase();     
+		        cell = row.createCell(indice);
+		        cell.setCellStyle(estiloCab);
+		        cell.setCellValue(valorCampo);	
+		    }
+		    
+		    /**
+		     * HOJA NOTAS
+		     */
+	
+		    HSSFSheet worksheetNotas = workbook.createSheet("Notas");
+		    
+		    double[] anchosNotas = {6,15,30,10,14};
+		    for(int i=0;i<anchosNotas.length;i++){
+		    	worksheetNotas.setColumnWidth(i, calcularAnchoCelda(anchosNotas[i]));
+		    }
+		    
+		    fila = 0; 
+		    row = null;
+		    cell = null;
+		    String cabecera1 = "";
+		    
+		    row = worksheetNotas.createRow(fila);
+		    
+		    List<String> listaCamposCabeceraSecundario = new ArrayList();
+		    listaCamposCabeceraSecundario.add("Sec");
+		    listaCamposCabeceraSecundario.add("Columna");
+		    listaCamposCabeceraSecundario.add("Valor");
+		    listaCamposCabeceraSecundario.add("Oblig?");
+		    listaCamposCabeceraSecundario.add("Tipo");
+		    
+		    for (int indice = 0; indice < listaCamposCabeceraSecundario.size(); indice++) {
+		        cabecera1 = listaCamposCabeceraSecundario.get(indice);
+		        valorCampo = cabecera1.toUpperCase();     
+		        cell = row.createCell(indice);
+		        cell.setCellStyle(estiloCab);
+		        cell.setCellValue(valorCampo);	
+		    }
+		    
+		    String columnas = datosNotas.get(0);
+		    String[] datosColumnas = columnas.split(Pattern.quote("||"));
+		    String valores = datosNotas.get(1);
+		    String[] datosValores = valores.split(Pattern.quote("||"));
+		    String oblig = datosNotas.get(2);
+		    String[] datosOblig = oblig.split(Pattern.quote("||"));
+		    String tipo = datosNotas.get(3);
+		    String[] datosTipo = tipo.split(Pattern.quote("||"));
+		    
+		    for(int i=0;i<datosColumnas.length;i++){
+		    	fila++;
+		    	row = worksheetNotas.createRow(fila);
+	    		cell = row.createCell(0);
+	    		cell.setCellStyle(estiloTexto);
+	    		cell.setCellValue(i+1);
+	    		cell = row.createCell(1);
+	    		cell.setCellStyle(estiloTexto);
+	    		try{
+	    			cell.setCellValue(datosColumnas[i]);
+	    		}catch(Exception e){
+	    			cell.setCellValue("");
+	    		}
+	    		cell = row.createCell(2);
+	    		cell.setCellStyle(estiloTexto);
+	    		try{
+		    		cell.setCellValue(datosValores[i]);
+				}catch(Exception e){
+					cell.setCellValue("");
+				}
+	    		cell = row.createCell(3);
+	    		cell.setCellStyle(estiloTexto);
+	    		try{
+		    		cell.setCellValue(datosOblig[i]);
+				}catch(Exception e){
+					cell.setCellValue("");
+				}
+	    		cell = row.createCell(4);
+	    		cell.setCellStyle(estiloTexto);
+	    		try{
+		    		cell.setCellValue(datosTipo[i]);
+				}catch(Exception e){
+					cell.setCellValue("");
+				}
+		    }
+		    
+		    /**
+		     * HOJA PRODUCTOS
+		     */
+		    
+		    HSSFSheet worksheetProductos = workbook.createSheet("Productos");
+		    
+		    double[] anchosProductos = {15};
+		    for(int i=0;i<anchosProductos.length;i++){
+		    	worksheetProductos.setColumnWidth(i, calcularAnchoCelda(anchosProductos[i]));
+		    }
+		    
+		    fila = 0;
+		    row = worksheetProductos.createRow(fila);
+		    int indice = 0;
+		    cell = row.createCell(indice);
+		    cell.setCellStyle(estiloCab);
+		    cell.setCellValue("PRODUCTOS");
+		    
+		    listaValores = new ArrayList<String>();
+		    
+		    Producto producto;
+			
+		    for (int contador = 0; contador < listaProductos.size(); contador++) {
+		        producto = (Producto) listaProductos.get(contador);
+		        listaValores.clear();
+		        valorCampo = producto.getAbreviatura().trim();
+		        if(!valorCampo.isEmpty()){
+			        fila++;
+			        row = worksheetProductos.createRow(fila);
+			        cell = row.createCell(0);
+			        cell.setCellStyle(estiloTexto);
+			        cell.setCellValue(valorCampo);
+		        }
+		    }
+		    
+		    archivo = new ByteArrayOutputStream();		
+		    workbook.write(archivo); 	
+	
+		} catch (Exception ex) {
+		    ex.printStackTrace();
+		}
+	
+	    return archivo;
+	}
+	
+	protected HSSFCellStyle crearEstiloCabecera(HSSFWorkbook wb){
+		HSSFFont fuenteCab = wb.createFont();
+		fuenteCab.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		fuenteCab.setFontHeightInPoints((short) 9);
+	    
+		HSSFCellStyle estilo = wb.createCellStyle();
+	    estilo.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+	    estilo.setBorderTop(HSSFCellStyle.BORDER_THIN);
+	    estilo.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+	    estilo.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+	    estilo.setBorderRight(HSSFCellStyle.BORDER_THIN);
+	    estilo.setWrapText(true);
+	    estilo.setFont(fuenteCab);
+	    return estilo;
+	}
+	
+	protected HSSFCellStyle crearEstiloTexto(HSSFWorkbook wb){
+		HSSFFont fuenteCab = wb.createFont();
+		fuenteCab.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);
+		fuenteCab.setFontHeightInPoints((short) 9);
+	    
+		HSSFCellStyle estilo = wb.createCellStyle();
+	    estilo.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+	    estilo.setBorderTop(HSSFCellStyle.BORDER_THIN);
+	    estilo.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+	    estilo.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+	    estilo.setBorderRight(HSSFCellStyle.BORDER_THIN);
+	    estilo.setWrapText(true);
+	    estilo.setFont(fuenteCab);
+	    return estilo;
+	}
+	
+	public static int calcularAnchoCelda(double ancho) {
+		int MAXIMUM_DIGIT_WIDTH = 7;
+		return (int) Math.floor((ancho * MAXIMUM_DIGIT_WIDTH + 5) / MAXIMUM_DIGIT_WIDTH * 256);
+	}
 
 }

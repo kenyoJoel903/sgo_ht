@@ -143,7 +143,8 @@ public class EstacionDao {
 			consultaSQL.append("t1.nombre_operacion,");
 			consultaSQL.append("t1.metodo_descarga,");
 			consultaSQL.append("0 tipo_apertura_tanque,");
-			consultaSQL.append("0 numero_decimales_contometro,");
+			// 9000003068
+			consultaSQL.append("t1.numero_decimales_contometro,");
 			consultaSQL.append("0 id_perfil_horario,");
 			consultaSQL.append("0 nombre_perfil,");
 			

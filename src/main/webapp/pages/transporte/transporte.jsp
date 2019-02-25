@@ -233,10 +233,16 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
           <table id="tablaListaSap" class="sgo-table table table-striped" width="100%">
           <thead>
             <tr>
-            <td> </td>
+<!--             se agrega input y style en el td por 9000003068 G2 Transporte -->
+            <td style="padding-left:10px;"> <input name="cmpSelectorAllSap" id="cmpSelectorAllSap" type="checkbox" value="0" style="margin:0;"> </td>
             <th>G/R</th>
             <th>F. Emisión </th>
             <th>Tracto/Cisterna</th>
+            
+<!--             Inicio Agregado por 9000003068 G2 Transporte -->
+            <th>Conductor</th>
+<!--             Fin Agregado por 9000003068 G2 Transporte -->           
+            
             <th>Vol [T. Obs.]</th>
             <th>Vol [60F]</th>
             <th>SCOP</th>
@@ -245,7 +251,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
           </thead>
           <tbody>
             <tr id="plantillaNoRegistro">
-              <td colspan="8">
+            <!--             se cambia colspan de 8 a 9 -->   
+              <td colspan="9">
               Sin registros
               </td>
             </tr>
@@ -253,7 +260,12 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
             		<td style="padding-left:10px;"><input name="cmpSelectorDetalle" id="cmpSelectorDetalle" type="checkbox" name="selector" value="0" style="margin:0;"></td>
             		<td style="padding-left:10px;"><span style="line-height:10px;" id="cmpDetalleNumeroGuia"></span></td>
             		<td style="padding-left:10px;"><span id="cmpFechaEmision"></span></td>
-            		<td style="padding-left:10px;"><span id="cmpTractoCisterna"></span></td>                	
+            		<td style="padding-left:10px;"><span id="cmpTractoCisterna"></span></td>
+            		
+<!--             Inicio Agregado por 9000003068 G2 Transporte -->            		
+            		<td style="padding-left:10px;"><span id="cmpConductorSAP"></span></td>           
+<!--             Fin Agregado por 9000003068 G2 Transporte -->               		
+            		      	
             		<td style="text-align:right;padding-right:10px;"><span id="cmpVolumenObservado"></span></td>
             		<td style="text-align:right;padding-right:10px;"><span id="cmpVolumenCorregido"></span></td>
             		<td style="padding-left:10px;"><span id="cmpSCOP"></span></td>

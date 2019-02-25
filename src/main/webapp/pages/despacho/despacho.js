@@ -11,6 +11,8 @@ $(document).ready(function(){
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
   moduloActual.URL_ACTUALIZAR_ESTADO = moduloActual.urlBase + '/actualizarEstado';
   moduloActual.URL_CARGAR_ARCHIVO = moduloActual.urlBase +'/cargar-archivo';
+  
+  moduloActual.URL_EXPORTAR_PLANTILLA = moduloActual.urlBase + '/plantilla-despacho';
  
   moduloActual.MEGABYTE= 1048576;
   moduloActual.TAMANO_MAXIMO_ARCHIVO=2*moduloActual.MEGABYTE;
@@ -60,9 +62,10 @@ $(document).ready(function(){
   moduloActual.columnasGrillaDespacho.push({ "data": 'numeroVale'});//Target4
   moduloActual.columnasGrillaDespacho.push({ "data": 'producto.nombre'});//Target5
   moduloActual.columnasGrillaDespacho.push({ "data": 'contometro.alias'});//Target6
-  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicial'});//Target7
-  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaFinal'});//Target8
-  moduloActual.columnasGrillaDespacho.push({ "data": 'volumenObservado'});//Target9
+  //moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicial'});//Target7
+  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicial', "render" : function(data, type, row){ return parseFloat(row.lecturaInicial).toFixed(parseInt(row.nroDecimales)); }});//Target7
+  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaFinal', "render" : function(data, type, row){ return parseFloat(row.lecturaFinal).toFixed(parseInt(row.nroDecimales)); }});//Target8
+  moduloActual.columnasGrillaDespacho.push({ "data": 'volumenObservado', "render" : function(data, type, row){ return parseFloat(row.volumenObservado).toFixed(parseInt(row.nroDecimales)); }});//Target9
   moduloActual.columnasGrillaDespacho.push({ "data": 'tipoRegistro'});//Target10
   
   //Columnas Despacho
@@ -118,6 +121,16 @@ $(document).ready(function(){
     this.obj.idClienteSeleccionado =$("#idClienteSeleccionado");
     this.obj.idEstacionSeleccionado =$("#idEstacionSeleccionado");
     this.obj.idJornadaSeleccionado =$("#idJornadaSeleccionado");
+    
+    this.obj.idTurno = $("#cmpFormularioTurno");
+    this.obj.nroDecimales = $("#cmpFormularioNroDecimales");
+    this.obj.btnPlantillaDespacho = $("#btnPlantillaDespacho");
+    
+    this.obj.btnPlantillaDespacho.on("click", function(e){
+    	e.preventDefault();
+    	var url=moduloActual.URL_EXPORTAR_PLANTILLA+'?formato='+constantes.FORMATO_CSV;
+    	window.open(url);
+    });	
 	  
     this.obj.clienteSeleccionado=$("#clienteSeleccionado");
     this.obj.operacionSeleccionado=$("#operacionSeleccionado");
@@ -168,7 +181,7 @@ $(document).ready(function(){
 		    		document.getElementById("filtroEstacion").innerHTML = "";
 		    		for(var cont = 0; cont < respuesta.contenido.carga.length; cont++){
 		    			var registro = respuesta.contenido.carga[cont];
-		    			$('#filtroEstacion').append("<option value="+ registro.id +"> " + registro.nombre + "</option>");
+		    			$('#filtroEstacion').append("<option value="+ registro.id +" data-nro-decimales="+ registro.numeroDecimalesContometro +"> " + registro.nombre + "</option>");
 		    			
 		    		}
 		    		moduloActual.obj.filtroEstacion.select2("val", respuesta.contenido.carga[0].id);
@@ -196,6 +209,8 @@ $(document).ready(function(){
 	
 	this.obj.filtroEstacion.on('change', function(e){
 	   moduloActual.obj.idEstacionSeleccionado=$(this).val();
+	   var nroDecimalesEstacion= $('option:selected', this).attr('data-nro-decimales');;
+	   moduloActual.obj.nroDecimales.val(nroDecimalesEstacion);
 	   $.ajax({
 		    type: constantes.PETICION_TIPO_GET,
 		    url: "./jornada/recuperar-ultimo-dia", 
@@ -335,7 +350,8 @@ $(document).ready(function(){
   		    	valorBuscado: parametros.term, // search term
   		        page: parametros.page,
   		        paginacion:0,
-  		        filtroEstado: constantes.ESTADO_ACTIVO
+  		        filtroEstado: constantes.ESTADO_ACTIVO,
+  		        idCliente: moduloActual.obj.idClienteSeleccionado
   		      };
   		    },
   		    processResults: function (respuesta, pagina) {
@@ -693,6 +709,18 @@ $(document).ready(function(){
         			elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
                 moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
                 $(cmpIdTanque).prop('disabled', true);
+        	  }else{
+        		  // 9000003068
+        		  if(tanquejornada > 0){
+	        		  var registros = respuesta.contenido.carga;
+	        		  $(cmpIdTanque).prop('disabled', false);
+	        		  return {results: registro};
+        		  }else{
+        			  var registro = {};
+        			  moduloActual.obj.cmpIdTanque.val(0).trigger('change');
+        			  //$(cmpIdTanque).prop('disabled', true);
+	        		  return {results: registro};
+        		  }
         	  };
             };
           },
@@ -782,6 +810,7 @@ $(document).ready(function(){
   	  this.obj.cmpFormularioOperacion.val($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion'));
   	  this.obj.cmpFormularioEstacion.val(moduloActual.obj.estacionSeleccionado);
   	  this.obj.cmpFormularioFechaJornada.val(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));
+  	  this.obj.cmpFormularioFechaJornada.text(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));	//Agregado por HT correccion 9000003068
 //	  ====================================================================================================================================== 
       
   	  referenciaModulo.recuperarTurno();
@@ -931,14 +960,20 @@ $(document).ready(function(){
 	  //this.obj.cmpFechaFin.val(utilitario.formatearTimestampToString(registro.fechaHoraFin));
 	  this.obj.cmpHoraInicio.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraInicio));
 	  this.obj.cmpHoraFin.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraFin));
+	  this.obj.cmpVolObservado.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
 	  this.obj.cmpVolObservado.val(registro.volumenObservado.toFixed(2));
+	  this.obj.cmpVolumen60.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
 	  this.obj.cmpVolumen60.val(registro.volumenCorregido.toFixed(2));
 	
-	  this.obj.cmpLecturaInicial.val(registro.lecturaInicial);
-	  this.obj.cmpLecturaFinal.val(registro.lecturaFinal);
+	  this.obj.cmpLecturaInicial.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
+	  this.obj.cmpLecturaInicial.val(parseFloat(registro.lecturaInicial).toFixed(registro.nroDecimales));
+	  this.obj.cmpLecturaFinal.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
+	  this.obj.cmpLecturaFinal.val(parseFloat(registro.lecturaFinal).toFixed(registro.nroDecimales));
 	  this.obj.cmpFactor.val(registro.factorCorreccion.toFixed(6));	  
 	  this.obj.cmpAPI60.val(registro.apiCorregido.toFixed(1));
   	  this.obj.cmpTemperatura.val(registro.temperatura.toFixed(2));
+  	  
+  	  this.obj.idTurno.val(registro.idTurno);
   };
 
   moduloActual.recuperarValores = function(registro){
@@ -957,9 +992,14 @@ $(document).ready(function(){
 	    eRegistro.idContometro = parseInt(referenciaModulo.obj.cmpIdContometro.val());
 	    eRegistro.estado = parseInt(constantes.ESTADO_ACTIVO);
 	    eRegistro.tipoRegistro = moduloActual.obj.cmpTipoRegistro;
+
+//	    Inicio modificado por req 9000003068
+	    eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraInicio.val());
+	    eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraFin.val());
 	    
-	    eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraInicio.val());
-	    eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraFin.val());
+	    eRegistro.idTurno = referenciaModulo.obj.idTurno.val();
+//	    Fin modificado por req 9000003068
+
 	    
 	    //eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaInicio.val());
 	    //eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaFin.val());
@@ -1016,13 +1056,17 @@ $(document).ready(function(){
 	this.obj.vistaIdProducto.text(registro.producto.nombre);
 	this.obj.vistaIdContometro.text(registro.contometro.alias);
 	this.obj.vistaIdTanque.text(registro.tanque.descripcion);
-	this.obj.vistaVolObservado.text(registro.volumenObservado);
-	this.obj.vistaLecturaInicial.text(registro.lecturaInicial);
-	this.obj.vistaLecturaFinal.text(registro.lecturaFinal);
+	//this.obj.vistaVolObservado.text(registro.volumenObservado);
+	this.obj.vistaVolObservado.text(parseFloat(registro.volumenObservado).toFixed(registro.nroDecimales));
+	//this.obj.vistaLecturaInicial.text(registro.lecturaInicial);
+	this.obj.vistaLecturaInicial.text(parseFloat(registro.lecturaInicial).toFixed(registro.nroDecimales));
+	//this.obj.vistaLecturaFinal.text(registro.lecturaFinal);
+	this.obj.vistaLecturaFinal.text(parseFloat(registro.lecturaFinal).toFixed(registro.nroDecimales));
 	this.obj.vistaFactor.text(registro.factorCorreccion);
 	this.obj.vistaAPI60.text(registro.apiCorregido);
 	this.obj.vistaTemperatura.text(registro.temperatura);
-	this.obj.vistaVolumen60.text(registro.volumenCorregido.toFixed(2));
+	//this.obj.vistaVolumen60.text(registro.volumenCorregido.toFixed(2));
+	this.obj.vistaVolumen60.text(parseFloat(registro.volumenCorregido).toFixed(registro.nroDecimales));
 	this.obj.vistaCreadoEl.text(registro.fechaCreacion);
 	this.obj.vistaCreadoPor.text(registro.usuarioCreacion);
 	this.obj.vistaActualizadoPor.text(registro.usuarioActualizacion);
@@ -1037,7 +1081,8 @@ $(document).ready(function(){
  };
   moduloActual.botonGuardarImportacion = function(){	  
 		var ref=this;		
-		//var idTanque =$("#cmpTanqueImportar").attr("data-id");
+		var nroDecimales = ref.obj.nroDecimales.val();
+		var idTurno =ref.obj.idTurno.val();
 		var idJornada =ref.obj.idJornadaSeleccionado;
 		var idOperario =ref.obj.cmpOperarioImportacion.val();
 		var comentario =ref.obj.cmpComentarioImportacion.val();
@@ -1049,7 +1094,7 @@ $(document).ready(function(){
 				$.ajax({
 				    type: "post",
 				    enctype: 'multipart/form-data',
-				    url: moduloActual.URL_CARGAR_ARCHIVO+"/"+idJornada+"/"+idOperario+"/"+comentario, 
+				    url: moduloActual.URL_CARGAR_ARCHIVO+"/"+idJornada+"/"+idOperario+"/"+idTurno+"/"+nroDecimales+"/"+comentario, 
 		            data: formularioDatos,
 		            cache: false,
 		            contentType: false,

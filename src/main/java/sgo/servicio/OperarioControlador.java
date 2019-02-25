@@ -226,6 +226,11 @@ public class OperarioControlador {
    if (httpRequest.getParameter("filtroEstado") != null) {
     parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
    }
+	
+	// 9000003068
+   if(httpRequest.getParameter("idCliente") != null && httpRequest.getParameter("idCliente") != "0"){
+	   parametros.setIdCliente(Integer.parseInt(httpRequest.getParameter("idCliente")));
+   }
 
    // Recuperar registros
    respuesta = dOperario.recuperarRegistros(parametros);

@@ -193,6 +193,8 @@ public class DespachoDao {
 			consultaSQL.append("t1.nombre_producto,");
 			consultaSQL.append("t1.abreviatura,");
 			consultaSQL.append("t1.codigo_archivo_origen,");
+			consultaSQL.append("t1.id_turno,");
+			consultaSQL.append("t1.numero_decimales_contometro,");
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");
 			consultaSQL.append("t1.creado_por,");
@@ -281,7 +283,9 @@ public class DespachoDao {
 			consultaSQL.append("t1.usuario_creacion,");
 			consultaSQL.append("t1.usuario_actualizacion,");
 			consultaSQL.append("t1.ip_creacion,");
-			consultaSQL.append("t1.ip_actualizacion");
+			consultaSQL.append("t1.ip_actualizacion,");
+			consultaSQL.append("t1.id_turno,");
+			consultaSQL.append("t1.numero_decimales_contometro");
 			consultaSQL.append(" FROM ");				
 			consultaSQL.append(NOMBRE_VISTA);
 			consultaSQL.append(" t1 ");
@@ -313,11 +317,11 @@ public class DespachoDao {
 			consultaSQL.append("INSERT INTO ");
 			consultaSQL.append(NOMBRE_TABLA);
 			consultaSQL.append(" (id_jornada, id_vehiculo, kilometro_horometro, numero_vale, tipo_registro, fecha_hora_inicio, fecha_hora_fin, clasificacion, id_producto,  ");
-			consultaSQL.append(" lectura_inicial, lectura_final, factor_correccion, api_corregido, temperatura, volumen_corregido, volumen_observado, id_tanque, id_contometro, estado, codigo_archivo_origen, ");
+			consultaSQL.append(" lectura_inicial, lectura_final, factor_correccion, api_corregido, temperatura, volumen_corregido, volumen_observado, id_tanque, id_contometro, estado, codigo_archivo_origen, id_turno, ");
 			consultaSQL.append(" creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion ) ");
 
 			consultaSQL.append(" VALUES (:IdJornada,:IdVehiculo,:KilometroHorometro,:NumeroVale,:TipoRegistro,:FechaHoraInicio,:FechaHoraFin,:Clasificacion,:IdProducto, ");
-			consultaSQL.append(" :LecturaInicial, :LecturaFinal,:FactorCorreccion,:ApiCorregido, :Temperatura,:VolumenCorregido,:VolumenObservado,:IdTanque, :IdContometro, :Estado, :CodigoArchivoOrigen, ");
+			consultaSQL.append(" :LecturaInicial, :LecturaFinal,:FactorCorreccion,:ApiCorregido, :Temperatura,:VolumenCorregido,:VolumenObservado,:IdTanque, :IdContometro, :Estado, :CodigoArchivoOrigen, :IdTurno, ");
 			consultaSQL.append(" :CreadoEl,:CreadoPor,:ActualizadoPor, :ActualizadoEl,:IpCreacion, :IpActualizacion )");
 			
 			MapSqlParameterSource listaParametros= new MapSqlParameterSource();   
@@ -341,6 +345,7 @@ public class DespachoDao {
 			listaParametros.addValue("IdContometro", despacho.getIdContometro());
 			listaParametros.addValue("Estado", despacho.getEstado());
 			listaParametros.addValue("CodigoArchivoOrigen", despacho.getCodigoArchivoOrigen());
+			listaParametros.addValue("IdTurno", despacho.getIdTurno());
 			//parametros para auditoria
 			listaParametros.addValue("CreadoEl", despacho.getCreadoEl());
 			listaParametros.addValue("CreadoPor", despacho.getCreadoPor());

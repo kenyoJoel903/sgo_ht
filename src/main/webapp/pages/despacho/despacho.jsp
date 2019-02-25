@@ -290,6 +290,7 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 				<div class="box-footer">
 		            <button id="btnGuardarImportacion" type="submit" class="btn btn-primary btn-sm">Guardar</button>
 		            <button id="btnCancelarImportacion" class="btn btn-danger btn-sm">Cancelar</button>
+		            <button id="btnPlantillaDespacho" class="btn btn-sm btn-success">Plantilla Despacho</button>
 		            <br />
 		    	</div>
 		    	<div class="overlay" id="ocultaContenedorImportacion" style="display:none;">
@@ -362,6 +363,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 			<div class="box box-default">
 				<div class="box-header">
 					<form id="frmPrincipal" class="form form-horizontal" role="form form-horizontal" novalidate="novalidate">
+						<input id="cmpFormularioTurno" type="hidden" />
+						<input id="cmpFormularioNroDecimales" type="hidden" />
 						<table class="sgo-simple-table table table-condensed">
 		                  <thead> </thead>
 		                  <tbody>

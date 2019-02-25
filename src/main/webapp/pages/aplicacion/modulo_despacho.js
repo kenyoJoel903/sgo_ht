@@ -440,7 +440,10 @@ moduloDespacho.prototype.recuperarTurno = function(accion){
 	    			console.log(registro.fechaHoraApertura);
 //	    		    se cambio .text por .val por req 9000003068===========================================================================================	    			
 	    			referenciaModulo.obj.cmpHoraAperturaTurno.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraApertura));
-//	    			  ======================================================================================================================================	    			
+//	    			  ======================================================================================================================================	
+//					REQ. 9000003068 - AGREGAR ID DEL TURNO ===============================================================================================
+	    			referenciaModulo.obj.idTurno.val(registro.id);
+//					======================================================================================================================================
 	    		}
 	    		
     		}
@@ -1044,6 +1047,10 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 moduloDespacho.prototype.inicializarFormularioPrincipal= function(){  
   //Establecer validaciones del formulario    
     var referenciaModulo=this;
+    this.obj.cmpLecturaInicial.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
+    this.obj.cmpLecturaFinal.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
+    this.obj.cmpVolumen60.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
+    this.obj.cmpVolObservado.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
     referenciaModulo.obj.verificadorFormulario = referenciaModulo.obj.frmPrincipal.validate({
       rules: referenciaModulo.reglasValidacionFormulario,
       messages: referenciaModulo.mensajesValidacionFormulario,
