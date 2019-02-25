@@ -1,10 +1,7 @@
 package sgo.servicio;
 
 import java.io.ByteArrayOutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -20,10 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,10 +30,7 @@ import sgo.datos.JornadaDao;
 import sgo.datos.LiquidacionDao;
 import sgo.datos.OperacionDao;
 import sgo.entidad.Bitacora;
-import sgo.entidad.Cliente;
-import sgo.entidad.DetalleGEC;
 import sgo.entidad.Enlace;
-import sgo.entidad.GuiaCombustible;
 import sgo.entidad.Jornada;
 import sgo.entidad.Liquidacion;
 import sgo.entidad.MenuGestor;
@@ -47,11 +39,9 @@ import sgo.entidad.ParametrosListar;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
-import sgo.utilidades.ReporteGec;
 import sgo.utilidades.ReporteLiquidacion;
 import sgo.utilidades.Reporteador;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 public class LiquidacionControlador {
  @Autowired
@@ -76,6 +66,7 @@ public class LiquidacionControlador {
  ServletContext servletContext;
  //
  private DataSourceTransactionManager transaccion;// Gestor de la transaccion
+ 
  // urls generaleson
  private static final String URL_GESTION_COMPLETA = "/admin/liquidacion";
  private static final String URL_GESTION_RELATIVA = "/liquidacion";
@@ -91,7 +82,9 @@ public class LiquidacionControlador {
  private static final String URL_REPORTE_RELATIVA = "/liquidacion/reporte";
 
  private HashMap<String, String> recuperarMapaValores(Locale locale) {
+	 
   HashMap<String, String> mapaValores = new HashMap<String, String>();
+  
   try {
    mapaValores.put("ESTADO_ACTIVO", String.valueOf(Constante.ESTADO_ACTIVO));
    mapaValores.put("ESTADO_INACTIVO", String.valueOf(Constante.ESTADO_INACTIVO));
@@ -126,11 +119,13 @@ public class LiquidacionControlador {
   } catch (Exception ex) {
 
   }
+  
   return mapaValores;
  }
 
  @RequestMapping(URL_GESTION_RELATIVA)
  public ModelAndView mostrarFormulario(Locale locale) {
+	 
   ModelAndView vista =null;
   AuthenticatedUserDetails principal = null;
   ArrayList<Enlace> listaEnlaces = null;
@@ -138,7 +133,9 @@ public class LiquidacionControlador {
   HashMap<String, String> mapaValores = null;
   ArrayList<?> listaOperaciones = null;
   ParametrosListar parametros = null;
+  
   try {
+	  
     principal = this.getCurrentUser();
     respuesta = menu.Generar(principal.getRol().getId(),URL_GESTION_COMPLETA);
     if (respuesta.estado==false){
@@ -171,63 +168,69 @@ public class LiquidacionControlador {
   return vista;
  }
 
- @RequestMapping(value = URL_LISTAR_RELATIVA, method = RequestMethod.GET)
- public @ResponseBody
- RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  ParametrosListar parametros = null;
-  AuthenticatedUserDetails principal = null;
-  String mensajeRespuesta = "";
-  try {
-   // Recuperar el usuario actual
-   principal = this.getCurrentUser();
-   // Recuperar el enlace de la accion
-   respuesta = dEnlace.recuperarRegistro(URL_LISTAR_COMPLETA);
-   if (respuesta.estado == false) {
-    mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
-    throw new Exception(mensajeRespuesta);
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   // Verificar si cuenta con el permiso necesario
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale);
-    throw new Exception(mensajeRespuesta);
-   }
-   // Recuperar parametros
-   parametros = new ParametrosListar();
-   if (httpRequest.getParameter("paginacion") != null) {
-    parametros.setPaginacion(Integer.parseInt(httpRequest.getParameter("paginacion")));
-   }
-   
-   parametros.setPaginacion(Constante.SIN_PAGINACION);
+@RequestMapping(value = URL_LISTAR_RELATIVA, method = RequestMethod.GET)
+public @ResponseBody
+RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale locale) {
 
-   if (httpRequest.getParameter("registrosxPagina") != null) {
-    parametros.setRegistrosxPagina(Integer.parseInt(httpRequest.getParameter("registrosxPagina")));
-   }
+    RespuestaCompuesta respuesta = null;
+    ParametrosListar parametros = null;
+    AuthenticatedUserDetails principal = null;
+    String mensajeRespuesta = "";
 
-   if (httpRequest.getParameter("inicioPagina") != null) {
-    parametros.setInicioPaginacion(Integer.parseInt(httpRequest.getParameter("inicioPagina")));
-   }
+    try {
 
-  if (httpRequest.getParameter("filtroOperacion") != null) {
-   parametros.setIdOperacion(Integer.parseInt(httpRequest.getParameter("filtroOperacion")));
-  }
+        // Recuperar el usuario actual
+        principal = this.getCurrentUser();
+        // Recuperar el enlace de la accion
+        respuesta = dEnlace.recuperarRegistro(URL_LISTAR_COMPLETA);
+        if (respuesta.estado == false) {
+        	mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+            throw new Exception(mensajeRespuesta);
+        }
+        
+        Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+        // Verificar si cuenta con el permiso necesario
+        if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+            mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale);
+            throw new Exception(mensajeRespuesta);
+        }
 
-  if (httpRequest.getParameter("filtroFechaDiaOperativo") != null) {
-   parametros.setFiltroFechaDiaOperativo((httpRequest.getParameter("filtroFechaDiaOperativo")));
-  }
+        // Recuperar parametros
+        parametros = new ParametrosListar();
+        if (httpRequest.getParameter("paginacion") != null) {
+            parametros.setPaginacion(Integer.parseInt(httpRequest.getParameter("paginacion")));
+        }
 
-   // Recuperar registros
-   respuesta = dLiquidacion.recuperarRegistros(parametros);
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
-  } catch (Exception ex) {
-   ex.printStackTrace();
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
- }
+        parametros.setPaginacion(Constante.SIN_PAGINACION);
+
+        if (httpRequest.getParameter("registrosxPagina") != null) {
+            parametros.setRegistrosxPagina(Integer.parseInt(httpRequest.getParameter("registrosxPagina")));
+        }
+
+        if (httpRequest.getParameter("inicioPagina") != null) {
+            parametros.setInicioPaginacion(Integer.parseInt(httpRequest.getParameter("inicioPagina")));
+        }
+
+        if (httpRequest.getParameter("filtroOperacion") != null) {
+            parametros.setIdOperacion(Integer.parseInt(httpRequest.getParameter("filtroOperacion")));
+        }
+
+        if (httpRequest.getParameter("filtroFechaDiaOperativo") != null) {
+            parametros.setFiltroFechaDiaOperativo((httpRequest.getParameter("filtroFechaDiaOperativo")));
+        }
+
+        // Recuperar registros
+        respuesta = dLiquidacion.recuperarRegistros(parametros);
+        respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        respuesta.estado = false;
+        respuesta.contenido = null;
+        respuesta.mensaje = ex.getMessage();
+    }
+    return respuesta;
+}
+ 
  
  @RequestMapping(value = URL_LISTAR_POR_ESTACION_RELATIVA, method = RequestMethod.GET)
  public @ResponseBody
