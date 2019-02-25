@@ -20,9 +20,9 @@ public class ProductoEquivalenteMapper implements RowMapper<ProductoEquivalente>
 			object.setIdOperacion(rs.getInt("id_operacion"));
 			object.setIdProductoEquivalencia(rs.getInt("id_producto_equivalencia"));
 			object.setIdProductoPrincipal(rs.getInt("id_producto_principal"));
-			object.setNombreProductoPrincipal(Utilidades.cleanXSS("nombre_producto_principal"));
+			object.setNombreProductoPrincipal(Utilidades.cleanXSS(rs.getString("nombre_producto_principal")));
 			object.setIdProductoSecundario(rs.getInt("id_producto_secundario"));
-			object.setNombreProductoSecundario(Utilidades.cleanXSS("nombre_producto_secundario"));
+			object.setNombreProductoSecundario(Utilidades.cleanXSS(rs.getString("nombre_producto_secundario")));
 			object.setCentimetros(rs.getInt("centimetros"));
 			object.setEstado(rs.getInt("estado"));
 			

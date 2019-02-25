@@ -8,6 +8,7 @@ import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
 
 public class Tolerancia  {
+	
   private String id_tolerancia;
   private int id_estacion;
   private int id_producto;

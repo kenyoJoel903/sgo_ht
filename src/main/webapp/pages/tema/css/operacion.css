@@ -11,17 +11,75 @@ table.productos {
 	width: 100%;
 }
 
-table.productos i.fa-remove {
-	color: red;
-	cursor: help;
-    font-size: 1.5em !important;
+table.productos tbody tr.empty
+{
+    border: 1px solid #6e6e6e;
 }
 
-table.productos i.fa-check {
-	color: green;
-	cursor: help;
-	font-size: 1.5em !important;
+table.productos tbody tr.empty td.celda-detalle
+{
+    padding: 3px !important;
 }
+
+table.productos tbody tr
+{
+	height: 30px;
+}
+
+span.select2-container
+{
+    width: 100% !important;
+}
+
+table.productos tbody tr td:nth-child(4)
+{
+	width: 5%;
+}
+
+table.productos tbody tr td:nth-child(5)
+{
+	width: 3%;
+}
+
+
+table.productos tbody tr input
+{
+	margin-right: 2px;
+}
+
+table.productos tbody tr td:nth-child(1) input,
+table.productos tbody tr td:nth-child(2) input,
+table.productos tbody tr td:nth-child(1) select,
+table.productos tbody tr td:nth-child(2) select,
+span.select2-container
+{
+    width: 100% !important;
+    min-width: 100% !important;
+}
+   
+/* 
+
+table.productos thead tr th:nth-child(1)
+{
+    border-left: 1px solid #6e6e6e;
+}
+
+table.productos thead tr th:nth-child(5)
+{
+    border-right: 1px solid #6e6e6e;
+}
+
+table.productos tbody tr td:nth-child(3) input
+{
+	width: 80%;
+}
+
+table.productos thead
+{
+    background-color: #FFC05A;
+    color: white;
+}
+
 
 table.productos thead tr th
 {
@@ -38,50 +96,52 @@ table.productos thead tr th label
 	margin-bottom: 3px !important; 
 }
 
-table.productos thead
-{
-    background-color: #FFC05A;
-    color: white;
+table.productos tbody:before {
+    content: "-";
+    display: block;
+    line-height: 0.3em;
+    color: transparent;
 }
 
-table.productos tbody tr
-{
-	height: 30px;
-}
 
-table.productos thead tr th:nth-child(1)
-{
-    border-left: 1px solid #6e6e6e;
-}
 
-table.productos thead tr th:nth-child(6)
-{
-    border-right: 1px solid #6e6e6e;
-}
-
+table.productos tbody tr td:nth-child(1) input,
+table.productos tbody tr td:nth-child(2) input,
 table.productos tbody tr td:nth-child(1) select,
-table.productos tbody tr td:nth-child(2) select
+table.productos tbody tr td:nth-child(2) select,
+span.select2-container
 {
-    width: 90%;
+    width: 400px !important;
 }
 
-table.productos tbody tr td:nth-child(3) input
-{
-	width: 90%;
-}
-
-table.productos tbody tr td:nth-child(4)
-{
-	width: 5%;
-}
-
-table.productos tbody tr td:nth-child(5)
-{
-	width: 3%;
-}
-   
 table.productos tbody tr td:nth-child(6)
 {
 	width: 3%;
+}
+table.productos i.fa-remove {
+	color: red;
+	cursor: help;
+    font-size: 1.5em !important;
+}
+
+table.productos i.fa-check {
+	color: green;
+	cursor: help;
+	font-size: 1.5em !important;
+}
+*/
+
+
+/**
+* AdminLTE - override
+*/
+.table>thead>tr>th,
+.table>tbody>tr>th,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>tbody>tr>td,
+.table>tfoot>tr>td {
+    border-top: 0;
+    border-bottom: 0;
 }
     

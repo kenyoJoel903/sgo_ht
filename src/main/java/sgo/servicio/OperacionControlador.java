@@ -31,9 +31,11 @@ import sgo.datos.ClienteDao;
 import sgo.datos.DiaOperativoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.EnlaceDao;
+import sgo.datos.EstacionDao;
 import sgo.datos.PlantaDao;
 import sgo.datos.ProductoDao;
 import sgo.datos.ProductoEquivalenteDao;
+import sgo.datos.ToleranciaDao;
 import sgo.datos.TransportistaDao;
 import sgo.datos.TransportistaOperacionDao;
 import sgo.entidad.Bitacora;
@@ -43,13 +45,14 @@ import sgo.entidad.Enlace;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.OperacionEtapaRuta;
 import sgo.entidad.ParametrosListar;
+import sgo.entidad.Producto;
 import sgo.entidad.ProductoEquivalente;
 import sgo.entidad.ProductoEquivalenteJson;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
+import sgo.entidad.Tolerancia;
 import sgo.entidad.Transportista;
 import sgo.entidad.TransportistaOperacion;
-import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
@@ -81,6 +84,10 @@ public class OperacionControlador {
  private ProductoDao dProducto;
  @Autowired
  private ClienteDao dCliente;
+ @Autowired
+ private EstacionDao dEstacion;
+ @Autowired
+ private ToleranciaDao dToleranciaDao;
 
  private DataSourceTransactionManager transaccion;
  /** Nombre de la clase. */
@@ -1002,7 +1009,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  }
 
  private AuthenticatedUserDetails getCurrentUser() {
-  return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	 return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
  }
  
  /**
@@ -1045,14 +1052,58 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		List<Operacion> listOperacion = (List<Operacion>) respuesta.contenido.getCarga();
  		Operacion eOperacion = (Operacion) listOperacion.get(PRIMER_ROW);
  		
- 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistroPorOperacion(idOperacion);
- 		
+ 		/**
+ 		 * Lista de productos equivalentes
+ 		 */
+ 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistrosPorOperacion(idOperacion);
  		if (!respuestaProdEquivalente.estado) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
- 		
  		ArrayList<ProductoEquivalente> listProductoEquivalente = (ArrayList<ProductoEquivalente>) respuestaProdEquivalente.getContenido().getCarga();
  		eOperacion.setListProductoEquivalente(listProductoEquivalente);
+ 		
+ 		/**
+ 		 * Lista de Tolerancia
+ 		 */
+ 		ParametrosListar param = new ParametrosListar();
+ 		param.setPaginacion(Constante.SIN_PAGINACION);
+ 		param.setCampoOrdenamiento(EstacionDao.NOMBRE_CAMPO_FILTRO_OPERACION);
+ 		//param.setFiltroEstado(Constante.ESTADO_ACTIVO);
+ 		param.setFiltroOperacion(idOperacion);
+ 		RespuestaCompuesta respuestaTolerancia = dToleranciaDao.recuperarRegistros(param);
+ 		if (!respuestaTolerancia.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		} 
+ 		
+ 		/**
+ 		 * Traer la lista de productos principales
+ 		 */
+ 		int i = 0;
+ 		int[] listProducto = new int[999];
+ 		ArrayList<Producto> listProductoPrincipal = new ArrayList<Producto>();
+ 		List<Tolerancia> listaTolerancia = (ArrayList<Tolerancia>) respuestaTolerancia.getContenido().getCarga();
+ 		for (Tolerancia tolerancia : listaTolerancia) {
+
+ 			if (tolerancia.getProducto() == null) {
+ 				continue;
+ 			}
+ 			
+ 			boolean esUtilizado = Utilidades.arrayContainsInt(listProducto, tolerancia.getIdProducto());
+ 			
+ 			if (esUtilizado) {
+ 				continue;
+ 			}
+ 			
+ 			Producto producto = new Producto();
+ 			producto.setId(tolerancia.getIdProducto());
+ 			producto.setNombre(tolerancia.getProducto().getNombre());
+ 			listProductoPrincipal.add(producto);
+ 			
+ 			listProducto[i] = tolerancia.getIdProducto();
+ 			i++;
+ 		}
+ 		
+ 		eOperacion.setListProductoPrincipal(listProductoPrincipal);
 
  		listOperacion.set(PRIMER_ROW, eOperacion);
  		
@@ -1085,6 +1136,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  RespuestaCompuesta guardarProductosEquivalentes(@RequestBody ProductoEquivalente entity, HttpServletRequest request, Locale locale) {
 
  	RespuestaCompuesta respuesta = null;
+ 	RespuestaCompuesta respuestaValidacion = null;
  	AuthenticatedUserDetails principal = null;
 
  	try {
@@ -1115,9 +1167,23 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		entity.setIpCreacion(direccionIp);
  		entity.setEstado(Constante.ESTADO_ACTIVO); 
  		
+ 		/**
+ 		 * Validar cada producto antes de guardar
+ 		 */
  		ArrayList<ProductoEquivalenteJson> productos = entity.getProductos();
 
  		for (ProductoEquivalenteJson peEntity : productos) {
+ 			
+ 			if (peEntity.getProductoPrincipal() <= 0 || peEntity.getProductoSecundario() <= 0) {
+ 				continue;
+ 			}
+ 			
+ 			respuestaValidacion = validaciones(entity, peEntity);
+ 			
+ 	 		if (!respuestaValidacion.estado) {
+ 	 			throw new Exception(respuestaValidacion.mensaje);
+ 	 		}
+ 			
  			respuesta = dProductoEquivalente.guardarRegistro(entity, peEntity);
  	 		if (!respuesta.estado) {
  	 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
@@ -1149,6 +1215,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 
  	RespuestaCompuesta respuesta = null;
  	AuthenticatedUserDetails principal = null;
+ 	ParametrosListar parametros = null;
 
  	try {
  		
@@ -1167,18 +1234,56 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
  		}
+ 		
+ 		boolean estadoValido = Utilidades.arrayContainsInt(new int[] {1, 2}, entity.getEstado());
+ 		
+ 		if (!estadoValido) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.estadoNoValido", null, locale));
+ 		}
+ 		
+ 		/**
+ 		 * Cuando el estado que se quiere cambiar es Inactivo, no se hace ninguna validacion
+ 		 */
+ 		if (entity.getEstado() == Constante.ESTADO_INACTIVO) {
+ 	 		respuesta = dProductoEquivalente.updateRegistro(entity);
+ 	 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+ 	 		return respuesta;
+ 		}
+ 		
+ 		/**
+ 		 * Trae el producto equivalente seleccionado.
+ 		 */
+ 		parametros = new ParametrosListar();
+ 		parametros.setIdProductoEquivalencia(entity.getIdProductoEquivalencia());
+ 		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
 
- 		if (entity.getEstado() == Constante.ESTADO_ACTIVO) {
- 			entity.setEstado(Constante.ESTADO_INACTIVO);
- 		} else if (entity.getEstado() == Constante.ESTADO_INACTIVO) {
- 			entity.setEstado(Constante.ESTADO_ACTIVO);
-		}
+ 		/**
+ 		 * Validar si existe mas de un registro con la misma asociacion
+ 		 */
+ 		parametros = new ParametrosListar();
+ 		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
+ 		parametros.setIdProductoPrincipal(productoEquivalente.getIdProductoPrincipal());
+ 		parametros.setIdProductoSecundario(productoEquivalente.getIdProductoSecundario());
+ 		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		List<ProductoEquivalente> listProductoEquivalente = (List<ProductoEquivalente>) respuesta.getContenido().getCarga();
+ 		
+ 		if (listProductoEquivalente.size() > 0) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.productoSecundarioUnicoEstado", null, locale));
+ 		}
  		
  		respuesta = dProductoEquivalente.updateRegistro(entity);
  		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
 
  	} catch (Exception e) {
- 		e.printStackTrace();
  		respuesta.estado = false;
  		respuesta.contenido = null;
  		respuesta.mensaje = e.getMessage();
@@ -1187,5 +1292,53 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  	return respuesta;
  }
  
+ /**
+  * Valida si la asociacion del producto secundario fue utilizado anteriormente.
+  * @param entity
+  * @param peEntity
+  * @return
+  */
+ private RespuestaCompuesta validaciones(ProductoEquivalente entity, ProductoEquivalenteJson peEntity) {
+	 
+	 Locale locale = new Locale("es", "ES");
+	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	 
+	 try {
+		 
+		 ParametrosListar parametros = new ParametrosListar();
+		 parametros.setFiltroOperacion(entity.getIdOperacion());
+		 parametros.setIdProductoSecundario(peEntity.getProductoSecundario());
+		 respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+		 
+		 if (!respuesta.estado) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 
+		 if (respuesta.getContenido().getCarga().size() <= 0) {
+			 respuesta.estado = true;
+			 return respuesta;
+		 }
+		 
+		 ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
+		 
+		 if (Utilidades.intToBool(productoEquivalente.getEstado())) {
+			 respuesta.mensaje = gestorDiccionario.getMessage("sgo.productoSecundarioUnico", null, locale);
+			 respuesta.mensaje = respuesta.mensaje.replace("REPLACE_PRODUCT", productoEquivalente.getNombreProductoSecundario());
+			 respuesta.estado = false;
+			 return respuesta;
+		 }
+		 
+		 respuesta.estado = true;
+		 respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+		 
+	 } catch (Exception e) {
+		e.printStackTrace();
+		respuesta.estado = false;
+		respuesta.contenido = null;
+		respuesta.mensaje = e.getMessage();
+	 }
+	 
+	 return respuesta;
+ }
  
 }

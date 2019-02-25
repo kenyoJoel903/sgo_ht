@@ -115,6 +115,10 @@ public class ParametrosListar {
 	private int filtroIdProforma = 0;
 	private int idInterlocutor = 0;
 	private int idCanalSector = 0;
+	private int idProductoPrincipal;
+	private int idProductoSecundario;
+	private int idProductoEquivalencia;
+	
 	
 	// 9000002608 - jmatos
 	private int filtroCodigoCliente = 0;
@@ -1260,14 +1264,38 @@ public void setFiltroEstadoCliente(int filtroEstadoCliente) {
 	this.filtroEstadoCliente = filtroEstadoCliente;
 }
 
-	// 9000003068
-	public String getFiltroNombreTanque() {
-		return filtroNombreTanque;
-	}
-	
-	public void setFiltroNombreTanque(String filtroNombreTanque) {
-		this.filtroNombreTanque = filtroNombreTanque;
-	}
+// 9000003068
+public String getFiltroNombreTanque() {
+	return filtroNombreTanque;
+}
+
+public void setFiltroNombreTanque(String filtroNombreTanque) {
+	this.filtroNombreTanque = filtroNombreTanque;
+}
+
+public int getIdProductoPrincipal() {
+	return idProductoPrincipal;
+}
+
+public void setIdProductoPrincipal(int idProductoPrincipal) {
+	this.idProductoPrincipal = idProductoPrincipal;
+}
+
+public int getIdProductoSecundario() {
+	return idProductoSecundario;
+}
+
+public void setIdProductoSecundario(int idProductoSecundario) {
+	this.idProductoSecundario = idProductoSecundario;
+}
+
+public int getIdProductoEquivalencia() {
+	return idProductoEquivalencia;
+}
+
+public void setIdProductoEquivalencia(int idProductoEquivalencia) {
+	this.idProductoEquivalencia = idProductoEquivalencia;
+}
 
 
 }

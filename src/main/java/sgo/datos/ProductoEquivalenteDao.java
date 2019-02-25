@@ -75,116 +75,13 @@ public class ProductoEquivalenteDao {
 		
 		return order;
 	}
-
-	public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
-		
-		String sqlLimit = "";
-		String sqlOrderBy = "";
-		List<String> filtrosWhere = new ArrayList<String>();
-		String sqlWhere = "";
-		int totalRegistros = 0, 
-		totalEncontrados = 0;
-		RespuestaCompuesta respuesta = new RespuestaCompuesta();
-		Contenido<Producto> contenido = new Contenido<Producto>();
-		List<Producto> listaRegistros = new ArrayList<Producto>();
-		List<Object> parametros = new ArrayList<Object>();
-		
-		try {
-			
-			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
-				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
-				parametros.add(argumentosListar.getInicioPaginacion());
-				parametros.add(argumentosListar.getRegistrosxPagina());
-			}
-
-			sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
-
-			StringBuilder sql = new StringBuilder();
-			sql.setLength(0);
-			sql.append("SELECT count(" + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_VISTA);
-			totalRegistros = jdbcTemplate.queryForObject(sql.toString(), null, Integer.class);
-			totalEncontrados=totalRegistros;
-
-			if (!argumentosListar.getValorBuscado().isEmpty()){
-				filtrosWhere.add("lower(t1."+NOMBRE_CAMPO_FILTRO+") like lower('%"+ argumentosListar.getValorBuscado() +"%') ");
-			}
-			
-			if(argumentosListar.getFiltroEstado() != Constante.FILTRO_TODOS){
-				filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTADO + "=" + argumentosListar.getFiltroEstado());
-			}
-			
-			if (!argumentosListar.getTxtFiltro().isEmpty()){
-				filtrosWhere.add("lower(t1."+NOMBRE_CAMPO_FILTRO+") like lower('%"+ argumentosListar.getTxtFiltro() +"%') ");
-			}
-			
-			if (!argumentosListar.getAbreviaturaProducto().isEmpty()){
-				filtrosWhere.add("lower(t1.abreviatura) like lower('%"+ argumentosListar.getAbreviaturaProducto() +"%') ");
-			}
-			
-			if (argumentosListar.getFiltroCodigoReferencia().length()==5){
-			 filtrosWhere.add("codigo_referencia =  '"+argumentosListar.getFiltroCodigoReferencia()+"'");
-			}
-			
-			if (argumentosListar.getIndicadorProducto() != Constante.FILTRO_TODOS){
-				 filtrosWhere.add("indicador_producto =  '"+argumentosListar.getIndicadorProducto()+"'");
-			}
-			
-			if(!filtrosWhere.isEmpty()){
-				sql.setLength(0);
-				sqlWhere = "WHERE " + StringUtils.join(filtrosWhere, Constante.SQL_Y);
-				sql.append("SELECT count(t1." + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_VISTA + " t1 " + sqlWhere);
-				totalEncontrados = jdbcTemplate.queryForObject(sql.toString(), null, Integer.class);
-			}
-
-			sql.setLength(0);
-			sql.append("SELECT ");
-			sql.append("t1.id_producto,");
-			sql.append("t1.nombre,");
-			sql.append("t1.codigo_osinerg,");
-			sql.append("t1.abreviatura,");
-			sql.append("t1.indicador_producto,");
-			sql.append("t1.estado,");
-			
-			//Campos de auditoria
-			sql.append("t1.creado_el,");
-			sql.append("t1.creado_por,");
-			sql.append("t1.actualizado_por,");
-			sql.append("t1.actualizado_el,");
-			sql.append("t1.usuario_creacion,");
-			sql.append("t1.usuario_actualizacion,");
-			sql.append("t1.ip_creacion,");
-			sql.append("t1.ip_actualizacion");
-			sql.append(", t1.codigo_referencia");
-			sql.append(" FROM ");
-			sql.append(NOMBRE_VISTA);
-			sql.append(" t1 ");
-			sql.append(sqlWhere);
-			sql.append(sqlOrderBy);
-			sql.append(sqlLimit);
-			
-			listaRegistros = jdbcTemplate.query(sql.toString(),parametros.toArray(), new ProductoMapper());
-			totalEncontrados = totalRegistros;
-			contenido.carga = listaRegistros;
-			respuesta.estado = true;
-			respuesta.contenido = contenido;
-			respuesta.contenido.totalRegistros = totalRegistros;
-			respuesta.contenido.totalEncontrados = totalEncontrados;
-			
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-			respuesta.error =  Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado = false;
-			respuesta.contenido = null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			respuesta.error = Constante.EXCEPCION_GENERICA;
-			respuesta.contenido = null;
-			respuesta.estado = false;
-		}
-		return respuesta;
-	}
 	
-	public RespuestaCompuesta recuperarRegistroPorOperacion(int idOperacion) {
+	/**
+	 * 
+	 * @param idOperacion
+	 * @return
+	 */
+	public RespuestaCompuesta recuperarRegistrosPorOperacion(int idOperacion) {
 		
 			StringBuilder sql = new StringBuilder();		
 			List<ProductoEquivalente> listaRegistros = new ArrayList<ProductoEquivalente>();
@@ -213,6 +110,7 @@ public class ProductoEquivalenteDao {
 				sql.append(" WHERE ");
 				sql.append(NOMBRE_CAMPO_CLAVE);
 				sql.append("=?");
+				sql.append(" ORDER BY t1.id_producto_equivalencia ASC ");
 				
 				listaRegistros = jdbcTemplate.query(sql.toString(), new Object[] {idOperacion}, new ProductoEquivalenteMapper());
 				
@@ -359,6 +257,74 @@ public class ProductoEquivalenteDao {
 		
 		return respuesta;
 	}
-	
+
+	// int idOperacion, int idProductoSecundario
+	public RespuestaCompuesta recuperarRegistro(ParametrosListar parametros) {
+		
+		String sqlWhere = "";
+		StringBuilder sql = new StringBuilder();	
+		RespuestaCompuesta respuesta = new RespuestaCompuesta();
+		List<ProductoEquivalente> listaRegistros = new ArrayList<ProductoEquivalente>();
+		Contenido<ProductoEquivalente> contenido = new Contenido<ProductoEquivalente>();
+		List<String> where = new ArrayList<String>();
+		List<Object> parametrosList = new ArrayList<Object>();
+		
+		try {
+			
+			if (parametros.getFiltroOperacion() > 0) {
+				where.add(" t1.id_operacion = " + parametros.getFiltroOperacion());
+			}
+			
+			if (parametros.getIdProductoSecundario() > 0) {
+				where.add(" t1.id_producto_secundario = " + parametros.getIdProductoSecundario());
+			}
+			
+			if (parametros.getIdProductoEquivalencia() > 0) {
+				where.add(" t1.id_producto_equivalencia = " + parametros.getIdProductoEquivalencia());
+			}
+			
+			if(parametros.getFiltroEstado() > 0) {
+				where.add(" t1.estado = " + parametros.getFiltroEstado());
+			}
+			
+			if (!where.isEmpty()) {
+				sqlWhere = " WHERE " + StringUtils.join(where, Constante.SQL_Y);
+			}
+			
+			sql.append("SELECT ");
+			sql.append("t1.id_producto_equivalencia,");
+			sql.append("t1.id_operacion,");
+			sql.append("t1.id_producto_principal,");
+			sql.append("t1.nombre_producto_principal,");
+			sql.append("t1.id_producto_secundario,");
+			sql.append("t1.nombre_producto_secundario,");
+			sql.append("t1.centimetros,");
+			sql.append("t1.estado,");
+			
+			//Campos de auditoria
+			sql.append("t1.creado_el,");
+			sql.append("t1.creado_por,");
+			sql.append("t1.ip_creacion");
+			sql.append(" FROM ");				
+			sql.append(NOMBRE_VISTA);
+			sql.append(" t1 ");
+			sql.append(sqlWhere);
+			
+			listaRegistros = jdbcTemplate.query(sql.toString(), parametrosList.toArray(), new ProductoEquivalenteMapper());
+			respuesta.estado = true;
+			contenido.carga = listaRegistros;
+			respuesta.contenido = contenido;
+			respuesta.contenido.totalRegistros = listaRegistros.size();
+			respuesta.contenido.totalEncontrados = listaRegistros.size();
+			
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
+			respuesta.contenido = null;
+		}
+		
+		return respuesta;
+	}
 	
 }
