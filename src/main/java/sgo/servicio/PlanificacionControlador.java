@@ -356,6 +356,7 @@ public class PlanificacionControlador {
    
    ParametrosListar parametros = new ParametrosListar();
    parametros.setFiltroFechaPlanificada(Utilidades.modificarFormatoFecha(eDiaOperativo.getFechaOperativa().toString()));
+   parametros.setFiltroFechaPlanificada(eDiaOperativo.getFechaOperativa().toString().substring(0, 10));
    parametros.setFiltroOperacion(eDiaOperativo.getIdOperacion());
 
    //esto es para saber cual es el último dia operativo
