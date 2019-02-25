@@ -42,7 +42,6 @@ import sgo.entidad.Bitacora;
 import sgo.entidad.Contenido;
 import sgo.entidad.Operacion;
 import sgo.entidad.Enlace;
-import sgo.entidad.Estacion;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.OperacionEtapaRuta;
 import sgo.entidad.ParametrosListar;
@@ -54,7 +53,6 @@ import sgo.entidad.RespuestaCompuesta;
 import sgo.entidad.Tolerancia;
 import sgo.entidad.Transportista;
 import sgo.entidad.TransportistaOperacion;
-import sgo.entidad.Turno;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
@@ -1244,10 +1242,18 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		}
  		
  		/**
+ 		 * Cuando el estado que se quiere cambiar es Inactivo, no se hace ninguna validacion
+ 		 */
+ 		if (entity.getEstado() == Constante.ESTADO_INACTIVO) {
+ 	 		respuesta = dProductoEquivalente.updateRegistro(entity);
+ 	 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+ 	 		return respuesta;
+ 		}
+ 		
+ 		/**
  		 * Trae el producto equivalente seleccionado.
  		 */
  		parametros = new ParametrosListar();
- 		parametros.setFiltroOperacion(entity.getIdOperacion());
  		parametros.setIdProductoEquivalencia(entity.getIdProductoEquivalencia());
  		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
  		if (!respuesta.estado) {
@@ -1260,6 +1266,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		 * Validar si existe mas de un registro con la misma asociacion
  		 */
  		parametros = new ParametrosListar();
+ 		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
  		parametros.setIdProductoPrincipal(productoEquivalente.getIdProductoPrincipal());
  		parametros.setIdProductoSecundario(productoEquivalente.getIdProductoSecundario());
  		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
@@ -1269,7 +1276,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		
  		List<ProductoEquivalente> listProductoEquivalente = (List<ProductoEquivalente>) respuesta.getContenido().getCarga();
  		
- 		if (listProductoEquivalente.size() > 1) {
+ 		if (listProductoEquivalente.size() > 0) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.productoSecundarioUnicoEstado", null, locale));
  		}
  		
@@ -1285,6 +1292,12 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  	return respuesta;
  }
  
+ /**
+  * Valida si la asociacion del producto secundario fue utilizado anteriormente.
+  * @param entity
+  * @param peEntity
+  * @return
+  */
  private RespuestaCompuesta validaciones(ProductoEquivalente entity, ProductoEquivalenteJson peEntity) {
 	 
 	 Locale locale = new Locale("es", "ES");
@@ -1299,6 +1312,11 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 		 
 		 if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 
+		 if (respuesta.getContenido().getCarga().size() <= 0) {
+			 respuesta.estado = true;
+			 return respuesta;
 		 }
 		 
 		 ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
@@ -1319,8 +1337,6 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 		respuesta.contenido = null;
 		respuesta.mensaje = e.getMessage();
 	 }
-	 
-
 	 
 	 return respuesta;
  }

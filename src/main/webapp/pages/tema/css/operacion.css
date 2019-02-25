@@ -47,6 +47,15 @@ table.productos tbody tr input
 	margin-right: 2px;
 }
 
+table.productos tbody tr td:nth-child(1) input,
+table.productos tbody tr td:nth-child(2) input,
+table.productos tbody tr td:nth-child(1) select,
+table.productos tbody tr td:nth-child(2) select,
+span.select2-container
+{
+    width: 100% !important;
+    min-width: 100% !important;
+}
    
 /* 
 

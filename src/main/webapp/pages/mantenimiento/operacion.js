@@ -132,16 +132,16 @@ $(document).ready(function() {
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
           var cmpIdTransportista=$(formularioNuevo).find("select[elemento-grupo='idTransportista']");
-          var cmpElimina=$(formularioNuevo).find("[elemento-grupo='botonElimina']");
+          var cmpElimina = $(formularioNuevo).find("[elemento-grupo='botonElimina']");
 
           cmpElimina.on("click", function(){
-          try{
-        	  moduloActual.indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
-        	  moduloActual.obj.grupoTransportista.removeForm(moduloActual.indiceFormulario);
-          } catch(error){
-            console.log(error.message);
-          
-          };
+	          try{
+	        	  moduloActual.indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
+	        	  moduloActual.obj.grupoTransportista.removeForm(moduloActual.indiceFormulario);
+	          } catch(error){
+	            console.log(error.message);
+	          
+	          };
         });
       }
     });
@@ -952,6 +952,7 @@ $(document).ready(function() {
   };
   
   moduloActual.updateProductoEquivalencia = function(object) {
+	  
 	  $.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES, 
@@ -963,12 +964,12 @@ $(document).ready(function() {
 					moduloActual.obj.modalEstadoProductoEquivalente.modal('hide');
 				} else {
 					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Estado actualizado con exito!");
+			    	$('input[type=text][data-producto-equivalencia="' + moduloActual.obj.updateEstado.idProductoEquivalencia + '"]').val(moduloActual.obj.updateEstado.checked ? "ACTIVO" : "INACTIVO");
+			    	$('input[type=checkbox][data-producto-equivalencia="' + moduloActual.obj.updateEstado.idProductoEquivalencia + '"]').prop('checked', moduloActual.obj.updateEstado.checked);
+			    	
 			    	moduloActual.obj.updateEstado.checked = null;
 			    	moduloActual.obj.updateEstado.idProductoEquivalencia = null;
 			    	moduloActual.obj.modalEstadoProductoEquivalente.modal('hide');
-			    	
-			    	$('input[type=text][data-producto-equivalencia="' + idProductoEquivalencia + '"]').val(checked ? "ACTIVO" : "INACTIVO");
-			    	$('input[type=checkbox][data-producto-equivalencia="' + idProductoEquivalencia + '"]').prop('checked', checked);
 				}
 			},			    		    
 			error: function(xhr, status, error) {

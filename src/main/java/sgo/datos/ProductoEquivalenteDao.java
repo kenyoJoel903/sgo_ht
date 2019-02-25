@@ -283,6 +283,10 @@ public class ProductoEquivalenteDao {
 				where.add(" t1.id_producto_equivalencia = " + parametros.getIdProductoEquivalencia());
 			}
 			
+			if(parametros.getFiltroEstado() > 0) {
+				where.add(" t1.estado = " + parametros.getFiltroEstado());
+			}
+			
 			if (!where.isEmpty()) {
 				sqlWhere = " WHERE " + StringUtils.join(where, Constante.SQL_Y);
 			}
