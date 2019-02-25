@@ -20,11 +20,6 @@ public class Estacion extends EntidadBase {
 	private int idPerfilHorario;
 	private int numeroDecimalesContometro;
 	private int tipoAperturaTanque;
-	
-	/*
-	 * private String sincronizado_el; private String fecha_referencia; private
-	 * String codigo_referencia;
-	 */
 	private PerfilHorario perfilHorario;
 	private Operacion operacion;
 	private int metodoDescarga;

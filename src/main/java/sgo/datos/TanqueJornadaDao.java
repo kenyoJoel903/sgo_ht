@@ -137,6 +137,11 @@ public class TanqueJornadaDao {
 			if (!argumentosListar.getFiltroFinDespacho().isEmpty()) {
 				filtrosWhere.add(" t1.hora_final   >= " + argumentosListar.getFiltroFinDespacho() +" ");
 			}
+			
+			// 9000003068
+			if(!argumentosListar.getFiltroNombreTanque().isEmpty()){
+				filtrosWhere.add(" lower(t1.nombre_tanque) LIKE lower('%" + argumentosListar.getFiltroNombreTanque() + "%')");
+			}
 
 			if (!filtrosWhere.isEmpty()) {
 				consultaSQL.setLength(0);

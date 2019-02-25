@@ -1,4 +1,4 @@
---inicio agregar tablas=================================================================================================
+--inicio agregar tablas==
 --producto_equivalente
 CREATE SEQUENCE sgo.secuencia_id_producto_equivalencia
     INCREMENT 1
@@ -10,6 +10,7 @@ CREATE SEQUENCE sgo.secuencia_id_producto_equivalencia
 ALTER SEQUENCE sgo.secuencia_id_producto_equivalencia
     OWNER TO sgo_user;
 
+-- ALTER TABLE sgo.producto_equivalente ADD COLUMN estado INTEGER DEFAULT 1;
 CREATE TABLE sgo.producto_equivalente(
 	id_producto_equivalencia integer NOT NULL DEFAULT nextval('sgo.secuencia_id_producto_equivalencia'::regclass),
 	id_operacion integer,
@@ -19,6 +20,7 @@ CREATE TABLE sgo.producto_equivalente(
 	creado_el bigint,
     creado_por integer,
 	ip_creacion character varying(40) COLLATE pg_catalog."default",
+    estado integer DEFAULT 1,
 	CONSTRAINT producto_equivalente_pkey PRIMARY KEY (id_producto_equivalencia),
 	CONSTRAINT producto_equivalente_id_operacion_fkey FOREIGN KEY (id_operacion)
         REFERENCES sgo.operacion (id_operacion) MATCH SIMPLE
@@ -1198,3 +1200,339 @@ CREATE OR REPLACE VIEW sgo.v_operacion AS
      JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
      JOIN sgo.cliente t4 ON t1.id_cliente = t4.id_cliente
      LEFT JOIN sgo.planta t5 ON t1.planta_despacho_defecto = t5.id_planta;
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-19 1605 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_RECUPERAR_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/recuperarProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'), 'Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-20 1100 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_GUARDAR_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/guardarProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'), 'Guardar Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+
+-- ******************* TURNOS JORNADA 2019-02-21 1424 ******************************
+CREATE OR REPLACE VIEW sgo.v_producto_equivalente AS
+ SELECT 
+    t1.id_producto_equivalencia,
+    t1.id_operacion,
+    t1.id_producto_principal,
+    t1.id_producto_secundario,
+    t1.centimetros,
+    t1.creado_el,
+    t1.creado_por,
+    t1.ip_creacion,
+    t1.estado,
+    t2.nombre AS nombre_producto_principal,
+    t3.nombre AS nombre_producto_secundario
+   FROM sgo.producto_equivalente t1
+   JOIN sgo.producto t2 ON t2.id_producto = t1.id_producto_principal
+   JOIN sgo.producto t3 ON t3.id_producto = t1.id_producto_secundario
+   ;
+
+ALTER TABLE sgo.v_producto_equivalente
+    OWNER TO sgo_user;
+
+
+
+-- ******************* TURNOS JORNADA 2019-02-21 1424 ******************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('URL_UPDATE_PRODUCTOS_EQUIVALENTES', 1, 1456317900163, 2, 2, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+        VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+        VALUES('/admin/operacion/updateProductosEquivalentes', 10, 255, '/operacion', 2, 
+            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'), 'Update Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+
+-- ******************** SCRIPTS DE DESPACHO - 9000003068 *************************
+CREATE OR REPLACE VIEW sgo.v_despacho AS
+ SELECT t1.id_despacho,
+    t1.id_jornada,
+    t1.id_vehiculo,
+    t1.kilometro_horometro,
+    t1.numero_vale,
+    t1.tipo_registro,
+    t1.fecha_hora_inicio,
+    t1.fecha_hora_fin,
+    t1.clasificacion,
+    t1.id_producto,
+    t1.lectura_inicial,
+    t1.lectura_final,
+    t1.factor_correccion,
+    t1.api_corregido,
+    t1.temperatura,
+    t1.volumen_corregido,
+    t1.id_tanque,
+    t1.id_contometro,
+    t1.estado,
+    t1.creado_el,
+    t1.creado_por,
+    t1.actualizado_por,
+    t1.actualizado_el,
+    t1.ip_creacion,
+    t1.ip_actualizacion,
+    u1.identidad AS usuario_creacion,
+    u2.identidad AS usuario_actualizacion,
+    t2.fecha_operativa,
+    t2.id_estacion,
+    t7.nombre AS nombre_estacion,
+    t7.id_operacion,
+    t8.nombre AS nombre_operacion,
+    t8.id_cliente,
+    t3.nombre_corto,
+    t3.descripcion,
+    t3.id_propietario,
+    t6.razon_social,
+    t6.nombre_corto AS nombre_corto_propietario,
+    t4.descripcion AS descripcion_tanque,
+    t5.alias AS alias_contometro,
+    t5.tipo_contometro,
+    t9.nombre AS nombre_producto,
+    t9.abreviatura,
+    t1.codigo_archivo_origen,
+    t1.volumen_observado,
+	t1.id_turno,
+	t7.numero_decimales_contometro
+   FROM sgo.despacho t1
+     JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
+     JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
+     JOIN sgo.jornada t2 ON t1.id_jornada = t2.id_jornada
+     JOIN sgo.vehiculo t3 ON t1.id_vehiculo = t3.id_vehiculo
+     JOIN sgo.tanque t4 ON t1.id_tanque = t4.id_tanque
+     JOIN sgo.contometro t5 ON t1.id_contometro = t5.id_contometro
+     JOIN sgo.propietario t6 ON t3.id_propietario = t6.id_propietario
+     JOIN sgo.estacion t7 ON t2.id_estacion = t7.id_estacion
+     JOIN sgo.operacion t8 ON t7.id_operacion = t8.id_operacion
+     JOIN sgo.producto t9 ON t1.id_producto = t9.id_producto;
+
+ALTER TABLE sgo.v_despacho
+    OWNER TO sgo_user;
+
+-- ******************** SCRIPT PERMISO PLANTILLA DESPACHO (9000003068) *************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES('URL_GENERAR_PLANTILLA_DESPACHO', 1, 1550765850819, 2, 2, 1550765850819, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_DESPACHO'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES('/admin/despacho/plantilla-despacho', 600, 359, '/despacho/plantilla-despacho', 3, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_DESPACHO'), 'Generar Plantilla Despacho', 1550766359243, 2, 2, 1550766359243, '127.0.0.1', '127.0.0.1');
+
+-- ******************** SCRIPT MODIFICACIONES VISTAS REPORTE CONCILIACION VOLUMETRICA (9000003068) *************************
+CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_volumetrica AS
+ SELECT t1.id_operacion,
+    t2.fecha_operativa AS diaoperativo,
+    t1.nombre_estacion AS estacion,
+    t1.nombre_producto AS producto,
+    t1.stock_inicial AS invinicial,
+    CASE 
+		WHEN t3.tipo_volumen_descargado = 1 THEN t1.volumen_descargado_cisterna
+		WHEN t3.tipo_volumen_descargado = 2 THEN t1.volumen_descargado 
+		ELSE 0
+	END AS descargas,
+    ROUND(t1.volumen_despacho, 2) AS despachos,
+    0 AS otrosmovimientos,
+    t1.stock_final_calculado AS invfinalteorico,
+    t1.stock_final AS invfinalfisico,
+    t1.variacion AS diferencia,
+    t1.tolerancia * '-1'::integer::numeric AS tolerancia,
+        CASE
+            WHEN t2.estado = 1 THEN 'ABIERTO'::text
+            WHEN t2.estado = 2 THEN 'REGISTRADO'::text
+            WHEN t2.estado = 3 THEN 'CERRADO'::text
+            WHEN t2.estado = 4 THEN 'LIQUIDADO'::text
+            ELSE ''::text
+        END AS estadojornada,
+        CASE
+            WHEN t1.faltante < 0::numeric THEN 'OBSERVADO'::text
+            ELSE 'OK'::text
+        END AS situacionregistro,
+    t2.comentario AS observaciones,
+    t1.id_operacion AS idoperacion,
+    t1.nombre_operacion AS operacion
+   FROM sgo.v_liquidacion_inventario_x_estacion_completo_total t1
+     JOIN sgo.jornada t2 ON t1.fecha_operativa = t2.fecha_operativa AND t1.id_estacion = t2.id_estacion
+	 JOIN sgo.operacion t3 ON t1.id_operacion = t3.id_operacion;
+
+ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion_completo_total AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.porcentaje_actual,
+    t1.stock_final,
+    t1.stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    t1.tolerancia,
+    t1.stock_final_calculado,
+    t1.variacion,
+    t1.variacion_absoluta,
+    t1.nombre_producto,
+    t1.nombre_operacion,
+    t1.nombre_cliente,
+    t1.nombre_estacion,
+        CASE
+            WHEN t1.variacion > 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * 0::numeric
+            WHEN t1.variacion < 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * '-1'::integer::numeric
+            ELSE NULL::numeric
+        END AS faltante,
+    0 AS id_tanque,
+    ''::character(1) AS nombre_tanque,
+	t1.volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion_completo t1;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion_completo_total
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion_completo AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.porcentaje_actual,
+    t1.stock_final_fisico AS stock_final,
+    t1.stock_inicial_fisico AS stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    round(t1.stock_final_fisico * (t1.porcentaje_actual / 100::numeric), 0) AS tolerancia,
+    t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho AS stock_final_calculado,
+    t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho) AS variacion,
+    @ (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho)) AS variacion_absoluta,
+    t2.nombre AS nombre_producto,
+    t3.nombre AS nombre_operacion,
+    t3.nombre_corto_cliente AS nombre_cliente,
+    t4.nombre AS nombre_estacion,
+	t1.volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion t1
+     JOIN sgo.producto t2 ON t1.id_producto = t2.id_producto
+     JOIN sgo.v_operacion t3 ON t1.id_operacion = t3.id_operacion
+     JOIN sgo.estacion t4 ON t1.id_estacion = t4.id_estacion;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion_completo
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.porcentaje_actual,
+    t1.id_estacion,
+    t1.stock_final_fisico,
+    t1.stock_inicial_fisico,
+    COALESCE(t2.volumen_descargado, 0::numeric) AS volumen_descargado,
+    COALESCE(t3.volumen_despacho, 0::numeric) AS volumen_despacho,
+	COALESCE(t2.volumen_descargado_cisterna, 0::numeric) AS volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion1 t1
+     LEFT JOIN sgo.v_liquidacion_inventario_x_estacion2 t2 ON t1.id_operacion = t2.id_operacion AND t1.fecha_operativa = t2.fecha_operativa AND t1.id_producto = t2.id_producto AND t1.id_estacion = t2.id_estacion
+     LEFT JOIN sgo.v_liquidacion_inventario_x_estacion3 t3 ON t1.id_operacion = t3.id_operacion AND t1.fecha_operativa = t3.fecha_operativa AND t1.id_producto = t3.id_producto AND t1.id_estacion = t3.id_estacion;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion2 AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    sum(t1.volumen_cargado_usar) AS volumen_descargado,
+	SUM(t1.volumen_cargado_usar_cisterna) AS volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_carga3 t1
+  GROUP BY t1.id_operacion, t1.fecha_operativa, t1.id_producto, t1.id_estacion
+  ORDER BY t1.fecha_operativa;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion2
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga3 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.volumen_cargado_observado,
+    t1.volumen_cargado_corregido,
+    t1.fecha_operativa,
+    t1.id_operacion,
+    t1.id_producto,
+    t1.nombre_producto,
+    t2.tipo_volumen,
+        CASE
+            WHEN t2.tipo_volumen = 1 THEN t1.volumen_cargado_observado
+            WHEN t2.tipo_volumen = 2 THEN t1.volumen_cargado_corregido
+            ELSE NULL::numeric
+        END AS volumen_cargado_usar,
+	CASE
+		WHEN t2.tipo_volumen = 1 THEN t1.volumen_cargado_observado_cisterna
+		WHEN t2.tipo_volumen = 2 THEN t1.volumen_cargado_corregido_cisterna
+		ELSE NULL::numeric
+	END AS volumen_cargado_usar_cisterna
+   FROM sgo.v_liquidacion_carga2 t1
+     JOIN sgo.tolerancia t2 ON t1.id_estacion = t2.id_estacion AND t1.id_producto = t2.id_producto;
+
+ALTER TABLE sgo.v_liquidacion_carga3
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga2 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.volumen_cargado_observado,
+    t1.volumen_cargado_corregido,
+    t1.fecha_operativa,
+    t1.id_operacion,
+    t2.id_producto,
+    t2.nombre_producto,
+	t1.volumen_cargado_observado_cisterna,
+	t1.volumen_cargado_corregido_cisterna
+   FROM sgo.v_liquidacion_carga1 t1
+     JOIN sgo.v_tanque_jornada t2 ON t1.fecha_operativa = t2.fecha_operativa AND t1.id_tanque = t2.id_tanque AND t1.id_estacion = t2.id_estacion
+  WHERE t2.cierre = 1;
+
+ALTER TABLE sgo.v_liquidacion_carga2
+    OWNER TO sgo_user;
+
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga1 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.volumen_observado_final - t1.volumen_observado_inicial AS volumen_cargado_observado,
+    t1.volumen_corregido_final - t1.volumen_corregido_inicial AS volumen_cargado_corregido,
+    t2.fecha_operativa,
+    t2.id_operacion,
+	SUM(t4.volumen_recibido_observado) AS volumen_cargado_observado_cisterna,
+	SUM(t4.volumen_recibido_corregido) AS volumen_cargado_corregido_cisterna
+   FROM sgo.carga_tanque t1
+     JOIN sgo.dia_operativo t2 ON t1.id_doperativo = t2.id_doperativo
+	 LEFT JOIN sgo.descarga_cisterna t3 ON t1.id_ctanque = t3.id_ctanque
+	 LEFT JOIN sgo.descarga_compartimento t4 ON t3.id_dcisterna = t4.id_dcisterna
+	GROUP BY 
+		t1.id_ctanque, t1.id_doperativo, t1.id_estacion, t1.id_tanque, t1.volumen_observado_final, t1.volumen_observado_inicial, 
+		t1.volumen_corregido_final, t1.volumen_corregido_inicial, t2.fecha_operativa, t2.id_operacion;
+
+ALTER TABLE sgo.v_liquidacion_carga1
+    OWNER TO sgo_user;
+

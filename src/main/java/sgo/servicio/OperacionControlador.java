@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,22 +31,32 @@ import sgo.datos.ClienteDao;
 import sgo.datos.DiaOperativoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.EnlaceDao;
+import sgo.datos.EstacionDao;
 import sgo.datos.PlantaDao;
+import sgo.datos.ProductoDao;
+import sgo.datos.ProductoEquivalenteDao;
+import sgo.datos.ToleranciaDao;
 import sgo.datos.TransportistaDao;
 import sgo.datos.TransportistaOperacionDao;
 import sgo.entidad.Bitacora;
+import sgo.entidad.Contenido;
 import sgo.entidad.Operacion;
 import sgo.entidad.Enlace;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.OperacionEtapaRuta;
 import sgo.entidad.ParametrosListar;
+import sgo.entidad.Producto;
+import sgo.entidad.ProductoEquivalente;
+import sgo.entidad.ProductoEquivalenteJson;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
+import sgo.entidad.Tolerancia;
 import sgo.entidad.Transportista;
 import sgo.entidad.TransportistaOperacion;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
+
 
 @Controller
 public class OperacionControlador {
@@ -62,14 +73,21 @@ public class OperacionControlador {
  @Autowired
  private OperacionDao dOperacion;
  @Autowired
+ private ProductoEquivalenteDao dProductoEquivalente;
+ @Autowired
  private TransportistaDao dTransportistas; 
  @Autowired
  private PlantaDao dPlantas; 
  @Autowired
  private TransportistaOperacionDao dTransportistaOperacion;
- 
+ @Autowired
+ private ProductoDao dProducto;
  @Autowired
  private ClienteDao dCliente;
+ @Autowired
+ private EstacionDao dEstacion;
+ @Autowired
+ private ToleranciaDao dToleranciaDao;
 
  private DataSourceTransactionManager transaccion;
  /** Nombre de la clase. */
@@ -84,7 +102,13 @@ public class OperacionControlador {
  private static final String URL_ACTUALIZAR_RELATIVA = "/operacion/actualizar";
  private static final String URL_RECUPERAR_COMPLETA = "/admin/operacion/recuperar";
  private static final String URL_RECUPERAR_RELATIVA = "/operacion/recuperar";
- 
+ private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/recuperarProductosEquivalentes";
+ private static final String URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/recuperarProductosEquivalentes";
+ private static final String URL_GUARDAR_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/guardarProductosEquivalentes";
+ private static final String URL_GUARDAR_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/guardarProductosEquivalentes";
+ private static final String URL_UPDATE_PRODUCTOS_EQUIVALENTES_COMPLETA = "/admin/operacion/updateProductosEquivalentes";
+ private static final String URL_UPDATE_PRODUCTOS_EQUIVALENTES_RELATIVA = "/operacion/updateProductosEquivalentes";
+
 //Agregado por req 9000002570==================== 
  private static final String URL_RECUPERAR_ETAPAS_COMPLETA = "/admin/operacion/recuperarEtapas";
  private static final String URL_RECUPERAR_ETAPAS_RELATIVA = "/operacion/recuperarEtapas";
@@ -100,6 +124,8 @@ public class OperacionControlador {
  
  private static final String URL_ACTUALIZAR_ESTADO_COMPLETA = "/admin/operacion/actualizarEstado";
  private static final String URL_ACTUALIZAR_ESTADO_RELATIVA = "/operacion/actualizarEstado";
+ 
+ private static final int PRIMER_ROW = 0;
 
  private HashMap<String, String> recuperarMapaValores(Locale locale) {
 	 
@@ -144,6 +170,7 @@ public class OperacionControlador {
 
  @RequestMapping(URL_GESTION_RELATIVA)
  public ModelAndView mostrarFormulario(Locale locale) {
+	 
   ModelAndView vista = null;
   AuthenticatedUserDetails principal = null;
   ArrayList<?> listaEnlaces = null;
@@ -152,8 +179,11 @@ public class OperacionControlador {
   ArrayList<?> listadoClientes = null;
   ArrayList<?> listadoTransportistas = null;
   ArrayList<?> listadoPlantas = null;
+  ArrayList<?> listProductosSecundarios = null;
   HashMap<String, String> mapaValores = null;
+  
   try {
+	  
    principal = this.getCurrentUser();
    respuesta = menu.Generar(principal.getRol().getId(), URL_GESTION_COMPLETA);
    if (respuesta.estado == false) {
@@ -186,24 +216,34 @@ public class OperacionControlador {
    parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
    respuesta = dPlantas.recuperarRegistros(parametros);
    if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
+	   throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
    }
    listadoPlantas = (ArrayList<?>) respuesta.contenido.carga;
    
+   parametros = new ParametrosListar();
+   parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
+   respuesta = dProducto.recuperarRegistros(parametros);
+   if (!respuesta.estado) {
+	   throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
+   }
+   listProductosSecundarios = (ArrayList<?>) respuesta.contenido.carga;
+   
    mapaValores = recuperarMapaValores(locale);
    vista = new ModelAndView("plantilla");
-   vista.addObject("vistaJSP", "mantenimiento/operacion.jsp");
+   vista.addObject("vistaJSP", "mantenimiento/operacion.jsp"); 
    vista.addObject("vistaJS", "mantenimiento/operacion.js");
    vista.addObject("identidadUsuario", principal.getIdentidad());
    vista.addObject("menu", listaEnlaces);
    vista.addObject("listadoClientes", listadoClientes);
    vista.addObject("listadoTransportistas", listadoTransportistas);
    vista.addObject("listadoPlantas", listadoPlantas);
-   
+   vista.addObject("listProductosSecundarios", listProductosSecundarios);
    vista.addObject("mapaValores", mapaValores);
-  } catch (Exception ex) {
+   
+  } catch (Exception e) {
 
   }
+  
   return vista;
  }
 
@@ -293,7 +333,6 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	return respuesta;
 
 }
- 
  
  /**
   * 
@@ -868,9 +907,10 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
 	   eTransportistaOperacion.setIdTransportista(transportista.getId());
 	   eTransportistaOperacion.setIdOperacion(eOperacion.getId());
 	   respuesta = dTransportistaOperacion.guardarRegistro(eTransportistaOperacion);
-    if (respuesta.estado == false) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
-    }
+	   
+	    if (respuesta.estado == false) {
+	     throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+	    }
    }
 		   
    respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { eOperacion.getFechaActualizacion().substring(0, 9), eOperacion.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);;
@@ -889,71 +929,416 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  @RequestMapping(value = URL_ACTUALIZAR_ESTADO_RELATIVA, method = RequestMethod.POST)
  public @ResponseBody
  RespuestaCompuesta actualizarEstadoRegistro(@RequestBody Operacion eEntidad, HttpServletRequest peticionHttp, Locale locale) {
+	 
   RespuestaCompuesta respuesta = null;
   AuthenticatedUserDetails principal = null;
   TransactionDefinition definicionTransaccion = null;
   TransactionStatus estadoTransaccion = null;
   Bitacora eBitacora = null;
   String direccionIp = "";
+  
   try {
-   // Inicia la transaccion
-   this.transaccion = new DataSourceTransactionManager(dOperacion.getDataSource());
-   definicionTransaccion = new DefaultTransactionDefinition();
-   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
-   eBitacora = new Bitacora();
-   // Recuperar el usuario actual
-   principal = this.getCurrentUser();
-   // Recuperar el enlace de la accion
-   respuesta = dEnlace.recuperarRegistro(URL_ACTUALIZAR_ESTADO_COMPLETA);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   // Verificar si cuenta con el permiso necesario
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   // Auditoria local (En el mismo registro)
-   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
-   if (direccionIp == null) {
-    direccionIp = peticionHttp.getRemoteAddr();
-   }
-   eEntidad.setActualizadoEl(Calendar.getInstance().getTime().getTime());
-   eEntidad.setActualizadoPor(principal.getID());
-   eEntidad.setIpActualizacion(direccionIp);
-   respuesta = dOperacion.ActualizarEstadoRegistro(eEntidad);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
-   }
-   // Guardar en la bitacora
-   ObjectMapper mapper = new ObjectMapper();
-   eBitacora.setUsuario(principal.getNombre());
-   eBitacora.setAccion(URL_ACTUALIZAR_ESTADO_COMPLETA);
-   eBitacora.setTabla(OperacionDao.NOMBRE_TABLA);
-   eBitacora.setIdentificador(String.valueOf(eEntidad.getId()));
-   eBitacora.setContenido(mapper.writeValueAsString(eEntidad));
-   eBitacora.setRealizadoEl(eEntidad.getActualizadoEl());
-   eBitacora.setRealizadoPor(eEntidad.getActualizadoPor());
-   respuesta = dBitacora.guardarRegistro(eBitacora);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
-   }
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso",
-     new Object[] { eEntidad.getFechaActualizacion().substring(0, 9), eEntidad.getFechaActualizacion().substring(10), principal.getIdentidad() }, locale);
-   ;
-   this.transaccion.commit(estadoTransaccion);
-  } catch (Exception ex) {
-   //ex.printStackTrace();
-   Utilidades.gestionaError(ex, sNombreClase, "actualizarEstadoRegistro");
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-   this.transaccion.rollback(estadoTransaccion);
+	   // Inicia la transaccion
+	   this.transaccion = new DataSourceTransactionManager(dOperacion.getDataSource());
+	   definicionTransaccion = new DefaultTransactionDefinition();
+	   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
+	   eBitacora = new Bitacora();
+	   // Recuperar el usuario actual
+	   principal = this.getCurrentUser();
+	   // Recuperar el enlace de la accion
+	   respuesta = dEnlace.recuperarRegistro(URL_ACTUALIZAR_ESTADO_COMPLETA);
+	   if (respuesta.estado == false) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+	   }
+	   
+	   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+	   // Verificar si cuenta con el permiso necesario
+	   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+	   }
+	   
+	   // Auditoria local (En el mismo registro)
+	   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
+	   if (direccionIp == null) {
+	    direccionIp = peticionHttp.getRemoteAddr();
+	   }
+	   
+	   eEntidad.setActualizadoEl(Calendar.getInstance().getTime().getTime());
+	   eEntidad.setActualizadoPor(principal.getID());
+	   eEntidad.setIpActualizacion(direccionIp);
+	   respuesta = dOperacion.ActualizarEstadoRegistro(eEntidad);
+	   if (respuesta.estado == false) {
+	    throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
+	   }
+	   
+	   // Guardar en la bitacora
+	   ObjectMapper mapper = new ObjectMapper();
+	   eBitacora.setUsuario(principal.getNombre());
+	   eBitacora.setAccion(URL_ACTUALIZAR_ESTADO_COMPLETA);
+	   eBitacora.setTabla(OperacionDao.NOMBRE_TABLA);
+	   eBitacora.setIdentificador(String.valueOf(eEntidad.getId()));
+	   eBitacora.setContenido(mapper.writeValueAsString(eEntidad));
+	   eBitacora.setRealizadoEl(eEntidad.getActualizadoEl());
+	   eBitacora.setRealizadoPor(eEntidad.getActualizadoPor());
+	   respuesta = dBitacora.guardarRegistro(eBitacora);
+	   
+	   if (respuesta.estado == false) {
+		   throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+	   }
+	   
+	   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso",
+		   new Object[] {
+			   eEntidad.getFechaActualizacion().substring(0, 9), 
+			   eEntidad.getFechaActualizacion().substring(10), 
+			   principal.getIdentidad()
+			}, 
+	   locale);
+	   
+	   this.transaccion.commit(estadoTransaccion);
+	   
+  } catch (Exception e) {
+	   Utilidades.gestionaError(e, sNombreClase, "actualizarEstadoRegistro");
+	   respuesta.estado = false;
+	   respuesta.contenido = null;
+	   respuesta.mensaje = e.getMessage();
+	   this.transaccion.rollback(estadoTransaccion);
   }
+  
   return respuesta;
+  
  }
 
  private AuthenticatedUserDetails getCurrentUser() {
-  return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	 return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
  }
+ 
+ /**
+  * 
+  * @param ID
+  * @param locale
+  * @return
+  */
+ @RequestMapping(value = URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.GET) 
+ public @ResponseBody
+ RespuestaCompuesta recuperarProductosEquivalentes(int idOperacion, Locale locale) {
+
+ 	RespuestaCompuesta respuesta = null;
+ 	AuthenticatedUserDetails principal = null;
+
+ 	try {
+
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_PRODUCTOS_EQUIVALENTES_COMPLETA);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+
+ 		// Recuperar el registro
+ 		respuesta = dOperacion.recuperarRegistro(idOperacion);
+ 		
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		List<Operacion> listOperacion = (List<Operacion>) respuesta.contenido.getCarga();
+ 		Operacion eOperacion = (Operacion) listOperacion.get(PRIMER_ROW);
+ 		
+ 		/**
+ 		 * Lista de productos equivalentes
+ 		 */
+ 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistrosPorOperacion(idOperacion);
+ 		if (!respuestaProdEquivalente.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		ArrayList<ProductoEquivalente> listProductoEquivalente = (ArrayList<ProductoEquivalente>) respuestaProdEquivalente.getContenido().getCarga();
+ 		eOperacion.setListProductoEquivalente(listProductoEquivalente);
+ 		
+ 		/**
+ 		 * Lista de Tolerancia
+ 		 */
+ 		ParametrosListar param = new ParametrosListar();
+ 		param.setPaginacion(Constante.SIN_PAGINACION);
+ 		param.setCampoOrdenamiento(EstacionDao.NOMBRE_CAMPO_FILTRO_OPERACION);
+ 		//param.setFiltroEstado(Constante.ESTADO_ACTIVO);
+ 		param.setFiltroOperacion(idOperacion);
+ 		RespuestaCompuesta respuestaTolerancia = dToleranciaDao.recuperarRegistros(param);
+ 		if (!respuestaTolerancia.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		} 
+ 		
+ 		/**
+ 		 * Traer la lista de productos principales
+ 		 */
+ 		int i = 0;
+ 		int[] listProducto = new int[999];
+ 		ArrayList<Producto> listProductoPrincipal = new ArrayList<Producto>();
+ 		List<Tolerancia> listaTolerancia = (ArrayList<Tolerancia>) respuestaTolerancia.getContenido().getCarga();
+ 		for (Tolerancia tolerancia : listaTolerancia) {
+
+ 			if (tolerancia.getProducto() == null) {
+ 				continue;
+ 			}
+ 			
+ 			boolean esUtilizado = Utilidades.arrayContainsInt(listProducto, tolerancia.getIdProducto());
+ 			
+ 			if (esUtilizado) {
+ 				continue;
+ 			}
+ 			
+ 			Producto producto = new Producto();
+ 			producto.setId(tolerancia.getIdProducto());
+ 			producto.setNombre(tolerancia.getProducto().getNombre());
+ 			listProductoPrincipal.add(producto);
+ 			
+ 			listProducto[i] = tolerancia.getIdProducto();
+ 			i++;
+ 		}
+ 		
+ 		eOperacion.setListProductoPrincipal(listProductoPrincipal);
+
+ 		listOperacion.set(PRIMER_ROW, eOperacion);
+ 		
+ 		Contenido<Operacion> contenido = new Contenido<Operacion>();
+        contenido.carga = listOperacion;
+        respuesta.contenido = contenido;
+		contenido.totalRegistros = listOperacion.size();
+		contenido.totalEncontrados = listOperacion.size();
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
+ }
+
+ /**
+  * 
+  * @param entity
+  * @param request
+  * @param locale
+  * @return
+  */
+ @RequestMapping(value = URL_GUARDAR_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.POST) 
+ public @ResponseBody
+ RespuestaCompuesta guardarProductosEquivalentes(@RequestBody ProductoEquivalente entity, HttpServletRequest request, Locale locale) {
+
+ 	RespuestaCompuesta respuesta = null;
+ 	RespuestaCompuesta respuestaValidacion = null;
+ 	AuthenticatedUserDetails principal = null;
+
+ 	try {
+ 		
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_GUARDAR_PRODUCTOS_EQUIVALENTES_COMPLETA);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+
+ 		String direccionIp = request.getHeader("X-FORWARDED-FOR");
+ 		if (direccionIp == null) {
+ 			direccionIp = request.getRemoteAddr();
+ 		}
+
+ 		entity.setCreadoEl(Calendar.getInstance().getTime().getTime());
+ 		entity.setCreadoPor(principal.getID());
+ 		entity.setIpCreacion(direccionIp);
+ 		entity.setEstado(Constante.ESTADO_ACTIVO); 
+ 		
+ 		/**
+ 		 * Validar cada producto antes de guardar
+ 		 */
+ 		ArrayList<ProductoEquivalenteJson> productos = entity.getProductos();
+
+ 		for (ProductoEquivalenteJson peEntity : productos) {
+ 			
+ 			if (peEntity.getProductoPrincipal() <= 0 || peEntity.getProductoSecundario() <= 0) {
+ 				continue;
+ 			}
+ 			
+ 			respuestaValidacion = validaciones(entity, peEntity);
+ 			
+ 	 		if (!respuestaValidacion.estado) {
+ 	 			throw new Exception(respuestaValidacion.mensaje);
+ 	 		}
+ 			
+ 			respuesta = dProductoEquivalente.guardarRegistro(entity, peEntity);
+ 	 		if (!respuesta.estado) {
+ 	 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 	 		}
+ 		}
+
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
+ }
+
+ /**
+  * 
+  * @param entity
+  * @param request
+  * @param locale
+  * @return
+  */
+ @RequestMapping(value = URL_UPDATE_PRODUCTOS_EQUIVALENTES_RELATIVA, method = RequestMethod.POST) 
+ public @ResponseBody
+ RespuestaCompuesta updateProductosEquivalentes(@RequestBody ProductoEquivalente entity, HttpServletRequest request, Locale locale) {
+
+ 	RespuestaCompuesta respuesta = null;
+ 	AuthenticatedUserDetails principal = null;
+ 	ParametrosListar parametros = null;
+
+ 	try {
+ 		
+ 		// Recupera el usuario actual
+ 		principal = this.getCurrentUser();
+ 		
+ 		// Recuperar el enlace de la accion
+ 		respuesta = dEnlace.recuperarRegistro(URL_UPDATE_PRODUCTOS_EQUIVALENTES_COMPLETA);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+ 		}
+
+ 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+ 		
+ 		// Verificar si cuenta con el permiso necesario
+ 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+ 		}
+ 		
+ 		boolean estadoValido = Utilidades.arrayContainsInt(new int[] {1, 2}, entity.getEstado());
+ 		
+ 		if (!estadoValido) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.estadoNoValido", null, locale));
+ 		}
+ 		
+ 		/**
+ 		 * Cuando el estado que se quiere cambiar es Inactivo, no se hace ninguna validacion
+ 		 */
+ 		if (entity.getEstado() == Constante.ESTADO_INACTIVO) {
+ 	 		respuesta = dProductoEquivalente.updateRegistro(entity);
+ 	 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+ 	 		return respuesta;
+ 		}
+ 		
+ 		/**
+ 		 * Trae el producto equivalente seleccionado.
+ 		 */
+ 		parametros = new ParametrosListar();
+ 		parametros.setIdProductoEquivalencia(entity.getIdProductoEquivalencia());
+ 		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
+
+ 		/**
+ 		 * Validar si existe mas de un registro con la misma asociacion
+ 		 */
+ 		parametros = new ParametrosListar();
+ 		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
+ 		parametros.setIdProductoPrincipal(productoEquivalente.getIdProductoPrincipal());
+ 		parametros.setIdProductoSecundario(productoEquivalente.getIdProductoSecundario());
+ 		respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+ 		if (!respuesta.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		
+ 		List<ProductoEquivalente> listProductoEquivalente = (List<ProductoEquivalente>) respuesta.getContenido().getCarga();
+ 		
+ 		if (listProductoEquivalente.size() > 0) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.productoSecundarioUnicoEstado", null, locale));
+ 		}
+ 		
+ 		respuesta = dProductoEquivalente.updateRegistro(entity);
+ 		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+
+ 	} catch (Exception e) {
+ 		respuesta.estado = false;
+ 		respuesta.contenido = null;
+ 		respuesta.mensaje = e.getMessage();
+ 	}
+
+ 	return respuesta;
+ }
+ 
+ /**
+  * Valida si la asociacion del producto secundario fue utilizado anteriormente.
+  * @param entity
+  * @param peEntity
+  * @return
+  */
+ private RespuestaCompuesta validaciones(ProductoEquivalente entity, ProductoEquivalenteJson peEntity) {
+	 
+	 Locale locale = new Locale("es", "ES");
+	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	 
+	 try {
+		 
+		 ParametrosListar parametros = new ParametrosListar();
+		 parametros.setFiltroOperacion(entity.getIdOperacion());
+		 parametros.setIdProductoSecundario(peEntity.getProductoSecundario());
+		 respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+		 
+		 if (!respuesta.estado) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 
+		 if (respuesta.getContenido().getCarga().size() <= 0) {
+			 respuesta.estado = true;
+			 return respuesta;
+		 }
+		 
+		 ProductoEquivalente productoEquivalente = (ProductoEquivalente) respuesta.getContenido().getCarga().get(0);
+		 
+		 if (Utilidades.intToBool(productoEquivalente.getEstado())) {
+			 respuesta.mensaje = gestorDiccionario.getMessage("sgo.productoSecundarioUnico", null, locale);
+			 respuesta.mensaje = respuesta.mensaje.replace("REPLACE_PRODUCT", productoEquivalente.getNombreProductoSecundario());
+			 respuesta.estado = false;
+			 return respuesta;
+		 }
+		 
+		 respuesta.estado = true;
+		 respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+		 
+	 } catch (Exception e) {
+		e.printStackTrace();
+		respuesta.estado = false;
+		respuesta.contenido = null;
+		respuesta.mensaje = e.getMessage();
+	 }
+	 
+	 return respuesta;
+ }
+ 
 }

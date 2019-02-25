@@ -10,22 +10,24 @@ import sgo.utilidades.Constante;
 import sgo.utilidades.Utilidades;
 
 public class Producto extends EntidadBase {
-  private int id_producto;
-  private String nombre;
-  private String codigo_osinerg;
-  private String abreviatura;
-  private int estado;
-  private String sincronizado_el;
-  private String fecha_referencia;
-  private String codigo_referencia;
-  private int indicador_producto;
-  private String unidadMedida;
-  
+
+	private static final long serialVersionUID = 1L;
+	private int id_producto;
+	private String nombre;
+	private String codigo_osinerg;
+	private String abreviatura;
+	private int estado;
+	private String sincronizado_el;
+	private String fecha_referencia;
+	private String codigo_referencia;
+	private int indicador_producto;
+	private String unidadMedida;
+
 	//variables para hacer las validaciones.
 	static final int MAXIMA_LONGITUD_NOMBRE=80;
 	static final int MAXIMA_LONGITUD_CODIGO_OSINERG=5;
 	static final int MAXIMA_LONGITUD_ABREVIATURA=20;
-	
+
 	public final static int INDICADOR_PRODUCTO_SIN_DATOS=2;
 	public final static int INDICADOR_PRODUCTO_CON_DATOS=1;
   

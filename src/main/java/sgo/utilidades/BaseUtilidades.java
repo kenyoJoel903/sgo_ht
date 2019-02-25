@@ -1058,6 +1058,7 @@ public static Respuesta validacionXSS(Muestreo eEntidad, MessageSource gestorDic
  
  private static Respuesta validacionXSS(String cadena){
   Respuesta respuesta = new Respuesta();
+  
   try {
 	  //busqueda de caracteres en el texto
 		if(cadena.indexOf('<') != -1){

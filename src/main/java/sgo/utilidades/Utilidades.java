@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -719,6 +720,10 @@ public static String trailingZeros(float f, int leadingZeros) {
     }
 
     return out;
+}
+
+public static boolean arrayContainsInt(final int[] array, final int key) {     
+    return ArrayUtils.contains(array, key);
 }
 
 }

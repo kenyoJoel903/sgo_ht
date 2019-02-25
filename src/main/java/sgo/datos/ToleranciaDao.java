@@ -74,7 +74,9 @@ public class ToleranciaDao {
     List<Object> parametros = new ArrayList<Object>();
     List<String> filtrosWhere = new ArrayList<String>();
     String sqlWhere="";
+    
     try {
+    	
       if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
         sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
         parametros.add(argumentosListar.getInicioPaginacion());
@@ -83,18 +85,18 @@ public class ToleranciaDao {
       
       if (argumentosListar.getFiltroEstacion()>0){
        filtrosWhere.add(" t1."+CAMPO_ESTACION+"= '"+ argumentosListar.getFiltroEstacion() +"' ");
-     }
+      }
       
       if (argumentosListar.getFiltroProducto()>0){
        filtrosWhere.add(" t1."+CAMPO_ID_PRODUCTO+"= '"+ argumentosListar.getFiltroProducto() +"' ");
-     }
+      }
       
       if (!argumentosListar.getAbreviaturaProducto().isEmpty()){
 		filtrosWhere.add("lower(t2.abreviatura) like lower('%"+ argumentosListar.getAbreviaturaProducto() +"%') ");
       }
 		
      if (argumentosListar.getFiltroOperacion()>0){
-       filtrosWhere.add(" t1."+ CAMPO_ESTACION +" IN (SELECT ID_ESTACION FROM SGO.ESTACION WHERE ID_OPERACION = '" + argumentosListar.getFiltroOperacion() + "')' ");
+       filtrosWhere.add(" t1."+ CAMPO_ESTACION +" IN (SELECT ID_ESTACION FROM SGO.ESTACION WHERE ID_OPERACION = '" + argumentosListar.getFiltroOperacion() + "') ");
      }
      
      if (!filtrosWhere.isEmpty()) {
@@ -113,6 +115,7 @@ public class ToleranciaDao {
       consultaSQL.append("t2.nombre as nombre_producto,");
       consultaSQL.append("t2.abreviatura as abreviatura_producto,");
       consultaSQL.append("t1.porcentaje_actual");
+      
       //Campos de auditoria
       consultaSQL.append(" FROM ");
       consultaSQL.append(NOMBRE_VISTA);

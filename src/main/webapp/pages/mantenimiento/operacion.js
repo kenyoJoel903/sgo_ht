@@ -1,10 +1,13 @@
 $(document).ready(function() {
 	
   var moduloActual = new moduloBase();  
-  moduloActual.urlBase='operacion';
+  moduloActual.urlBase = 'operacion';
   moduloActual.SEPARADOR_MILES = ",";
   moduloActual.URL_LISTAR = moduloActual.urlBase + '/listar';
   moduloActual.URL_RECUPERAR = moduloActual.urlBase + '/recuperar';
+  moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/recuperarProductosEquivalentes';
+  moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/guardarProductosEquivalentes';
+  moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES = moduloActual.urlBase + '/updateProductosEquivalentes';
   
   //Agregado por req 9000002570====================
   moduloActual.URL_RECUPERAR_ETAPA = moduloActual.urlBase + '/recuperarEtapas';
@@ -95,11 +98,21 @@ $(document).ready(function() {
     //esto para alinear a la izquierda un decimal
     this.obj.cmpVolumenPromedioCisterna.css("text-align", "left");
     this.obj.cmpSincronizadoEl=$("#cmpSincronizadoEl");
+    
     this.obj.cmpIdCliente=$("#cmpIdCliente");
     this.obj.cmpIdCliente.tipoControl="select2";  
     this.obj.cmpIdCliente.nombreControl="cmpIdCliente"; 
-    this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false}); 
-    this.obj.btnAgregarTransportista=$("#btnAgregarTransportista");
+    this.obj.cmpIdCliente.select2({placeholder: "Seleccionar...", allowClear: false});
+    
+    this.obj.btnAgregarTransportista = $("#btnAgregarTransportista");
+    this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
+    this.obj.cntProductosEquivalentes = $("#cntProductosEquivalentes");
+    this.obj.btnCerrarProductosEquivalentes = $("#btnCerrarProductosEquivalentes");
+    this.obj.btnAgregarTrEquivalencia = $("#btnAgregarTrEquivalencia");
+    this.obj.btnGuardarEquivalencia = $("#btnGuardarEquivalencia");
+    this.obj.ocultaContenedorProductosEquivalentes = $("#ocultaContenedorProductosEquivalentes");
+    this.obj.modalEstadoProductoEquivalente = $("#modalEstadoProductoEquivalente");
+    this.obj.btnEstadoProductoEquivalente = $(".btnEstadoProductoEquivalente");
     
     //Campos Agregados por 9000002570=========================
     this.obj.btnAgregarEtapa=$("#btnAgregarEtapa");
@@ -119,23 +132,23 @@ $(document).ready(function() {
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
           var cmpIdTransportista=$(formularioNuevo).find("select[elemento-grupo='idTransportista']");
-          var cmpElimina=$(formularioNuevo).find("[elemento-grupo='botonElimina']");
+          var cmpElimina = $(formularioNuevo).find("[elemento-grupo='botonElimina']");
 
           cmpElimina.on("click", function(){
-          try{
-        	  moduloActual.indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
-        	  moduloActual.obj.grupoTransportista.removeForm(moduloActual.indiceFormulario);
-          } catch(error){
-            console.log(error.message);
-          
-          };
+	          try{
+	        	  moduloActual.indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
+	        	  moduloActual.obj.grupoTransportista.removeForm(moduloActual.indiceFormulario);
+	          } catch(error){
+	            console.log(error.message);
+	          
+	          };
         });
       }
     });
     
     this.obj.grupoTransportista.addForm();
 
-    this.obj.btnAgregarTransportista.on("click",function(){
+    this.obj.btnAgregarTransportista.on("click", function(){
     	try {
     		moduloActual.obj.grupoTransportista.addForm();
     	} catch(error) {
@@ -143,8 +156,53 @@ $(document).ready(function() {
     	};
     });
     
-    this.obj.btnProductosEquivalentes.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
-    	moduloActual.productosEquivalentes();		
+    this.obj.btnProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.recuperarProductosEquivalentes();		
+    });
+    
+    this.obj.btnCerrarProductosEquivalentes.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.cerrarProductosEquivalentes();
+    });
+    
+    this.obj.btnAgregarTrEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.agregarTrEquivalencia();		
+    });
+    
+    this.obj.btnGuardarEquivalencia.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+    	moduloActual.guardarProductoEquivalencia();	
+    });
+    
+    $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'button.btn-remove-row', function() {
+    	$(this).closest('tr').remove();
+    });
+    
+    $(document).on(moduloActual.NOMBRE_EVENTO_CLICK, 'input.update-producto-equivalente', function() {
+    	
+    	var checked = $(this).is(':checked');
+    	$(this).prop('checked', true);
+    	var modalBody = moduloActual.obj.modalEstadoProductoEquivalente.find('.modal-body');
+		modalBody.find('p.activar').hide();
+		modalBody.find('p.desactivar').show();
+    	
+    	if (checked) {
+    		modalBody.find('p.activar').show();
+    		modalBody.find('p.desactivar').hide();
+    		$(this).prop('checked', false);
+    	}
+    	
+    	moduloActual.obj.updateEstado = {};
+    	moduloActual.obj.updateEstado.checked = checked;
+    	moduloActual.obj.updateEstado.idProductoEquivalencia = $(this).data("producto-equivalencia");
+    	moduloActual.obj.modalEstadoProductoEquivalente.modal('show');
+    });
+    
+    this.obj.btnEstadoProductoEquivalente.on(moduloActual.NOMBRE_EVENTO_CLICK, function() {
+
+    	var object = {};
+    	object.estado = moduloActual.obj.updateEstado.checked ? constantes.ESTADO_ACTIVO : constantes.ESTADO_INACTIVO;
+    	object.idProductoEquivalencia = moduloActual.obj.updateEstado.idProductoEquivalencia;
+    	
+    	moduloActual.updateProductoEquivalencia(object);
     });
     
     //Campos Agregados por 9000002570=========================
@@ -255,9 +313,10 @@ $(document).ready(function() {
         	  
         	  var estado;
         	  var cambiaEstadoTemp = $(formularioNuevo).find("[elemento-grupo='estadoEtapa']");
+        	  
         	  if(cambiaEstadoTemp.val() == "ACTIVO"){
         		  estado = '0';
-        	  }else{
+        	  } else {
         		  estado = '1';
         	  }
         	  
@@ -419,7 +478,6 @@ $(document).ready(function() {
     this.obj.vistaActualizadoEl=$("#vistaActualizadoEl");
     this.obj.vistaIpCreacion=$("#vistaIpCreacion");
     this.obj.vistaIpActualizacion=$("#vistaIpActualizacion");
-    this.obj.btnProductosEquivalentes = $("#btnProductosEquivalentes");
     
     //Campos Agregados por 9000002570=========================
     this.obj.cmpOperaciones=$("#cmpOperaciones");
@@ -533,10 +591,10 @@ $(document).ready(function() {
 			  nombreEtapasEnGrilla.push(etapa.nombreEtapa);
 			  
 			  var estadoTemp = formulario.find("input[elemento-grupo='estadoEtapa']").val();
-			  
+
 			  if(estadoTemp === 'ACTIVO'){
 				  etapa.estado = 1;
-			  }else{
+			  } else {
 				  etapa.estado = 0;
 			  }
 			  
@@ -707,8 +765,6 @@ $(document).ready(function() {
     var ref = this;
     
     try {
-    	
-    	console.log(" ******** recuperarValores ******* ");
 
 		eRegistro.id = parseInt(ref.idRegistro);
 		eRegistro.nombre = ref.obj.cmpNombre.val().toUpperCase();
@@ -726,9 +782,7 @@ $(document).ready(function() {
 		eRegistro.correoCC = ref.obj.cmpCorreoCC.val();
 		eRegistro.tipoVolumenDescargado = parseInt(ref.obj.cmpTipoVolumenDescargado.val());
 		
-		console.dir(eRegistro);
-		
-		eRegistro.transportistas=[];   
+		eRegistro.transportistas = [];   
 	    var numeroFormularios = ref.obj.grupoTransportista.getForms().length;
 	    for(var contador = 0;contador < numeroFormularios; contador++){
 		    var transportista = {};
@@ -746,14 +800,185 @@ $(document).ready(function() {
     return eRegistro;
   };
   
-  moduloActual.productosEquivalentes = function() {
-		
-		var _this = this;
+  moduloActual.recuperarProductosEquivalentes = function() {
+	  
+	$.ajax({
+	    type: constantes.PETICION_TIPO_GET,
+	    url: moduloActual.URL_RECUPERAR_PRODUCTOS_EQUIVALENTES, 
+	    contentType: moduloActual.TIPO_CONTENIDO, 
+	    data: {
+	    	idOperacion: moduloActual.idRegistro
+	    },	
+	    success: function(respuesta) {
+	    	
+	    	if (!respuesta.estado) {
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+	    	} else {
+	    		
+	    		var listProdEquivalente = respuesta.contenido.carga[0].listProductoEquivalente;
+	    		var listProductoPrincipal = respuesta.contenido.carga[0].listProductoPrincipal;
 
-		console.log(" ******** productosEquivalentes /////// "); // JAFETH
-		  
-		referenciaModulo.obj.cntProductosEquivalentes.show();
+	    		$table = $("table.productos").find("tbody");
+	    		$table.empty();
+	    		$tableClone = $("table.productos-clone").find("tbody");
+	    		$tableCloneEdit = $("table.productos-edit-clone").find("tbody");
+	    		
+	    		$cmpProductosPrincipales = $tableClone.find("select.cmpProductosPrincipales");
+	    		$cmpProductosPrincipales.empty();
+	    		$cmpProductosPrincipales.append($("<option>", {
+		    		value: "",
+		    		text: "[Seleccione]"
+	    		}));
+    			
+	    		for (var j = 0; j < listProductoPrincipal.length; j++) {
+	    			var prodPrincipal = listProductoPrincipal[j];
+	    			$cmpProductosPrincipales.append($("<option>", {
+			    		value: prodPrincipal.id,
+			    		text: prodPrincipal.nombre
+		    		}));
+	    		}
+	    		
+	    		if (typeof listProdEquivalente == 'undefined' || listProdEquivalente.length == 0) {
+	    			$table.append('<tr class="empty"><td class="celda-detalle" colspan="5">No se encontro productos asociados.</td></tr>');
+	    		}
+	    		
+	    		for (var i = 0; i < listProdEquivalente.length; i++) {
+	    			
+	    			var prodEquivalente = listProdEquivalente[i];
+	    			
+		    		$trNew = $tableCloneEdit.find('tr:last').clone();
+		    		$trNew.find("input.cmpProductosPrincipales").val(prodEquivalente.nombreProductoPrincipal);
+		    		$trNew.find("input.cmpProductosSecundarios").val(prodEquivalente.nombreProductoSecundario);
+		    		$trNew.find("input.update-producto-equivalente").attr("data-producto-equivalencia", prodEquivalente.idProductoEquivalencia);
+		    		$trNew.find("input.estado").val("ACTIVO");
+		    		$trNew.find("input.estado").attr("data-producto-equivalencia", prodEquivalente.idProductoEquivalencia);
+		    		$trNew.find("input.update-producto-equivalente").prop("checked", true);
+		    		$trNew.find("select.cmpProductosPrincipales").val();
+
+		    		if (prodEquivalente.estado == constantes.ESTADO_INACTIVO) {
+		    			$trNew.find("input.estado").val("INACTIVO");
+		    			$trNew.find("input.update-producto-equivalente").prop("checked", false);
+					}
+		    		
+		    		$table.append($trNew);
+	    		}
+	    		
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
+    			
+    			$("#cntProductosEquivalentes input.operacion").val(respuesta.contenido.carga[0].nombre);
+	    		moduloActual.obj.cntProductosEquivalentes.show();
+	    		moduloActual.obj.cntTabla.hide();
+	    		moduloActual.obj.ocultaContenedorProductosEquivalentes.hide();
+	    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Se recupero el formulario de Productos Equivalentes");
+			}
+	    },			    		    
+	    error: function(xhr, status, error) {
+	    	moduloActual.mostrarErrorServidor(xhr, status, error);
+	    }
+	});
   };
   
+  moduloActual.cerrarProductosEquivalentes = function() {
+		
+	  moduloActual.obj.tituloSeccion.text(cadenas.TITULO_LISTADO_REGISTROS); 
+	  moduloActual.obj.cntProductosEquivalentes.hide();
+		
+//		this.obj.cntVistaRegistro.hide();
+//		this.obj.ocultaContenedorVista.show();
+		
+	  moduloActual.obj.cntTabla.show();
+	  moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Se cerró la vista de Productos Equivalentes");
+  };
+  
+  moduloActual.desactivarBotones = function() {
+	moduloActual.obj.btnModificarEstado.html(constantes.BOTON_ACTIVAR + constantes.TITULO_ACTIVAR_REGISTRO);
+	moduloActual.obj.btnModificar.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnModificarEstado.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnEtapas.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnVer.addClass(constantes.CSS_CLASE_DESHABILITADA);
+	moduloActual.obj.btnProductosEquivalentes.addClass(constantes.CSS_CLASE_DESHABILITADA);
+  };
+  
+  moduloBase.prototype.activarBotones = function() {	  
+	  moduloActual.obj.btnModificar.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnModificarEstado.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnVer.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnEtapas.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+	  moduloActual.obj.btnProductosEquivalentes.removeClass(constantes.CSS_CLASE_DESHABILITADA);
+  };
+  
+  moduloActual.agregarTrEquivalencia = function() {
+	  $("tr.empty").remove();
+      $tableClone = $('table.productos-clone').find('tbody');
+      $trNew = $tableClone.find('tr:last').clone();
+      $trNew.find("select.cmpProductosPrincipales").select2();
+      $trNew.find("select.cmpProductosSecundarios").select2();
+      
+      $table = $('table.productos').find('tbody');
+      $table.append($trNew);
+  };
+  
+  moduloActual.guardarProductoEquivalencia = function() {
+
+	  var object = {};
+	  object.idOperacion = moduloActual.idRegistro;
+	  object.productos = [];
+	  
+	  $("table.productos tbody tr.new").each(function(index, value) {
+		  var obj = {};
+		  obj.productoPrincipal = $(this).find("td").eq(0).find("option:selected").val();
+		  obj.productoSecundario = $(this).find("td").eq(1).find("option:selected").val();
+		  object.productos.push(obj);
+	  });
+	  
+	  $.ajax({
+			type: constantes.PETICION_TIPO_POST,
+			url: moduloActual.URL_GUARDAR_PRODUCTOS_EQUIVALENTES, 
+			contentType: moduloActual.TIPO_CONTENIDO, 
+			data: JSON.stringify(object),
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+				} else {
+					moduloActual.obj.cntProductosEquivalentes.hide();
+					moduloActual.obj.cntTabla.show();
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Productos equivalentes guardados con exito.");
+				}
+			},			    		    
+			error: function(xhr, status, error) {
+				moduloActual.mostrarErrorServidor(xhr, status, error);
+			}
+	  });
+  };
+  
+  moduloActual.updateProductoEquivalencia = function(object) {
+	  
+	  $.ajax({
+			type: constantes.PETICION_TIPO_POST,
+			url: moduloActual.URL_UPDATE_PRODUCTOS_EQUIVALENTES, 
+			contentType: moduloActual.TIPO_CONTENIDO, 
+			data: JSON.stringify(object),
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+					moduloActual.obj.modalEstadoProductoEquivalente.modal('hide');
+				} else {
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Estado actualizado con exito!");
+			    	$('input[type=text][data-producto-equivalencia="' + moduloActual.obj.updateEstado.idProductoEquivalencia + '"]').val(moduloActual.obj.updateEstado.checked ? "ACTIVO" : "INACTIVO");
+			    	$('input[type=checkbox][data-producto-equivalencia="' + moduloActual.obj.updateEstado.idProductoEquivalencia + '"]').prop('checked', moduloActual.obj.updateEstado.checked);
+			    	
+			    	moduloActual.obj.updateEstado.checked = null;
+			    	moduloActual.obj.updateEstado.idProductoEquivalencia = null;
+			    	moduloActual.obj.modalEstadoProductoEquivalente.modal('hide');
+				}
+			},			    		    
+			error: function(xhr, status, error) {
+				moduloActual.mostrarErrorServidor(xhr, status, error);
+			}
+	  });
+  };
+
+
   moduloActual.inicializar();
+  
 });

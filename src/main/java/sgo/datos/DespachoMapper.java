@@ -1,6 +1,8 @@
 package sgo.datos;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 
 import org.springframework.jdbc.core.RowMapper;
 
@@ -39,8 +41,8 @@ public class DespachoMapper implements RowMapper<Despacho>{
 			eDespacho.setFechaHoraFin(rs.getTimestamp("fecha_hora_fin"));
 			eDespacho.setClasificacion(Utilidades.cleanXSS(rs.getString("clasificacion")));
 			eDespacho.setIdProducto(rs.getInt("id_producto"));
-			eDespacho.setLecturaInicial(rs.getLong("lectura_inicial"));
-			eDespacho.setLecturaFinal(rs.getLong("lectura_final"));
+			eDespacho.setLecturaInicial(rs.getFloat("lectura_inicial"));
+			eDespacho.setLecturaFinal(rs.getFloat("lectura_final"));
 			eDespacho.setFactorCorreccion(rs.getFloat("factor_correccion"));
 			eDespacho.setApiCorregido(rs.getFloat("api_corregido"));
 			eDespacho.setTemperatura(rs.getFloat("temperatura"));
@@ -50,6 +52,9 @@ public class DespachoMapper implements RowMapper<Despacho>{
 			eDespacho.setIdContometro(rs.getInt("id_contometro"));
 			eDespacho.setCodigoArchivoOrigen(rs.getInt("codigo_archivo_origen"));
 			eDespacho.setEstado(rs.getInt("estado"));
+			// DECIMALES DE LA ESTACION - 9000003068
+			eDespacho.setIdTurno(rs.getInt("id_turno"));
+			eDespacho.setNroDecimales(rs.getInt("numero_decimales_contometro"));
 			
 			eOperacion = new Operacion();
 			eOperacion.setId(rs.getInt("id_operacion"));

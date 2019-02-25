@@ -1,10 +1,14 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="sgo.entidad.Cliente"%>
-<%@ page import="sgo.entidad.Transportista"%>
-<%@ page import="sgo.entidad.Planta"%>
-<%@ page import="java.util.HashMap"%>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="sgo.entidad.Cliente" %>
+<%@ page import="sgo.entidad.Planta" %>
+<%@ page import="sgo.entidad.Producto" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="sgo.entidad.Transportista" %>
 <% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
+
+<link href="tema/css/switch.css" rel="stylesheet" type="text/css"/>
+<link href="tema/css/operacion.css" rel="stylesheet" type="text/css"/>
 
 <div class="content-wrapper">
 
@@ -53,7 +57,7 @@
 		              	  </a>
 			              <%--Fin Agregado por 9000002570 --%>
 			              
-			              <a id="btnProductosEquivalentes" class="btn btn-default btn-sm espaciado">
+			              <a id="btnProductosEquivalentes" class="btn btn-default btn-sm disabled espaciado">
 			              	<%=mapaValores.get("BOTON_PRODUCTOS_EQUIVALENTES")%>
 		              	  </a>
 						</div>
@@ -100,6 +104,7 @@
       <div class="col-md-12">
         <div class="box box-default">
           <div class="box-body">
+          
             <form id="frmPrincipal" role="form">
                <div class="form-group">
                 <label>Nombre (Max. 150 caracteres)</label>
@@ -237,24 +242,148 @@
         </div>
       </div>
     </div>
-    
-<div class="row" id="cntVistaRegistro" style="display:none;">
-    <div class="col-md-12">
-        <div class="box box-default">
-            <div class="box-body">
-                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
-            </div>
-            <div class="box-footer">
-                <button id="btnCerrarVista"  class="btn btn-danger btn-sm">
-                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%>
-                </button>
-            </div>
-            <div class="overlay" id="ocultaContenedorVista">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
-        </div>
-    </div>
-</div>
+	    
+	<div class="row" id="cntVistaRegistro" style="display:none;">
+	    <div class="col-md-12">
+	        <div class="box box-default">
+	            <div class="box-body">
+	                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
+	            </div>
+	            <div class="box-footer">
+	                <button id="btnCerrarVista"  class="btn btn-danger btn-sm">
+	                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%>
+	                </button>
+	            </div>
+	            <div class="overlay" id="ocultaContenedorVista">
+	                <i class="fa fa-refresh fa-spin"></i>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<div class="row" id="cntProductosEquivalentes" style="display:none;">
+	    <div class="col-md-12">
+	        <div class="box box-default">
+	            <div class="box-body">
+
+					<div class="form-group">
+						<label class="etiqueta-titulo-horizontal">Operaci&oacute;n</label>
+						<input type="text" class="operacion form-control text-uppercase input-sm" readonly="readonly">
+					</div>
+
+					<table class="productos sgo-simple-table table table-condensed">
+						<thead>
+							<tr>
+								<th><label>Productos Principales</label></th>
+								<th><label>Productos Secundarios</label></th>
+								<th><label>Estado</label></th>
+								<th></th>
+								<th></th>
+							</tr>
+					    </thead>
+					    <tbody></tbody>
+					</table>
+					
+				    <table class="productos-clone" style="display: none">
+				        <tbody>
+							<tr class="new">
+					            <td class="celda-detalle">
+					                <select class="cmpProductosPrincipales form-control input-sm"></select>
+					            </td>
+					            <td class="celda-detalle">
+					                <select class="cmpProductosSecundarios form-control input-sm">
+					                	<option value="">[Seleccione]</option>
+					                    <%
+						                    ArrayList<?> listProductosSecundarios2 = (ArrayList<?>) request.getAttribute("listProductosSecundarios");               
+											
+						                    for (int i=0; i < listProductosSecundarios2.size(); i++) { 
+						                    	Producto eProducto = (Producto) listProductosSecundarios2.get(i);
+					                    %>
+					                	<option value="<%=eProducto.getId() %>"><%=eProducto.getNombre().trim() %></option>
+					                	<% } %>
+					            	</select>
+					            </td>
+					            <td class="celda-detalle" align="center">
+					            	<input type="text" class="form-control text-uppercase input-sm" readonly="readonly" value="Activo">
+					            </td>
+					            <td class="celda-detalle"></td>
+					            <td class="celda-detalle" align="center">
+									<button class="btn btn-danger btn-xs btn-remove-row" type="button">
+										<i class="fa fa-fw fa-trash-o"></i>
+									</button>
+					            </td>
+					        </tr>
+				        </tbody>
+				    </table>
+				    
+				    <table class="productos-edit-clone" style="display: none">
+				        <tbody>
+							<tr>
+					            <td class="celda-detalle">
+					            	<input type="text" class="cmpProductosPrincipales form-control input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle">
+					            	<input type="text" class="cmpProductosSecundarios form-control input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle" align="center">
+					            	<input type="text" class="estado form-control text-uppercase input-sm" readonly="readonly">
+					            </td>
+					            <td class="celda-detalle" align="center">
+									<label class="switch">
+										<input class="update-producto-equivalente" type="checkbox">
+										<span class="slider round bg-yellow-slider"></span>
+                            		</label>
+					            </td>
+					            <td class="celda-detalle"></td>
+					        </tr>
+				        </tbody>
+				    </table>
+
+	            </div>
+	            <div class="box-footer">
+	                <button id="btnGuardarEquivalencia" class="btn btn-primary btn-sm">
+	                    <i class="fa fa-save"></i> Guardar
+	                </button>
+	                <button id="btnAgregarTrEquivalencia" class="btn bg-purple btn-sm">
+	                    <i class="fa fa-plus-circle"></i> Agregar Equivalencia
+	                </button>
+	                <button id="btnCerrarProductosEquivalentes" class="btn btn-danger btn-sm">
+	                    <i class="fa fa-close"></i> <%=mapaValores.get("ETIQUETA_BOTON_CERRAR") %>
+	                </button>
+	            </div>
+	            <div class="overlay" id="ocultaContenedorProductosEquivalentes">
+	                <i class="fa fa-refresh fa-spin"></i>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<div id="modalEstadoProductoEquivalente" class="modal" data-keyboard="false" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<strong>SGO - PetroPer&uacute;</strong> / Cambiar estado de Producto Equivalente
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p class="activar" style="display: none;">¿Est&aacute; seguro de que desea activar registro?</p>
+					<p class="desactivar" style="display: none;">¿Est&aacute; seguro de que desea desactivar el registro?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btnEstadoProductoEquivalente btn btn-primary">
+						Si
+					</button>
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">
+						No
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
     
     <%-- Inicio Agregado por 9000002570 --%>
     <div class="row" id="cntFrmEtapas" style="display:none;">
@@ -368,26 +497,11 @@
     	</div>
     </div>
     <%-- Fin Agregado por 9000002570 --%>
+    
   </section>
 </div>
 
-<div class="row" id="formProductosEquivalentes" style="display:none;">
-    <div class="col-md-12">
-        <div class="box box-default">
-            <div class="box-body">
-                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
-            </div>
-            <div class="box-footer">
-                <button id="btnCerrarVista" class="btn btn-danger btn-sm">
-                    <%=mapaValores.get("ETIQUETA_BOTON_CERRAR")%>
-                </button>
-            </div>
-            <div class="overlay" id="ocultaContenedorVista">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 
 
