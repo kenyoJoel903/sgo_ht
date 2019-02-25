@@ -1,21 +1,31 @@
 package sgo.servicio;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 //9000002843 unused import org.jaxen.function.SubstringAfterFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.codec.Utf8;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -70,8 +80,11 @@ import sgo.entidad.TanqueJornada;
 import sgo.entidad.Tolerancia;
 import sgo.entidad.Vehiculo;
 import sgo.seguridad.AuthenticatedUserDetails;
+import sgo.utilidades.CabeceraReporte;
+import sgo.utilidades.Campo;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Formula;
+import sgo.utilidades.Reporteador;
 import sgo.utilidades.Utilidades;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -135,6 +148,8 @@ private JornadaDao dJornadaDao;
 private ToleranciaDao dToleranciaDao;
 @Autowired
 private JornadaDao dJornada;
+@Autowired
+ServletContext servletContext;
 //
 private DataSourceTransactionManager transaccion;// Gestor de la transaccion
 // urls generales
@@ -153,6 +168,8 @@ private static final String URL_RECUPERAR_RELATIVA = "/despacho/recuperar";
 private static final String URL_CARGAR_ARCHIVO_COMPLETA="/admin/despacho/cargar-archivo";
 private static final String URL_CARGAR_ARCHIVO_RELATIVA="/despacho/cargar-archivo";
 private static final String SEPARADOR_CSV=",";
+private static final String URL_EXPORTAR_PLANTILLA_COMPLETA = "/admin/despacho/plantilla-despacho";
+private static final String URL_EXPORTAR_PLANTILLA_RELATIVA = "/despacho/plantilla-despacho";
 
 private HashMap<String, String> recuperarMapaValores(Locale locale) {
 	HashMap<String, String> mapaValores = new HashMap<String, String>();
@@ -233,7 +250,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 
 		parametros = new ParametrosListar();
 		parametros.setPaginacion(Constante.SIN_PAGINACION);
-		// Para que retorne sÃ³lo los productos que se encuentren activos
+		// Para que retorne sÃƒÂ³lo los productos que se encuentren activos
 		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
 		respuesta = dProducto.recuperarRegistros(parametros);
 		if (respuesta.estado == false) {
@@ -244,7 +261,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		String fecha = dDiaOperativo.recuperarFechaActual().valor;
 		Operacion op = (Operacion) listaOperaciones.get(0);
 		parametros.setIdOperacion(op.getId());
-	    //esto para obtener la última jornada cargada 
+	    //esto para obtener la Ãºltima jornada cargada 
 	    Respuesta oRespuesta = dJornada.recuperarUltimaJornada(parametros);
 	    // Verifica el resultado de la accion
 	    if (oRespuesta.estado == false) {
@@ -281,6 +298,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 	} catch (Exception ex) {
 
 	}
+	Utilidades.gestionaTrace("DespachoControlador", "mostrarFormulario");
 	return vista;
 }
 
@@ -643,10 +661,12 @@ RespuestaCompuesta actualizarEstadoRegistro(@RequestBody Despacho eDespacho, Htt
  return respuesta;
 }
 	
-@RequestMapping(value = URL_CARGAR_ARCHIVO_RELATIVA+"/{idJornada}/{idOperario}/{comentario}" ,method = RequestMethod.POST)
+@RequestMapping(value = URL_CARGAR_ARCHIVO_RELATIVA+"/{idJornada}/{idOperario}/{idTurno}/{nroDecimales}/{comentario}" ,method = RequestMethod.POST)
 public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file") MultipartFile file,
   @PathVariable("idJornada") String idJornada,
   @PathVariable("idOperario") String idOperario,
+  @PathVariable("idTurno") String idTurno,
+  @PathVariable("nroDecimales") String nroDecimales,
   @PathVariable("comentario") String comentario,
 //  @PathVariable("borrar") int borrar,
   HttpServletRequest peticionHttp,Locale locale){
@@ -661,7 +681,9 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
 	this.transaccion = new DataSourceTransactionManager(dDespacho.getDataSource());
 	definicionTransaccion = new DefaultTransactionDefinition();
 	estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
-
+	
+	// 9000003068
+	int nroDec = Integer.parseInt(nroDecimales);
 	
     //Recupera el usuario actual
     principal = this.getCurrentUser(); 
@@ -718,7 +740,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     float temperatura=0;
     float volumen_corregido=0;
     
-    String nombre_corto_vehiculo=null;//Nombre corto del vehï¿½culo o maquina al que se le abastece combustible.
+    String nombre_corto_vehiculo=null;//Nombre corto del vehÃ¯Â¿Â½culo o maquina al que se le abastece combustible.
     String abreviatura_producto=null;//Abreviatura del producto (material).
     String contrometro_alias=null;
     String descripcion_tanque=null;
@@ -742,7 +764,8 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     despachoCarga.setIdEstacion(jornada.getEstacion().getId());
     despachoCarga.setIdJornada(jornada.getId());
     despachoCarga.setFechaCarga(dDiaOperativo.recuperarFechaActualDateSql("yyyy-MM-dd"));
-    despachoCarga.setComentario(comentario);
+    byte coment[] = comentario.getBytes("ISO-8859-1");
+    despachoCarga.setComentario(new String(coment, "UTF-8"));
     despachoCarga.setActualizadoEl(Calendar.getInstance().getTime().getTime());
     despachoCarga.setActualizadoPor(principal.getID()); 
     despachoCarga.setCreadoEl(Calendar.getInstance().getTime().getTime());
@@ -768,6 +791,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
       columnas= linea.split(SEPARADOR_CSV,-1);
       numero_columna=columnas.length;
       despacho = new Despacho();
+      despacho.setIdTurno(Integer.parseInt(idTurno));
       nombre_corto_vehiculo=columnas[0];
       if(nombre_corto_vehiculo!=null && !nombre_corto_vehiculo.isEmpty()){
           argumentosListar=new ParametrosListar();
@@ -899,9 +923,12 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
       }
       
       //buscamos el tanque que se encuentre despachando
+      descripcion_tanque=columnas[8];
       ParametrosListar parametros = new ParametrosListar();
       parametros.setIdJornada(despachoCarga.getIdJornada());
       parametros.setFiltroProducto(despacho.getIdProducto());
+      // 9000003068 - Añadimos el nombre del tanque como valor de busqueda. Antes solo se consideraba 1 tanque por producto y no era necesario.
+      parametros.setFiltroNombreTanque(descripcion_tanque);
       String fecha =(fechaOperativa.substring(0, 4))+"-"+(fechaOperativa.substring(4,6))+"-"+(fechaOperativa.substring(6,8));
       parametros.setFiltroInicioDespacho(fecha+" "+sHoraInicio);
       
@@ -925,7 +952,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     	  }
       }
 
-      descripcion_tanque=columnas[8];
+      //descripcion_tanque=columnas[8];
       /*if(descripcion_tanque!=null && !descripcion_tanque.isEmpty()){
           argumentosListar=new ParametrosListar();
           argumentosListar.setValorBuscado(descripcion_tanque);
@@ -1032,6 +1059,20 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     	  }
       }
       
+      // 9000003068 - Nro Decimales Estacion
+      double lectIni = (double) despacho.getLecturaInicial();
+      float lectIniD = (float) Formula.redondearDouble(lectIni, nroDec);
+      despacho.setLecturaInicial(lectIniD);
+      double lectFin = (double) despacho.getLecturaFinal();
+      float lectFinD = (float) Formula.redondearDouble(lectFin, nroDec);
+      despacho.setLecturaFinal(lectFinD);
+      double volObs = (double) despacho.getVolumenObservado();
+      float volObsD = (float) Formula.redondearDouble(volObs, nroDec);
+      despacho.setVolumenObservado(volObsD);
+      double volCor = (double) despacho.getVolumenCorregido();
+      float volCorD = (float) Formula.redondearDouble(volCor, nroDec);
+      despacho.setVolumenCorregido(volCorD);
+      
       despacho.setIdJornada(jornada.getId());
       despacho.setTipoRegistro(Despacho.ORIGEN_FICHERO);
       despacho.setEstado(Despacho.ESTADO_ACTIVO);
@@ -1068,6 +1109,187 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
   }
   return respuesta;
 }
+
+	@RequestMapping(value = URL_EXPORTAR_PLANTILLA_RELATIVA, method = RequestMethod.GET)
+	public void exportarPlantillaDespacho(HttpServletRequest httpRequest, HttpServletResponse response, Locale locale) {
+		RespuestaCompuesta respuesta = null;
+	 	ParametrosListar parametros = null;
+	 	AuthenticatedUserDetails principal = null;
+	 	String mensajeRespuesta = "";
+	 	try {
+		 
+		 	String columnas = gestorDiccionario.getMessage("sgo.plantillaDespacho.columna", null, locale);
+		 	String valores = gestorDiccionario.getMessage("sgo.plantillaDespacho.valor", null, locale);
+		 	String obligatorios = gestorDiccionario.getMessage("sgo.plantillaDespacho.obligatorio", null, locale);
+		 	String tipos = gestorDiccionario.getMessage("sgo.plantillaDespacho.tipo", null, locale);
+		 
+		 	List<String> datosNotas = new ArrayList<>();
+		 	datosNotas.add(columnas);
+		 	datosNotas.add(valores);
+		 	datosNotas.add(obligatorios);
+		 	datosNotas.add(tipos);
+		 
+		 	// Recuperar el usuario actual
+		 	principal = (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	  		// Recuperar el enlace de la accion
+	  		respuesta = dEnlace.recuperarRegistro(URL_EXPORTAR_PLANTILLA_COMPLETA);
+	  		if (respuesta.estado == false) {
+		  		mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+	   			throw new Exception(mensajeRespuesta);
+	  		}
+	  		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+	  		// Verificar si cuenta con el permiso necesario
+	  		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+		  		mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale);
+	   			throw new Exception(mensajeRespuesta);
+	  		}
+	  		// Recuperar parametros
+	  		parametros = new ParametrosListar();
+	  
+	  		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
+	  		parametros.setPaginacion(Constante.SIN_PAGINACION);
+	  
+	  		respuesta = dProducto.recuperarRegistros(parametros);
+	  
+	  		if (respuesta.estado==false){
+		  		mensajeRespuesta = gestorDiccionario.getMessage("sgo.noListadoRegistros", null, locale);
+	   			throw new Exception(mensajeRespuesta);
+	  		}
+	  		ArrayList<?> listaProductos = (ArrayList<?>)  respuesta.contenido.carga;
+	
+	  		ByteArrayOutputStream baos = null;
+	  		Reporteador uReporteador = new Reporteador();
+	  		uReporteador.setRutaServlet(servletContext.getRealPath("/"));
+	  		ArrayList<CabeceraReporte> listaCamposCabecera = this.generarCabecera();
+	
+	
+	    	baos=uReporteador.generarPlantillaDespacho(listaProductos, listaCamposCabecera, datosNotas);
+			try {
+				
+				byte[] bytes = baos.toByteArray();
+				response.setContentType("application/vnd.ms-excel");
+				response.addHeader ("Content-Disposition", "attachment; filename=\"plantilla-despacho.xls\"");
+				response.setContentLength(bytes.length);
+				ServletOutputStream ouputStream = response.getOutputStream();
+				ouputStream.write( bytes, 0, bytes.length ); 
+			    ouputStream.flush();    
+		    	ouputStream.close();  
+			
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	
+	 	} catch (Exception ex) {
+		 	ex.printStackTrace();
+	 	}
+	}
+	
+	private ArrayList<CabeceraReporte> generarCabecera(){
+		  ArrayList<CabeceraReporte> listaCamposCabecera =null;
+		  CabeceraReporte cabeceraReporte = null;
+		  try {
+			   listaCamposCabecera = new ArrayList<CabeceraReporte>();
+			   //1
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Vehículo");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //2
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("K.M/Horómetro");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //3
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Nro. Vale");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //4
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Hora Inicio");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //5
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Hora Fin");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //6
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Clasificación");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //7
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Producto");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //8
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Contómetro");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //9
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Tanque");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //10
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Volumen Obs. (2)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //11
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Lect. Inicial (1)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //12
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Lect. Final (1)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //13
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Factor (3)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //14
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("API 60°F (4)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //15
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Temperatura (°F) (4)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+			   //16
+			   cabeceraReporte = new CabeceraReporte();
+			   cabeceraReporte.setEtiqueta("Vol. 60°F (5)");
+			   cabeceraReporte.setColspan(1);
+			   cabeceraReporte.setRowspan(1);
+			   listaCamposCabecera.add(cabeceraReporte);
+		  }catch(Exception ex){
+		   
+		  }
+		  return listaCamposCabecera;
+		}
 
 private AuthenticatedUserDetails getCurrentUser() {
 	return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

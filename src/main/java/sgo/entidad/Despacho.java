@@ -1,5 +1,6 @@
 package sgo.entidad;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import sgo.utilidades.Utilidades;
@@ -32,6 +33,9 @@ public class Despacho extends EntidadBase {
 	private Vehiculo vehiculo;
 	private Tanque tanque;
 	private Contometro contometro;
+	
+	private int id_turno;
+	private int nro_decimales;
 	
 	public final static int ESTADO_ACTIVO=1;
 	public final static int ESTADO_INACTIVO=2;
@@ -264,6 +268,22 @@ public class Despacho extends EntidadBase {
 
 	public void setVolumenObservado(float volumenObservado) {
 		this.volumen_observado = volumenObservado;
+	}
+
+	public int getIdTurno() {
+		return id_turno;
+	}
+
+	public void setIdTurno(int idTurno) {
+		this.id_turno = idTurno;
+	}
+	
+	public int getNroDecimales() {
+		return nro_decimales;
+	}
+
+	public void setNroDecimales(int dNroDecimales) {
+		this.nro_decimales = dNroDecimales;
 	}
 
 }

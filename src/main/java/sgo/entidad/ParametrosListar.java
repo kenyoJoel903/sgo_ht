@@ -96,6 +96,7 @@ public class ParametrosListar {
 	private String abreviaturaProducto="";
 	private String nombreArchivoDespacho="";
 	private String queryRolGec="";
+	private String filtroNombreTanque="";//9000003068
 	
 	//esto para el envio de correo
 	private String filtroNombreCliente="";
@@ -1261,6 +1262,15 @@ public int getFiltroEstadoCliente() {
 
 public void setFiltroEstadoCliente(int filtroEstadoCliente) {
 	this.filtroEstadoCliente = filtroEstadoCliente;
+}
+
+// 9000003068
+public String getFiltroNombreTanque() {
+	return filtroNombreTanque;
+}
+
+public void setFiltroNombreTanque(String filtroNombreTanque) {
+	this.filtroNombreTanque = filtroNombreTanque;
 }
 
 public int getIdProductoPrincipal() {
