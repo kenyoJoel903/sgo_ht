@@ -1536,3 +1536,447 @@ CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_volumetrica AS
 ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
     OWNER TO sgo_user;
 
+
+
+
+
+
+
+-- ******************* SCRIPT 2019-02-25 1621 ******************************
+DROP VIEW IF EXISTS sgo.v_reporte_conciliacion_volumetrica;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_estacion_completo_total;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_estacion_completo;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_estacion;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_estacion2;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_a_resumen_completo_total;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_a_resumen_completo;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_a_resumen;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_a_resumen2;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_tanque_total;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_tanque_completo;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_tanque;
+DROP VIEW IF EXISTS sgo.v_liquidacion_inventario_x_tanque2;
+DROP VIEW IF EXISTS sgo.v_liquidacion_carga3;
+DROP VIEW IF EXISTS sgo.v_liquidacion_carga2;
+DROP VIEW IF EXISTS public.v_liquidacion_carga2;
+DROP VIEW IF EXISTS sgo.v_liquidacion_carga1;
+
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga1 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    -- t1.volumen_observado_final - t1.volumen_observado_inicial AS volumen_cargado_observado,
+    -- t1.volumen_corregido_final - t1.volumen_corregido_inicial AS volumen_cargado_corregido,
+    t2.fecha_operativa,
+    t2.id_operacion,
+    SUM(t4.volumen_recibido_observado) AS volumen_cargado_observado_cisterna,
+    SUM(t4.volumen_recibido_corregido) AS volumen_cargado_corregido_cisterna,
+
+    CASE
+        WHEN t5.tipo_volumen_descargado = 1 THEN t1.volumen_observado_final - t1.volumen_observado_inicial
+        WHEN t5.tipo_volumen_descargado = 2 THEN (
+            SELECT 
+            SUM(dcomp.volumen_recibido_observado)
+            FROM sgo.descarga_cisterna dcist
+            LEFT JOIN sgo.descarga_compartimento dcomp ON dcomp.id_dcisterna = dcist.id_dcisterna
+            WHERE dcist.id_ctanque = t1.id_ctanque
+        )
+        ELSE NULL::numeric
+    END AS volumen_cargado_observado,
+
+    CASE
+        WHEN t5.tipo_volumen_descargado = 1 THEN t1.volumen_corregido_final - t1.volumen_corregido_inicial
+        WHEN t5.tipo_volumen_descargado = 2 THEN (
+            SELECT 
+            SUM(dcomp.volumen_recibido_corregido)
+            FROM sgo.descarga_cisterna dcist
+            LEFT JOIN sgo.descarga_compartimento dcomp ON dcomp.id_dcisterna = dcist.id_dcisterna
+            WHERE dcist.id_ctanque = t1.id_ctanque
+        )
+        ELSE NULL::numeric
+    END AS volumen_cargado_corregido
+
+   FROM sgo.carga_tanque t1
+     JOIN sgo.dia_operativo t2 ON t1.id_doperativo = t2.id_doperativo
+     LEFT JOIN sgo.descarga_cisterna t3 ON t1.id_ctanque = t3.id_ctanque
+     LEFT JOIN sgo.descarga_compartimento t4 ON t3.id_dcisterna = t4.id_dcisterna
+     LEFT JOIN sgo.v_operacion t5 ON t5.id_operacion = t1.id_doperativo
+    GROUP BY 
+        t1.id_ctanque, t1.id_doperativo, t1.id_estacion, t1.id_tanque, t1.volumen_observado_final, t1.volumen_observado_inicial, 
+        t1.volumen_corregido_final, t1.volumen_corregido_inicial, t2.fecha_operativa, t2.id_operacion,
+        t5.tipo_volumen_descargado
+        ;
+
+ALTER TABLE sgo.v_liquidacion_carga1
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW public.v_liquidacion_carga2 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.volumen_cargado_observado,
+    t1.volumen_cargado_corregido,
+    t1.fecha_operativa,
+    t1.id_operacion,
+    t2.id_producto,
+    t2.nombre_producto
+   FROM sgo.v_liquidacion_carga1 t1
+     JOIN sgo.v_tanque_jornada t2 ON t1.fecha_operativa = t2.fecha_operativa AND t1.id_tanque = t2.id_tanque AND t1.id_estacion = t2.id_estacion;
+
+ALTER TABLE public.v_liquidacion_carga2
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga2 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.volumen_cargado_observado,
+    t1.volumen_cargado_corregido,
+    t1.fecha_operativa,
+    t1.id_operacion,
+    t2.id_producto,
+    t2.nombre_producto,
+    t1.volumen_cargado_observado_cisterna,
+    t1.volumen_cargado_corregido_cisterna
+   FROM sgo.v_liquidacion_carga1 t1
+     JOIN sgo.v_tanque_jornada t2 ON t1.fecha_operativa = t2.fecha_operativa AND t1.id_tanque = t2.id_tanque AND t1.id_estacion = t2.id_estacion
+  WHERE t2.cierre = 1;
+
+ALTER TABLE sgo.v_liquidacion_carga2
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga3 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.volumen_cargado_observado,
+    t1.volumen_cargado_corregido,
+    t1.fecha_operativa,
+    t1.id_operacion,
+    t1.id_producto,
+    t1.nombre_producto,
+    t2.tipo_volumen,
+        CASE
+            WHEN t2.tipo_volumen = 1 THEN t1.volumen_cargado_observado
+            WHEN t2.tipo_volumen = 2 THEN t1.volumen_cargado_corregido
+            ELSE NULL::numeric
+        END AS volumen_cargado_usar,
+    CASE
+        WHEN t2.tipo_volumen = 1 THEN t1.volumen_cargado_observado_cisterna
+        WHEN t2.tipo_volumen = 2 THEN t1.volumen_cargado_corregido_cisterna
+        ELSE NULL::numeric
+    END AS volumen_cargado_usar_cisterna
+   FROM sgo.v_liquidacion_carga2 t1
+     JOIN sgo.tolerancia t2 ON t1.id_estacion = t2.id_estacion AND t1.id_producto = t2.id_producto;
+
+ALTER TABLE sgo.v_liquidacion_carga3
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_tanque2 AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.id_tanque,
+    sum(t1.volumen_cargado_usar) AS volumen_descargado
+   FROM sgo.v_liquidacion_carga3 t1
+  GROUP BY t1.id_operacion, t1.fecha_operativa, t1.id_producto, t1.id_estacion, t1.id_tanque
+  ORDER BY t1.fecha_operativa;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_tanque2
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_tanque AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.porcentaje_actual,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.stock_final_fisico,
+    t1.stock_inicial_fisico,
+    COALESCE(t2.volumen_descargado, 0::numeric) AS volumen_descargado,
+    COALESCE(t3.volumen_despacho, 0::numeric) AS volumen_despacho,
+    COALESCE(t4.volumen_otros, 0::bigint) AS volumen_otros
+   FROM sgo.v_liquidacion_inventario_x_tanque1 t1
+     LEFT JOIN sgo.v_liquidacion_inventario_x_tanque2 t2 ON t1.id_operacion = t2.id_operacion AND t1.fecha_operativa = t2.fecha_operativa AND t1.id_producto = t2.id_producto AND t1.id_estacion = t2.id_estacion AND t1.id_tanque = t2.id_tanque
+     LEFT JOIN sgo.v_liquidacion_inventario_x_tanque3 t3 ON t1.id_operacion = t3.id_operacion AND t1.fecha_operativa = t3.fecha_operativa AND t1.id_producto = t3.id_producto AND t1.id_estacion = t3.id_estacion AND t1.id_tanque = t3.id_tanque
+     LEFT JOIN sgo.v_liquidacion_inventario_x_tanque4 t4 ON t1.id_operacion = t4.id_operacion AND t1.fecha_operativa = t4.fecha_operativa AND t1.id_producto = t4.id_producto AND t1.id_estacion = t4.id_estacion AND t1.id_tanque = t4.id_tanque;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_tanque
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_tanque_completo AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.porcentaje_actual,
+    t1.stock_final_fisico AS stock_final,
+    t1.stock_inicial_fisico AS stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    round(t1.stock_final_fisico * (t1.porcentaje_actual / 100::numeric), 0) AS tolerancia,
+    t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho + t1.volumen_otros::numeric AS stock_final_calculado,
+    t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho + t1.volumen_otros::numeric) AS variacion,
+    @ (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho + t1.volumen_otros::numeric)) AS variacion_absoluta,
+    t2.nombre AS nombre_producto,
+    t3.nombre AS nombre_operacion,
+    t3.nombre_corto_cliente AS nombre_cliente,
+    t4.nombre AS nombre_estacion,
+    t5.descripcion AS nombre_tanque,
+    t1.volumen_otros
+   FROM sgo.v_liquidacion_inventario_x_tanque t1
+     JOIN sgo.producto t2 ON t1.id_producto = t2.id_producto
+     JOIN sgo.v_operacion t3 ON t1.id_operacion = t3.id_operacion
+     JOIN sgo.estacion t4 ON t1.id_estacion = t4.id_estacion
+     JOIN sgo.tanque t5 ON t1.id_tanque = t5.id_tanque;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_tanque_completo
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_tanque_total AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.id_tanque,
+    t1.porcentaje_actual,
+    t1.stock_final,
+    t1.stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    t1.tolerancia,
+    t1.stock_final_calculado,
+    t1.variacion,
+    t1.variacion_absoluta,
+    t1.nombre_producto,
+    t1.nombre_operacion,
+    t1.nombre_cliente,
+    t1.nombre_estacion,
+    t1.nombre_tanque,
+        CASE
+            WHEN t1.variacion > 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * 0::numeric
+            WHEN t1.variacion < 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * '-1'::integer::numeric
+            ELSE NULL::numeric
+        END AS faltante,
+    t1.volumen_otros
+   FROM sgo.v_liquidacion_inventario_x_tanque_completo t1;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_tanque_total
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_a_resumen2 AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    sum(t1.volumen_cargado_usar) AS volumen_descargado
+   FROM sgo.v_liquidacion_carga3 t1
+  GROUP BY t1.id_operacion, t1.fecha_operativa, t1.id_producto;
+
+ALTER TABLE sgo.v_liquidacion_inventario_a_resumen2
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_a_resumen AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.porcentaje_actual,
+    t1.stock_final_fisico,
+    t1.stock_inicial_fisico,
+    COALESCE(t2.volumen_descargado, 0::numeric) AS volumen_descargado,
+    COALESCE(t3.volumen_despacho, 0::numeric) AS volumen_despacho
+   FROM sgo.v_liquidacion_inventario_a_resumen1 t1
+     LEFT JOIN sgo.v_liquidacion_inventario_a_resumen2 t2 ON t1.id_operacion = t2.id_operacion AND t1.fecha_operativa = t2.fecha_operativa AND t1.id_producto = t2.id_producto
+     LEFT JOIN sgo.v_liquidacion_inventario_a_resumen3 t3 ON t1.id_operacion = t3.id_operacion AND t1.fecha_operativa = t3.fecha_operativa AND t1.id_producto = t3.id_producto;
+
+ALTER TABLE sgo.v_liquidacion_inventario_a_resumen
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_a_resumen_completo AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.porcentaje_actual,
+    t1.stock_final_fisico AS stock_final,
+    t1.stock_inicial_fisico AS stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    round(t1.stock_final_fisico * (t1.porcentaje_actual / 100::numeric), 0) AS tolerancia,
+    t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho AS stock_final_calculado,
+    t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho) AS variacion,
+    @ (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho)) AS variacion_absoluta,
+    t2.nombre AS nombre_producto,
+    t3.nombre AS nombre_operacion,
+    t3.nombre_corto_cliente AS nombre_cliente
+   FROM sgo.v_liquidacion_inventario_a_resumen t1
+     JOIN sgo.producto t2 ON t1.id_producto = t2.id_producto
+     JOIN sgo.v_operacion t3 ON t1.id_operacion = t3.id_operacion;
+
+ALTER TABLE sgo.v_liquidacion_inventario_a_resumen_completo
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_a_resumen_completo_total AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.porcentaje_actual,
+    t1.stock_final,
+    t1.stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    t1.tolerancia,
+    t1.stock_final_calculado,
+    t1.variacion,
+    t1.variacion_absoluta,
+    t1.nombre_producto,
+    t1.nombre_operacion,
+    t1.nombre_cliente,
+        CASE
+            WHEN t1.variacion > 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * 0::numeric
+            WHEN t1.variacion < 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * '-1'::integer::numeric
+            ELSE NULL::numeric
+        END AS faltante,
+    0 AS id_estacion,
+    ''::character(1) AS nombre_estacion,
+    0 AS id_tanque,
+    ''::character(1) AS nombre_tanque
+   FROM sgo.v_liquidacion_inventario_a_resumen_completo t1;
+
+ALTER TABLE sgo.v_liquidacion_inventario_a_resumen_completo_total
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion2 AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    sum(t1.volumen_cargado_usar) AS volumen_descargado,
+    SUM(t1.volumen_cargado_usar_cisterna) AS volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_carga3 t1
+  GROUP BY t1.id_operacion, t1.fecha_operativa, t1.id_producto, t1.id_estacion
+  ORDER BY t1.fecha_operativa;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion2
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.porcentaje_actual,
+    t1.id_estacion,
+    t1.stock_final_fisico,
+    t1.stock_inicial_fisico,
+    COALESCE(t2.volumen_descargado, 0::numeric) AS volumen_descargado,
+    COALESCE(t3.volumen_despacho, 0::numeric) AS volumen_despacho,
+    COALESCE(t2.volumen_descargado_cisterna, 0::numeric) AS volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion1 t1
+     LEFT JOIN sgo.v_liquidacion_inventario_x_estacion2 t2 ON t1.id_operacion = t2.id_operacion AND t1.fecha_operativa = t2.fecha_operativa AND t1.id_producto = t2.id_producto AND t1.id_estacion = t2.id_estacion
+     LEFT JOIN sgo.v_liquidacion_inventario_x_estacion3 t3 ON t1.id_operacion = t3.id_operacion AND t1.fecha_operativa = t3.fecha_operativa AND t1.id_producto = t3.id_producto AND t1.id_estacion = t3.id_estacion;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion_completo AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.porcentaje_actual,
+    t1.stock_final_fisico AS stock_final,
+    t1.stock_inicial_fisico AS stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    round(t1.stock_final_fisico * (t1.porcentaje_actual / 100::numeric), 0) AS tolerancia,
+    t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho AS stock_final_calculado,
+    t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho) AS variacion,
+    @ (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho)) AS variacion_absoluta,
+    t2.nombre AS nombre_producto,
+    t3.nombre AS nombre_operacion,
+    t3.nombre_corto_cliente AS nombre_cliente,
+    t4.nombre AS nombre_estacion,
+    t1.volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion t1
+     JOIN sgo.producto t2 ON t1.id_producto = t2.id_producto
+     JOIN sgo.v_operacion t3 ON t1.id_operacion = t3.id_operacion
+     JOIN sgo.estacion t4 ON t1.id_estacion = t4.id_estacion;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion_completo
+    OWNER TO sgo_user;
+-- ************************************************************************************ JAFETH XXXXXXXXXXXXXXX
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion_completo_total AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.porcentaje_actual,
+    t1.stock_final,
+    t1.stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    t1.tolerancia,
+    t1.stock_final_calculado,
+    t1.variacion,
+    t1.variacion_absoluta,
+    t1.nombre_producto,
+    t1.nombre_operacion,
+    t1.nombre_cliente,
+    t1.nombre_estacion,
+        CASE
+            WHEN t1.variacion > 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * 0::numeric
+            WHEN t1.variacion < 0::numeric THEN (t1.variacion_absoluta - t1.tolerancia) * '-1'::integer::numeric
+            ELSE NULL::numeric
+        END AS faltante,
+    0 AS id_tanque,
+    ''::character(1) AS nombre_tanque,
+    t1.volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion_completo t1;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion_completo_total
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_volumetrica AS
+ SELECT t1.id_operacion,
+    t2.fecha_operativa AS diaoperativo,
+    t1.nombre_estacion AS estacion,
+    t1.nombre_producto AS producto,
+    t1.stock_inicial AS invinicial,
+    CASE 
+        WHEN t3.tipo_volumen_descargado = 1 THEN t1.volumen_descargado_cisterna
+        WHEN t3.tipo_volumen_descargado = 2 THEN t1.volumen_descargado 
+        ELSE 0
+    END AS descargas,
+    ROUND(t1.volumen_despacho, 2) AS despachos,
+    0 AS otrosmovimientos,
+    t1.stock_final_calculado AS invfinalteorico,
+    t1.stock_final AS invfinalfisico,
+    t1.variacion AS diferencia,
+    t1.tolerancia * '-1'::integer::numeric AS tolerancia,
+        CASE
+            WHEN t2.estado = 1 THEN 'ABIERTO'::text
+            WHEN t2.estado = 2 THEN 'REGISTRADO'::text
+            WHEN t2.estado = 3 THEN 'CERRADO'::text
+            WHEN t2.estado = 4 THEN 'LIQUIDADO'::text
+            ELSE ''::text
+        END AS estadojornada,
+        CASE
+            WHEN t1.faltante < 0::numeric THEN 'OBSERVADO'::text
+            ELSE 'OK'::text
+        END AS situacionregistro,
+    t2.comentario AS observaciones,
+    t1.id_operacion AS idoperacion,
+    t1.nombre_operacion AS operacion
+   FROM sgo.v_liquidacion_inventario_x_estacion_completo_total t1
+     JOIN sgo.jornada t2 ON t1.fecha_operativa = t2.fecha_operativa AND t1.id_estacion = t2.id_estacion
+     JOIN sgo.operacion t3 ON t1.id_operacion = t3.id_operacion;
+
+ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
+    OWNER TO sgo_user;
+-- ************************************************************************************
