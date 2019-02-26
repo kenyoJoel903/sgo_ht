@@ -3,6 +3,7 @@ package sgo.servicio;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.ServletContext;
@@ -41,6 +42,7 @@ import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.ReporteLiquidacion;
 import sgo.utilidades.Reporteador;
+import sgo.utilidades.Utilidades;
 
 @Controller
 public class LiquidacionControlador {
@@ -359,179 +361,151 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
   return respuesta;
  }
 
-
-/* @RequestMapping(value = URL_LIQUIDAR_JORNADA_RELATIVA, method = RequestMethod.POST)
- public @ResponseBody RespuestaCompuesta liquidarJornada( HttpServletRequest peticionHttp, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  AuthenticatedUserDetails principal = null;
-  TransactionDefinition definicionTransaccion = null;
-  TransactionStatus estadoTransaccion = null;
-  Bitacora eBitacora = null;
-  String direccionIp = "";
-  Jornada jornada=null;
-  try {
-   // Inicia la transaccion
-   this.transaccion = new DataSourceTransactionManager(dCliente.getDataSource());
-   definicionTransaccion = new DefaultTransactionDefinition();
-   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
-   eBitacora = new Bitacora();
-   principal = this.getCurrentUser();
-   respuesta = dEnlace.recuperarRegistro(URL_LIQUIDAR_JORNADA_COMPLETA);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
-   if (direccionIp == null) {
-    direccionIp = peticionHttp.getRemoteAddr();
-    }
-    ParametrosListar parametros = new ParametrosListar();
-    parametros.setPaginacion(Constante.SIN_PAGINACION);
-    System.out.println("peticionHttp.getParameter(idOperacion)");
-    System.out.println(peticionHttp.getParameter("idOperacion"));
-    parametros.setFiltroOperacion(Integer.parseInt(peticionHttp.getParameter("idOperacion")));
-    parametros.setFiltroFechaJornada(peticionHttp.getParameter("fechaOperativa"));
-    respuesta = dJornada.recuperarRegistros(parametros);
-    
-    if (respuesta.estado==false){
-     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-    }
-    if (respuesta.contenido.carga.size()==0) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-    }  
-
-    jornada = (Jornada) respuesta.contenido.carga.get(0);
-    System.out.println("jornada.getId()");
-    System.out.println(jornada.getId());
-    System.out.println("jornada.getEstado()");
-    System.out.println(jornada.getEstado());
-    if (jornada.getEstado() == Jornada.ESTADO_LIQUIDADO){
-     throw new Exception(gestorDiccionario.getMessage("sgo.diaPreviamenteLiquidado", null, locale));
-    }
-    
-    jornada.setEstado(Jornada.ESTADO_LIQUIDADO);
-    jornada.setComentario(peticionHttp.getParameter("comentario"));
-    System.out.println("jornada.getEstado()");
-    System.out.println(jornada.getEstado());
-    System.out.println("jornada.getcomentario()");
-    System.out.println(jornada.getComentario());
-    respuesta = dJornada.liquidarRegistro(jornada);
-    if (respuesta.estado == false) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
-    }
-    respuesta.estado=true;
-    respuesta.mensaje= gestorDiccionario.getMessage("sgo.liquidacionDiaExitosa", null, locale);
-    this.transaccion.commit(estadoTransaccion);
-  } catch (Exception ex) {
-   ex.printStackTrace();
-   this.transaccion.rollback(estadoTransaccion);
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
- }*/
- 
  @RequestMapping(value = URL_LIQUIDAR_JORNADA_RELATIVA, method = RequestMethod.GET)
  public @ResponseBody RespuestaCompuesta liquidarJornada( HttpServletRequest peticionHttp, HttpServletResponse response, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  AuthenticatedUserDetails principal = null;
-  TransactionDefinition definicionTransaccion = null;
-  TransactionStatus estadoTransaccion = null;
-  Bitacora eBitacora = null;
-  String direccionIp = "";
-  Jornada jornada=null;
-  
-  try {
-   // Inicia la transaccion
-   this.transaccion = new DataSourceTransactionManager(dCliente.getDataSource());
-   definicionTransaccion = new DefaultTransactionDefinition();
-   estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
-   eBitacora = new Bitacora();
-   principal = this.getCurrentUser();
-   respuesta = dEnlace.recuperarRegistro(URL_LIQUIDAR_JORNADA_COMPLETA);
-   if (respuesta.estado == false) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
-   }
-   direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
-   if (direccionIp == null) {
-    direccionIp = peticionHttp.getRemoteAddr();
-    }
-    ParametrosListar parametros = new ParametrosListar();
-    parametros.setPaginacion(Constante.SIN_PAGINACION);
-    
-    System.out.println("peticionHttp.getParameter(idOperacion)");
-    System.out.println(peticionHttp.getParameter("idOperacion"));
-    
-    if (peticionHttp.getParameter("idOperacion") != null) {
-	    parametros.setFiltroOperacion(Integer.parseInt(peticionHttp.getParameter("idOperacion")));
-	   }
-	
-	if (peticionHttp.getParameter("fechaOperativa") != null) {
-	  parametros.setFiltroFechaJornada(peticionHttp.getParameter("fechaOperativa"));
-	}
-	
-	  /*if (peticionHttp.getParameter("comentario") != null) {
-	   parametros.setIdOperacion(peticionHttp.getParameter("comentario"));
-	  }*/
-    
-//    System.out.println("peticionHttp.getParameter(idOperacion)");
-//    System.out.println(peticionHttp.getParameter("idOperacion"));
-//    parametros.setFiltroOperacion(Integer.parseInt(peticionHttp.getParameter("idOperacion")));
-//    parametros.setFiltroFechaJornada(peticionHttp.getParameter("fechaOperativa"));
-    respuesta = dJornada.recuperarRegistros(parametros);
-    
-    if (respuesta.estado==false){
-     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-    }
-    if (respuesta.contenido.carga.size()==0) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
-    }  
 
-    jornada = (Jornada) respuesta.contenido.carga.get(0);
-    System.out.println("jornada.getId()");
-    System.out.println(jornada.getId());
-    System.out.println("jornada.getEstado()");
-    System.out.println(jornada.getEstado());
-    if (jornada.getEstado() == Jornada.ESTADO_LIQUIDADO){
-     throw new Exception(gestorDiccionario.getMessage("sgo.diaPreviamenteLiquidado", null, locale));
-    }
-    
-    jornada.setEstado(Jornada.ESTADO_LIQUIDADO);
-    if (peticionHttp.getParameter("comentario") != null) {
-    	jornada.setComentario(peticionHttp.getParameter("comentario"));
-	}
-    
-    //jornada.setComentario(peticionHttp.getParameter("comentario"));
-    
-    System.out.println("jornada.getEstado()");
-    System.out.println(jornada.getEstado());
-    System.out.println("jornada.getcomentario()");
-    System.out.println(jornada.getComentario());
-    respuesta = dJornada.liquidarRegistro(jornada);
-    if (respuesta.estado == false) {
-     throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
-    }
-    respuesta.estado=true;
-    respuesta.mensaje= gestorDiccionario.getMessage("sgo.liquidacionDiaExitosa", null, locale);
-    this.transaccion.commit(estadoTransaccion);
-  } catch (Exception ex) {
-   ex.printStackTrace();
-   this.transaccion.rollback(estadoTransaccion);
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
+     RespuestaCompuesta respuesta = null;
+     AuthenticatedUserDetails principal = null;
+     TransactionDefinition definicionTransaccion = null;
+     TransactionStatus estadoTransaccion = null;
+     Bitacora eBitacora = null;
+     String direccionIp = "";
+     Jornada jornada = null;
+
+     try {
+
+         // Inicia la transaccion
+         this.transaccion = new DataSourceTransactionManager(dCliente.getDataSource());
+         definicionTransaccion = new DefaultTransactionDefinition();
+         estadoTransaccion = this.transaccion.getTransaction(definicionTransaccion);
+         
+         eBitacora = new Bitacora();
+         principal = this.getCurrentUser();
+         respuesta = dEnlace.recuperarRegistro(URL_LIQUIDAR_JORNADA_COMPLETA);
+         if (respuesta.estado == false) {
+             throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
+         }
+
+         Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+         if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+        	 throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
+         }
+
+         direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
+         if (direccionIp == null) {
+             direccionIp = peticionHttp.getRemoteAddr();
+         }
+
+         ParametrosListar parametros = new ParametrosListar();
+         parametros.setPaginacion(Constante.SIN_PAGINACION);
+
+         if (peticionHttp.getParameter("idOperacion") != null) {
+             parametros.setFiltroOperacion(Integer.parseInt(peticionHttp.getParameter("idOperacion")));
+         }
+
+         if (peticionHttp.getParameter("fechaOperativa") != null) {
+             parametros.setFiltroFechaJornada(peticionHttp.getParameter("fechaOperativa"));
+         }
+
+         respuesta = dJornada.recuperarRegistros(parametros);
+         if (respuesta.estado==false) {
+        	 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+         }
+         
+         if (respuesta.contenido.carga.size()==0) {
+             throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+         }  
+
+         jornada = (Jornada) respuesta.contenido.carga.get(0);
+         if (jornada.getEstado() == Jornada.ESTADO_LIQUIDADO) {
+             throw new Exception(gestorDiccionario.getMessage("sgo.diaPreviamenteLiquidado", null, locale));
+         }
+     	
+         if (peticionHttp.getParameter("comentario") != null) {
+             jornada.setComentario(peticionHttp.getParameter("comentario"));
+         }
+         
+         /**
+          * Validacion de los estados de las jornadas
+          * Todas las jornadas tienen que estar en estado CERRADO, para poder cambiar el estado a LIQUIDADO
+          */
+         parametros = new ParametrosListar();
+         if (peticionHttp.getParameter("fechaOperativa") != null) {
+             parametros.setFiltroFechaJornada(peticionHttp.getParameter("fechaOperativa"));
+         }
+         parametros.setFiltroEstados(new int[] {Jornada.ESTADO_ABIERTO, Jornada.ESTADO_REGISTRADO});
+         respuesta = dJornada.recuperarRegistros(parametros);
+         if (!respuesta.estado) {
+             throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+         }
+
+         if (respuesta.contenido.carga.size() > 0) {
+        	 String estaciones = "";
+        	 for (Jornada obj : (List<Jornada>) respuesta.contenido.carga) {
+        		 estaciones = estaciones + obj.getEstacion().getNombre() + ", ";
+        	 }
+        	 
+			 respuesta.mensaje = gestorDiccionario.getMessage("sgo.errorJornadasCerradas", null, locale);
+			 respuesta.mensaje = respuesta.mensaje.replace("LISTA_ESTACIONES", estaciones);
+			 throw new Exception(respuesta.mensaje);
+         }
+         /**
+          * Fin validacion
+          */
+         
+         
+         /**
+          * Validacion de las jornadas del dia anterior
+          * todas las estaciones asociadas deben encontrarse con el estado “Liquidado” para la jornada anterior a la actual.
+          */
+         parametros = new ParametrosListar();
+         if (peticionHttp.getParameter("fechaOperativa") != null) {
+        	 String date = peticionHttp.getParameter("fechaOperativa");
+        	 date = Utilidades.subtractDateDays(date, 1);
+             parametros.setFiltroFechaJornada(date);
+         }
+         
+         respuesta = dJornada.recuperarRegistros(parametros);
+         if (!respuesta.estado) {
+             throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+         }
+
+         if (respuesta.contenido.carga.size() > 0) { 
+        	 for (Jornada obj : (List<Jornada>) respuesta.contenido.carga) {
+        		 if (obj.getEstado() != Jornada.ESTADO_LIQUIDADO) {
+        			 throw new Exception(gestorDiccionario.getMessage("sgo.errorJornadaAnterior", null, locale));
+        		 }
+        	 }
+         }
+         /**
+          * Fin validacion
+          */
+         
+         
+         /**
+          * Actualizar estado a: LIQUIDADO
+          */
+         jornada.setEstado(Jornada.ESTADO_LIQUIDADO);
+         respuesta = dJornada.liquidarRegistro(jornada);
+         if (!respuesta.estado) {
+             throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
+         }
+
+         respuesta.estado = true;
+         respuesta.mensaje = gestorDiccionario.getMessage("sgo.liquidacionDiaExitosa", null, locale);
+         this.transaccion.commit(estadoTransaccion);
+
+     } catch (Exception e) {
+         e.printStackTrace();
+         this.transaccion.rollback(estadoTransaccion);
+         respuesta.estado = false;
+         respuesta.contenido = null;
+         respuesta.mensaje = e.getMessage();
+     }
+
+     return respuesta;
  }
- 
+
  @RequestMapping(value = URL_REPORTE_RELATIVA, method = RequestMethod.GET)
  public void mostrarReporteGec(HttpServletRequest httpRequest, HttpServletResponse response, Locale locale) {
   RespuestaCompuesta respuesta = null;
