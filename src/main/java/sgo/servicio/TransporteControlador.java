@@ -44,6 +44,7 @@ import sgo.datos.EventoDao;
 import sgo.datos.OperacionDao;
 import sgo.datos.PlanificacionDao;
 import sgo.datos.ProductoDao;
+import sgo.datos.ProductoEquivalenteDao;
 import sgo.datos.ProgramacionDao;
 import sgo.datos.TransporteDao;
 import sgo.datos.TransportistaDao;
@@ -71,6 +72,7 @@ import sgo.entidad.Operacion;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.Planificacion;
 import sgo.entidad.Producto;
+import sgo.entidad.ProductoEquivalente;
 import sgo.entidad.Programacion;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
@@ -137,6 +139,11 @@ public class TransporteControlador {
 	private DiaOperativoControlador DiaOperativoControlador;
 	@Autowired
 	private DetalleProgramacionDao dDetalleProgramacion;
+	
+//	Inicio Agregado por req 9000003068
+	@Autowired
+	private ProductoEquivalenteDao dProductoEquivalente;
+//	Fin Agregado por req 9000003068
 
 	//
 	private DataSourceTransactionManager transaccion;// Gestor de la transaccion
@@ -184,7 +191,7 @@ public class TransporteControlador {
    private static final String URL_GUARDAR_SAP_RELATIVA = "/transporte/guardar-sap";
    
 //   Inicio Agregado por 9000003068
-   private static final String VALOR_FIJO_GR = "GR";
+   private static final String VALOR_FIJO_GR = "X";
 //   Fin Agregado por 9000003068
 
 	private HashMap<String, String> recuperarMapaValores(Locale locale) {
@@ -620,7 +627,7 @@ public class TransporteControlador {
             String numeroGR = elemento.getNumeroGR();
             if(numeroGR == null || numeroGR.trim().equals("")){
             	
-            	numeroGR = VALOR_FIJO_GR + " - " + String.format("%03d", idOperacion) + " - " + elemento.getNumeroOC();
+            	numeroGR = VALOR_FIJO_GR + " - " + String.format("%04d", idOperacion) + " - " + elemento.getNumeroOC();
             	
             }
             
@@ -665,7 +672,54 @@ public class TransporteControlador {
             detalleImportacion.setApiTemperaturaBase(Float.parseFloat(compartimentos[contadorDetalle].getApiTemperaturaBase()));
             detalleImportacion.setCapacidadVolumetricaCompartimento(Float.parseFloat( compartimentos[contadorDetalle].getCapVolCompartimento()));
             detalleImportacion.setCodigoOsinergProducto(compartimentos[contadorDetalle].getCodOsinergProducto());
-            detalleImportacion.setCodigoReferenciaProducto(compartimentos[contadorDetalle].getCodRefProducto());
+            
+//           Inicio Agregado por req 9000003068
+            String codigoSap = compartimentos[contadorDetalle].getCodRefProducto();
+            
+            ParametrosListar argumentosListar = new ParametrosListar();
+            argumentosListar.setPaginacion(Constante.SIN_PAGINACION);
+            argumentosListar.setFiltroCodigoReferencia(codigoSap.substring(codigoSap.length() - 5));
+            respuesta = dProducto.recuperarRegistros(argumentosListar);
+            if (respuesta.estado==false){
+             throw new Exception("Error al obtener producto");
+            }
+            
+            if(respuesta.contenido.totalRegistros > 0){
+            	Producto producto = (Producto) respuesta.contenido.carga.get(0); 
+                
+                argumentosListar = new ParametrosListar();
+                argumentosListar.setPaginacion(Constante.SIN_PAGINACION);
+                argumentosListar.setIdProductoSecundario(producto.getId());
+                argumentosListar.setFiltroOperacion(idOperacion);
+                respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+                if (respuesta.estado==false){
+                    throw new Exception("Error al obtener producto equivalente");
+                }
+                
+                if(respuesta.contenido.totalRegistros > 0){
+                	ProductoEquivalente pe = (ProductoEquivalente) respuesta.contenido.carga.get(0); 
+                    
+                    respuesta = dProducto.recuperarRegistro(pe.getIdProductoPrincipal());
+                    if (respuesta.estado==false){
+                        throw new Exception("Error al obtener producto principal");
+                    }
+                    
+                    producto = (Producto) respuesta.contenido.carga.get(0);
+                    
+                    codigoSap = producto.getCodigoReferencia();
+                }
+                
+            }else{
+            	throw new Exception("No se encuentra registrado en el SGO el producto " + codigoSap + " - " + compartimentos[contadorDetalle].getNomProducto());
+            }
+
+            detalleImportacion.setCodigoReferenciaProducto(codigoSap);
+//          Fin Agregado por req 9000003068
+            
+//          Inicio Comentado por req 9000003068
+//            detalleImportacion.setCodigoReferenciaProducto(compartimentos[contadorDetalle].getCodRefProducto());
+//          Fin Comentado por req 9000003068
+            
             detalleImportacion.setFactorCorreccion(Float.parseFloat(compartimentos[contadorDetalle].getFactorCorrecion()));
             detalleImportacion.setNombreProducto(compartimentos[contadorDetalle].getNomProducto());
             detalleImportacion.setNumeroCompartimento(Integer.parseInt(compartimentos[contadorDetalle].getNumCompartimento()));
@@ -1014,6 +1068,15 @@ public class TransporteControlador {
        System.out.println("claveTransporte");
        System.out.println(claveTransporte);
        numeroDetalles = maestroImportacion.getDetalle().size();
+       
+//     Inicio Agregado por req 9000003068
+       int numCompartimentos = cisterna.getCantidadCompartimentos();
+       if(numCompartimentos != numeroDetalles){
+    	   throw new Exception("Para el transporte " + maestroImportacion.getPlacaTracto() + "/" + maestroImportacion.getPlacaCisterna() + " no coincide el número de compartimentos entre SAP y el SGO (" + numeroDetalles + "/" + numCompartimentos + ")");
+       }
+//     Fin Agregado por req 9000003068
+       
+       
        for (int contadorDetalles=0;contadorDetalles<numeroDetalles;contadorDetalles++){
         detalleTransporte = new DetalleTransporte();
         detalleImportacion = maestroImportacion.getDetalle().get(contadorDetalles);
