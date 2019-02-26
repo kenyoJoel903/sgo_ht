@@ -1274,9 +1274,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
  		
- 		List<ProductoEquivalente> listProductoEquivalente = (List<ProductoEquivalente>) respuesta.getContenido().getCarga();
- 		
- 		if (listProductoEquivalente.size() > 0) {
+ 		if (respuesta.getContenido().getCarga().size() > 0) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.productoSecundarioUnicoEstado", null, locale));
  		}
  		

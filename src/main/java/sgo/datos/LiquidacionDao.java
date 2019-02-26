@@ -113,85 +113,89 @@ public class LiquidacionDao {
     return campoOrdenamiento;
   }
 
-  public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+
+public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+
     String sqlLimit = "";
-    List<String> filtrosWhere= new ArrayList<String>();
-    String sqlWhere="";
+    List<String> filtrosWhere = new ArrayList<String>();
+    String sqlWhere = "";
     int totalRegistros = 0, totalEncontrados = 0;
     RespuestaCompuesta respuesta = new RespuestaCompuesta();
     Contenido<Liquidacion> contenido = new Contenido<Liquidacion>();
     List<Liquidacion> listaRegistros = new ArrayList<Liquidacion>();
     List<Object> parametros = new ArrayList<Object>();
+
     try {
-      if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
-        sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
-        parametros.add(argumentosListar.getInicioPaginacion());
-        parametros.add(argumentosListar.getRegistrosxPagina());
-      }
-      StringBuilder consultaSQL = new StringBuilder();
-      //consultaSQL.append("SELECT count(t1." + NOMBRE_CAMPO_CLAVE+ ") as total FROM sgo.v_liquidacion_inventario_a_resumen_completo_total t1" );
-      //totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
-      
-      if (argumentosListar.getIdOperacion() > 0){
-       filtrosWhere.add(" (t1.id_operacion ='"+ argumentosListar.getIdOperacion() +"') ");
-     }
-     if (!argumentosListar.getFiltroFechaDiaOperativo().isEmpty()){
-       filtrosWhere.add(" ( t1.fecha_operativa='" + argumentosListar.getFiltroFechaDiaOperativo()+"') ");
-     }
-     
-     if(!filtrosWhere.isEmpty()){
-       consultaSQL.setLength(0);
-       sqlWhere = "WHERE " + StringUtils.join(filtrosWhere, Constante.SQL_Y);
-       //consultaSQL.append("SELECT count(t1." + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_VISTA + " t1 " + sqlWhere);
-       //totalEncontrados = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
-     }
-      
-      consultaSQL.setLength(0);
-      consultaSQL.append("SELECT ");
-      consultaSQL.append("t1.id_operacion,");
-      consultaSQL.append("t1.fecha_operativa,");
-      consultaSQL.append("t1.id_producto,");
-      consultaSQL.append("t1.porcentaje_actual,");
-      consultaSQL.append("t1.stock_final,");
-      consultaSQL.append("t1.stock_inicial,");
-      consultaSQL.append("t1.volumen_descargado,");
-      consultaSQL.append("t1.volumen_despacho,");
-      consultaSQL.append("t1.tolerancia,");
-      consultaSQL.append("t1.stock_final_calculado,");
-      consultaSQL.append("t1.variacion,");
-      consultaSQL.append("t1.variacion_absoluta,");
-      consultaSQL.append("t1.nombre_producto,");
-      consultaSQL.append("t1.nombre_operacion,");
-      consultaSQL.append("t1.nombre_cliente,");
-      consultaSQL.append("t1.faltante,");
-      consultaSQL.append("t1.id_estacion,");
-      consultaSQL.append("t1.id_tanque,");
-      consultaSQL.append("t1.nombre_estacion,");
-      consultaSQL.append("t1.nombre_tanque");
-      consultaSQL.append(" FROM ");
-      consultaSQL.append("sgo.v_liquidacion_inventario_a_resumen_completo_total t1 ");
-      consultaSQL.append(sqlWhere);
-      listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new LiquidacionMapper());
-      totalEncontrados =totalRegistros;
-      contenido.carga = listaRegistros;
-      respuesta.estado = true;
-      respuesta.contenido = contenido;
-      respuesta.contenido.totalRegistros = totalRegistros;
-      respuesta.contenido.totalEncontrados = totalEncontrados;
-    } catch (DataAccessException excepcionAccesoDatos) {
-      excepcionAccesoDatos.printStackTrace();
-      respuesta.error=  Constante.EXCEPCION_ACCESO_DATOS;
-      respuesta.estado = false;
-      respuesta.contenido=null;
-    } catch (Exception excepcionGenerica) {
-      excepcionGenerica.printStackTrace();
-      respuesta.error= Constante.EXCEPCION_GENERICA;
-      respuesta.contenido=null;
-      respuesta.estado = false;
+
+        if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
+            sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
+            parametros.add(argumentosListar.getInicioPaginacion());
+            parametros.add(argumentosListar.getRegistrosxPagina());
+        }
+
+        StringBuilder consultaSQL = new StringBuilder();
+
+        if (argumentosListar.getIdOperacion() > 0) {
+            filtrosWhere.add(" (t1.id_operacion ='"+ argumentosListar.getIdOperacion() +"') ");
+        }
+
+        if (!argumentosListar.getFiltroFechaDiaOperativo().isEmpty()) {
+            filtrosWhere.add(" ( t1.fecha_operativa='" + argumentosListar.getFiltroFechaDiaOperativo()+"') ");
+        }
+
+        if (!filtrosWhere.isEmpty()) {
+            consultaSQL.setLength(0);
+            sqlWhere = "WHERE " + StringUtils.join(filtrosWhere, Constante.SQL_Y);
+        }
+
+        consultaSQL.setLength(0);
+        consultaSQL.append("SELECT ");
+        consultaSQL.append("t1.id_operacion,");
+        consultaSQL.append("t1.fecha_operativa,");
+        consultaSQL.append("t1.id_producto,");
+        consultaSQL.append("t1.porcentaje_actual,");
+        consultaSQL.append("t1.stock_final,");
+        consultaSQL.append("t1.stock_inicial,");
+        consultaSQL.append("t1.volumen_descargado,");
+        consultaSQL.append("t1.volumen_despacho,");
+        consultaSQL.append("t1.tolerancia,");
+        consultaSQL.append("t1.stock_final_calculado,");
+        consultaSQL.append("t1.variacion,");
+        consultaSQL.append("t1.variacion_absoluta,");
+        consultaSQL.append("t1.nombre_producto,");
+        consultaSQL.append("t1.nombre_operacion,");
+        consultaSQL.append("t1.nombre_cliente,");
+        consultaSQL.append("t1.faltante,");
+        consultaSQL.append("t1.id_estacion,");
+        consultaSQL.append("t1.id_tanque,");
+        consultaSQL.append("t1.nombre_estacion,");
+        consultaSQL.append("t1.nombre_tanque");
+        consultaSQL.append(" FROM ");
+        consultaSQL.append("sgo.v_liquidacion_inventario_a_resumen_completo_total t1 ");
+        consultaSQL.append(sqlWhere);
+        
+        listaRegistros = jdbcTemplate.query(consultaSQL.toString(), parametros.toArray(), new LiquidacionMapper());
+        totalEncontrados = totalRegistros;
+        contenido.carga = listaRegistros;
+        respuesta.estado = true;
+        respuesta.contenido = contenido;
+        respuesta.contenido.totalRegistros = totalRegistros;
+        respuesta.contenido.totalEncontrados = totalEncontrados;
+    } catch (DataAccessException e) {
+        e.printStackTrace();
+        respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+        respuesta.estado = false;
+        respuesta.contenido = null;
+    } catch (Exception e) {
+        e.printStackTrace();
+        respuesta.error = Constante.EXCEPCION_GENERICA;
+        respuesta.contenido = null;
+        respuesta.estado = false;
     }
+
     return respuesta;
-  }
-  
+
+}
   
   public RespuestaCompuesta recuperarRegistrosxEstacion(ParametrosListar argumentosListar) {
    String sqlLimit = "";

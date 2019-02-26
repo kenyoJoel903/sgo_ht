@@ -713,7 +713,7 @@ public static String trailingZeros(float f, int leadingZeros) {
 	
 	String out = "0";
 	
-    try { 
+    try {
     	out = String.format("%16." + leadingZeros + "f", f).trim();
     } catch(Exception e) { 
     	e.getStackTrace();
@@ -724,6 +724,27 @@ public static String trailingZeros(float f, int leadingZeros) {
 
 public static boolean arrayContainsInt(final int[] array, final int key) {     
     return ArrayUtils.contains(array, key);
+}
+
+public static String subtractDateDays(String date, int subtractDays) {
+
+	String newDate = "";
+	
+	try {
+	    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+	    Date dateObj = format1.parse(date);
+	    
+	    Calendar c = Calendar.getInstance();
+	    c.setTime(dateObj);
+	    c.add(Calendar.DATE, -subtractDays);
+	    
+	    SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
+	    newDate = format2.format(c.getTime());
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+    
+    return newDate;
 }
 
 }

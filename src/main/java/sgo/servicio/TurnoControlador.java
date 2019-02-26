@@ -65,7 +65,6 @@ import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.PerfilHorario;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
-import sgo.entidad.ResumenCierre;
 import sgo.entidad.TableAttributes;
 import sgo.entidad.TanqueJornada;
 import sgo.entidad.Turno;
@@ -203,7 +202,6 @@ private HashMap<String, String> recuperarMapaValores(Locale locale) {
 	return mapaValores;
 }
 
-// @SuppressWarnings("unchecked")
 @RequestMapping(URL_GESTION_RELATIVA)
 public ModelAndView mostrarFormulario(Locale locale) {
 	
@@ -417,7 +415,6 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 	        if (!respuestaPerfilDetalle.estado) {
 	        	list.add(eTurno);
 	        	continue;
-	        	//throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
 	        }
 	        
 	        PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalle.getContenido().getCarga().get(0);
@@ -807,7 +804,7 @@ public @ResponseBody Respuesta obtieneUltimaJornada(HttpServletRequest httpReque
 			parametros.setIdOperacion(Integer.parseInt( httpRequest.getParameter("idOperacion")));
 		}
 		
-		int estados[]={Jornada.ESTADO_ABIERTO,Jornada.ESTADO_REGISTRADO};		
+		int estados[]={Jornada.ESTADO_ABIERTO,Jornada.ESTADO_REGISTRADO};	
 		parametros.setFiltroEstados(estados);		
 		
     	respuesta= dJornada.recuperarUltimaJornadaEstado(parametros);

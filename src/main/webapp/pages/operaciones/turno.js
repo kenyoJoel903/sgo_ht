@@ -20,8 +20,8 @@ $(document).ready(function() {
 	moduloActual.columnasGrillaJornada.push({ "data": 'id'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'estacion.id'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'estacion.nombre'});
-	moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.nombrePerfil'});
-	moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'}); // 5
+	moduloActual.columnasGrillaJornada.push({ "data": 'fechaOperativa'}); // antes 5 - ahora 4
+	moduloActual.columnasGrillaJornada.push({ "data": 'perfilHorario.nombrePerfil'}); // 5
 	moduloActual.columnasGrillaJornada.push({ "data": 'totalDespachos'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'fechaActualizacion'});
 	moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});
@@ -32,8 +32,8 @@ $(document).ready(function() {
 	moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
 	moduloActual.definicionColumnasJornada.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : false });
 	moduloActual.definicionColumnasJornada.push({"targets" : 3, "searchable" : true, "orderable" : false, "visible" : true });
-	moduloActual.definicionColumnasJornada.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true });
-	moduloActual.definicionColumnasJornada.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearFecha });
+	moduloActual.definicionColumnasJornada.push({"targets" : 4, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearFecha });
+	moduloActual.definicionColumnasJornada.push({"targets" : 5, "searchable" : true, "orderable" : false, "visible" : true });
 	moduloActual.definicionColumnasJornada.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-right" });
 	moduloActual.definicionColumnasJornada.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
 	moduloActual.definicionColumnasJornada.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });

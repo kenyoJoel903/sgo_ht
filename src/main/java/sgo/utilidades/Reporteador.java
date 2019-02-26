@@ -29,14 +29,13 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import sgo.entidad.Producto;
 
 import org.apache.commons.lang.StringUtils;
-//import org.apache.poi.hssf.model.Workbook;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-//import org.apache.poi.ss.usermodel.CellStyle;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;

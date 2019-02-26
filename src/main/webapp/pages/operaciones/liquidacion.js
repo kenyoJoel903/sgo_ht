@@ -32,7 +32,7 @@ $(document).ready(function(){
       return utilitario.formatearDecimales(data,2);
   } , "className": "text-right" });
   moduloActual.definicionColumnas.push({"targets": 7, "searchable": false, "orderable": false, "visible":true, "render" : function ( data, type, full, meta ) {
-      return utilitario.formatearDecimales(data,2);
+	  return utilitario.formatearDecimales(data,2);
   } , "className": "text-right" });
   moduloActual.definicionColumnas.push({"targets": 8, "searchable": false, "orderable": false, "visible":true, 	  "render" : function ( data, type, full, meta ) {
       return utilitario.formatearDecimales(data,2);
