@@ -115,7 +115,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<text><![CDATA[PETRÓLEOS DEL PERÚ - PETROPERÚ S.A.]]></text>
+				<text><![CDATA[PETRÓLEOS DEL PERÚ - PETROPERÚ S.A. - IREPORT]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="100" y="43" width="1120" height="13"/>
@@ -155,7 +155,7 @@
 				<text><![CDATA[ESTACIÓN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="217" y="0" width="164" height="41"/>
+				<reportElement x="217" y="0" width="163" height="41"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -168,7 +168,7 @@
 				<text><![CDATA[PRODUCTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="381" y="15" width="55" height="26"/>
+				<reportElement x="380" y="15" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -181,7 +181,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="436" y="15" width="55" height="26"/>
+				<reportElement x="440" y="15" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -207,7 +207,7 @@
 				<text><![CDATA[DÍA OPERAT.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="381" y="0" width="110" height="15"/>
+				<reportElement x="380" y="0" width="120" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -220,20 +220,7 @@
 				<text><![CDATA[TANQUES]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="491" y="15" width="55" height="26"/>
-				<box>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
-				</textElement>
-				<text><![CDATA[LEC INICIAL]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="656" y="15" width="55" height="26"/>
+				<reportElement x="560" y="15" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -246,7 +233,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="601" y="15" width="55" height="26"/>
+				<reportElement x="500" y="15" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -259,20 +246,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="546" y="15" width="55" height="26"/>
-				<box>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
-				</textElement>
-				<text><![CDATA[LEC FINAL]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="491" y="0" width="220" height="15"/>
+				<reportElement x="500" y="0" width="120" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -285,7 +259,7 @@
 				<text><![CDATA[CONTÓMETROS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="751" y="15" width="41" height="26"/>
+				<reportElement x="680" y="15" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -298,7 +272,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="711" y="15" width="40" height="26"/>
+				<reportElement x="620" y="15" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -311,7 +285,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="711" y="0" width="81" height="15"/>
+				<reportElement x="620" y="0" width="120" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -324,7 +298,7 @@
 				<text><![CDATA[DOCUMENTOS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="792" y="15" width="116" height="11"/>
+				<reportElement x="740" y="15" width="130" height="11"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -337,7 +311,7 @@
 				<text><![CDATA[TQ vs CNT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="847" y="26" width="61" height="15"/>
+				<reportElement x="805" y="26" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -350,7 +324,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="792" y="26" width="55" height="15"/>
+				<reportElement x="740" y="26" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -363,7 +337,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="792" y="0" width="371" height="15"/>
+				<reportElement x="740" y="0" width="390" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -376,7 +350,7 @@
 				<text><![CDATA[DIFERENCIA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="908" y="15" width="116" height="11"/>
+				<reportElement x="870" y="15" width="130" height="11"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -389,7 +363,7 @@
 				<text><![CDATA[TQ vs DOC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="908" y="26" width="55" height="15"/>
+				<reportElement x="870" y="26" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -402,7 +376,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="963" y="26" width="61" height="15"/>
+				<reportElement x="935" y="26" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -415,7 +389,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1024" y="15" width="139" height="11"/>
+				<reportElement x="1000" y="15" width="130" height="11"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -428,7 +402,7 @@
 				<text><![CDATA[CNT vs DOC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1024" y="26" width="66" height="15"/>
+				<reportElement x="1000" y="26" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -441,7 +415,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1090" y="26" width="73" height="15"/>
+				<reportElement x="1065" y="26" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -454,7 +428,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1163" y="0" width="57" height="41"/>
+				<reportElement x="1130" y="0" width="90" height="41"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -497,7 +471,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{estacion}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="217" y="0" width="164" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="217" y="0" width="163" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -510,7 +484,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="381" y="0" width="55" height="20" backcolor="#FFFFFF"/>
+				<reportElement stretchType="RelativeToTallestObject" x="380" y="0" width="60" height="20" backcolor="#FFFFFF"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -523,12 +497,12 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_observado_t}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="436" y="0" width="55" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="440" y="0" width="60" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.0"/>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
 					<font fontName="Helvetica" size="8" isUnderline="false" pdfFontName="Helvetica"/>
@@ -536,36 +510,10 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_corregido_t}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="491" y="0" width="55" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="500" y="0" width="60" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Helvetica" size="8" isUnderline="false" pdfFontName="Helvetica"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{lectura_inicial_c}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="546" y="0" width="55" height="20"/>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Helvetica" size="8" isUnderline="false" pdfFontName="Helvetica"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{lectura_final_c}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="601" y="0" width="55" height="20"/>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.0"/>
+					<topPen lineWidth="0.75" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
@@ -575,7 +523,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_observado_c}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="656" y="0" width="55" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="560" y="0" width="60" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -588,7 +536,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_corregido_c}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="711" y="0" width="40" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="620" y="0" width="60" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -601,7 +549,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_observado_d}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="751" y="0" width="41" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="680" y="0" width="60" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -614,7 +562,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_corregido_d}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="792" y="0" width="55" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="740" y="0" width="65" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -627,7 +575,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_observado_tc}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="847" y="0" width="61" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="805" y="0" width="65" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -640,7 +588,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_corregido_tc}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="908" y="0" width="55" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="870" y="0" width="65" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -653,7 +601,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_observado_td}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="963" y="0" width="61" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="935" y="0" width="65" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -666,7 +614,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_corregido_td}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="1024" y="0" width="66" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="1000" y="0" width="65" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -679,7 +627,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_observado_cd}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="1090" y="0" width="73" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="1065" y="0" width="65" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -692,7 +640,7 @@
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{volumen_corregido_cd}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="1163" y="0" width="57" height="20"/>
+				<reportElement stretchType="RelativeToTallestObject" x="1130" y="0" width="90" height="20"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -769,7 +717,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Helvetica" size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<text><![CDATA[PETRÓLEOS DEL PERÚ - PETROPERÚ S.A.]]></text>
+				<text><![CDATA[PETRÓLEOS DEL PERÚ - PETROPERÚ S.A. - IREPORT 2]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="100" y="44" width="1120" height="13"/>
@@ -803,7 +751,7 @@
 				<text><![CDATA[REPORTE DE CONCILIACIÓN VOLUMÉTRICA ESTACIÓN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="491" y="68" width="220" height="15"/>
+				<reportElement x="500" y="68" width="120" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -816,7 +764,7 @@
 				<text><![CDATA[CONTÓMETROS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1090" y="94" width="73" height="15"/>
+				<reportElement x="1065" y="94" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -829,7 +777,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="792" y="68" width="371" height="15"/>
+				<reportElement x="740" y="68" width="390" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -842,7 +790,7 @@
 				<text><![CDATA[DIFERENCIA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="217" y="68" width="164" height="41"/>
+				<reportElement x="217" y="68" width="163" height="41"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -855,7 +803,7 @@
 				<text><![CDATA[PRODUCTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="711" y="83" width="40" height="26"/>
+				<reportElement x="620" y="83" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -868,7 +816,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="963" y="94" width="61" height="15"/>
+				<reportElement x="935" y="94" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -881,7 +829,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="711" y="68" width="81" height="15"/>
+				<reportElement x="620" y="68" width="120" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -907,7 +855,7 @@
 				<text><![CDATA[DÍA OPERAT.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="656" y="83" width="55" height="26"/>
+				<reportElement x="560" y="83" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -920,7 +868,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="751" y="83" width="41" height="26"/>
+				<reportElement x="680" y="83" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -933,7 +881,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1024" y="83" width="139" height="11"/>
+				<reportElement x="1000" y="83" width="130" height="11"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -946,7 +894,7 @@
 				<text><![CDATA[CNT vs DOC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="436" y="83" width="55" height="26"/>
+				<reportElement x="440" y="83" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -959,7 +907,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="792" y="83" width="116" height="11"/>
+				<reportElement x="740" y="83" width="130" height="11"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -972,7 +920,7 @@
 				<text><![CDATA[TQ vs CNT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="847" y="94" width="61" height="15"/>
+				<reportElement x="805" y="94" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -985,7 +933,7 @@
 				<text><![CDATA[VOL. 60°]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1024" y="94" width="66" height="15"/>
+				<reportElement x="1000" y="94" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -998,33 +946,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="546" y="83" width="55" height="26"/>
-				<box>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
-				</textElement>
-				<text><![CDATA[LEC FINAL]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="491" y="83" width="55" height="26"/>
-				<box>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Helvetica" size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
-				</textElement>
-				<text><![CDATA[LEC INICIAL]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="908" y="94" width="55" height="15"/>
+				<reportElement x="870" y="94" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -1037,7 +959,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="908" y="83" width="116" height="11"/>
+				<reportElement x="870" y="83" width="130" height="11"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -1050,7 +972,7 @@
 				<text><![CDATA[TQ vs DOC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="792" y="94" width="55" height="15"/>
+				<reportElement x="740" y="94" width="65" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -1063,7 +985,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="381" y="68" width="110" height="15"/>
+				<reportElement x="380" y="68" width="120" height="15"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>
@@ -1076,7 +998,7 @@
 				<text><![CDATA[TANQUES]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="601" y="83" width="55" height="26"/>
+				<reportElement x="500" y="83" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -1089,7 +1011,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="381" y="83" width="55" height="26"/>
+				<reportElement x="380" y="83" width="60" height="26"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -1102,7 +1024,7 @@
 				<text><![CDATA[VOL. OBS.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1163" y="68" width="57" height="41"/>
+				<reportElement x="1130" y="68" width="90" height="41"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.0"/>

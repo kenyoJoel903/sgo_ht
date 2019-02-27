@@ -117,6 +117,7 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		if (httpRequest.getParameter("filtroEstado") != null) {
 			parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
 		}
+		parametros.setPaginacion(Constante.SIN_PAGINACION);
 		
 		//Recuperar registros
 		respuesta = dContometroJornada.recuperarRegistros(parametros);
