@@ -627,18 +627,15 @@ public class TransporteControlador {
             String numeroGR = elemento.getNumeroGR();
             if(numeroGR == null || numeroGR.trim().equals("")){
             	
-            	numeroGR = VALOR_FIJO_GR + " - " + String.format("%04d", idOperacion) + " - " + elemento.getNumeroOC();
+            	numeroGR = VALOR_FIJO_GR + "-" + String.format("%04d", idOperacion) + "-" + elemento.getNumeroOC();
             	
             }
             
-            maestroImportacion.setNumeroGuiaRemision(numeroGR);
+            elemento.setNumeroGR(numeroGR);            
             
 //          Fin Agregado por 9000003068
             
-//          Inicio Comentado por req 9000003068
-//            maestroImportacion.setNumeroGuiaRemision(elemento.getNumeroGR());
-//          Fin Comentado por req 9000003068
-            
+            maestroImportacion.setNumeroGuiaRemision(elemento.getNumeroGR());
             maestroImportacion.setNumeroOrdenEntrega(elemento.getNumeroOC());
             maestroImportacion.setPlacaCisterna(elemento.getPlacaCisterna());
             
@@ -941,7 +938,8 @@ public class TransporteControlador {
        if (transporte.getId()==0){
         respuesta = dTransporte.guardarRegistro(transporte);
         if (respuesta.estado == false) {
-         mensajeError = "Para la guia " + maestroImportacion.getNumeroGuiaRemision() + "no se pudo crear el transporte";
+     	   //Agregar un espacio despues del no se pudo por req 9000003068
+         mensajeError = "Para la guia " + maestroImportacion.getNumeroGuiaRemision() + " no se pudo crear el transporte";
          throw new Exception(mensajeError);
        }
         claveGenerada = Integer.valueOf(respuesta.valor);       
@@ -1014,7 +1012,8 @@ public class TransporteControlador {
     	       }else{
     	    	   respuesta = dTransporte.guardarRegistro(transporte);
     	           if (respuesta.estado == false) {
-    	            mensajeError = "Para la guia " + maestroImportacion.getNumeroGuiaRemision() + "no se pudo crear el transporte";
+    	        	   //Agregar un espacio despues del no se pudo por req 9000003068
+    	            mensajeError = "Para la guia " + maestroImportacion.getNumeroGuiaRemision() + " no se pudo crear el transporte";
     	            throw new Exception(mensajeError);
     	          }
     	           claveGenerada = Integer.valueOf(respuesta.valor);       
