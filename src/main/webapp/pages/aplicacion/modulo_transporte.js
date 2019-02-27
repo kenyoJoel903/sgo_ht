@@ -1393,7 +1393,11 @@ moduloTransporte.prototype.guardarSAP= function(){
     	fila = $(this).attr('data-fila');    
         numeroGuiaRemision=$("#cmpDetalleNumeroGuia"+fila).text();
         elemento=ref.listaMaestroSAP[numeroGuiaRemision];
-        registro.detalle.push(elemento);
+        
+//        Agregado if por req 9000003068 ya que ahora hay un checkbox en la cabecera que selecciona o deselecciona todos los registros
+        if(elemento !== undefined){
+        	registro.detalle.push(elemento);
+        }
     });
     console.log(registro);
     
