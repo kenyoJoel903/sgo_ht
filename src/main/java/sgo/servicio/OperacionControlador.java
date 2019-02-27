@@ -364,12 +364,37 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		}
 
  		// Recuperar el registro
- 		respuesta = dOperacion.recuperarRegistro(ID);
- 		// Verifica el resultado de la accion
+ 		respuesta = dOperacion.recuperarRegistro(ID); 
  		if (respuesta.estado == false) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
  		
+ 		/**
+ 		 * Trae el primer registro de Operacion
+ 		 */
+ 		List<Operacion> listOperacion = (List<Operacion>) respuesta.contenido.getCarga();
+ 		Operacion eOperacion = (Operacion) listOperacion.get(PRIMER_ROW);
+ 		
+ 		/**
+ 		 * Lista de productos equivalentes
+ 		 */
+ 		RespuestaCompuesta respuestaProdEquivalente = dProductoEquivalente.recuperarRegistrosPorOperacion(ID);
+ 		if (!respuestaProdEquivalente.estado) {
+ 			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+ 		}
+ 		ArrayList<ProductoEquivalente> listProductoEquivalente = (ArrayList<ProductoEquivalente>) respuestaProdEquivalente.getContenido().getCarga();
+ 		eOperacion.setListProductoEquivalente(listProductoEquivalente);
+ 		
+ 		/**
+ 		 * Setea la operacion inicial
+ 		 */
+ 		listOperacion.set(PRIMER_ROW, eOperacion);
+ 		
+ 		Contenido<Operacion> contenido = new Contenido<Operacion>();
+        contenido.carga = listOperacion;
+		contenido.totalRegistros = listOperacion.size();
+		contenido.totalEncontrados = listOperacion.size();
+        respuesta.contenido = contenido;
  		respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
 
  	} catch (Exception e) {
@@ -1049,6 +1074,9 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
  		
+ 		/**
+ 		 * Trae el primer registro de Operacion
+ 		 */
  		List<Operacion> listOperacion = (List<Operacion>) respuesta.contenido.getCarga();
  		Operacion eOperacion = (Operacion) listOperacion.get(PRIMER_ROW);
  		
@@ -1063,12 +1091,11 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		eOperacion.setListProductoEquivalente(listProductoEquivalente);
  		
  		/**
- 		 * Lista de Tolerancia
+ 		 * Lista de Tolerancia, para traer solo los productos de las estaciones de la operacion
  		 */
  		ParametrosListar param = new ParametrosListar();
  		param.setPaginacion(Constante.SIN_PAGINACION);
  		param.setCampoOrdenamiento(EstacionDao.NOMBRE_CAMPO_FILTRO_OPERACION);
- 		//param.setFiltroEstado(Constante.ESTADO_ACTIVO);
  		param.setFiltroOperacion(idOperacion);
  		RespuestaCompuesta respuestaTolerancia = dToleranciaDao.recuperarRegistros(param);
  		if (!respuestaTolerancia.estado) {
@@ -1105,6 +1132,9 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  		
  		eOperacion.setListProductoPrincipal(listProductoPrincipal);
 
+ 		/**
+ 		 * Setea la operacion inicial
+ 		 */
  		listOperacion.set(PRIMER_ROW, eOperacion);
  		
  		Contenido<Operacion> contenido = new Contenido<Operacion>();
@@ -1274,9 +1304,7 @@ RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale loc
  			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
  		}
  		
- 		List<ProductoEquivalente> listProductoEquivalente = (List<ProductoEquivalente>) respuesta.getContenido().getCarga();
- 		
- 		if (listProductoEquivalente.size() > 0) {
+ 		if (respuesta.getContenido().getCarga().size() > 0) {
  			throw new Exception(gestorDiccionario.getMessage("sgo.productoSecundarioUnicoEstado", null, locale));
  		}
  		

@@ -22,8 +22,8 @@ public class DataMaestraServicioWS {
 	
 	public RespuestaCompuesta consultar(Cliente eCliente, DT_Data_Maestra_Cliente_Proforma_Response response){
 		proxy = new SI_Data_Maestra_Cliente_OutProxy();
-//		proxy.setEndpoint("http://petpidqc.petroperu.com.pe:50200/XISOAPAdapter/MessageServlet?senderParty=Proforma&senderService=BC_Data_Maestra_Cliente&receiverParty=&receiverService=&interface=SI_Data_Maestra_Cliente_Out&interfaceNamespace=urn:petroperu.com.pe:pmerp:sd:proforma");
-		proxy.setEndpoint("http://PEPINPRC.petroperu.com.pe:50600/XISOAPAdapter/MessageServlet?senderParty=Proforma&senderService=BC_Data_Maestra_Cliente&receiverParty=&receiverService=&interface=SI_Data_Maestra_Cliente_Out&interfaceNamespace=urn:petroperu.com.pe:pmerp:sd:proforma");
+		proxy.setEndpoint("http://petpidqc.petroperu.com.pe:50200/XISOAPAdapter/MessageServlet?senderParty=Proforma&senderService=BC_Data_Maestra_Cliente&receiverParty=&receiverService=&interface=SI_Data_Maestra_Cliente_Out&interfaceNamespace=urn:petroperu.com.pe:pmerp:sd:proforma");
+//		proxy.setEndpoint("http://PEPINPRC.petroperu.com.pe:50600/XISOAPAdapter/MessageServlet?senderParty=Proforma&senderService=BC_Data_Maestra_Cliente&receiverParty=&receiverService=&interface=SI_Data_Maestra_Cliente_Out&interfaceNamespace=urn:petroperu.com.pe:pmerp:sd:proforma");
 		DT_Data_Maestra_Cliente_Proforma_Request req = new DT_Data_Maestra_Cliente_Proforma_Request();
 		DT_Data_Maestra_Cliente_Proforma_RequestCodCliente_InItem [] subreq = new DT_Data_Maestra_Cliente_Proforma_RequestCodCliente_InItem[1];
 		subreq[0] = new DT_Data_Maestra_Cliente_Proforma_RequestCodCliente_InItem();
@@ -35,8 +35,8 @@ public class DataMaestraServicioWS {
 		
 		req.setCodCliente_In(subreq);
 		try {
-//			DT_Data_Maestra_Cliente_Proforma_Response res = proxy.SI_Data_Maestra_Cliente_Out(req, "PISGOUSER", "P3tr0p3ru!");
-			DT_Data_Maestra_Cliente_Proforma_Response res = proxy.SI_Data_Maestra_Cliente_Out(req, "PISGOUSER", "P3tr0p3ru042016");
+			DT_Data_Maestra_Cliente_Proforma_Response res = proxy.SI_Data_Maestra_Cliente_Out(req, "PISGOUSER", "P3tr0p3ru!");
+//			DT_Data_Maestra_Cliente_Proforma_Response res = proxy.SI_Data_Maestra_Cliente_Out(req, "PISGOUSER", "P3tr0p3ru042016");
 			
 			response.setClieDestMate_Out(res.getClieDestMate_Out());
 			response.setClieDestRamoCentMate_Out(res.getClieDestRamoCentMate_Out());

@@ -103,10 +103,21 @@ public class JornadaDao {
 			}
 			
 			if(argumentosListar.getFiltroEstado() != Constante.FILTRO_TODOS){
-				filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTADO + "=" + argumentosListar.getFiltroEstado() + " ");
+				filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTADO + "=" + argumentosListar.getFiltroEstado() + " "); 
 			}
 			
-			if(!argumentosListar.getFiltroFechaJornada().isEmpty()){
+			if (argumentosListar.getFiltroEstados() != null) {
+			    String estadoCadena = "";
+
+			    for (int e:argumentosListar.getFiltroEstados()) {
+			        estadoCadena = estadoCadena + String.valueOf(e) + ",";
+			    }
+
+			    if(estadoCadena.length() > 0) estadoCadena=estadoCadena.substring(0, estadoCadena.length() - 1);
+			    filtrosWhere.add(" t1.estado in(" + estadoCadena +")");
+			}
+			
+			if(!argumentosListar.getFiltroFechaJornada().isEmpty()){ 
 				filtrosWhere.add(" t1."+ FECHA_OPERATIVA + " ='" + argumentosListar.getFiltroFechaJornada() + "' ");
 			}
 			

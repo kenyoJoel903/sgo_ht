@@ -113,19 +113,19 @@ public class JornadaControlador {
 	@Autowired
 	private DiaOperativoDao dDiaOperativo;
 	
-//	Inicio agregado por requerimiento 9000003068=============
-	 @Autowired
-	 private PerfilHorarioDao dPerfilHorario;
+	//Inicio agregado por requerimiento 9000003068=============
+	@Autowired
+	private PerfilHorarioDao dPerfilHorario;
 	 
-	 @Autowired
-	 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
+	@Autowired
+	private PerfilDetalleHorarioDao dPerfilDetalleHorario;
 	 
 	@Autowired
 	private ParametroDao dParametro;
 	
 	@Autowired
 	private DespachoDao dDespacho;
-//		Fin agregado por requerimiento 9000003068========
+	//Fin agregado por requerimiento 9000003068========
 	
 	private DataSourceTransactionManager transaccion;//Gestor de la transaccion
 	/** Nombre de la clase. */
@@ -154,37 +154,38 @@ public class JornadaControlador {
 	private static final String URL_PROCESO_CIERRE_RELATIVA="/jornada/procesoCierre";
 	
 	private HashMap<String,String> recuperarMapaValores(Locale locale) {
+		
 	 HashMap<String,String> mapaValores = new HashMap<String,String>();
+	 
 	 try {
-    mapaValores.put("ESTADO_ACTIVO", String.valueOf(Constante.ESTADO_ACTIVO));
-    mapaValores.put("ESTADO_INACTIVO", String.valueOf(Constante.ESTADO_INACTIVO));
-    mapaValores.put("FILTRO_TODOS", String.valueOf(Constante.FILTRO_TODOS));
-    mapaValores.put("TEXTO_INACTIVO", gestorDiccionario.getMessage("sgo.estadoInactivo",null,locale));
-    mapaValores.put("TEXTO_ACTIVO", gestorDiccionario.getMessage("sgo.estadoActivo",null,locale));
-    mapaValores.put("TEXTO_TODOS", gestorDiccionario.getMessage("sgo.filtroTodos",null,locale));
-    
-    mapaValores.put("TITULO_AGREGAR_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioAgregar",null,locale));
-    mapaValores.put("TITULO_MODIFICA_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioEditar",null,locale));
-    mapaValores.put("TITULO_DETALLE_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioVer",null,locale));
-    mapaValores.put("TITULO_LISTADO_REGISTROS", gestorDiccionario.getMessage("sgo.tituloFormularioListado",null,locale));
-    //
-    mapaValores.put("ETIQUETA_BOTON_CERRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCerrar",null,locale));
-    mapaValores.put("ETIQUETA_BOTON_GUARDAR", gestorDiccionario.getMessage("sgo.etiquetaBotonGuardar",null,locale));
-
-    mapaValores.put("ETIQUETA_BOTON_AGREGAR", gestorDiccionario.getMessage("sgo.etiquetaBotonAgregar",null,locale));
-    mapaValores.put("ETIQUETA_BOTON_MODIFICAR", gestorDiccionario.getMessage("sgo.etiquetaBotonModificar",null,locale));
-    mapaValores.put("ETIQUETA_BOTON_VER", gestorDiccionario.getMessage("sgo.etiquetaBotonVer",null,locale));
-    mapaValores.put("ETIQUETA_BOTON_FILTRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonFiltrar",null,locale));
-    mapaValores.put("ETIQUETA_BOTON_ACTIVAR", gestorDiccionario.getMessage("sgo.etiquetaBotonActivar",null,locale));
-    
-    mapaValores.put("ETIQUETA_BOTON_CANCELAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCancelar",null,locale));
-    mapaValores.put("ETIQUETA_BOTON_CONFIRMAR", gestorDiccionario.getMessage("sgo.etiquetaBotonConfirmar",null,locale));
-    mapaValores.put("MENSAJE_REAPERTURAR_JORNADA", gestorDiccionario.getMessage("sgo.mensajeReaperturarJornada",null,locale));
-    mapaValores.put("MENSAJE_ELIMINAR_REGISTRO", gestorDiccionario.getMessage("sgo.mensajeEliminarRegistro",null,locale));
-    
-    mapaValores.put("MENSAJE_CARGANDO", gestorDiccionario.getMessage("sgo.mensajeCargando",null,locale));
-    mapaValores.put("TITULO_VENTANA_MODAL", gestorDiccionario.getMessage("sgo.tituloVentanaModal",null,locale));
-
+	    mapaValores.put("ESTADO_ACTIVO", String.valueOf(Constante.ESTADO_ACTIVO));
+	    mapaValores.put("ESTADO_INACTIVO", String.valueOf(Constante.ESTADO_INACTIVO));
+	    mapaValores.put("FILTRO_TODOS", String.valueOf(Constante.FILTRO_TODOS));
+	    mapaValores.put("TEXTO_INACTIVO", gestorDiccionario.getMessage("sgo.estadoInactivo",null,locale));
+	    mapaValores.put("TEXTO_ACTIVO", gestorDiccionario.getMessage("sgo.estadoActivo",null,locale));
+	    mapaValores.put("TEXTO_TODOS", gestorDiccionario.getMessage("sgo.filtroTodos",null,locale));
+	    
+	    mapaValores.put("TITULO_AGREGAR_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioAgregar",null,locale));
+	    mapaValores.put("TITULO_MODIFICA_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioEditar",null,locale));
+	    mapaValores.put("TITULO_DETALLE_REGISTRO", gestorDiccionario.getMessage("sgo.tituloFormularioVer",null,locale));
+	    mapaValores.put("TITULO_LISTADO_REGISTROS", gestorDiccionario.getMessage("sgo.tituloFormularioListado",null,locale));
+	    //
+	    mapaValores.put("ETIQUETA_BOTON_CERRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCerrar",null,locale));
+	    mapaValores.put("ETIQUETA_BOTON_GUARDAR", gestorDiccionario.getMessage("sgo.etiquetaBotonGuardar",null,locale));
+	
+	    mapaValores.put("ETIQUETA_BOTON_AGREGAR", gestorDiccionario.getMessage("sgo.etiquetaBotonAgregar",null,locale));
+	    mapaValores.put("ETIQUETA_BOTON_MODIFICAR", gestorDiccionario.getMessage("sgo.etiquetaBotonModificar",null,locale));
+	    mapaValores.put("ETIQUETA_BOTON_VER", gestorDiccionario.getMessage("sgo.etiquetaBotonVer",null,locale));
+	    mapaValores.put("ETIQUETA_BOTON_FILTRAR", gestorDiccionario.getMessage("sgo.etiquetaBotonFiltrar",null,locale));
+	    mapaValores.put("ETIQUETA_BOTON_ACTIVAR", gestorDiccionario.getMessage("sgo.etiquetaBotonActivar",null,locale));
+	    
+	    mapaValores.put("ETIQUETA_BOTON_CANCELAR", gestorDiccionario.getMessage("sgo.etiquetaBotonCancelar",null,locale));
+	    mapaValores.put("ETIQUETA_BOTON_CONFIRMAR", gestorDiccionario.getMessage("sgo.etiquetaBotonConfirmar",null,locale));
+	    mapaValores.put("MENSAJE_REAPERTURAR_JORNADA", gestorDiccionario.getMessage("sgo.mensajeReaperturarJornada",null,locale));
+	    mapaValores.put("MENSAJE_ELIMINAR_REGISTRO", gestorDiccionario.getMessage("sgo.mensajeEliminarRegistro",null,locale));
+	    
+	    mapaValores.put("MENSAJE_CARGANDO", gestorDiccionario.getMessage("sgo.mensajeCargando",null,locale));
+	    mapaValores.put("TITULO_VENTANA_MODAL", gestorDiccionario.getMessage("sgo.tituloVentanaModal",null,locale));
 	 }catch(Exception ex){
 	  
 	 }
@@ -192,7 +193,8 @@ public class JornadaControlador {
 	}
 	
 	@RequestMapping(URL_GESTION_RELATIVA)
-	public ModelAndView mostrarFormulario(Locale locale){
+	public ModelAndView mostrarFormulario(Locale locale) {
+		
 		ModelAndView vista =null;
 		AuthenticatedUserDetails principal = null;
 		ArrayList<Enlace> listaEnlaces = null;
@@ -201,6 +203,7 @@ public class JornadaControlador {
 		ArrayList<?> listaOperaciones = null;
 		ArrayList<?> listaEstaciones = null;
 		HashMap<String,String> mapaValores= null;
+		
 		try {
 			principal = this.getCurrentUser();
 			respuesta = menu.Generar(principal.getRol().getId(), URL_GESTION_COMPLETA);
@@ -291,6 +294,7 @@ public class JornadaControlador {
 		String mensajeRespuesta = "";
 		
 		try {
+			
 			//Recuperar el usuario actual
 			principal = this.getCurrentUser(); 
 			//Recuperar el enlace de la accion
@@ -299,12 +303,14 @@ public class JornadaControlador {
 				mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale);
 				throw new Exception(mensajeRespuesta);
 			}
+			
 			Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 			//Verificar si cuenta con el permiso necesario			
 			if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 				mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale);
 				throw new Exception(mensajeRespuesta);
     		}
+			
 			//Recuperar parametros
 			 parametros = new ParametrosListar();
 			if (httpRequest.getParameter("paginacion") != null) {
@@ -330,9 +336,11 @@ public class JornadaControlador {
 			if (httpRequest.getParameter("valorBuscado") != null) {
 				parametros.setValorBuscado(( httpRequest.getParameter("valorBuscado")));
 			}
+			
 			if (httpRequest.getParameter("txtFiltro") != null) {
 				parametros.setTxtFiltro((httpRequest.getParameter("txtFiltro")));
 			}
+			
 			parametros.setFiltroEstado(Constante.FILTRO_TODOS);
 			if (httpRequest.getParameter("filtroEstado") != null) {
 				parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
@@ -937,7 +945,8 @@ public class JornadaControlador {
 //	Fin agregado por req 9000003068====================================================================================================
 	
 	@RequestMapping(value = URL_GUARDAR_RELATIVA ,method = RequestMethod.POST)
-	public @ResponseBody RespuestaCompuesta guardarRegistro(@RequestBody Jornada eJornada,HttpServletRequest peticionHttp,Locale locale){		 
+	public @ResponseBody RespuestaCompuesta guardarRegistro(@RequestBody Jornada eJornada,HttpServletRequest peticionHttp,Locale locale) {
+		
 		RespuestaCompuesta respuesta = null;
 		AuthenticatedUserDetails principal = null;
 		Bitacora eBitacora= null;
@@ -950,7 +959,9 @@ public class JornadaControlador {
 		TanqueJornada eTanqueJornada = null;
 		ObjectMapper mapper = null;
 		int idJornadaGenerada;
+		
 		try {
+			
 			//Inicia la transaccion
 			this.transaccion = new DataSourceTransactionManager(dJornada.getDataSource());
 			definicionTransaccion = new DefaultTransactionDefinition();
@@ -963,11 +974,13 @@ public class JornadaControlador {
 			if (respuesta.estado==false){
 				throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 			}
+			
 			Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 			//Verificar si cuenta con el permiso necesario			
 			if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 				throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
-    		}			
+    		}	
+			
 			//Actualiza los datos de auditoria local
 			direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");  
 			if (direccionIp == null) {  
@@ -977,13 +990,14 @@ public class JornadaControlador {
 			if(!Utilidades.esValido(eJornada.getIdOperario1()) || eJornada.getIdOperario1() <= 0){
 				throw new Exception(gestorDiccionario.getMessage("sgo.noOperario1", null, locale));
 			}
+			
 			if(!Utilidades.esValido(eJornada.getIdOperario2())){
 				throw new Exception(gestorDiccionario.getMessage("sgo.noOperario2", null, locale));
 			}
+			
 			if(eJornada.getIdOperario1() == eJornada.getIdOperario2()){
 				throw new Exception(gestorDiccionario.getMessage("sgo.operadoreIguales", null, locale));
 			}
-			
 			
 			ArrayList<TanqueJornada> tanqueApertura = new ArrayList<TanqueJornada>();
 
@@ -1168,13 +1182,12 @@ public class JornadaControlador {
             
         	respuesta.mensaje=gestorDiccionario.getMessage("sgo.guardarExitoso",new Object[] {  eJornada.getFechaCreacion().substring(0, 9),eJornada.getFechaCreacion().substring(10),principal.getIdentidad() },locale);
         	this.transaccion.commit(estadoTransaccion);
-		} catch (Exception ex){
+		} catch (Exception e){
 			this.transaccion.rollback(estadoTransaccion);
-			//ex.printStackTrace();
-			Utilidades.gestionaError(ex, sNombreClase, "guardarRegistro");
-			respuesta.estado=false;
+			Utilidades.gestionaError(e, sNombreClase, "guardarRegistro");
+			respuesta.estado = false;
 			respuesta.contenido = null;
-			respuesta.mensaje=ex.getMessage();
+			respuesta.mensaje = e.getMessage();
 		}
 		return respuesta;
 	}
