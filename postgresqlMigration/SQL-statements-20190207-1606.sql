@@ -1980,3 +1980,87 @@ CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_volumetrica AS
 ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
     OWNER TO sgo_user;
 -- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_tanque AS
+SELECT t1.id_jornada, t1.id_producto, CAST(0 AS BIGINT) AS medida_inicial, CAST(0 AS BIGINT) AS medida_final, 
+	SUM(t1.volumen_observado_inicial + COALESCE(t5.volumen_observado, 0) - COALESCE(t2.volumen_observado_final, 0) + COALESCE(t3.volumen_observado, 0) - COALESCE(t4.volumen_observado, 0)) AS volumen_observado, 
+	SUM(t1.volumen_corregido_inicial + COALESCE(t5.volumen_corregido, 0) - COALESCE(t2.volumen_corregido_final, 0) + COALESCE(t3.volumen_corregido, 0) - COALESCE(t4.volumen_corregido, 0)) AS volumen_corregido
+FROM (
+	SELECT MIN(id_tjornada) AS id_tjornada, t1.id_tanque, t1.id_producto, t1.id_jornada, t1.volumen_observado_inicial, t1.volumen_corregido_inicial
+	FROM sgo.tanque_jornada t1
+	GROUP BY t1.id_tanque, t1.id_producto, t1.id_jornada, t1.volumen_observado_inicial, t1.volumen_corregido_inicial
+) t1 
+LEFT JOIN (
+	SELECT MAX(id_tjornada) AS id_tjornada, t1.id_tanque, t1.id_producto, t1.id_jornada, t1.volumen_observado_final, t1.volumen_corregido_final
+	FROM sgo.tanque_jornada t1
+	GROUP BY t1.id_tanque, t1.id_producto, t1.id_jornada, t1.volumen_observado_final, t1.volumen_corregido_final
+) t2 ON t1.id_tanque = t2.id_tanque AND t1.id_producto = t2.id_producto AND t1.id_jornada = t2.id_jornada
+LEFT JOIN (
+	SELECT COALESCE(SUM(volumen), 0) AS volumen_observado, COALESCE(SUM(volumen * factor_muestreo), 0) AS volumen_corregido, t2.id_tanque, t2.id_producto, t1.id_jornada 
+	FROM sgo.otro_movimiento t1
+	LEFT JOIN sgo.tanque t2 ON t1.id_tanque_destino = t2.id_tanque
+	LEFT JOIN sgo.v_muestreo_ultimo t3 ON t1.id_jornada = t3.id_jornada AND t2.id_producto = t3.producto_muestreado
+	GROUP BY t2.id_tanque, t2.id_producto, t1.id_jornada
+) t3 ON t1.id_tanque = t3.id_tanque AND t1.id_jornada = t3.id_jornada AND t1.id_producto = t3.id_producto
+LEFT JOIN (
+	SELECT COALESCE(SUM(volumen), 0) AS volumen_observado, COALESCE(SUM(volumen * factor_muestreo), 0) AS volumen_corregido, t2.id_tanque, t2.id_producto, t1.id_jornada 
+	FROM sgo.otro_movimiento t1
+	LEFT JOIN sgo.tanque t2 ON t1.id_tanque_origen = t2.id_tanque
+	LEFT JOIN sgo.v_muestreo_ultimo t3 ON t1.id_jornada = t3.id_jornada AND t2.id_producto = t3.producto_muestreado
+	GROUP BY t2.id_tanque, t2.id_producto, t1.id_jornada
+) t4 ON t1.id_tanque = t4.id_tanque AND t1.id_jornada = t4.id_jornada AND t1.id_producto = t4.id_producto
+LEFT JOIN (
+	SELECT t3.id_jornada, t5.id_producto, t1.id_tanque, CASE WHEN t6.tipo_volumen_descargado = 1 THEN SUM(t5.volumen_recibido_observado) 
+		WHEN t6.tipo_volumen_descargado = 2 THEN (t1.volumen_observado_final - t1.volumen_observado_inicial) ELSE 0 END AS volumen_observado, 
+		CASE WHEN t6.tipo_volumen_descargado = 1 THEN SUM(t5.volumen_recibido_corregido) WHEN t6.tipo_volumen_descargado = 2 THEN
+		(t1.volumen_corregido_final - t1.volumen_corregido_inicial) ELSE 0 END AS volumen_corregido--, 0 AS medida_inicial, 0 AS medida_final
+	FROM sgo.carga_tanque t1
+	LEFT JOIN sgo.dia_operativo t2 ON t1.id_doperativo = t2.id_doperativo
+	LEFT JOIN sgo.jornada t3 ON t2.fecha_operativa = t3.fecha_operativa
+	LEFT JOIN sgo.descarga_cisterna t4 ON t1.id_ctanque = t4.id_ctanque
+	LEFT JOIN sgo.descarga_compartimento t5 ON t4.id_dcisterna = t5.id_dcisterna
+	LEFT JOIN sgo.operacion t6 ON t2.id_operacion = t6.id_operacion
+	GROUP BY t3.id_jornada, t5.id_producto, t1.id_tanque, t6.tipo_volumen_descargado, t1.volumen_observado_final, t1.volumen_observado_inicial, 
+		t1.volumen_corregido_final, t1.volumen_corregido_inicial
+) t5 ON t1.id_tanque = t5.id_tanque AND t1.id_jornada = t5.id_jornada AND t1.id_producto = t5.id_producto
+GROUP BY t1.id_jornada, t1.id_producto;
+
+ALTER TABLE sgo.v_reporte_conciliacion_tanque
+    OWNER TO sgo_user;
+-- ************************************************************************************
+CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_estacion AS
+ SELECT j.fecha_operativa,
+    p.nombre AS producto,
+    e.nombre AS estacion,
+    t1.medida_inicial AS medida_inicial_t,
+    t1.medida_final AS medida_final_t,
+    t1.volumen_observado AS volumen_observado_t,
+    t1.volumen_corregido AS volumen_corregido_t,
+    t2.lectura_inicial AS lectura_inicial_c,
+    t2.lectura_final AS lectura_final_c,
+    ROUND(t2.volumen_observado, 2) AS volumen_observado_c,
+    ROUND(t2.volumen_corregido, 2) AS volumen_corregido_c,
+    ROUND(t3.volumen_observado, 2) AS volumen_observado_d,
+    ROUND(t3.volumen_corregido, 2) AS volumen_corregido_d,
+    ROUND(t1.volumen_observado - t2.volumen_observado, 2) AS volumen_observado_tc,
+    ROUND(t1.volumen_corregido - t2.volumen_corregido, 2) AS volumen_corregido_tc,
+    ROUND(t1.volumen_observado - t3.volumen_observado, 2) AS volumen_observado_td,
+    ROUND(t1.volumen_corregido - t3.volumen_corregido, 2) AS volumen_corregido_td,
+    ROUND(t2.volumen_observado - t3.volumen_observado, 2) AS volumen_observado_cd,
+    ROUND(t2.volumen_corregido - t3.volumen_corregido, 2) AS volumen_corregido_cd,
+    e.id_operacion,
+        CASE
+            WHEN j.estado = 1 THEN 'ABIERTO'::text
+            WHEN j.estado = 2 THEN 'REGISTRADO'::text
+            WHEN j.estado = 3 THEN 'CERRADO'::text
+            WHEN j.estado = 4 THEN 'LIQUIDADO'::text
+            ELSE 'ABIERTO'::text
+        END AS estado
+   FROM sgo.v_reporte_conciliacion_tanque t1
+     LEFT JOIN sgo.v_reporte_conciliacion_contometro t2 ON t2.id_jornada = t1.id_jornada AND t2.id_producto = t1.id_producto
+     LEFT JOIN sgo.v_reporte_conciliacion_despacho t3 ON t3.id_jornada = t1.id_jornada AND t3.id_producto = t1.id_producto
+     JOIN sgo.producto p ON p.id_producto = COALESCE(t1.id_producto, t2.id_producto, t3.id_producto)
+     JOIN sgo.jornada j ON j.id_jornada = COALESCE(t1.id_jornada, t2.id_jornada, t3.id_jornada)
+     JOIN sgo.estacion e ON e.id_estacion = j.id_estacion;
+
+ALTER TABLE sgo.v_reporte_conciliacion_estacion
+    OWNER TO sgo_user;
