@@ -1,9 +1,8 @@
 <!-- Agregado por req 9000003068-->
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.HashMap"%>
-<%
-HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); 
-%>
+<% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
+
 <!-- Contenedor de pagina-->
 <div class="content-wrapper">
 	<section class="content-header">

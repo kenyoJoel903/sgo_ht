@@ -516,8 +516,16 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		            <br />
 		    	</div>
 		    	
+				<div class="overlay" id="ocultaContenedorAperturaJornada">
+			    	<i class="fa fa-refresh fa-spin"></i>
+			    </div> 
+	   		</div>
+		</div>
+	</div>
+	
+	
 <!-- 		    	Inicio Agregado por 9000003068 -->
-		    							<div id="frmConfirmarGuardarApertura" class="modal"
+		    				<div id="frmConfirmarGuardarApertura" class="modal"
 							data-keyboard="false" data-backdrop="static">
 							<div class="modal-dialog">
 								<div class="modal-content">
@@ -541,14 +549,6 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 							</div>
 						</div>
 <!-- 				Fin agregado por 9000003068 -->
-				<div class="overlay" id="ocultaContenedorAperturaJornada">
-			    	<i class="fa fa-refresh fa-spin"></i>
-			    </div> 
-	   		</div>
-		</div>
-	</div>
-	
-	
 	
 	<div class="row" id="cntFormularioCierreJornada" style="display: none;">
 		<div class="col-md-12">

@@ -655,6 +655,12 @@ $(document).ready(function() {
 
   moduloActual.llenarDetalles = function(registro) {
 	  
+	  
+	  console.log(" ***** moduloActual.llenarDetalles ******** ");
+	  console.dir(registro);
+	  
+	  
+	  
     this.idRegistro = registro.id;    
     this.obj.vistaId.text(registro.id);
     this.obj.vistaNombre.text(registro.nombre);
@@ -737,6 +743,26 @@ $(document).ready(function() {
     grilla.append(g_tr);
     g_tr = '<tr><td> IP (Actualizacion):</td><td>' +registro.ipActualizacion+ '</td></tr>';
     grilla.append(g_tr);
+    
+    
+    /**
+     * Productos equivalentes
+     */
+    var listPe = registro.listProductoEquivalente;
+    
+    if (listPe == null || listPe.length <= 0) {
+    	return false;
+    }
+
+	$("#detalleProductosEquivalentes tbody").empty();
+    for (var k = 0; k < listPe.length; k++) { 
+    	$nombreProductoSecundario = listPe[k].nombreProductoSecundario;
+    	$nombreProductoPrincipal = listPe[k].nombreProductoPrincipal;
+    	$estado = listPe[k].estado == 1 ? "ACTIVO" : "INACTIVO";
+    	$row = '<tr><td class="text-left">'+$nombreProductoSecundario+'</td><td class="text-left">'+$nombreProductoPrincipal+'</td><td class="text-center">'+$estado+'</td></tr>';
+    	$("#detalleProductosEquivalentes > tbody:last").append($row);
+    }
+    
   };
 
   moduloActual.iniciarGuardar = function(){

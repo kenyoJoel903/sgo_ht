@@ -248,6 +248,19 @@
 	        <div class="box box-default">
 	            <div class="box-body">
 	                <table id="grilla_x" class="sgo-table table table-striped" style="width:100%;"></table>
+	                <br>
+					<table id="detalleProductosEquivalentes" class="sgo-table table table-striped">
+						<thead>
+							<tr>
+								<th>Productos Principales</th>
+								<th>Productos Secundarios</th>
+								<th>Estado</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr><td class="text-left" colspan="3">No hay resultados.</td></tr>
+						</tbody>
+					</table>
 	            </div>
 	            <div class="box-footer">
 	                <button id="btnCerrarVista"  class="btn btn-danger btn-sm">
