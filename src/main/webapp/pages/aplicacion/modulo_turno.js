@@ -246,7 +246,7 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   });
   
   this.obj.btnGuardarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
-	  referenciaModulo.botonGuardarApertura();		
+	  referenciaModulo.botonGuardarApertura();	/ xxx	
   });
  
   this.obj.btnCancelarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
@@ -491,24 +491,6 @@ moduloTurno.prototype.botonCancelarApertura = function(){
 	    this.obj.datTurnoAPI.ajax.reload(referenciaModulo.despuesListarRegistros,true);	
 	  	referenciaModulo.desactivarBotones();
 	    referenciaModulo.obj.btnVer.addClass(constantes.CSS_CLASE_DESHABILITADA);
-	} catch(error){
-	  console.log(error.message);
-	}
-};
-
-moduloTurno.prototype.botonGuardarApertura = function(){
-	var referenciaModulo = this;
-	try {
-		referenciaModulo.guardarApertura();
-	} catch(error){
-	  console.log(error.message);
-	}
-};
-
-moduloTurno.prototype.botonGuardarCierre = function(){
-	var referenciaModulo = this;
-	try {
-		referenciaModulo.guardarCierre();
 	} catch(error){
 	  console.log(error.message);
 	}
@@ -958,6 +940,34 @@ moduloTurno.prototype.verRegistro= function() {
 	});
 };
 
+moduloTurno.prototype.botonGuardarApertura = function(){
+	var referenciaModulo = this;
+	try {
+		//referenciaModulo.guardarApertura();
+		referenciaModulo.modalGuardarApertura();
+	} catch(error){
+	  console.log(error.message);
+	}
+};
+
+moduloTurno.prototype.botonGuardarCierre = function(){
+	var referenciaModulo = this;
+	try {
+		//referenciaModulo.guardarCierre();
+		referenciaModulo.modalGuardarCierre();
+	} catch(error){
+	  console.log(error.message);
+	}
+};
+
+moduloTurno.prototype.modalGuardarApertura = function() {
+	
+	
+	return false;
+	moduloTurno.prototype.guardarApertura();
+	
+};
+
 moduloTurno.prototype.guardarApertura = function() {
 	
 	var referenciaModulo = this;
@@ -966,9 +976,12 @@ moduloTurno.prototype.guardarApertura = function() {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.obj.frmApertura.valid()) {
 		
-		if (!confirm("Esta seguro de realizar la apertura del turno?")) {
-			return false;
-		}
+		
+		
+		/ XXXX
+//		if (!confirm("Esta seguro de realizar la apertura del turno?")) {
+//			return false;
+//		}
 		
 		referenciaModulo.obj.ocultaContenedorApertura.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
@@ -998,6 +1011,13 @@ moduloTurno.prototype.guardarApertura = function() {
 	}
 };
 
+moduloTurno.prototype.modalGuardarCierre = function() {
+
+	
+	return false;
+	moduloTurno.prototype.guardarCierre();
+};
+
 moduloTurno.prototype.guardarCierre = function() {
 	
 	var referenciaModulo = this;
@@ -1006,9 +1026,10 @@ moduloTurno.prototype.guardarCierre = function() {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,  cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.validarCierre()) {
 		
-		if (!confirm("Esta seguro de realizar el cierre del turno?")) {
-			return false;
-		}
+		/ XXXX
+//		if (!confirm("Esta seguro de realizar el cierre del turno?")) {
+//			return false;
+//		}
 		  
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 		referenciaModulo.obj.ocultaContenedorCierre.show();

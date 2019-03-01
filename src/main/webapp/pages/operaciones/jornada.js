@@ -309,8 +309,6 @@ $(document).ready(function() {
           
       		function trailingZeros(num) {
 	    		
-	    		console.log("trailingZeros ::: " + moduloActual.obj.numeroDecimalesContometro);
-	    		
 	    		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
 	    		
 	    		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
@@ -1364,7 +1362,6 @@ $(document).ready(function() {
 //	Inicio Agregado por req 9000003068===============
 	referenciaModulo.obj.tipoAperturaTanque.val(registro.estacion.tipoAperturaTanque);
 	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
-	console.log(registro.estacion.numeroDecimalesContometro);
 //	Fin Agregado por req 9000003068=================
 	
 	if(registro.registroNuevo == false){
@@ -1565,24 +1562,17 @@ $(document).ready(function() {
 		
 		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
 		
-		console.log("decimalesContometro ::: " + decimalesContometro);
-		console.log("num1: " + num);
-		
 		if(decimalesContometro == 0) decimalesContometro = 2;	// 2 sera decimales por defecto
 		
 		if (!num.toString().includes(".")){
 			num = num + ".0";
 		}
-		
-		console.log("num2: " + num);
 		  
 		var result = num.toString().split(".");
 		
 		var integer = result[0];
 		var decimal = result[1];
 		
-		console.log("integer: " + result[0]);
-		console.log("decimal: " + result[1]);
 		if (decimal.length > decimalesContometro) {
 			return integer + "." + decimal.substring(0, decimalesContometro);
 		}
@@ -2307,6 +2297,11 @@ function delay(callback, ms) {
     };
 }
 //Fin Agregado por req 9000003068===========================	
+
+$('button[data-dismiss="modal"]').click(function() {
+	$("#frmConfirmarGuardarApertura").hide();
+});
+
   moduloActual.inicializar();
   
 });

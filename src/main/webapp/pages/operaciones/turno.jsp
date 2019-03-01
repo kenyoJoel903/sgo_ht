@@ -1,13 +1,13 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.sql.Timestamp"%>
-<%@ page import="sgo.entidad.Cliente"%>
-<%@ page import="sgo.entidad.Operacion"%>
-<%@ page import="sgo.entidad.Estacion"%>
-<%@ page import="sgo.entidad.Producto"%>
-<%@ page import="sgo.entidad.TableAttributes"%>
-<%@ page import="java.util.HashMap"%>
-<%@ page import="sgo.utilidades.Constante"%>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.sql.Timestamp" %>
+<%@ page import="sgo.entidad.Cliente" %>
+<%@ page import="sgo.entidad.Operacion" %>
+<%@ page import="sgo.entidad.Estacion" %>
+<%@ page import="sgo.entidad.Producto" %>
+<%@ page import="sgo.entidad.TableAttributes" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="sgo.utilidades.Constante" %>
 <% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
 <% TableAttributes tableAttributes = (TableAttributes) request.getAttribute("tableAttributes"); %>
 
@@ -541,3 +541,24 @@
 	</div>
 </div>
 
+<div id="modalGuardarApertura" class="modal" data-keyboard="false" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">
+					<strong>Turno</strong> Confirmación de la acción.
+				</h4>
+			</div>
+			<div class="modal-body">
+				<p>Esta seguro de realizar la <span class="apertura">apertura</span><span class="cierre">cierre</span> del turno?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+				<button id="btnProcesarArchivoContometros" type="button" class="btn btn-primary">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
