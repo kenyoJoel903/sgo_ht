@@ -714,6 +714,11 @@ $(document).ready(function() {
 	  		    "data": function (parametros) {
 	  		    	try{
 	  			      return {
+	  			    	
+//		  			  Iniciado agregado por req 9000003068		  			    
+		  			    estadoTanque: 1,
+//		  			  Fin agregado por 9000003068
+		  			    
 	  			    	valorBuscado: parametros.term,
   				        page: parametros.page,
   				        paginacion:0,
@@ -806,6 +811,10 @@ $(document).ready(function() {
           var cmpVol60Inicial=$(formularioNuevo).find("input[elemento-grupo='vol60Inicial']");
           var cmpFsInicial=$(formularioNuevo).find("input[elemento-grupo='fsInicial']");
           var cmpDespInicial=$(formularioNuevo).find("input[elemento-grupo='despInicial']");
+          
+//	    	Iniciado agregado por req 9000003068
+          var cmpIdProductoFinal = $('#GrupoCambioTanquesFinal').find("input[elemento-grupo='idProductoFinal']");
+//	    	Fin agregado por 9000003068
 
           cmpHoraInicial.inputmask("d/m/y h:s:s");
           cmpIdTanqueJornadaInicial.tipoControl="select2";
@@ -817,6 +826,12 @@ $(document).ready(function() {
 	  		    "data": function (parametros) {
 	  		    	try{
 	  			      return {
+	  			    	
+//	  			    	Iniciado agregado por req 9000003068
+	  			    	filtroProducto: cmpIdProductoFinal.val(),
+	  			    	estadoTanque: 1,
+//	  			    	Fin agregado por 9000003068
+	  			    	
 	  			    	valorBuscado: parametros.term,
   				        page: parametros.page,
   				        paginacion:0,
@@ -831,10 +846,16 @@ $(document).ready(function() {
 	    		  };
 	  		    },
 	  		    processResults: function (respuesta, pagina) {
-	  		      var resultados= respuesta.contenido.carga;
-	  		      return { 
-	  		    	  results: resultados
-	  		      };
+	  		    	
+//	  		    	se agrega if por req 9000003068
+	  		    	if(respuesta.contenido == null){
+	  		    		moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+	  		    	}else{
+	  	  		      var resultados= respuesta.contenido.carga;
+		  		      return { 
+		  		    	  results: resultados
+		  		      };
+	  		    	}
 	  		    },
 	  		    cache: true
 	  		  },
