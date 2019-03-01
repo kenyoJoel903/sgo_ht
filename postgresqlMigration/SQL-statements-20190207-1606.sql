@@ -1337,6 +1337,8 @@ VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
 VALUES('/admin/despacho/plantilla-despacho', 600, 359, '/despacho/plantilla-despacho', 3, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_DESPACHO'), 'Generar Plantilla Despacho', 1550766359243, 2, 2, 1550766359243, '127.0.0.1', '127.0.0.1');
 
+
+
 -- ******************** SCRIPT MODIFICACIONES VISTAS REPORTE CONCILIACION VOLUMETRICA (9000003068) *************************
 CREATE OR REPLACE VIEW sgo.v_liquidacion_carga1 AS
  SELECT t1.id_ctanque,
@@ -2064,3 +2066,15 @@ CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_estacion AS
 
 ALTER TABLE sgo.v_reporte_conciliacion_estacion
     OWNER TO sgo_user;
+
+
+-- ******************** Permisos al admin 20190301-1117 *************************
+INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES('URL_LIQUIDAR_JORNADA', 1, 1550765850819, 2, 2, 1550765850819, '127.0.0.1', '127.0.0.1');
+
+INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
+VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_LIQUIDAR_JORNADA'));
+
+INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES('/admin/liquidacion/liquidar-jornada', 600, 359, '/liquidacion/liquidar-jornada', 3, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_DESPACHO'), 'Generar Plantilla Despacho', 1550766359243, 2, 2, 1550766359243, '127.0.0.1', '127.0.0.1');
+
