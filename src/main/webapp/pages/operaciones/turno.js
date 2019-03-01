@@ -841,21 +841,25 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	          	
 	    	if(lenturaFin==null || lenturaFin.length==0 || parseFloat(lenturaFin)<=0){
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Debe de ingresar la lectura final correcta del cont\u00f3metro.");
+	    		referenciaModulo.obj.modalConfirmacionAccion.modal("hide");
 	    		return false;
     		}
 	    	
 	    	var diferencia = parseFloat(lenturaFin) - parseFloat(lecturaIni); 
 	    	if(diferencia < 0){
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La diferencia de lectura no debe ser negativa.");
+	    		referenciaModulo.obj.modalConfirmacionAccion.modal("hide");
 	    		return false;
 	    	}  
 	      }
-	    
-	    return retorno;
+
 	  } catch(error){
 		  console.log(error.message);	      
 	  };
-};
+	  
+	  return retorno;
+	  
+  };
 
 //========================== llenarTanquesApertura ============================================================ 
   moduloActual.llenarTanquesApertura = function(registro){

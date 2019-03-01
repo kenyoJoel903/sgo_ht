@@ -541,7 +541,7 @@
 	</div>
 </div>
 
-<div id="modalGuardarApertura" class="modal" data-keyboard="false" data-backdrop="static">
+<div id="modalConfirmacionAccion" class="modal" data-keyboard="false" data-backdrop="static">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -549,15 +549,15 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<h4 class="modal-title">
-					<strong>Turno</strong> Confirmación de la acción.
+					<i class="fa fa-fw fa-check-circle"></i> <strong>Turno</strong> - Confirmación de la acción.
 				</h4>
 			</div>
 			<div class="modal-body">
-				<p>Esta seguro de realizar la <span class="apertura">apertura</span><span class="cierre">cierre</span> del turno?</p>
+				<p>Esta seguro de realizar <span class="apertura">la apertura</span><span class="cierre">el cierre</span> del turno?</p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
-				<button id="btnProcesarArchivoContometros" type="button" class="btn btn-primary">Confirmar</button>
+				<button type="button" class="confirmar btn btn-primary">Confirmar</button>
 			</div>
 		</div>
 	</div>

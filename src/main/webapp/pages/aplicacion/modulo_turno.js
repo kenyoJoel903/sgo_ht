@@ -180,6 +180,7 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.ocultaContenedorCierre=$("#ocultaContenedorCierre");
   this.obj.ocultaContenedorFormulario=$("#ocultaContenedorFormulario");
   this.obj.ocultaContenedorVistaTurno=$("#ocultaContenedorVistaTurno");
+  
   //Botones	
   this.obj.btnFiltrar=$("#btnFiltrar");
   this.obj.btnApertura=$("#btnApertura");
@@ -219,7 +220,9 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   this.obj.filtroFechaJornada=$("#filtroFechaJornada");
   this.obj.cmpFiltroUsuario=$("#cmpFiltroUsuario");
   this.obj.cmpFiltroTabla=$("#cmpFiltroTabla");
-  this.obj.cmpFiltroTipoFecha=$("#cmpFiltroTipoFecha");	
+  this.obj.cmpFiltroTipoFecha=$("#cmpFiltroTipoFecha");
+  this.obj.modalConfirmacionAccion = $("#modalConfirmacionAccion");
+  this.obj.btnConfirmacionAccion = this.obj.modalConfirmacionAccion.find("button.confirmar");
 
   this.obj.btnFiltrar.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.validaFormularioXSS("#frmBuscar");
@@ -246,7 +249,7 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   });
   
   this.obj.btnGuardarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
-	  referenciaModulo.botonGuardarApertura();	/ xxx	
+	  referenciaModulo.botonGuardarApertura();	
   });
  
   this.obj.btnCancelarApertura.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
@@ -275,6 +278,10 @@ moduloTurno.prototype.inicializarControlesGenericos=function(){
   
   this.obj.btnProcesarArchivoContometros.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
 	  referenciaModulo.procesarArchivoContometros();		
+  });
+  
+  this.obj.btnConfirmacionAccion.on(referenciaModulo.NOMBRE_EVENTO_CLICK, function() {
+	  referenciaModulo.procesarConfirmacionAccion();		
   });
 
 };
@@ -679,7 +686,7 @@ moduloTurno.prototype.inicializarGrillaTurno = function() {
 	//Nota no retornar el objeto solo manipular directamente
 	//Establecer grilla y su configuracion
 	
-  var referenciaModulo=this;
+  var referenciaModulo = this;
   
   try {
 	  this.obj.tablaTurno.on(constantes.DT_EVENTO_AJAX, function (e,configuracion,json) {
@@ -941,31 +948,53 @@ moduloTurno.prototype.verRegistro= function() {
 };
 
 moduloTurno.prototype.botonGuardarApertura = function(){
-	var referenciaModulo = this;
+	var _this = this;
 	try {
-		//referenciaModulo.guardarApertura();
-		referenciaModulo.modalGuardarApertura();
-	} catch(error){
+		_this.modalGuardarApertura();
+	} catch(error) {
 	  console.log(error.message);
 	}
 };
 
-moduloTurno.prototype.botonGuardarCierre = function(){
-	var referenciaModulo = this;
+moduloTurno.prototype.botonGuardarCierre = function() {
+	var _this = this;
 	try {
-		//referenciaModulo.guardarCierre();
-		referenciaModulo.modalGuardarCierre();
-	} catch(error){
+		
+		//_this.guardarCierre();
+		
+		_this.modalGuardarCierre();
+	} catch(error) {
 	  console.log(error.message);
 	}
 };
 
 moduloTurno.prototype.modalGuardarApertura = function() {
+	this.obj.modalConfirmacionAccion.modal("show");
+	this.obj.modalConfirmacionAccion.find("span.apertura").show();
+	this.obj.modalConfirmacionAccion.find("span.cierre").hide();
+	this.obj.flagConfirmacionAccion = "apertura";
+	return false;
+};
+
+moduloTurno.prototype.modalGuardarCierre = function() {
+	this.obj.modalConfirmacionAccion.modal("show");
+	this.obj.modalConfirmacionAccion.find("span.apertura").hide();
+	this.obj.modalConfirmacionAccion.find("span.cierre").show();
+	this.obj.flagConfirmacionAccion = "cierre";
+	return false;
+};
+
+moduloTurno.prototype.procesarConfirmacionAccion = function() {
 	
+	var accion = this.obj.flagConfirmacionAccion;
+	
+	if (accion == "apertura") {
+		this.guardarApertura();
+	} else if (accion == "cierre") {
+		this.guardarCierre();
+	}
 	
 	return false;
-	moduloTurno.prototype.guardarApertura();
-	
 };
 
 moduloTurno.prototype.guardarApertura = function() {
@@ -975,14 +1004,7 @@ moduloTurno.prototype.guardarApertura = function() {
 	if (!referenciaModulo.validaFormularioXSS("#frmApertura")) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.obj.frmApertura.valid()) {
-		
-		
-		
-		/ XXXX
-//		if (!confirm("Esta seguro de realizar la apertura del turno?")) {
-//			return false;
-//		}
-		
+
 		referenciaModulo.obj.ocultaContenedorApertura.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
@@ -998,8 +1020,10 @@ moduloTurno.prototype.guardarApertura = function() {
 				} else {
 					referenciaModulo.iniciarListado(respuesta.mensaje);
 					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
+					referenciaModulo.obj.flagConfirmacionAccion = "";
 				}
 				referenciaModulo.obj.ocultaContenedorApertura.hide();
+				referenciaModulo.obj.modalConfirmacionAccion.modal("hide");
 			},			    		    
 			error: function() {
 				referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
@@ -1011,13 +1035,6 @@ moduloTurno.prototype.guardarApertura = function() {
 	}
 };
 
-moduloTurno.prototype.modalGuardarCierre = function() {
-
-	
-	return false;
-	moduloTurno.prototype.guardarCierre();
-};
-
 moduloTurno.prototype.guardarCierre = function() {
 	
 	var referenciaModulo = this;
@@ -1026,11 +1043,6 @@ moduloTurno.prototype.guardarCierre = function() {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,  cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.validarCierre()) {
 		
-		/ XXXX
-//		if (!confirm("Esta seguro de realizar el cierre del turno?")) {
-//			return false;
-//		}
-		  
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 		referenciaModulo.obj.ocultaContenedorCierre.show();
 		var eRegistro = referenciaModulo.recuperarValores();
@@ -1045,8 +1057,10 @@ moduloTurno.prototype.guardarCierre = function() {
 					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 				} else {		    				    			    		
 					referenciaModulo.iniciarListado(respuesta.mensaje);
+					referenciaModulo.obj.flagConfirmacionAccion = "";
 				}
 				referenciaModulo.obj.ocultaContenedorCierre.hide();
+				referenciaModulo.obj.modalConfirmacionAccion.modal("hide");
 			},			    		    
 			error: function() {
 				referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
