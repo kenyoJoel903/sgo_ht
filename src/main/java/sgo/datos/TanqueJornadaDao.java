@@ -94,6 +94,12 @@ public class TanqueJornadaDao {
 				filtrosWhere.add(" t1.estado_jornada =" + argumentosListar.getFiltroEstado());
 			}
 			
+//			Agregado por req 9000003068
+			if (argumentosListar.getEstadoTanque() != Constante.FILTRO_TODOS) {
+				filtrosWhere.add(" t1.estado_tanque =" + argumentosListar.getEstadoTanque());
+			}
+//			Fin Agregado por req 9000003068
+			
 			if (!argumentosListar.getFiltroFechaDiaOperativo().isEmpty()) {
 				filtrosWhere.add(" t1.fecha_operativa = '" + argumentosListar.getFiltroFechaDiaOperativo() +"' ");
 			}
