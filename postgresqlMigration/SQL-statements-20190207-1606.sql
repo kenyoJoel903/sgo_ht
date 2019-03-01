@@ -1980,3 +1980,52 @@ CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_volumetrica AS
 ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
     OWNER TO sgo_user;
 -- ************************************************************************************
+
+
+-- Inicio Agregado por HT 01-03-2019 15:37
+CREATE OR REPLACE VIEW sgo.v_tanque_jornada AS
+ SELECT t1.id_tjornada,
+    t1.id_tanque,
+    t1.id_producto,
+    t1.medida_inicial,
+    t1.medida_final,
+    t1.volumen_observado_inicial,
+    t1.volumen_observado_final,
+    t1.api_corregido_inicial,
+    t1.api_corregido_final,
+    t1.temperatura_inicial,
+    t1.temperatura_final,
+    t1.factor_correccion_inicial,
+    t1.factor_correccion_final,
+    t1.volumen_corregido_inicial,
+    t1.volumen_corregido_final,
+    t1.estado_servicio,
+    t1.en_linea,
+    t1.volumen_agua_final,
+    t1.id_jornada,
+    t2.nombre AS nombre_producto,
+    t2.abreviatura,
+    t2.indicador_producto,
+    t3.descripcion AS nombre_tanque,
+    t3.volumen_total,
+    t3.volumen_trabajo,
+    t4.id_estacion,
+    t4.fecha_operativa,
+    t4.estado AS estado_jornada,
+    t5.nombre AS nombre_estacion,
+    t5.id_operacion,
+    t1.hora_inicial,
+    t1.hora_final,
+    t1.apertura,
+    t1.cierre,
+    t3.estado AS estado_tanque
+   FROM sgo.tanque_jornada t1
+     JOIN sgo.producto t2 ON t1.id_producto = t2.id_producto
+     JOIN sgo.tanque t3 ON t1.id_tanque = t3.id_tanque
+     JOIN sgo.jornada t4 ON t1.id_jornada = t4.id_jornada
+     JOIN sgo.estacion t5 ON t4.id_estacion = t5.id_estacion;
+
+ALTER TABLE sgo.v_tanque_jornada
+    OWNER TO sgo_user;
+
+-- Fin Agregado por HT 01-03-2019 15:37

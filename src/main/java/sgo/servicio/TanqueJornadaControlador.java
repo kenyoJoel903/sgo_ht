@@ -199,7 +199,15 @@ public class TanqueJornadaControlador {
    
    parametros.setFiltroProducto(Constante.FILTRO_TODOS);
    if (httpRequest.getParameter("filtroProducto") != null) {
-    parametros.setFiltroProducto(Integer.parseInt(httpRequest.getParameter("filtroProducto")));
+	   
+//	   Agregado por req 9000003068 idProd
+	   String idProd = httpRequest.getParameter("filtroProducto");
+	   if(idProd.trim().equals("")){
+		   throw new Exception("Debe seleccionar Tanque a Cerrar");
+	   }
+	   
+//	   Se cambia por idProd por req 9000003068
+    parametros.setFiltroProducto(Integer.parseInt(idProd));
    }
    
    if (httpRequest.getParameter("idJornada") != null) {
@@ -225,6 +233,12 @@ public class TanqueJornadaControlador {
    if (httpRequest.getParameter("tanqueDeCierre") != null) {
     parametros.setTanqueDeCierre(Integer.parseInt(httpRequest.getParameter("tanqueDeCierre")));
    }
+   
+//	Inicio Agregado por req 9000003068
+   if (httpRequest.getParameter("estadoTanque") != null) {
+	    parametros.setEstadoTanque(Integer.parseInt(httpRequest.getParameter("estadoTanque")));
+	   }
+//	Fin Agregado por req 9000003068
 
    // Recuperar registros
    respuesta = dTanqueJornada.recuperarRegistros(parametros);

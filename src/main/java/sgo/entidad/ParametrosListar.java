@@ -26,6 +26,10 @@ public class ParametrosListar {
 	private int tanqueDeApertura=Constante.FILTRO_NINGUNO;
 	private int tanqueDeCierre=Constante.FILTRO_NINGUNO;
 	
+//	Inicio Agregado por req 9000003068
+	private int estadoTanque=Constante.FILTRO_TODOS;
+//	Fin Agregado por req 9000003068
+	
 	//filtros fechas
 	private String filtroFechaInicio = "";
 	private String filtroFechaFinal = "";
@@ -1296,6 +1300,16 @@ public int getIdProductoEquivalencia() {
 public void setIdProductoEquivalencia(int idProductoEquivalencia) {
 	this.idProductoEquivalencia = idProductoEquivalencia;
 }
+
+//Inicio Agregado por req 9000003068
+public int getEstadoTanque() {
+	return estadoTanque;
+}
+
+public void setEstadoTanque(int estadoTanque) {
+	this.estadoTanque = estadoTanque;
+}
+//Fin Agregado por req 9000003068
 
 
 }
