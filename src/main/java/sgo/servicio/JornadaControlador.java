@@ -922,7 +922,7 @@ public class JornadaControlador {
 		int idPerfilHorarioTemp = estacionTemp.getPerfilHorario().getId();
 		
 		if(idPerfilHorarioTemp == 0){
-			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique",null,locale));
+			throw new Exception("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique");
 		}
 		
 		respuesta = dPerfilHorario.recuperarRegistro(idPerfilHorarioTemp);
@@ -933,11 +933,11 @@ public class JornadaControlador {
 		PerfilHorario perfilHorarioTemp = (PerfilHorario) respuesta.contenido.carga.get(0);
 		
 		if(perfilHorarioTemp == null){
-			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique",null,locale));
+			throw new Exception("La Estación de Servicio tiene no tiene asociado un perfil de turno, por favor verifique");
 		}
 		
 		if(perfilHorarioTemp.getEstado() == PerfilHorario.ESTADO_INACTIVO){
-			throw new Exception(gestorDiccionario.getMessage("La Estación de Servicio tiene asociado un perfil de turno que se encuentra inactivo, por favor verifique",null,locale));
+			throw new Exception("La Estación de Servicio tiene asociado un perfil de turno que se encuentra inactivo, por favor verifique");
 		}
 		
 		return perfilHorarioTemp.getId();

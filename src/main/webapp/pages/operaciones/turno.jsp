@@ -7,6 +7,7 @@
 <%@ page import="sgo.entidad.Producto"%>
 <%@ page import="sgo.entidad.TableAttributes"%>
 <%@ page import="java.util.HashMap"%>
+<%@ page import="sgo.utilidades.Constante"%>
 <% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
 <% TableAttributes tableAttributes = (TableAttributes) request.getAttribute("tableAttributes"); %>
 
@@ -52,10 +53,15 @@
 	                    for(int indiceOperaciones=0; indiceOperaciones < numeroOperaciones; indiceOperaciones++){ 
 		                    eOperacion =(Operacion) listaOperaciones.get(indiceOperaciones);
 		                    eCliente = eOperacion.getCliente();
+		                    
+		                    if (eOperacion.getEstado() != Constante.ESTADO_ACTIVO || eCliente.getEstado() != Constante.ESTADO_ACTIVO) {
+		                    	continue;
+		                    }
+		                    	
 		                    %>
 		                    <option <%=seleccionado%> data-operacion-cliente='<%=eOperacion.getNombre().trim() + " / " + eCliente.getNombreCorto().trim() %>' data-idCliente='<%=eOperacion.getIdCliente()%>' data-idOperacion='<%=eOperacion.getId()%>' data-fecha-actual='<%=fechaActual%>' data-nombre-operacion='<%=eOperacion.getNombre().trim()%>' data-nombre-cliente='<%=eCliente.getNombreCorto().trim()%>' value='<%=eOperacion.getId()%>'><%=eOperacion.getNombre().trim() + " / " + eCliente.getNombreCorto().trim() %></option>
 		                    <%
-	                    } %>
+	                    }%>
                     </select>
                     </td> 
                     <td></td>
