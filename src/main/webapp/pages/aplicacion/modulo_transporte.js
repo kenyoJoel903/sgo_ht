@@ -283,9 +283,9 @@ moduloTransporte.prototype.inicializarControlesGenericos=function(){
 	});
 	
 	this.obj.btnImportar.on(referenciaModulo.NOMBRE_EVENTO_CLICK,function(){
-//		  Inicio Agregado por req 7000002585
+//		  Inicio Agregado por req 9000003068
 		  $("#cmpSelectorAllSap").prop( "checked", false);
-//		  Fin Agregado por req 7000002585
+//		  Fin Agregado por req 9000003068
 		  
 		referenciaModulo.descripcionPermiso = 'IMPORTAR_TRANSPORTE';
 		referenciaModulo.validaPermisos();
@@ -1435,9 +1435,9 @@ moduloTransporte.prototype.pintarSap= function(registros){
 	  var clonDetalle=null;
 	  ref.listaMaestroSAP={};
 	  
-//	  Inicio Agregado por req 7000002585
+//	  Inicio Agregado por req 9000003068
 	  $("#cmpSelectorAllSap").prop( "checked", false);
-//	  Fin Agregado por req 7000002585
+//	  Fin Agregado por req 9000003068
 	  try {
 		  $("#tablaListaSap > tbody:first").children().remove();
 		  for(var contador=0;contador<numeroRegistros;contador++){
