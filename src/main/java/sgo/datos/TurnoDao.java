@@ -525,11 +525,11 @@ public class TurnoDao {
 	          consultaSQL.append("t1.id_perfil_detalle_horario,"); 
 	          consultaSQL.append("t1.id_perfil_horario,");
 	          consultaSQL.append("t1.nombre_perfil,"); 
-	          consultaSQL.append("t1.horaInicioFinTurno,"); 
+//	          consultaSQL.append("t1.horaInicioFinTurno,"); 
 	          
 	        //Agregado por req 9000003068========================
-	          consultaSQL.append("t1.hora_inicio_turno,");
-	          consultaSQL.append("t1.hora_fin_turno,");
+//	          consultaSQL.append("t1.hora_inicio_turno,");
+//	          consultaSQL.append("t1.hora_fin_turno,");
 	          //===================================================
 	          
 	          consultaSQL.append("t1.usuario_actualizacion");

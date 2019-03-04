@@ -1083,7 +1083,8 @@ CREATE OR REPLACE VIEW sgo.v_perfil_horario AS
         t1.ip_creacion,
         t1.ip_actualizacion,
         u1.identidad AS usuario_creacion,
-        u2.identidad AS usuario_actualizacion
+        u2.identidad AS usuario_actualizacion,
+    (select count(*) :: integer from sgo.estacion where id_perfil_horario = t1.id_perfil_horario) estaciones_asociadas 
    FROM sgo.perfil_horario t1
    JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
    JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario;
@@ -2136,3 +2137,13 @@ ALTER TABLE sgo.v_tanque_jornada
     OWNER TO sgo_user;
 
 -- Fin Agregado por HT 01-03-2019 15:37
+
+-- Inicio Agregado por HT 04-03-2019 11:08
+insert into sgo.perfil_horario(nombre_perfil, numero_turnos, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values('PEFIL 2 TURNOS', 2, 1, '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
+
+insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_turno, hora_inicio_turno,  hora_fin_turno, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values((select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PEFIL 2 TURNOS'), 1, 'TURNO 1', '00:00', '12:00', '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
+
+insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_turno, hora_inicio_turno,  hora_fin_turno, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values((select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PEFIL 2 TURNOS'), 2, 'TURNO 2', '12:01', '23:59', '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
+
+update sgo.estacion set id_perfil_horario = (select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PEFIL 2 TURNOS');
+-- Fin Agregado por HT 04-03-2019 11:08

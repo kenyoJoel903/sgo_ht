@@ -55,11 +55,12 @@ public class PerfilHorarioDao {
 			consultaSQL.append("t1.nombre_perfil, ");
 			consultaSQL.append("t1.numero_turnos, ");
 			consultaSQL.append("t1.estado, ");
+			consultaSQL.append("t1.estaciones_asociadas, ");
 			consultaSQL.append("t1.creado_el, ");
 			consultaSQL.append("t1.creado_por, ");
 			consultaSQL.append("t1.actualizado_por, ");
 			consultaSQL.append("t1.actualizado_el, ");
-			consultaSQL.append("t1.ip_creacion, ");
+			consultaSQL.append("t1.ip_creacion, ");			
 			consultaSQL.append("t1.ip_actualizacion, ");
 			consultaSQL.append(" t1.usuario_creacion, "); 
 			consultaSQL.append(" t1.usuario_actualizacion ");
@@ -119,6 +120,7 @@ public class PerfilHorarioDao {
 			consultaSQL.append("t1.nombre_perfil, ");
 			consultaSQL.append("t1.numero_turnos, ");
 			consultaSQL.append("t1.estado, ");
+			consultaSQL.append("t1.estaciones_asociadas, ");
 			consultaSQL.append("t1.creado_el, ");
 			consultaSQL.append("t1.creado_por, ");
 			consultaSQL.append("t1.actualizado_por, ");
@@ -264,6 +266,7 @@ public class PerfilHorarioDao {
 			consultaSQL.append("t1.nombre_perfil, ");
 			consultaSQL.append("t1.numero_turnos, ");
 			consultaSQL.append("t1.estado, ");
+			consultaSQL.append("t1.estaciones_asociadas, ");
 			consultaSQL.append("t1.creado_el, ");
 			consultaSQL.append("t1.creado_por, ");
 			consultaSQL.append("t1.actualizado_por, ");

@@ -110,7 +110,10 @@ $(document).ready(function(){
 		
 		this.obj.cmpNombre=$("#cmpNombre");
 		
+		this.obj.cmpEstacionesAsociadas=$("#cmpEstacionesAsociadas");
+		
 		this.obj.btnGuardarTurno=$("#btnGuardarTurno");
+		this.obj.btnConfirmGuardarTurno=$("#btnConfirmGuardarTurno");
 		
 		this.obj.cmpNroTurnos=$("#cmpNroTurnos");
 		this.obj.cmpNroTurnos.inputmask('integer');
@@ -185,7 +188,7 @@ $(document).ready(function(){
 		    };
 		});
 		
-		moduloActual.obj.btnGuardarTurno.on(constantes.NOMBRE_EVENTO_CLICK, function() {
+		moduloActual.guardarPerfilHorario = function(){
 			
 			try {
 				var mensajeError = moduloActual.validarFormPerfilHorario();
@@ -199,6 +202,29 @@ $(document).ready(function(){
 				moduloActual.mostrarDepuracion(error.message);
 				moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, error.message);
 			};
+			
+		};
+		
+		moduloActual.obj.btnGuardarTurno.on(constantes.NOMBRE_EVENTO_CLICK, function() {
+			
+			moduloActual.guardarPerfilHorario();
+			 $("#frmConfirmarGuardarPerfil").hide();
+
+		});
+		
+		moduloActual.obj.btnConfirmGuardarTurno.on(constantes.NOMBRE_EVENTO_CLICK, function() {
+			
+			var estacionesAsociadas = moduloActual.obj.cmpEstacionesAsociadas.val();
+			console.log('estacionesAsociadas: '+ estacionesAsociadas);
+			
+			if(estacionesAsociadas == 'S'){
+		    	$("#cmpMensajeConfirmGuardarPerfil").text("El perfil está asociado a una o más estaciones, esta seguro de actualizar el registro?");
+	    		$("#frmConfirmarGuardarPerfil").show();
+			}else{
+				moduloActual.guardarPerfilHorario();
+			}
+			
+
 		});
 		
 		moduloActual.validarFormPerfilHorario = function() {
@@ -289,6 +315,8 @@ $(document).ready(function(){
 		 this.obj.cmpNombre.val(registro.nombrePerfil);
 		 this.obj.cmpNroTurnos.val(registro.numeroTurnos);
 		 
+		 this.obj.cmpEstacionesAsociadas.val(registro.estacionesAsociadas);
+		 
 		 this.obj.GrupoPerfilDetalle.removeAllForms();
 		 
 		 if (registro.lstDetalles != null) {
@@ -308,6 +336,10 @@ $(document).ready(function(){
 		 }
 		
 	};
+	
+	$('button[data-dismiss="modal"]').click(function() {
+		$("#frmConfirmarGuardarPerfil").hide();
+	});
 	
 	moduloActual.inicializar();
 
