@@ -1123,7 +1123,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_TURNOS_JORNADA'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/perfilHorario/turnosJornada', 10, 255, '/perfilHorario', 2, 
+        VALUES('/admin/perfilHorario/turnosJornada', 10, 255, '/perfilHorario', 0, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_TURNOS_JORNADA'), 'Turnos por Jornada', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
@@ -1135,7 +1135,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_CIERRE'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/turno/recuperarCierre', 10, 255, '/turno', 2, 
+        VALUES('/admin/turno/recuperarCierre', 10, 255, '/turno', 0, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_CIERRE'), 'Recuperar cierre', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
@@ -1154,7 +1154,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_CONTOMETROS'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/turno/generarPlantillaContometros', 10, 255, '/turno', 2, 
+        VALUES('/admin/turno/generarPlantillaContometros', 10, 255, '/turno', 0, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_CONTOMETROS'), 'Generar Plantilla Contometros', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
@@ -1211,7 +1211,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/operacion/recuperarProductosEquivalentes', 10, 255, '/operacion', 2, 
+        VALUES('/admin/operacion/recuperarProductosEquivalentes', 10, 255, '/operacion', 0, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_RECUPERAR_PRODUCTOS_EQUIVALENTES'), 'Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
@@ -1224,7 +1224,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/operacion/guardarProductosEquivalentes', 10, 255, '/operacion', 2, 
+        VALUES('/admin/operacion/guardarProductosEquivalentes', 10, 255, '/operacion', 0, 
             (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GUARDAR_PRODUCTOS_EQUIVALENTES'), 'Guardar Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 
@@ -1259,9 +1259,19 @@ INSERT INTO seguridad.permiso(nombre, estado, creado_el, creado_por, actualizado
 INSERT INTO seguridad.permisos_rol(id_rol, id_permiso) 
         VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'));
 
-INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-        VALUES('/admin/operacion/updateProductosEquivalentes', 10, 255, '/operacion', 2, 
-            (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'), 'Update Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
+INSERT INTO sgo.enlace
+(url_completa, 
+padre, 
+orden, 
+url_relativa, 
+tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
+VALUES
+('/admin/operacion/updateProductosEquivalentes', 
+10, 
+255,
+'/operacion', 
+0, 
+(SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_UPDATE_PRODUCTOS_EQUIVALENTES'), 'Update Productos Equivalentes', 1456317900163, 1, 1, 1456317900163, '127.0.0.1', '127.0.0.1');
 
 -- ******************** SCRIPTS DE DESPACHO - 9000003068 *************************
 CREATE OR REPLACE VIEW sgo.v_despacho AS
@@ -2077,7 +2087,7 @@ INSERT INTO seguridad.permisos_rol(id_rol, id_permiso)
 VALUES(1, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_LIQUIDAR_JORNADA'));
 
 INSERT INTO sgo.enlace(url_completa, padre, orden, url_relativa, tipo, id_permiso, titulo, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion)
-VALUES('/admin/liquidacion/liquidar-jornada', 600, 359, '/liquidacion/liquidar-jornada', 3, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_DESPACHO'), 'Generar Plantilla Despacho', 1550766359243, 2, 2, 1550766359243, '127.0.0.1', '127.0.0.1');
+VALUES('/admin/liquidacion/liquidar-jornada', 600, 359, '/liquidacion/liquidar-jornada', 0, (SELECT id_permiso FROM seguridad.permiso where nombre = 'URL_GENERAR_PLANTILLA_DESPACHO'), 'Generar Plantilla Despacho', 1550766359243, 2, 2, 1550766359243, '127.0.0.1', '127.0.0.1');
 
 -- Inicio Agregado por HT 01-03-2019 15:37
 CREATE OR REPLACE VIEW sgo.v_tanque_jornada AS

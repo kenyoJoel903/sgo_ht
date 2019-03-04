@@ -1,4 +1,5 @@
-function moduloJornada(){
+function moduloJornada() {
+	
   this.obj={};
   this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA;
   this.TOPES_PAGINACION = constantes.TOPES_PAGINACION;
