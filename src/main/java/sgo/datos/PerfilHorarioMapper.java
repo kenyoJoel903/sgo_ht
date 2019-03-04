@@ -22,6 +22,15 @@ public class PerfilHorarioMapper implements RowMapper<PerfilHorario>{
 			ePerfilHorario.setId(rs.getInt("id_perfil_horario"));
 			ePerfilHorario.setNombrePerfil(rs.getString("nombre_perfil"));
 			ePerfilHorario.setNumeroTurnos(rs.getInt("numero_turnos"));
+			
+			int estacionesAsociadas = rs.getInt("estaciones_asociadas");
+			
+			if(estacionesAsociadas > 0){
+				ePerfilHorario.setEstacionesAsociadas("S");
+			}else{
+				ePerfilHorario.setEstacionesAsociadas("N");
+			}
+			
 			ePerfilHorario.setEstado(rs.getInt("estado"));
 			
 			//Parametros de auditoria

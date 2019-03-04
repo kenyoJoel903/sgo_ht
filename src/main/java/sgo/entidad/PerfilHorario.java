@@ -9,6 +9,9 @@ public class PerfilHorario extends EntidadBase{
 	
 	private int id_perfil_horario;
 	private String nombre_perfil;
+	
+	private String estacionesAsociadas;
+	
 	private int numero_turnos;
 	private int estado;
 	
@@ -43,6 +46,12 @@ public class PerfilHorario extends EntidadBase{
 	}
 	public void setLstDetalles(List<PerfilDetalleHorario> lstDetalles) {
 		this.lstDetalles = lstDetalles;
+	}
+	public String getEstacionesAsociadas() {
+		return estacionesAsociadas;
+	}
+	public void setEstacionesAsociadas(String estacionesAsociadas) {
+		this.estacionesAsociadas = estacionesAsociadas;
 	}
 	
 }
