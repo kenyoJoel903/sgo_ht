@@ -62,7 +62,8 @@ public class ReporteLiquidacion {
  private String CABECERA_CENTRO2 = "UNIDAD OPERACIONES INDUSTRIALES";
  private String IMPRESO_POR = "Impreso por : ";
  private String IMPRESO_EL = "Impreso el : ";
- private String RUTA_IMAGENES ="pages/tema/app/imagen" ;///"imagenes";
+// Se agrega '/' al inicio de la constante RUTA_IMAGENES por incidente 7000002594
+ private String RUTA_IMAGENES ="/pages/tema/app/imagen" ;///"imagenes";
  private String NOMBRE_LOGO = "logo.jpg";
  private String DIVISOR_ETIQUETA = ":";
  private String ESPACIO_BLANCO = " ";
