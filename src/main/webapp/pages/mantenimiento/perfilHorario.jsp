@@ -77,6 +77,7 @@
 							<div class="form-group">
 								<label  class="control-label" for="cmpPlaca">Nombre</label> 
 								<input name="cmpNombre" id="cmpNombre" type="text" class="form-control text-uppercase input-sm" maxlength="60" required placeholder="Nombre" />
+								<input type="hidden" id="cmpEstacionesAsociadas" name="cmpEstacionesAsociadas"/> 
 							</div>	
 							<div class="form-group">
 								<label  class="control-label" for="cmpPlaca">Número de Turnos</label> 
@@ -121,7 +122,7 @@
 					</div>
 				
 					<div class="box-footer">
-						<a id="btnGuardarTurno" class="btn btn-primary btn-sm"><i class="fa fa-save"></i>  <%=mapaValores.get("ETIQUETA_BOTON_GUARDAR")%></a>
+						<a id="btnConfirmGuardarTurno" class="btn btn-primary btn-sm"><i class="fa fa-save"></i>  <%=mapaValores.get("ETIQUETA_BOTON_GUARDAR")%></a>
 			            <a id="btnAgregarTurno" class="btn bg-purple btn-sm"><i class="fa fa-plus-circle"></i>  Agregar Turno</a>
 			            <a id="btnCancelarGuardar" class="btn btn-danger btn-sm"><i class="fa fa-close"></i>  <%=mapaValores.get("ETIQUETA_BOTON_CANCELAR")%></a>
 					</div>
@@ -207,3 +208,25 @@
 		
 	</section>
 </div>
+
+<!-- Inicio Agregado por 9000003068 -->
+<div id="frmConfirmarGuardarPerfil" class="modal" data-keyboard="false" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title"><%=mapaValores.get("TITULO_VENTANA_MODAL")%></h4>
+			</div>
+			<div class="modal-body">
+				<p><span id="cmpMensajeConfirmGuardarPerfil"></span></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+				<button id="btnGuardarTurno" type="button" class="btn btn-primary">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Fin agregado por 9000003068 -->
