@@ -260,7 +260,8 @@ public class ReporteControlador {
 	    where =" where " +  StringUtils.join(filtros," AND ");
    }   
    
-   String sql ="select * from sgo.v_reporte_liquidacion_cisterna " + where;
+   //Agregado ORDER BY por incidente 7000002585
+   String sql ="select * from sgo.v_reporte_liquidacion_cisterna " + where + " ORDER BY fechaOperativa DESC";
    respuesta = dReporte.recuperarRegistrosJasper(sql);
    if (respuesta.estado==false){
 	    mensajeRespuesta = gestorDiccionario.getMessage("sgo.noListadoRegistros", null, locale);
