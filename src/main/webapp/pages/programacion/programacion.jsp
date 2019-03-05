@@ -693,7 +693,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 						</tr>
 						<tr> 
 							<td class="tabla-vista-titulo" style="width:15%;">Comentario</td>   
-							<td class="text-left"  colspan="5"><textarea  id='vistaComentario' style="resize: none;" disabled="disabled" rows="6" cols="190"></textarea></td>  							
+<!-- 							se quita cols="190" y se agrega width:100%; al style -->
+							<td class="text-left"  colspan="5"><textarea  id='vistaComentario' style="resize: none;" disabled="disabled" rows="6"></textarea></td>  						
 						</tr>
 					</tbody>
 				</table>
