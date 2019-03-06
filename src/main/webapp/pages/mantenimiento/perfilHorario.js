@@ -80,6 +80,7 @@ $(document).ready(function(){
 		
 		moduloActual.obj.cmpNombre.val('');
 	    moduloActual.obj.cmpNroTurnos.val(0);
+	    moduloActual.obj.cmpEstacionesAsociadas.val('N');
 	    
 	    this.obj.GrupoPerfilDetalle.removeAllForms();
 		

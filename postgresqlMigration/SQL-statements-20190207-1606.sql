@@ -2139,11 +2139,11 @@ ALTER TABLE sgo.v_tanque_jornada
 -- Fin Agregado por HT 01-03-2019 15:37
 
 -- Inicio Agregado por HT 04-03-2019 11:08
-insert into sgo.perfil_horario(nombre_perfil, numero_turnos, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values('PEFIL 2 TURNOS', 2, 1, '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
+insert into sgo.perfil_horario(nombre_perfil, numero_turnos, estado, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values('PERFIL 2 TURNOS', 2, 1, '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
 
-insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_turno, hora_inicio_turno,  hora_fin_turno, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values((select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PEFIL 2 TURNOS'), 1, 'TURNO 1', '00:00', '12:00', '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
+insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_turno, hora_inicio_turno,  hora_fin_turno, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values((select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PERFIL 2 TURNOS'), 1, 'TURNO 1', '00:00', '12:00', '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
 
-insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_turno, hora_inicio_turno,  hora_fin_turno, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values((select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PEFIL 2 TURNOS'), 2, 'TURNO 2', '12:01', '23:59', '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
+insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_turno, hora_inicio_turno,  hora_fin_turno, creado_el, creado_por, actualizado_por, actualizado_el, ip_creacion, ip_actualizacion) values((select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PERFIL 2 TURNOS'), 2, 'TURNO 2', '12:01', '23:59', '1549570678266', 2, 2, '1549570678266', '127.0.0.1', '127.0.0.1');
 
-update sgo.estacion set id_perfil_horario = (select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PEFIL 2 TURNOS');
+update sgo.estacion set id_perfil_horario = (select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PERFIL 2 TURNOS'),  cantidad_turnos = 2;
 -- Fin Agregado por HT 04-03-2019 11:08

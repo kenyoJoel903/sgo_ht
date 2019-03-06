@@ -241,7 +241,7 @@ moduloActual.llenarDetalles = function(registro) {
     this.obj.vistaIdOperacion.text(registro.operacion.nombre);    
     this.obj.vistaMetodo.text(utilitario.formatearMetodoDescarga(registro.metodoDescarga));
 
-    this.obj.vistaTipoHorario.text(registro.nombrePerfil);
+    this.obj.vistaTipoHorario.text(registro.perfilHorario.nombrePerfil);
     this.obj.vistaDecimalContometro.text(registro.numeroDecimalesContometro);
     this.obj.vistaTipoAperturaTanque.text(registro.tipoAperturaTanque);
     

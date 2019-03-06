@@ -123,6 +123,12 @@ public class EstacionDao {
 		    if(argumentosListar.getFiltroOperacion() != Constante.FILTRO_TODOS){
 		    	 filtrosWhere.add(" t1."+ NOMBRE_CAMPO_FILTRO_OPERACION + "=" + argumentosListar.getFiltroOperacion());
 		    }
+		    
+//		    Inicio Agregado por req 9000003068
+		    if(argumentosListar.getIdPerfilHorario() != 0){
+		    	 filtrosWhere.add(" t1.id_perfil_horario " + "=" + argumentosListar.getIdPerfilHorario());
+		    }
+//		    Fin Agregado por req 9000003068
 		     
 			if (!filtrosWhere.isEmpty()) {
 				consultaSQL.setLength(0);
@@ -142,11 +148,11 @@ public class EstacionDao {
 			consultaSQL.append("t1.id_operacion,");
 			consultaSQL.append("t1.nombre_operacion,");
 			consultaSQL.append("t1.metodo_descarga,");
-			consultaSQL.append("0 tipo_apertura_tanque,");
+			consultaSQL.append("tipo_apertura_tanque,");
 			// 9000003068
 			consultaSQL.append("t1.numero_decimales_contometro,");
-			consultaSQL.append("0 id_perfil_horario,");
-			consultaSQL.append("0 nombre_perfil,");
+			consultaSQL.append("id_perfil_horario,");
+			consultaSQL.append("nombre_perfil,");
 			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");
