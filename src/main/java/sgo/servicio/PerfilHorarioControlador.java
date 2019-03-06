@@ -4,6 +4,7 @@ package sgo.servicio;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,13 +27,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sgo.datos.BitacoraDao;
 import sgo.datos.EnlaceDao;
+import sgo.datos.EstacionDao;
 import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PerfilHorarioDao;
 import sgo.datos.TurnoDao;
 import sgo.entidad.Bitacora;
-import sgo.entidad.CargaTanque;
 import sgo.entidad.Contenido;
 import sgo.entidad.Enlace;
+import sgo.entidad.Estacion;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.PerfilDetalleHorario;
@@ -61,6 +63,9 @@ public class PerfilHorarioControlador {
 	 
 	 @Autowired
 	 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
+	 
+	@Autowired
+	private EstacionDao dEstacion;
 	 
 	 @Autowired
 	 private TurnoDao dTurno;
@@ -610,6 +615,23 @@ public class PerfilHorarioControlador {
 			    }
 			   
 			   
+			    ParametrosListar parametros = new ParametrosListar();
+				parametros.setIdPerfilHorario(ePerfilHorario.getId());
+				respuesta = dEstacion.recuperarRegistros(parametros);
+				if (respuesta.estado == false) {
+					throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
+				}
+				List<Estacion> listaEstaciones = (List<Estacion>) respuesta.contenido.carga;
+				
+				for(Estacion est : listaEstaciones){
+					est.setCantidadTurnos(ePerfilHorario.getNumeroTurnos());
+					est.setIdPerfilHorario(est.getPerfilHorario().getId());
+					est.setActualizadoEl(Calendar.getInstance().getTime().getTime());
+					est.setActualizadoPor(principal.getID());
+					est.setIpActualizacion(direccionIp);
+					dEstacion.actualizarRegistro(est);
+				}
+				
 			   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { ePerfilHorario.getFechaActualizacion().substring(0, 9), ePerfilHorario.getFechaActualizacion().substring(10),principal.getIdentidad() }, locale);
 
 		   this.transaccion.commit(estadoTransaccion);
