@@ -620,6 +620,7 @@ public class PerfilHorarioControlador {
 			   
 			    ParametrosListar parametros = new ParametrosListar();
 				parametros.setIdPerfilHorario(ePerfilHorario.getId());
+				parametros.setPaginacion(Constante.SIN_PAGINACION);
 				respuesta = dEstacion.recuperarRegistros(parametros);
 				if (respuesta.estado == false) {
 					throw new Exception(gestorDiccionario.getMessage("sgo.noPermisosDisponibles", null, locale));
