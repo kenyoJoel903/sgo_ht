@@ -327,8 +327,10 @@ public class PerfilHorarioControlador {
 				   }
 				}
 				   
-				   respuesta.mensaje = gestorDiccionario.getMessage("sgo.guardarExitoso", new Object[] { ePerfilHorario.getFechaCreacion().substring(0, 9), ePerfilHorario.getFechaCreacion().substring(10), principal.getIdentidad() }, locale);
-				   this.transaccion.commit(estadoTransaccion);
+				String dia = ePerfilHorario.getFechaActualizacion().substring(0, 11);
+				String hora = ePerfilHorario.getFechaActualizacion().substring(10);		
+				respuesta.mensaje = gestorDiccionario.getMessage("sgo.guardarExitoso", new Object[] { dia, hora, principal.getIdentidad() }, locale);
+				this.transaccion.commit(estadoTransaccion);
 
 			 
 		 } catch (Exception ex) {
@@ -448,8 +450,9 @@ public class PerfilHorarioControlador {
 			    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
 			   }
 			   
-			   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { ePerfilHorario.getFechaActualizacion().substring(0, 9), ePerfilHorario.getFechaActualizacion().substring(10),
-			     principal.getIdentidad() }, locale);
+				String dia = ePerfilHorario.getFechaActualizacion().substring(0, 11);
+				String hora = ePerfilHorario.getFechaActualizacion().substring(10);			   
+			   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { dia, hora,principal.getIdentidad() }, locale);
 			   
 			   this.transaccion.commit(estadoTransaccion);
 			   
@@ -632,7 +635,9 @@ public class PerfilHorarioControlador {
 					dEstacion.actualizarRegistro(est);
 				}
 				
-			   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { ePerfilHorario.getFechaActualizacion().substring(0, 9), ePerfilHorario.getFechaActualizacion().substring(10),principal.getIdentidad() }, locale);
+				String dia = ePerfilHorario.getFechaActualizacion().substring(0, 11);
+				String hora = ePerfilHorario.getFechaActualizacion().substring(10);
+			   respuesta.mensaje = gestorDiccionario.getMessage("sgo.actualizarExitoso", new Object[] { dia, hora,principal.getIdentidad() }, locale);
 
 		   this.transaccion.commit(estadoTransaccion);
 		  } catch (Exception ex) {
