@@ -520,7 +520,7 @@ moduloActual.llenarApertura = function(registro) {
   	  	form.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
   	  	form.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
   	  	//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);
-  	  form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
+  	  	form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
      }
     
 	/**
@@ -539,16 +539,15 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	var numeroDetalles = registro.length;
 	moduloActual.obj.cmpHoraInicio.val("");
 	moduloActual.obj.cmpObservacionApertura.val("");
-	  
+	
 	/**
 	 * Modificar altura del tbody de la tabla de contometros
 	 */
 	var contometroRegistros = moduloActual.obj.tableGrupoApertura.attr("data-contometro-registros");
-	
+
 	if (numeroDetalles < contometroRegistros) {
 		moduloActual.obj.grupoApertura.css("height", numeroDetalles * 25);
 	}
-
 	
 	if (numeroDetalles > 0) {
 

@@ -361,8 +361,7 @@ moduloTurno.prototype.recuperarTanquesDespachando= function() {
       success: function(respuesta) {
         if (!respuesta.estado) {
         	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-        }   
-        else {	  
+        }   else {	  
         	referenciaModulo.llenarTanquesApertura(respuesta.contenido.carga[0]);
         	referenciaModulo.llenarTanquesCierre(respuesta.contenido.carga[0]);
         }
