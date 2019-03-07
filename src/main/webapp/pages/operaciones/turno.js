@@ -77,9 +77,10 @@ $(document).ready(function() {
 	cmpOperarioResponsable: { required: "El campo 'Responsable' es obligatorio" },
   };
  
-  moduloActual.inicializarFormularioPrincipal= function(){
+  moduloActual.inicializarFormularioPrincipal= function() {
+	  
 	  var referenciaModulo=this;
-	    referenciaModulo.obj.verificadorFormulario = referenciaModulo.obj.frmApertura.validate({
+	  referenciaModulo.obj.verificadorFormulario = referenciaModulo.obj.frmApertura.validate({
 	      rules: referenciaModulo.reglasValidacionFormulario,
 	      messages: referenciaModulo.mensajesValidacionFormulario,
 	    highlight: function(element, errorClass, validClass) {
@@ -119,6 +120,8 @@ $(document).ready(function() {
 
   moduloActual.inicializarCampos = function() {
 	  
+	this.obj.tableGrupoApertura = $("table.grupo-apertura");
+	this.obj.tableGrupoCierre = $("table.grupo-cierre");
     this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
     this.obj.idClienteSeleccionado =$("#idClienteSeleccionado");
     this.obj.idEstacionSeleccionado =$("#idEstacionSeleccionado");
@@ -519,6 +522,15 @@ moduloActual.llenarApertura = function(registro) {
   	  	//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);
   	  form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
      }
+    
+	/**
+	 * Modificar altura del tbody de la tabla de contometros
+	 */
+	var contometroRegistros = moduloActual.obj.tableGrupoApertura.attr("data-contometro-registros");
+
+	if (numeroDetalles < contometroRegistros) {
+		moduloActual.obj.grupoApertura.css("height", numeroDetalles * 25);
+	}
 };
   
 moduloActual.llenarAperturaContometroJornada = function(registro) {
@@ -528,6 +540,16 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	moduloActual.obj.cmpHoraInicio.val("");
 	moduloActual.obj.cmpObservacionApertura.val("");
 	  
+	/**
+	 * Modificar altura del tbody de la tabla de contometros
+	 */
+	var contometroRegistros = moduloActual.obj.tableGrupoApertura.attr("data-contometro-registros");
+	
+	if (numeroDetalles < contometroRegistros) {
+		moduloActual.obj.grupoApertura.css("height", numeroDetalles * 25);
+	}
+
+	
 	if (numeroDetalles > 0) {
 
 		//operario
@@ -621,7 +643,7 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	_this.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
 	_this.obj.countListContometro = registro.length;
 	
-	for (var contador = 0; contador < numeroDetalles; contador++) {      
+	for (var contador = 0; contador < numeroDetalles; contador++) {  
 		moduloActual.obj.grupoCierre.addForm();
 		var form = moduloActual.obj.grupoCierre.getForm(contador);
 		
@@ -639,6 +661,16 @@ moduloActual.llenarFormularioCierre = function(registro) {
 		list["lectura_inicial"] = registro[contador].lecturaInicialStr;
 		_this.obj.listCronometro.push(list);
 	}
+	
+	/**
+	 * Modificar altura del tbody de la tabla de contometros
+	 */
+	var contometroRegistros = moduloActual.obj.tableGrupoCierre.attr("data-contometro-registros");
+	
+	if (numeroDetalles < contometroRegistros) {
+		moduloActual.obj.grupoCierre.css("height", numeroDetalles * 25);
+	}
+	
 };
 
   /**

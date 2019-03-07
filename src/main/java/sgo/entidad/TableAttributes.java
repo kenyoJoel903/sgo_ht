@@ -4,6 +4,7 @@ public class TableAttributes {
 	
 	private String headStyle;
 	private String bodyStyle;
+	private int contometroRegistros;
 	
 	public String getHeadStyle() {
 		return headStyle;
@@ -17,5 +18,10 @@ public class TableAttributes {
 	public void setBodyStyle(String bodyStyle) {
 		this.bodyStyle = bodyStyle;
 	}
-	
+	public int getContometroRegistros() {
+		return contometroRegistros;
+	}
+	public void setContometroRegistros(int contometroRegistros) {
+		this.contometroRegistros = contometroRegistros;
+	}
 }

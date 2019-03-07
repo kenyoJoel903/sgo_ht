@@ -396,7 +396,10 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 		                </table>
 		                <label><B>Cont&oacute;metros </B></label>
 <!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
-		                <table class="grupo-apertura-contometros table-scroll sgo-simple-table table table-condensed" style="border:1px solid black;background-color:#F2DEF5">
+		                <table 
+		                	class="grupo-apertura-contometros table-scroll sgo-simple-table table table-condensed" 
+		                	style="border:1px solid black; background-color:#F2DEF5"
+		                	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>" >
 							<thead>
 							  <tr>
 <!-- 							  se quito los class text-center por req 9000003068-->
@@ -406,7 +409,9 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 							  </tr>
 							</thead>
 <%-- 							se agrega  style="<%=tableAttributes.getBodyStyle() %>" por req 9000003068--%>
-							<tbody id="GrupoAperturaContometros" style="<%=tableAttributes.getBodyStyle() %>">
+							<tbody 
+								id="GrupoAperturaContometros" 
+								style="<%=tableAttributes.getBodyStyle() %>" >
 			      				<tr id="GrupoAperturaContometros_template">
 			      					<td class="celda-detalle"  style="width:10%;">
 			      					    <input elemento-grupo="idContometros" id="GrupoAperturaContometros_#index#_IdContometro" name="aperturaContometro[detalle][#index#][idContometro]" type="hidden" disabled class="form-control text-right input-sm"/>
@@ -421,13 +426,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
       									<input elemento-grupo="lecturaInicial" id="GrupoAperturaContometros_#index#_LecturaInicial" name="aperturaContometro[detalle][#index#][lecturaInicial]" type="text"  maxlength="8" disabled class="form-control text-right input-sm" />
 									</td>
 								</tr>
-<!-- 								Inicio se comenta por req 9000003068 -->
-<!-- 								<tr> -->
-<!-- 			      				<td></td> -->
-<!-- 			      				</tr> -->
-<!-- 								Fin se comenta por req 9000003068 -->
 			      				<tr id="GrupoAperturaContometros_noforms_template">
-			      				<td></td>
+			      					<td></td>
 			      				</tr>    
 							</tbody>
 						</table>

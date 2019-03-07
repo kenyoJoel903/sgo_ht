@@ -5,29 +5,29 @@ function moduloJornada() {
   this.TOPES_PAGINACION = constantes.TOPES_PAGINACION;
   this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
   this.LENGUAJE_GRILLA =  {
-		    "sProcessing":cadenas.GRILLA_PROCESANDO,
-		    "sLengthMenu":cadenas.GRILLA_LONGITUD_MENU,
-		    "sZeroRecords":cadenas.GRILLA_SIN_REGISTROS,
-		    "sEmptyTable": cadenas.GRILLA_TABLA_VACIA,
-		    "sInfo":cadenas.GRILLA_INFO,
-		    "sInfoEmpty": cadenas.GRILLA_INFO_VACIA,
-		    "sInfoFiltered": cadenas.GRILLA_INFO_FILTRADA,
-		    "sInfoPostFix":   cadenas.GRILLA_INFO_POST_FIX,
-		    "sSearch": cadenas.GRILLA_BUSCAR,
-		    "sUrl":          cadenas.GRILLA_URL,
-		    "sInfoThousands":  cadenas.GRILLA_MILES,
-		    "sLoadingRecords": cadenas.GRILLA_CARGANDO_REGISTROS,
-		    "oPaginate": {
-		      "sFirst":   cadenas.GRILLA_PAGINACION_PRIMERO,
-		      "sLast":    cadenas.GRILLA_PAGINACION_ULTIMO,
-		      "sNext":     cadenas.GRILLA_PAGINACION_SIGUIENTE,
-		      "sPrevious": cadenas.GRILLA_PAGINACION_ANTERIOR,
-		    },
-		    "oAria": {
-		      "sSortAscending":  cadenas.GRILLA_ORDEN_ASCENDENTE,
-		      "sSortDescending": cadenas.GRILLA_ORDEN_DESCENDENTE,
-		    }
-		  };
+		"sProcessing":cadenas.GRILLA_PROCESANDO,
+		"sLengthMenu":cadenas.GRILLA_LONGITUD_MENU,
+		"sZeroRecords":cadenas.GRILLA_SIN_REGISTROS,
+		"sEmptyTable": cadenas.GRILLA_TABLA_VACIA,
+		"sInfo":cadenas.GRILLA_INFO,
+		"sInfoEmpty": cadenas.GRILLA_INFO_VACIA,
+		"sInfoFiltered": cadenas.GRILLA_INFO_FILTRADA,
+		"sInfoPostFix":   cadenas.GRILLA_INFO_POST_FIX,
+		"sSearch": cadenas.GRILLA_BUSCAR,
+		"sUrl":          cadenas.GRILLA_URL,
+		"sInfoThousands":  cadenas.GRILLA_MILES,
+		"sLoadingRecords": cadenas.GRILLA_CARGANDO_REGISTROS,
+		"oPaginate": {
+		  "sFirst":   cadenas.GRILLA_PAGINACION_PRIMERO,
+		  "sLast":    cadenas.GRILLA_PAGINACION_ULTIMO,
+		  "sNext":     cadenas.GRILLA_PAGINACION_SIGUIENTE,
+		  "sPrevious": cadenas.GRILLA_PAGINACION_ANTERIOR,
+		},
+		"oAria": {
+		  "sSortAscending":  cadenas.GRILLA_ORDEN_ASCENDENTE,
+		  "sSortDescending": cadenas.GRILLA_ORDEN_DESCENDENTE,
+		}
+  };
 
   this.TIPO_CONTENIDO=constantes.TIPO_CONTENIDO_JSON;
   this.NOMBRE_EVENTO_CLICK=constantes.NOMBRE_EVENTO_CLICK;
@@ -47,41 +47,43 @@ function moduloJornada() {
   this.definicionColumnasJornada=[];
   this.ordenGrillaJornada=[[ 1, 'asc' ]];
   this.columnasGrillaJornada=[{ "data": null} ];//Target 0
-  this.definicionColumnasJornada=[{ "targets": 0, 
-	  								"searchable": false, 
-	  								"orderable": false, 
-	  								"visible":false, 
-	  								"render": function ( datos, tipo, fila, meta ) {
-											    var configuracion =meta.settings;
-											    return configuracion._iDisplayStart + meta.row + 1;
-											  }
+  this.definicionColumnasJornada=[{
+	  	"targets": 0, 
+		"searchable": false, 
+		"orderable": false, 
+		"visible":false, 
+		"render": function ( datos, tipo, fila, meta ) {
+		    var configuracion =meta.settings;
+		    return configuracion._iDisplayStart + meta.row + 1;
+		}
   }];
   
 };
 
 moduloJornada.prototype.mostrarDepuracion=function(mensaje){
   var referenciaModulo=this;
-  if (referenciaModulo.depuracionActivada=true){
+  if (referenciaModulo.depuracionActivada=true) {
 
   }
 };
 
 moduloJornada.prototype.mostrarErrorServidor=function(xhr,estado,error){
   var referenciaModulo=this;
+  
   if (xhr.status === constantes.ERROR_SIN_CONEXION) {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_NO_CONECTADO);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_NO_CONECTADO);
   } else if (xhr.status == constantes.ERROR_RECURSO_NO_DISPONIBLE) {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_RECURSO_NO_DISPONIBLE);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_RECURSO_NO_DISPONIBLE);
   } else if (xhr.status == constantes.ERROR_INTERNO_SERVIDOR) {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_INTERNO_SERVIDOR);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_INTERNO_SERVIDOR);
   } else if (estado === constantes.ERROR_INTERPRETACION_DATOS) {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_GENERICO_SERVIDOR);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_GENERICO_SERVIDOR);
   } else if (estado === constantes.ERROR_TIEMPO_AGOTADO) {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_TIEMPO_AGOTADO);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_TIEMPO_AGOTADO);
   } else if (estado === constantes.ERROR_CONEXION_ABORTADA) {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_GENERICO_SERVIDOR);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_GENERICO_SERVIDOR);
   } else {
-  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_GENERICO_SERVIDOR);
+	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,constantes.ERROR_GENERICO_SERVIDOR);
   }
 };
 
@@ -178,7 +180,6 @@ moduloJornada.prototype.inicializarControlesGenericos=function(){
   this.obj.btnAgregarMuestra=$("#btnAgregarMuestra");
   this.obj.btnConfirmaEliminarMuestra=$("#btnConfirmaEliminarMuestra");
 
-  //TODO
   //para guardar los datos de la jornada seleccionada
   this.obj.jornadaSeleccionado=$("#jornadaSeleccionado");
   this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
@@ -797,9 +798,11 @@ moduloJornada.prototype.inicializarGrillaJornada=function(){
 	});
 };
 
-moduloJornada.prototype.recuperarApertura= function(){
+moduloJornada.prototype.recuperarApertura= function() {
+
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	
 	$.ajax({
         type: constantes.PETICION_TIPO_GET,
         url: './jornada/recuperar-apertura', 
@@ -812,6 +815,7 @@ moduloJornada.prototype.recuperarApertura= function(){
           if (!respuesta.estado) {
             referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
           } else {
+        	  
         	referenciaModulo.resetearFormularioApertura();
             referenciaModulo.modoEdicion = constantes.MODO_APERTURAR_JORNADA;
             referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_APERTURA_JORNADA);
@@ -826,6 +830,7 @@ moduloJornada.prototype.recuperarApertura= function(){
             referenciaModulo.obj.cntFormularioMuestreoJornada.hide();
             referenciaModulo.llenarApertura(respuesta.contenido.carga[0]);
             referenciaModulo.obj.cntFormularioAperturaJornada.show();
+
           }
           referenciaModulo.obj.ocultaContenedorTabla.hide();
           referenciaModulo.obj.ocultaContenedorAperturaJornada.hide();
@@ -833,7 +838,7 @@ moduloJornada.prototype.recuperarApertura= function(){
         error: function(xhr,estado,error) {
           referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
         }
-      }); 
+	}); 
 };
 
 moduloJornada.prototype.guardarApertura= function(){  

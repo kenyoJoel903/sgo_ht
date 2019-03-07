@@ -195,7 +195,7 @@ public class JornadaControlador {
 	@RequestMapping(URL_GESTION_RELATIVA)
 	public ModelAndView mostrarFormulario(Locale locale) {
 		
-		ModelAndView vista =null;
+		ModelAndView vista = null;
 		AuthenticatedUserDetails principal = null;
 		ArrayList<Enlace> listaEnlaces = null;
 		RespuestaCompuesta respuesta = null;
@@ -207,7 +207,7 @@ public class JornadaControlador {
 		try {
 			principal = this.getCurrentUser();
 			respuesta = menu.Generar(principal.getRol().getId(), URL_GESTION_COMPLETA);
-			if (respuesta.estado==false){
+			if (respuesta.estado==false) {
 				throw new Exception(gestorDiccionario.getMessage("sgo.menuNoGenerado",null,locale));
 			}
 			listaEnlaces = (ArrayList<Enlace>) respuesta.contenido.carga;
@@ -259,16 +259,17 @@ public class JornadaControlador {
 			Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
 
 			TableAttributes tableAttributes = new TableAttributes();
+			tableAttributes.setContometroRegistros(eParametro.getValorInt());
 			tableAttributes.setBodyStyle("height: " + eParametro.getValorInt() * 25 + "px !important;");
 //			Fin Agregado por req 9000003068=============================================
-
+			
 			mapaValores = recuperarMapaValores(locale);
 			
 			vista = new ModelAndView("plantilla");
-			vista.addObject("vistaJSP","operaciones/jornada.jsp");
-			vista.addObject("vistaJS","operaciones/jornada.js");
+			vista.addObject("vistaJSP", "operaciones/jornada.jsp");
+			vista.addObject("vistaJS", "operaciones/jornada.js");
 			vista.addObject("identidadUsuario",principal.getIdentidad());
-			vista.addObject("menu",listaEnlaces);
+			vista.addObject("menu", listaEnlaces);
 			
 //			Inicio Agregado por req 9000003068=============================================
 			vista.addObject("tableAttributes", tableAttributes);
@@ -276,12 +277,12 @@ public class JornadaControlador {
 			
 			vista.addObject("operaciones", listaOperaciones);
 			vista.addObject("estaciones", listaEstaciones);
-			vista.addObject("mapaValores",mapaValores);
-			//vista.addObject("fechaActual",dDiaOperativo.recuperarFechaActual().valor);
-			 vista.addObject("fechaActual", fecha);
+			vista.addObject("mapaValores", mapaValores);
+			vista.addObject("fechaActual", fecha);
 		} catch(Exception ex){
 			
 		}
+		
 		return vista;
 	}
 	
@@ -711,12 +712,14 @@ public class JornadaControlador {
 	}
 
 	@RequestMapping(value = URL_RECUPERAR_APERTURA_RELATIVA, method = RequestMethod.GET)
-	public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest httpRequest, Locale locale){
+	public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest httpRequest, Locale locale) {
+		
 	Respuesta respuesta = null;
 	RespuestaCompuesta oRespuesta = null;
 	ParametrosListar parametros= null;
 	AuthenticatedUserDetails principal = null;
 	java.util.Date ultimoDia = null;
+	
 	try {
 		// Recupera el usuario actual
 		principal = this.getCurrentUser();
@@ -725,6 +728,7 @@ public class JornadaControlador {
 		if (oRespuesta.estado == false) {
 		  throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 		}
+		
 		Enlace eEnlace = (Enlace) oRespuesta.getContenido().getCarga().get(0);
 		// Verificar si cuenta con el permiso necesario
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
@@ -767,7 +771,6 @@ public class JornadaControlador {
 	    }
 		
 		if(oRespuesta.contenido.carga.size() > 0){
-			//throw new Exception(gestorDiccionario.getMessage("Hay un dÃƒÂ­a operativo con estado abierto, favor verifique.", null, locale));
 			throw new Exception(gestorDiccionario.getMessage("sgo.jornada.existeJornadaAbierta", null, locale));
 		}
 		
@@ -778,7 +781,6 @@ public class JornadaControlador {
 	    }
 		
 		if(oRespuesta.contenido.carga.size() > 0){
-			//throw new Exception(gestorDiccionario.getMessage("Hay un dÃƒÂ­a operativo con estado abierto, favor verifique.", null, locale));
 			throw new Exception(gestorDiccionario.getMessage("sgo.jornada.existeJornadaRegistrado", null, locale));
 		}
 		
@@ -797,7 +799,8 @@ public class JornadaControlador {
         List<Tanque> listaTanque = new ArrayList<Tanque>();
         List<Jornada> listaRegistros = new ArrayList<Jornada>();
 		
-		if(Utilidades.esValido(respuesta.valor)){
+		if(Utilidades.esValido(respuesta.valor)) {
+			
 			ParametrosListar parametros2 = new ParametrosListar();
 			parametros2.setFiltroFechaJornada(respuesta.valor.toString());
 			parametros2.setFiltroEstacion(parametros.getFiltroEstacion());
@@ -843,11 +846,14 @@ public class JornadaControlador {
 
             contenido.carga = listaRegistros;
             oRespuesta.contenido = contenido;
+            
 		} else {
+			
 			 RespuestaCompuesta rpta = dOperacion.recuperarRegistro(parametros.getIdOperacion());
 			 if (rpta.estado == false) {
 			   throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
 			 }
+			 
 			 Operacion op = (Operacion) rpta.contenido.carga.get(0);
 			 ultimoDia = op.getFechaInicioPlanificacion();
 			 if(ultimoDia == null){
@@ -878,18 +884,22 @@ public class JornadaControlador {
 			 if (oRespuesta.estado == false || oRespuesta.contenido.carga.size() == 0) {
 			   throw new Exception(gestorDiccionario.getMessage("sgo.EstacionSinContometro",new Object[] {  eJornada.getEstacion().getNombre() },locale));
 			 }
+			 
 			 for (int k = 0; k < oRespuesta.contenido.carga.size(); k++){
 			 Contometro eContometro = (Contometro) oRespuesta.contenido.carga.get(k);
             	listaContometro.add(eContometro);
 			 }
+			 
 			 oRespuesta = dTanque.recuperarRegistros(parametros3);
 			 if (oRespuesta.estado == false || oRespuesta.contenido.carga.size() == 0) {
 			   throw new Exception(gestorDiccionario.getMessage("sgo.EstacionSinTanque",new Object[] {  eJornada.getEstacion().getNombre() },locale));
 			 }
+			 
 			 for (int k = 0; k < oRespuesta.contenido.carga.size(); k++){
 			 Tanque eTanque = (Tanque) oRespuesta.contenido.carga.get(k);
             	listaTanque.add(eTanque);
 			 }
+			 
 			 eJornada.setTotalDespachos(0);
 			 eJornada.setRegistroNuevo(true);
 			 eJornada.setTanque(listaTanque);

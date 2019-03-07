@@ -386,7 +386,7 @@ moduloTurno.prototype.recuperarRegistro = function() {
 	    	  ID: parseInt(_this.obj.idTurnoSeleccionado)
 	      },
 	      beforeSend: function() {
-	    	  _this.obj.grupoCierre.removeAllForms(); // JAFETH
+	    	  _this.obj.grupoCierre.removeAllForms();
 	      },
 	      success: function(respuesta) {
 				if (!respuesta.estado) {
