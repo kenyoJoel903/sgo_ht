@@ -1475,6 +1475,8 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);;
 		    	
 		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
+			    	$("#GrupoCierre_" + i + "_LecturaFinal").val("");
+			    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
 		    		continue;
 		    	}
 		    	
