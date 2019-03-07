@@ -738,8 +738,8 @@ public class JornadaControlador {
 		//Recuperar parametros
 		parametros = new ParametrosListar();
 		if (httpRequest.getParameter("filtroEstacion") != null) {
-			parametros.setFiltroEstacion(Integer.parseInt( httpRequest.getParameter("filtroEstacion")));
-			if(parametros.getFiltroEstacion() == 0){
+			parametros.setFiltroEstacion(Utilidades.parseInt( httpRequest.getParameter("filtroEstacion")));
+			if(parametros.getFiltroEstacion() <= 0){
 				throw new Exception(gestorDiccionario.getMessage("sgo.estacionVacia",null,locale));
 			}
 		} else {

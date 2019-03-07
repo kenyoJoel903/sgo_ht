@@ -688,6 +688,7 @@ public class TransporteControlador {
                 argumentosListar.setPaginacion(Constante.SIN_PAGINACION);
                 argumentosListar.setIdProductoSecundario(producto.getId());
                 argumentosListar.setFiltroOperacion(idOperacion);
+                argumentosListar.setFiltroEstado(Transporte.ESTADO_ACTIVO);
                 respuesta = dProductoEquivalente.recuperarRegistro(parametros);
                 if (respuesta.estado==false){
                     throw new Exception("Error al obtener producto equivalente");
