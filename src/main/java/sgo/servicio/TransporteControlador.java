@@ -672,10 +672,11 @@ public class TransporteControlador {
             
 //           Inicio Agregado por req 9000003068
             String codigoSap = compartimentos[contadorDetalle].getCodRefProducto();
+            codigoSap = codigoSap.substring(codigoSap.length() - 5);
             
             ParametrosListar argumentosListar = new ParametrosListar();
             argumentosListar.setPaginacion(Constante.SIN_PAGINACION);
-            argumentosListar.setFiltroCodigoReferencia(codigoSap.substring(codigoSap.length() - 5));
+            argumentosListar.setFiltroCodigoReferencia(codigoSap);
             respuesta = dProducto.recuperarRegistros(argumentosListar);
             if (respuesta.estado==false){
              throw new Exception("Error al obtener producto");
@@ -689,7 +690,7 @@ public class TransporteControlador {
                 argumentosListar.setIdProductoSecundario(producto.getId());
                 argumentosListar.setFiltroOperacion(idOperacion);
                 argumentosListar.setFiltroEstado(Transporte.ESTADO_ACTIVO);
-                respuesta = dProductoEquivalente.recuperarRegistro(parametros);
+                respuesta = dProductoEquivalente.recuperarRegistro(argumentosListar);
                 if (respuesta.estado==false){
                     throw new Exception("Error al obtener producto equivalente");
                 }
