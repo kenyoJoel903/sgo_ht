@@ -221,6 +221,7 @@ public class OperacionControlador {
    listadoPlantas = (ArrayList<?>) respuesta.contenido.carga;
    
    parametros = new ParametrosListar();
+   parametros.setPaginacion(Constante.SIN_PAGINACION);
    parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);
    respuesta = dProducto.recuperarRegistros(parametros);
    if (!respuesta.estado) {
