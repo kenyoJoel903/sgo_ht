@@ -1386,16 +1386,6 @@ $(document).ready(function() {
 	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 //	Fin Agregado por req 9000003068=================
 	
-	/**
-	 * Modificar altura del tbody de la tabla de contometros
-	 */
-    var contometrosLength = registro.contometro.length;
-	var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
-	
-	if (contometrosLength < contometroRegistros) {
-		referenciaModulo.obj.GrupoAperturaContometros.css("height", contometrosLength * 25);
-	}
-	
 	if(registro.registroNuevo == false) {
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
 				
@@ -1426,6 +1416,16 @@ $(document).ready(function() {
 	      
 //	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
 	    }
+	    
+		/**
+		 * Modificar altura del tbody de la tabla de contometros
+		 */
+		var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
+		
+		if (numeroContometros < contometroRegistros) {
+			referenciaModulo.obj.GrupoAperturaContometros.css("height", numeroContometros * 25);
+		}
+	    //fin
 	    
 	    if (registro.tanqueJornada != null){
 	    	numeroTanques = registro.tanqueJornada.length;
@@ -1470,6 +1470,17 @@ $(document).ready(function() {
 	    }
 
 	    referenciaModulo.obj.GrupoAperturaContometros.removeAllForms();
+	    
+		/**
+		 * Modificar altura del tbody de la tabla de contometros
+		 */
+		var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
+		
+		if (numeroContometros < contometroRegistros) {
+			referenciaModulo.obj.GrupoAperturaContometros.css("height", numeroContometros * 25);
+		}
+	    //fin
+	    
 	    for(var contador = 0; contador < numeroContometros; contador++){
 	      referenciaModulo.obj.GrupoAperturaContometros.addForm();
 	      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
@@ -1635,7 +1646,7 @@ $(document).ready(function() {
 		referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 		console.log("numeroDecimalesContometro:: " + registro.estacion.numeroDecimalesContometro);
 //		Fin Agregado por req 9000003068=================
-
+		
 		if (registro.contometroJornada != null){
 	    	numeroContometros = registro.contometroJornada.length;
 	    }
