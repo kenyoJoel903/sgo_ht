@@ -476,8 +476,6 @@ $(document).ready(function() {
         	  cmpDesp.prop('checked', false);
           });
           cmpDesp.on('click', function(e){
-
-        	  cmpFs.prop('checked', false);
         	  
         	  var check = cmpDesp.prop('checked');
         	  
@@ -506,6 +504,10 @@ $(document).ready(function() {
         			  }
         		  }
         		  
+        	  }
+        	  
+        	  if(cmpDesp.prop('checked')){
+        		  cmpFs.prop('checked', false);
         	  }
           });
 //      	Fin Agregado por req 9000003068=================
