@@ -628,7 +628,7 @@
 				<textElement textAlignment="Right">
 					<font fontName="Helvetica" size="8" isUnderline="false" pdfFontName="Helvetica"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{tempobsllegada}]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{tempobssalida}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="564" y="0" width="26" height="20"/>
