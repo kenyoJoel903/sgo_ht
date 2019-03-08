@@ -472,8 +472,11 @@ $(document).ready(function() {
           });
           
 //      	Inicio Agregado por req 9000003068===============
+          cmpFs.on('click', function(e){
+        	  cmpDesp.prop('checked', false);
+          });
           cmpDesp.on('click', function(e){
-
+        	  
         	  var check = cmpDesp.prop('checked');
         	  
         	  if(check){
@@ -501,6 +504,10 @@ $(document).ready(function() {
         			  }
         		  }
         		  
+        	  }
+        	  
+        	  if(cmpDesp.prop('checked')){
+        		  cmpFs.prop('checked', false);
         	  }
           });
 //      	Fin Agregado por req 9000003068=================
@@ -1577,6 +1584,11 @@ $(document).ready(function() {
 	    eRegistro.idOperario2 = parseInt(referenciaModulo.obj.cmpOperador2.val());
 	    eRegistro.fechaOperativa =  utilitario.formatearStringToDate(referenciaModulo.obj.cmpAperturaFechaJornada.text());
 	    eRegistro.observacion = referenciaModulo.obj.cmpObservacionApertura.val().toUpperCase();
+	    
+	    // Inicio Agregado por req 9000003068
+	    eRegistro.estacion  = {};
+	    eRegistro.estacion.tipoAperturaTanque = referenciaModulo.obj.tipoAperturaTanque.val();
+	    // Fin Agregado por req 9000003068
 	    
 	    eRegistro.contometroJornada = [];
 	    // datos para los contometros de la jornada

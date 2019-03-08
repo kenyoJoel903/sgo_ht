@@ -1029,7 +1029,13 @@ public class JornadaControlador {
 						cantidadProductos++;
 					}
 				}
-				if(cantidadProductos > 1){
+				
+//				Inicio Agregado por req 9000003068
+				int tipoAperTanque = eJornada.getEstacion().getTipoAperturaTanque();
+//				Fin agregado por req 9000003068
+				
+				// se agrega tipoAperTanque en el if por req 9000003068
+				if(cantidadProductos > 1 && tipoAperTanque == 1){
 					RespuestaCompuesta producto = dProducto.recuperarRegistro(idProd);
 					if (respuesta.estado==false){     	
 		              	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
