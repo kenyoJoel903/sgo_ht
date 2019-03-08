@@ -844,6 +844,35 @@ moduloJornada.prototype.recuperarApertura= function() {
 moduloJornada.prototype.guardarApertura= function(){  
 	var referenciaModulo = this;
    referenciaModulo.mostrarDepuracion("guardarApertura");
+   
+   //Inicio agregado por req 9000003068   
+   
+   var numeroContometros = referenciaModulo.obj.GrupoAperturaContometros.getForms().length;
+   for(var contador = 0; contador < numeroContometros; contador++){
+	   var formularioContometro = referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
+	   var cmpLecturaInicial	= formularioContometro.find("input[elemento-grupo='lecturaInicial']");
+	   
+	   console.log("#" + cmpLecturaInicial.val() +"#");
+	   if(cmpLecturaInicial.val() == ''){
+		   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El campo Lectura Inicial no debe estar vacío");
+		   return;
+       }
+   }
+   
+   var numeroTanques = referenciaModulo.obj.grupoAperturaTanques.getForms().length;
+   for(var contador = 0; contador < numeroTanques; contador++){
+	   var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);
+	   var cmpMedidaInicial = formularioTanque.find("input[elemento-grupo='medidaInicial']");
+	   
+	   console.log("#" + cmpMedidaInicial.val() +"#");
+	   if(cmpMedidaInicial.val() == ''){
+		   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El campo Medida Inicial no debe estar vacío");
+		   return;
+       }
+   }
+   
+   //Fin agregado por req 9000003068
+   
 	if (referenciaModulo.obj.frmApertura.valid()){
 		referenciaModulo.obj.ocultaContenedorAperturaJornada.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);

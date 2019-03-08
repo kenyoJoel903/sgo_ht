@@ -333,7 +333,9 @@ public Respuesta validarApertura(MessageSource gestorDiccionario, Locale locale)
 		respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Hora Inicial" }, locale);
 		return respuesta;
 	  }
-	  if (!Utilidades.esValido(this.medida_inicial) || this.medida_inicial == 0){	
+	  
+//	  se quita del if || this.medida_inicial == 0 por req 9000003068
+	  if (!Utilidades.esValido(this.medida_inicial) ){	
 		respuesta.estado = false;
 		respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Medida Inicial" }, locale);
 		return respuesta;
