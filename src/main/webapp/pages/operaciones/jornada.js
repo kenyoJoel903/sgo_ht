@@ -72,6 +72,7 @@ $(document).ready(function() {
 
   moduloActual.inicializarCampos= function(){
 	  
+	this.obj.tableGrupoAperturaContometros = $("table.grupo-apertura-contometros");
 	this.obj.cantTurnosEstacion =$("#cantTurnosEstacion");
     this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
     this.obj.idEstacionSeleccionado =$("#idEstacionSeleccionado");
@@ -1385,7 +1386,17 @@ $(document).ready(function() {
 	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 //	Fin Agregado por req 9000003068=================
 	
-	if(registro.registroNuevo == false){
+	/**
+	 * Modificar altura del tbody de la tabla de contometros
+	 */
+    var contometrosLength = registro.contometro.length;
+	var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
+	
+	if (contometrosLength < contometroRegistros) {
+		referenciaModulo.obj.GrupoAperturaContometros.css("height", contometrosLength * 25);
+	}
+	
+	if(registro.registroNuevo == false) {
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
 				
 		referenciaModulo.obj.cmpAperturaFechaJornada.text(utilitario.retornarSumaRestaFechas(1, utilitario.formatearFecha(registro.fechaOperativa)));
@@ -2296,7 +2307,7 @@ moduloActual.resetearFormularioMuestreo= function(){
   var referenciaModulo= this;
   referenciaModulo.obj.frmMuestreo[0].reset();
 
-  var elemento1 =constantes.PLANTILLA_OPCION_SELECTBOX;
+  var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
   elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, 0);
   elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, "SELECCIONAR...");
 

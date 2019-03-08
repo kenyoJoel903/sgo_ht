@@ -361,8 +361,7 @@ moduloTurno.prototype.recuperarTanquesDespachando= function() {
       success: function(respuesta) {
         if (!respuesta.estado) {
         	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-        }   
-        else {	  
+        }   else {	  
         	referenciaModulo.llenarTanquesApertura(respuesta.contenido.carga[0]);
         	referenciaModulo.llenarTanquesCierre(respuesta.contenido.carga[0]);
         }
@@ -386,7 +385,7 @@ moduloTurno.prototype.recuperarRegistro = function() {
 	    	  ID: parseInt(_this.obj.idTurnoSeleccionado)
 	      },
 	      beforeSend: function() {
-	    	  _this.obj.grupoCierre.removeAllForms(); // JAFETH
+	    	  _this.obj.grupoCierre.removeAllForms();
 	      },
 	      success: function(respuesta) {
 				if (!respuesta.estado) {
@@ -1475,6 +1474,8 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);;
 		    	
 		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
+			    	$("#GrupoCierre_" + i + "_LecturaFinal").val("");
+			    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
 		    		continue;
 		    	}
 		    	

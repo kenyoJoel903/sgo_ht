@@ -292,6 +292,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 		Parametro eParametro = (Parametro) respuesta.contenido.carga.get(0);
 
 		TableAttributes tableAttributes = new TableAttributes();
+		tableAttributes.setContometroRegistros(eParametro.getValorInt());
 		tableAttributes.setBodyStyle("height: " + eParametro.getValorInt() * 25 + "px !important;");
 		
 		mapaValores = recuperarMapaValores(locale);

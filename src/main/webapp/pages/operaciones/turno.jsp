@@ -217,7 +217,9 @@
 				        <br>
 		                 <label>Cont&oacute;metros</label>
 		                 	
-					    <table class="grupo-apertura table-scroll sgo-simple-table table table-condensed">
+					    <table 
+					    	class="grupo-apertura table-scroll sgo-simple-table table table-condensed" 
+					    	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>">
 			      			<thead>
 			      				<tr>
 			      					<td><label>Secuencia</label></td>
@@ -313,7 +315,9 @@
 				        </div>
 		                <br>
 		                 <label>Cont&oacute;metros</label>		
-					    <table class="grupo-cierre table-scroll sgo-simple-table table table-condensed">
+					    <table 
+					    	class="grupo-cierre table-scroll sgo-simple-table table table-condensed"
+					    	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>">
 			      			<thead>
 			      				<tr>
 				      				<td><label>Secuencia</label></td>
