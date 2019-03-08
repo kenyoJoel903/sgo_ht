@@ -551,7 +551,19 @@ $(document).ready(function(){
   	      };
   	    },
   	    processResults: function (respuesta, pagina) {
-  	      var resultados= respuesta.contenido.carga;
+  	      var resultados = respuesta.contenido.carga;
+  	      
+			var array = [];
+			for (var i = 0; i < respuesta.contenido.carga.length; i++) {
+				
+				var resultado = respuesta.contenido.carga[i];
+				resultado.id = resultado.idTanque;
+				
+				array.push(resultado);
+			}
+			
+			resultados = array;
+  	      
   	      return { results: resultados};
   	    },
   	    cache: true
@@ -568,6 +580,7 @@ $(document).ready(function(){
   	        return registro.descripcionTanque || registro.text;
   	    },	
       });
+    
     this.obj.cmpVolObservado=$("#cmpVolObservado");
     //this.obj.cmpVolObservado.inputmask("99999999.99");
     this.obj.cmpVolObservado.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
@@ -702,14 +715,23 @@ $(document).ready(function(){
         	 
           } else {
         	  var tanquejornada = respuesta.contenido.carga.length;
+
         	  if(tanquejornada == 1){
         		var registro = respuesta.contenido.carga[0];
         		var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
         			elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, registro.tanque.id);
         			elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
-                moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
-                $(cmpIdTanque).prop('disabled', true);
+        			moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
+        			$(cmpIdTanque).prop('disabled', true);
         	  }else{
+        		  
+	          		var registro = respuesta.contenido.carga[0];
+	        		var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
+	        			elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, registro.tanque.id);
+	        			elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
+	        			moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
+        		  
+        		  
         		  // 9000003068
         		  if(tanquejornada > 0){
 	        		  var registros = respuesta.contenido.carga;
@@ -980,6 +1002,10 @@ $(document).ready(function(){
     var eRegistro = {};
     var referenciaModulo=this;
     try {
+    	
+    	
+    	console.log("xxxx.::: " + referenciaModulo.obj.cmpIdTanque.val());
+    	
 	    //datos para el despacho
 	    eRegistro.id = parseInt(referenciaModulo.idDespacho);
 	    eRegistro.idJornada = parseInt(referenciaModulo.obj.idJornadaSeleccionado);
