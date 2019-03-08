@@ -1470,12 +1470,13 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 
 		    for (var i = 0; i < _this.excelRowsObj.length; i++) {
 		    	
+		    	$("#GrupoCierre_" + i + "_LecturaFinal").val("");
+		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
+		    	
 		    	var lecturaInicial = parseFloat(_this.obj.listCronometro[i].lectura_inicial);
 		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);;
 		    	
 		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
-			    	$("#GrupoCierre_" + i + "_LecturaFinal").val("");
-			    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
 		    		continue;
 		    	}
 		    	
