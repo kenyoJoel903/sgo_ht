@@ -1394,75 +1394,103 @@ $(document).ready(function() {
 		if (registro.contometroJornada != null){
 	    	numeroContometros = registro.contometroJornada.length;
 	    }
-	
-	    referenciaModulo.obj.GrupoAperturaContometros.removeAllForms();
-	    for(var contador = 0; contador < numeroContometros; contador++){
-	      referenciaModulo.obj.GrupoAperturaContometros.addForm();
-	      
-	      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
-	      formulario.find("input[elemento-grupo='idContometros']").val(registro.contometroJornada[contador].contometro.id);
-	      formulario.find("input[elemento-grupo='contometros']").val(registro.contometroJornada[contador].contometro.alias);
-
-	      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
-	      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
-	      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
-
-	      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
-	      
-//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
-//	      se agrega lecIni y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val
-	      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
-	      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
-	      
-//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
-	    }
-	    
-		/**
-		 * Modificar altura del tbody de la tabla de contometros
-		 */
-		var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
 		
-		if (numeroContometros < contometroRegistros) {
-			referenciaModulo.obj.GrupoAperturaContometros.css("height", numeroContometros * 25);
-		}
-	    //fin
+		/**
+		 * Mostrar el loading
+		 */
+		referenciaModulo.obj.tableGrupoAperturaContometros.addClass("loading");
+		var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
+		referenciaModulo.obj.GrupoAperturaContometros.css("height", contometroRegistros * 25);
+		
+		/**
+		 * Limpiar table contometros
+		 */
+		referenciaModulo.obj.GrupoAperturaContometros.removeAllForms();
+		
+		/**
+		 * Timeout
+		 */
+		setTimeout(function() {
+	
+		    referenciaModulo.obj.GrupoAperturaContometros.removeAllForms();
+		    for(var contador = 0; contador < numeroContometros; contador++){
+		      referenciaModulo.obj.GrupoAperturaContometros.addForm();
+		      
+		      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
+		      formulario.find("input[elemento-grupo='idContometros']").val(registro.contometroJornada[contador].contometro.id);
+		      formulario.find("input[elemento-grupo='contometros']").val(registro.contometroJornada[contador].contometro.alias);
+	
+		      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
+		      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
+		      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
+	
+		      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
+		      
+	//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
+	//	      se agrega lecIni y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val
+		      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
+		      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
+		      
+	//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
+		    }
+		    
+			/**
+			 * Ocultar el loading
+			 */
+		    referenciaModulo.obj.tableGrupoAperturaContometros.removeClass("loading");
+		    
+			/**
+			 * Modificar altura del tbody de la tabla de contometros
+			 */
+			var contometroRegistros = referenciaModulo.obj.tableGrupoAperturaContometros.attr("data-contometro-registros");
+			
+			if (numeroContometros < contometroRegistros) {
+				referenciaModulo.obj.GrupoAperturaContometros.css("height", numeroContometros * 25);
+			}
+		    //fin
+		    
+		    if (registro.tanqueJornada != null){
+		    	numeroTanques = registro.tanqueJornada.length;
+		    }
+		    
+		    referenciaModulo.obj.grupoAperturaTanques.removeAllForms();
+		    for(var cont = 0; cont < numeroTanques; cont++){
+		      referenciaModulo.obj.grupoAperturaTanques.addForm();
+		      var formularioTanque= referenciaModulo.obj.grupoAperturaTanques.getForm(cont);
+		      
+		      formularioTanque.find("input[elemento-grupo='idTanques']").val(registro.tanqueJornada[cont].tanque.id);
+		      formularioTanque.find("input[elemento-grupo='tanques']").val(registro.tanqueJornada[cont].tanque.descripcion);
+		      
+		      
+		      formularioTanque.find("input[elemento-grupo='idProductosTanques']").val(registro.tanqueJornada[cont].producto.id);
+		      formularioTanque.find("input[elemento-grupo='productosTanques']").val(registro.tanqueJornada[cont].producto.nombre);
+		      formularioTanque.find("input[elemento-grupo='medidaInicial']").val(registro.tanqueJornada[cont].medidaFinal);
+		      formularioTanque.find("input[elemento-grupo='volObsInicial']").val(registro.tanqueJornada[cont].volumenObservadoFinal.toFixed(2));
+		      formularioTanque.find("input[elemento-grupo='api60']").val(registro.tanqueJornada[cont].apiCorregidoFinal.toFixed(2));
+		      formularioTanque.find("input[elemento-grupo='temperatura']").val(registro.tanqueJornada[cont].temperaturaFinal.toFixed(2));
+		      formularioTanque.find("input[elemento-grupo='factor']").val(registro.tanqueJornada[cont].factorCorreccionFinal.toFixed(6));
+		      formularioTanque.find("input[elemento-grupo='vol60']").val(registro.tanqueJornada[cont].volumenCorregidoFinal.toFixed(2));
+		      
+		      if(registro.tanqueJornada[cont].estadoServicio == 1) { 
+		    	  formularioTanque.find("input[elemento-grupo='fs']").prop('checked', true); 
+	    	  } else { 
+	    		  formularioTanque.find("input[elemento-grupo='fs']").prop('checked', false);
+			  }
+		      
+		      if(registro.tanqueJornada[cont].enLinea == 1) { 
+		    	  formularioTanque.find("input[elemento-grupo='desp']").prop('checked', true); 
+		      } else { 
+		    	  formularioTanque.find("input[elemento-grupo='desp']").prop('checked', false);
+	    	  }
+		    }
+		    
+		}, 3000);
+		/**
+		 * Timeout
+		 */
 	    
-	    if (registro.tanqueJornada != null){
-	    	numeroTanques = registro.tanqueJornada.length;
-	    }
-	    
-	    referenciaModulo.obj.grupoAperturaTanques.removeAllForms();
-	    for(var cont = 0; cont < numeroTanques; cont++){
-	      referenciaModulo.obj.grupoAperturaTanques.addForm();
-	      var formularioTanque= referenciaModulo.obj.grupoAperturaTanques.getForm(cont);
-	      
-	      formularioTanque.find("input[elemento-grupo='idTanques']").val(registro.tanqueJornada[cont].tanque.id);
-	      formularioTanque.find("input[elemento-grupo='tanques']").val(registro.tanqueJornada[cont].tanque.descripcion);
-	      
-	      
-	      formularioTanque.find("input[elemento-grupo='idProductosTanques']").val(registro.tanqueJornada[cont].producto.id);
-	      formularioTanque.find("input[elemento-grupo='productosTanques']").val(registro.tanqueJornada[cont].producto.nombre);
-	      
-	      
-	      /*var productoTanque=constantes.PLANTILLA_OPCION_SELECTBOX;
-	      productoTanque = productoTanque.replace(constantes.ID_OPCION_CONTENEDOR,registro.tanqueJornada[cont].producto.id);
-	      productoTanque = productoTanque.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.tanqueJornada[cont].producto.nombre);
-	      formularioTanque.find("select[elemento-grupo='productosTanques']").empty().append(productoTanque).val(registro.tanqueJornada[cont].producto.id).trigger('change');*/
-	      
-	      // formularioTanque.find("select[elemento-grupo='productosTanques']").val(registro.tanqueJornada[cont].producto.nombre);
-	      formularioTanque.find("input[elemento-grupo='medidaInicial']").val(registro.tanqueJornada[cont].medidaFinal);
-	      formularioTanque.find("input[elemento-grupo='volObsInicial']").val(registro.tanqueJornada[cont].volumenObservadoFinal.toFixed(2));
-	      formularioTanque.find("input[elemento-grupo='api60']").val(registro.tanqueJornada[cont].apiCorregidoFinal.toFixed(2));
-	      formularioTanque.find("input[elemento-grupo='temperatura']").val(registro.tanqueJornada[cont].temperaturaFinal.toFixed(2));
-	      formularioTanque.find("input[elemento-grupo='factor']").val(registro.tanqueJornada[cont].factorCorreccionFinal.toFixed(6));
-	      formularioTanque.find("input[elemento-grupo='vol60']").val(registro.tanqueJornada[cont].volumenCorregidoFinal.toFixed(2));
-	      if(registro.tanqueJornada[cont].estadoServicio == 1) { formularioTanque.find("input[elemento-grupo='fs']").prop('checked', true);  }
-	      												  else { formularioTanque.find("input[elemento-grupo='fs']").prop('checked', false); }
-	      
-	      if(registro.tanqueJornada[cont].enLinea == 1) 	   { formularioTanque.find("input[elemento-grupo='desp']").prop('checked', true);  }
-	      												  else { formularioTanque.find("input[elemento-grupo='desp']").prop('checked', false); }
-	    }
 	} else {
+		
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
 		referenciaModulo.obj.cmpAperturaFechaJornada.text(utilitario.formatearFecha(registro.fechaOperativa));
 		if (registro.contometro != null){
@@ -1480,49 +1508,59 @@ $(document).ready(function() {
 			referenciaModulo.obj.GrupoAperturaContometros.css("height", numeroContometros * 25);
 		}
 	    //fin
-	    
-	    for(var contador = 0; contador < numeroContometros; contador++){
-	      referenciaModulo.obj.GrupoAperturaContometros.addForm();
-	      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
-	      
-	      formulario.find("input[elemento-grupo='idContometros']").val(registro.contometro[contador].id);
-	      formulario.find("input[elemento-grupo='contometros']").val(registro.contometro[contador].alias);
-	      formulario.find("input[elemento-grupo='lecturaInicial']").val("");
-	      formulario.find("select[elemento-grupo='productosContometros']").prop('disabled', false);
-	      formulario.find("input[elemento-grupo='lecturaInicial']").prop('disabled', false);
-	    }
+		
+		/**
+		 * Timeout
+		 */
+		setTimeout(function() {
+			
+			for(var contador = 0; contador < numeroContometros; contador++){
+		      referenciaModulo.obj.GrupoAperturaContometros.addForm();
+		      var formulario= referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
+		      
+		      formulario.find("input[elemento-grupo='idContometros']").val(registro.contometro[contador].id);
+		      formulario.find("input[elemento-grupo='contometros']").val(registro.contometro[contador].alias);
+		      formulario.find("input[elemento-grupo='lecturaInicial']").val("");
+		      formulario.find("select[elemento-grupo='productosContometros']").prop('disabled', false);
+		      formulario.find("input[elemento-grupo='lecturaInicial']").prop('disabled', false);
+		    }
 
-	    if (registro.tanque != null){
-	    	numeroTanques = registro.tanque.length;
-	    }
-	    
-	    referenciaModulo.obj.grupoAperturaTanques.removeAllForms();
-	    for(var cont = 0; cont < numeroTanques; cont++){
-	      referenciaModulo.obj.grupoAperturaTanques.addForm();
-	      var formularioTanque= referenciaModulo.obj.grupoAperturaTanques.getForm(cont);
-	      formularioTanque.find("input[elemento-grupo='idTanques']").val(registro.tanque[cont].id);
-	      formularioTanque.find("input[elemento-grupo='tanques']").val(registro.tanque[cont].descripcion);
-	      
-	      formularioTanque.find("input[elemento-grupo='idProductosTanques']").val(registro.tanque[cont].producto.id);
-	      formularioTanque.find("input[elemento-grupo='productosTanques']").val(registro.tanque[cont].producto.nombre);
-	      
-	      formularioTanque.find("input[elemento-grupo='medidaInicial']").val("");
-	      formularioTanque.find("input[elemento-grupo='volObsInicial']").val("");
-	      formularioTanque.find("input[elemento-grupo='api60']").val("");
-	      formularioTanque.find("input[elemento-grupo='temperatura']").val("");
-	      formularioTanque.find("input[elemento-grupo='factor']").val("");
-	      formularioTanque.find("input[elemento-grupo='vol60']").val("");
-	      formularioTanque.find("input[elemento-grupo='fs']").prop('checked', false);
-	      formularioTanque.find("input[elemento-grupo='desp']").prop('checked', false);
-	      
-	      //formularioTanque.find("select[elemento-grupo='productosTanques']").prop('disabled', false);
-	      formularioTanque.find("input[elemento-grupo='medidaInicial']").prop('disabled', false);
-	      formularioTanque.find("input[elemento-grupo='volObsInicial']").prop('disabled', false);
-	      formularioTanque.find("input[elemento-grupo='api60']").prop('disabled', false);
-	      formularioTanque.find("input[elemento-grupo='temperatura']").prop('disabled', false);
-	      formularioTanque.find("input[elemento-grupo='factor']").prop('disabled', false);
-	      formularioTanque.find("input[elemento-grupo='vol60']").prop('disabled', false);
-	    }
+		    if (registro.tanque != null){
+		    	numeroTanques = registro.tanque.length;
+		    }
+		    
+		    referenciaModulo.obj.grupoAperturaTanques.removeAllForms();
+		    for(var cont = 0; cont < numeroTanques; cont++) {
+		      referenciaModulo.obj.grupoAperturaTanques.addForm();
+		      var formularioTanque= referenciaModulo.obj.grupoAperturaTanques.getForm(cont);
+		      formularioTanque.find("input[elemento-grupo='idTanques']").val(registro.tanque[cont].id);
+		      formularioTanque.find("input[elemento-grupo='tanques']").val(registro.tanque[cont].descripcion);
+		      
+		      formularioTanque.find("input[elemento-grupo='idProductosTanques']").val(registro.tanque[cont].producto.id);
+		      formularioTanque.find("input[elemento-grupo='productosTanques']").val(registro.tanque[cont].producto.nombre);
+		      
+		      formularioTanque.find("input[elemento-grupo='medidaInicial']").val("");
+		      formularioTanque.find("input[elemento-grupo='volObsInicial']").val("");
+		      formularioTanque.find("input[elemento-grupo='api60']").val("");
+		      formularioTanque.find("input[elemento-grupo='temperatura']").val("");
+		      formularioTanque.find("input[elemento-grupo='factor']").val("");
+		      formularioTanque.find("input[elemento-grupo='vol60']").val("");
+		      formularioTanque.find("input[elemento-grupo='fs']").prop('checked', false);
+		      formularioTanque.find("input[elemento-grupo='desp']").prop('checked', false);
+		      
+		      //formularioTanque.find("select[elemento-grupo='productosTanques']").prop('disabled', false);
+		      formularioTanque.find("input[elemento-grupo='medidaInicial']").prop('disabled', false);
+		      formularioTanque.find("input[elemento-grupo='volObsInicial']").prop('disabled', false);
+		      formularioTanque.find("input[elemento-grupo='api60']").prop('disabled', false);
+		      formularioTanque.find("input[elemento-grupo='temperatura']").prop('disabled', false);
+		      formularioTanque.find("input[elemento-grupo='factor']").prop('disabled', false);
+		      formularioTanque.find("input[elemento-grupo='vol60']").prop('disabled', false);
+		    }
+			
+		}, 3000);
+		/**
+		 * Timeout
+		 */
 	}
   };
   
@@ -1594,9 +1632,10 @@ $(document).ready(function() {
 	        eRegistro.tanqueJornada.push(tanqueJornada);
 	      }
 
-    }  catch(error){
+    }  catch(error) {
       console.log(error.message);
     }
+    
     return eRegistro;
   };
   
