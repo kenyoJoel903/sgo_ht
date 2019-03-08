@@ -1484,7 +1484,7 @@ $(document).ready(function() {
 	    	  }
 		    }
 		    
-		}, 3000);
+		}, 300);
 		/**
 		 * Timeout
 		 */
@@ -1557,7 +1557,7 @@ $(document).ready(function() {
 		      formularioTanque.find("input[elemento-grupo='vol60']").prop('disabled', false);
 		    }
 			
-		}, 3000);
+		}, 300);
 		/**
 		 * Timeout
 		 */
