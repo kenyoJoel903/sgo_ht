@@ -316,7 +316,7 @@
 		                <br>
 		                 <label>Cont&oacute;metros</label>		
 					    <table 
-					    	class="grupo-cierre table-scroll sgo-simple-table table table-condensed"
+					    	class="grupo-cierre loading table-scroll sgo-simple-table table table-condensed"
 					    	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>">
 			      			<thead>
 			      				<tr>

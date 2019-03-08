@@ -832,8 +832,6 @@ public class GuiaCombustibleControlador {
           }
           if(respuesta.getContenido().getCarga().size() > 0){
         	  aprobacion = (GecAprobacion) respuesta.getContenido().getCarga().get(0);          
-              //aprobacion.setIdGcombustible(eGuiaCombustible.getId());
-              //aprobacion.setId(eGuiaCombustible.getAprobacionGec().getId());
               aprobacion.setIdUsuarioEmitido(principal.getID());
               aprobacion.setFechaHoraEmitido(dDiaOperativo.recuperarFechaActualTimeStamp());
               respuesta = dGecAprobacion.emitirGec(aprobacion);
@@ -876,7 +874,6 @@ public class GuiaCombustibleControlador {
           eGuiaCombustible.setOperacion((Operacion) respuesta.getContenido().getCarga().get(0));   
           
           //inicio
-          
           String correos = "";
           parametros2 = new ParametrosListar();
           parametros2.setIdCliente(eGuiaCombustible.getCliente().getId());
@@ -892,18 +889,13 @@ public class GuiaCombustibleControlador {
           if(!listausuarios.isEmpty()){
   			for (Usuario usuario : listausuarios) {
   				if (!usuario.getEmail().trim().isEmpty()) { 
-  					//System.out.println("correos inicio:" + correos);
   					correos = correos + usuario.getEmail() + ";";
-  					//System.out.println("correos final:" + correos);
 				}  				
 			 }
 	  	  }	  
           
-          System.out.println("correos:" + correos);
           eGuiaCombustible.getOperacion().setCorreoPara(correos);
-          
           //fin
-          
           
           parametros.setFiltroUsuario(principal.getNombre() + " - " + principal.getIdentidad()); 
           respuesta.estado = dMailNotifica.enviarMailNotificacionGECEmitido(parametros,eGuiaCombustible,eDetalleGEC);          
@@ -915,10 +907,8 @@ public class GuiaCombustibleControlador {
           }
           
           this.transaccion.commit(estadoTransaccion);
-          
        
     } catch (Exception ex){
-      //ex.printStackTrace();
       Utilidades.gestionaError(ex, sNombreClase, "emitirGuia");
       this.transaccion.rollback(estadoTransaccion);
       respuesta.estado=false;

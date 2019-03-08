@@ -500,37 +500,56 @@ $(document).ready(function() {
   //llena el formularo de contometro jornada
 moduloActual.llenarApertura = function(registro) {
 	
+	var _this = this;
+	
+	/**
+	 * Mostrar el loading
+	 */
+	_this.obj.tableGrupoApertura.addClass("loading");
+	var contometroRegistros = moduloActual.obj.tableGrupoApertura.attr("data-contometro-registros");
+	moduloActual.obj.grupoApertura.css("height", contometroRegistros * 25);
+	
     var numeroDetalles = registro.length;
     //moduloActual.obj.cmpHoraInicio.val(utilitario.formatearTimestampToStringSoloHora(registro[0].turno.fechaHoraCierre));
     var cmpHoraInicioDate = utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre);
     moduloActual.obj.cmpHoraInicio.val(cmpHoraInicioDate);
     moduloActual.obj.cmpObservacionApertura.val("");
-    this.obj.grupoApertura.removeAllForms();
+    _this.obj.grupoApertura.removeAllForms();
 
     $('#cmpOperarioResponsable').prop('disabled', false);
     $('#cmpOperarioAyudante').prop('disabled', false);
     
-    for(var contador=0; contador < numeroDetalles; contador++) {
-    	moduloActual.obj.grupoApertura.addForm();
-        var form = moduloActual.obj.grupoApertura.getForm(contador);
+    setTimeout(function() {
+    	
+        for(var contador=0; contador < numeroDetalles; contador++) {
+        	moduloActual.obj.grupoApertura.addForm();
+            var form = moduloActual.obj.grupoApertura.getForm(contador);
+            
+            form.find("input[elemento-grupo='secuencia']").val(contador + 1);
+      	  	form.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
+      	  	form.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
+      	  	form.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
+      	  	form.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+      	  	//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);
+      	  	form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
+         }
         
-        form.find("input[elemento-grupo='secuencia']").val(contador + 1);
-  	  	form.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
-  	  	form.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
-  	  	form.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-  	  	form.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
-  	  	//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinal);
-  	  	form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaFinalStr);
-     }
-    
-	/**
-	 * Modificar altura del tbody de la tabla de contometros
-	 */
-	var contometroRegistros = moduloActual.obj.tableGrupoApertura.attr("data-contometro-registros");
+		/**
+		 * Ocultar el loading
+		 */
+		_this.obj.tableGrupoApertura.removeClass("loading");
+        
+    	/**
+    	 * Modificar altura del tbody de la tabla de contometros
+    	 */
+    	var contometroRegistros = moduloActual.obj.tableGrupoApertura.attr("data-contometro-registros");
 
-	if (numeroDetalles < contometroRegistros) {
-		moduloActual.obj.grupoApertura.css("height", numeroDetalles * 25);
-	}
+    	if (numeroDetalles < contometroRegistros) {
+    		moduloActual.obj.grupoApertura.css("height", numeroDetalles * 25);
+    	}
+    	
+    }, 300);
+    
 };
   
 moduloActual.llenarAperturaContometroJornada = function(registro) {
@@ -634,41 +653,58 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 moduloActual.llenarFormularioCierre = function(registro) {
 	
 	var _this = this;
-	var numeroDetalles = registro.length;
 	
+	/**
+	 * Mostrar el loading
+	 */
+	_this.obj.tableGrupoCierre.addClass("loading");
+	var contometroRegistros = moduloActual.obj.tableGrupoCierre.attr("data-contometro-registros");
+	moduloActual.obj.grupoCierre.css("height", contometroRegistros * 25);
+	
+	var numeroDetalles = registro.length;
 	_this.obj.listCronometro = [];
 	_this.obj.grupoCierre.removeAllForms();
 	_this.obj.cmpObservacionCierre.val(registro[0].turno.observacion);
 	_this.obj.cmpHoraCierre.val(utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre));
 	_this.obj.countListContometro = registro.length;
 	
-	for (var contador = 0; contador < numeroDetalles; contador++) {  
-		moduloActual.obj.grupoCierre.addForm();
-		var form = moduloActual.obj.grupoCierre.getForm(contador);
-		
-		form.find("input[elemento-grupo='secuencia']").val(contador + 1);
-		form.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
-		form.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
-		form.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
-		form.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
-		form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);
-		form.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
-		//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
-		
-		var list = new Array();
-		list["contometro_alias"] = registro[contador].contometro.alias;
-		list["lectura_inicial"] = registro[contador].lecturaInicialStr;
-		_this.obj.listCronometro.push(list);
-	}
 	
-	/**
-	 * Modificar altura del tbody de la tabla de contometros
-	 */
-	var contometroRegistros = moduloActual.obj.tableGrupoCierre.attr("data-contometro-registros");
-	
-	if (numeroDetalles < contometroRegistros) {
-		moduloActual.obj.grupoCierre.css("height", numeroDetalles * 25);
-	}
+	setTimeout(function(){
+		
+		for (var contador = 0; contador < numeroDetalles; contador++) {  
+			moduloActual.obj.grupoCierre.addForm();
+			var form = moduloActual.obj.grupoCierre.getForm(contador);
+			
+			form.find("input[elemento-grupo='secuencia']").val(contador + 1);
+			form.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);   	  
+			form.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id); 
+			form.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);   	  
+			form.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id); 
+			form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicialStr);
+			form.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno", registro[contador].id); 
+			//form.find("input[elemento-grupo='lecturaInicial']").val(registro[contador].lecturaInicial);
+			
+			var list = new Array();
+			list["contometro_alias"] = registro[contador].contometro.alias;
+			list["lectura_inicial"] = registro[contador].lecturaInicialStr;
+			_this.obj.listCronometro.push(list);
+		}
+		
+		/**
+		 * Ocultar el loading
+		 */
+		_this.obj.tableGrupoCierre.removeClass("loading");
+		
+		/**
+		 * Modificar altura del tbody de la tabla de contometros
+		 */
+		var contometroRegistros = moduloActual.obj.tableGrupoCierre.attr("data-contometro-registros");
+		
+		if (numeroDetalles < contometroRegistros) {
+			moduloActual.obj.grupoCierre.css("height", numeroDetalles * 25);
+		}
+
+	}, 300);
 	
 };
 
