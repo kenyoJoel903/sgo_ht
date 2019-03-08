@@ -725,13 +725,6 @@ $(document).ready(function(){
         			$(cmpIdTanque).prop('disabled', true);
         	  }else{
         		  
-	          		var registro = respuesta.contenido.carga[0];
-	        		var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
-	        			elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, registro.tanque.id);
-	        			elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
-	        			moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
-        		  
-        		  
         		  // 9000003068
         		  if(tanquejornada > 0){
 	        		  var registros = respuesta.contenido.carga;
