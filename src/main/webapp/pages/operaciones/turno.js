@@ -310,8 +310,8 @@ $(document).ready(function() {
     this.obj.cmpHoraInicio = $("#cmpHoraInicio");
     //this.obj.cmpHoraInicio.inputmask("h:s:s");
     this.obj.cmpHoraInicio.inputmask("datetime", {
-        mask: "1/2/y h:s:s", 
-        placeholder: "dd/mm/yyyy hh:mm:ss", 
+        mask: "1/2/y h:s", //se quita :s por req 9000003068
+        placeholder: "dd/mm/yyyy HH:mm", 	//se quita :ss por req 9000003068
         leapday: "-02-29", 
         separator: "/", 
         alias: "dd/mm/yyyy"
@@ -556,7 +556,7 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	
 	//actualiza cabecera operador ay
 	var numeroDetalles = registro.length;
-	moduloActual.obj.cmpHoraInicio.val("");
+	moduloActual.obj.cmpHoraInicio.val(moduloActual.obj.cmpDiaOperativoApertura.text());		//se agrega moduloActual.obj.cmpDiaOperativoApertura.text() por req 9000003068
 	moduloActual.obj.cmpObservacionApertura.val("");
 	
 	/**

@@ -6,6 +6,7 @@
 <%@ page import="sgo.entidad.Estacion"%>
 <%@ page import="sgo.entidad.Producto"%>
 <%@ page import="java.util.HashMap"%>
+<%@ page import="sgo.utilidades.Constante" %>
 <%
 HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); 
 %>
@@ -61,6 +62,11 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 	                    estacionSeleccionada="";
 	                    for(int indiceEstaciones=0; indiceEstaciones < numeroEstaciones; indiceEstaciones++){ 
 	                    	eEstacion =(Estacion) listaEstaciones.get(indiceEstaciones);
+	                    	
+	                    	if (eEstacion.getEstado() != Constante.ESTADO_ACTIVO) {
+		                    	continue;
+		                    }
+	                    	
 		                    %>
 		                    <option <%=estacionSeleccionada%> data-estacion='<%=eEstacion.getNombre().trim()%>' 
 		                    								  data-idEstacion='<%=eEstacion.getId()%>' 

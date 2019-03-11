@@ -175,7 +175,7 @@ $(document).ready(function(){
 		    type: constantes.PETICION_TIPO_GET,
 		    url: "./estacion/listar", 
 		    dataType: 'json',
-		    data: {filtroOperacion: moduloActual.obj.filtroOperacion.val()},	
+		    data: {filtroOperacion: moduloActual.obj.filtroOperacion.val(), filtroEstado: 1},	
 		    success: function (respuesta) {
 		    	if(respuesta.contenido.carga.length > 0){
 		    		document.getElementById("filtroEstacion").innerHTML = "";
