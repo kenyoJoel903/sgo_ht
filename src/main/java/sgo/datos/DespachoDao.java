@@ -48,40 +48,45 @@ public class DespachoDao {
 	}
 	
 	public String mapearCampoOrdenamiento(String propiedad){
-		String campoOrdenamiento=NOMBRE_CAMPO_ORDENAMIENTO_DEFECTO;
+		String campoOrdenamiento = NOMBRE_CAMPO_ORDENAMIENTO_DEFECTO;
+		
 		try {
+			
 			if (propiedad.equals("jornada.fechaOperativa")){
-				campoOrdenamiento="fecha_operativa";
+				campoOrdenamiento = "fecha_operativa";
 			}
 			if (propiedad.equals("estado")){
-				campoOrdenamiento="estado";
+				campoOrdenamiento = "estado";
 			}
 			if (propiedad.equals("producto.nombre")){
-				campoOrdenamiento="nombre_producto";
+				campoOrdenamiento = "nombre_producto";
 			}
 			if (propiedad.equals("contometro.alias")){
-				campoOrdenamiento="alias_contometro";
+				campoOrdenamiento = "alias_contometro";
 			}
 			if (propiedad.equals("numeroVale")){
-				campoOrdenamiento="numero_vale";
+				campoOrdenamiento = "numero_vale";
 			}
 			if (propiedad.equals("lecturaInicial")){
-				campoOrdenamiento="lectura_inicial";
+				campoOrdenamiento = "lectura_inicial";
 			}
 			if (propiedad.equals("lecturaFinal")){
-				campoOrdenamiento="lectura_final";
+				campoOrdenamiento = "lectura_final";
 			}
 			if (propiedad.equals("volumenObservado")){
-				campoOrdenamiento="volumen_observado";
+				campoOrdenamiento = "volumen_observado";
 			}
 			if (propiedad.equals("tipoRegistro")){
-				campoOrdenamiento="codigo_archivo_origen";
+				campoOrdenamiento = "codigo_archivo_origen";
+			}
+			if (propiedad.equals("id_despacho")){
+				campoOrdenamiento = "id_despacho";
 			}
 
-			//Campos de auditoria
 		}catch(Exception excepcion){
 			
 		}
+		
 		return campoOrdenamiento;
 	}
 
@@ -103,7 +108,7 @@ public class DespachoDao {
 				parametros.add(argumentosListar.getRegistrosxPagina());
 			}
 			
-			sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
+			sqlOrderBy = " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
 			
 			StringBuilder consultaSQL = new StringBuilder();
 			consultaSQL.setLength(0);
@@ -308,11 +313,13 @@ public class DespachoDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta guardarRegistro(Despacho despacho){
+	public RespuestaCompuesta guardarRegistro(Despacho despacho) {
+		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		StringBuilder consultaSQL= new StringBuilder();
 		KeyHolder claveGenerada = null;
-		int cantidadFilasAfectadas=0;
+		int cantidadFilasAfectadas = 0;
+		
 		try {
 			consultaSQL.append("INSERT INTO ");
 			consultaSQL.append(NOMBRE_TABLA);
@@ -346,6 +353,7 @@ public class DespachoDao {
 			listaParametros.addValue("Estado", despacho.getEstado());
 			listaParametros.addValue("CodigoArchivoOrigen", despacho.getCodigoArchivoOrigen());
 			listaParametros.addValue("IdTurno", despacho.getIdTurno());
+			
 			//parametros para auditoria
 			listaParametros.addValue("CreadoEl", despacho.getCreadoEl());
 			listaParametros.addValue("CreadoPor", despacho.getCreadoPor());
@@ -353,26 +361,28 @@ public class DespachoDao {
 			listaParametros.addValue("ActualizadoEl", despacho.getActualizadoEl());
 			listaParametros.addValue("IpCreacion", despacho.getIpCreacion());
 			listaParametros.addValue("IpActualizacion", despacho.getIpActualizacion());
-			SqlParameterSource namedParameters= listaParametros;
+			SqlParameterSource namedParameters = listaParametros;
+			
 			/*Ejecuta la consulta y retorna las filas afectadas*/
 			claveGenerada = new GeneratedKeyHolder();
-			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters,claveGenerada,new String[] {NOMBRE_CAMPO_CLAVE});		
-			if (cantidadFilasAfectadas>1){
-				respuesta.error=Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-				respuesta.estado=false;
+			cantidadFilasAfectadas = namedJdbcTemplate.update(consultaSQL.toString(), namedParameters, claveGenerada, new String[] {NOMBRE_CAMPO_CLAVE});		
+			if (cantidadFilasAfectadas > 1) {
+				respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+				respuesta.estado = false;
 				return respuesta;
 			}
-			respuesta.estado=true;
-			respuesta.valor= claveGenerada.getKey().toString();
-		} catch (DataIntegrityViolationException excepcionIntegridadDatos){
-			excepcionIntegridadDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-			respuesta.estado=false;
-		} catch (DataAccessException excepcionAccesoDatos){
-			excepcionAccesoDatos.printStackTrace();
-			respuesta.error=Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
+			respuesta.estado = true;
+			respuesta.valor = claveGenerada.getKey().toString();
+		} catch (DataIntegrityViolationException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+			respuesta.estado = false;
+		} catch (DataAccessException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	

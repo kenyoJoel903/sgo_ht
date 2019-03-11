@@ -7,9 +7,7 @@
 <%@ page import="sgo.entidad.Producto"%>
 <%@ page import="sgo.entidad.TableAttributes"%>
 <%@ page import="java.util.HashMap"%>
-<%
-HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); 
-%>
+<% HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores"); %>
 
 <!-- Inicio agregado por req 9000003068 -->
 <% TableAttributes tableAttributes = (TableAttributes) request.getAttribute("tableAttributes"); %>
@@ -601,9 +599,8 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 							  <td class="celda-detalle text-center"><label>Lectura Inicial		</label></td>
 							  <td class="celda-detalle text-center"><label>Lectura Final		</label></td>
 							  <td class="celda-detalle text-center"><label>Dif. Vol. Encontrado	</label></td>
-							  
 <!-- 							  se quita class por req 9000003068 -->
-							  <td><label>F/S					</label></td>
+							  <td><label>F/S</label></td>
 							  </tr>
 							</thead>
 <%-- 							se agrega  style="<%=tableAttributes.getBodyStyle() %>" por req 9000003068--%>							

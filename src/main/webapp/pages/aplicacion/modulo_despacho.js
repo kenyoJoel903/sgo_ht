@@ -992,22 +992,23 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 	    	  var indiceOrdenamiento = d.order[0].column;
 	          d.registrosxPagina =  d.length; 
 	          d.inicioPagina = d.start; 
-	          d.campoOrdenamiento= d.columns[indiceOrdenamiento].data;
-	          d.sentidoOrdenamiento=d.order[0].dir;    	  
+	          d.campoOrdenamiento = "id_despacho"; //d.columns[indiceOrdenamiento].data;
+	          d.sentidoOrdenamiento = "desc"; //d.order[0].dir;
 	          d.filtroOperacion = referenciaModulo.obj.filtroOperacion.val();
 	          d.filtroEstacion = referenciaModulo.obj.filtroEstacion.val();
 	          //d.idJornada = referenciaModulo.obj.filtroJornada.val();	          
-	          var idJornada=0;
-	          if(referenciaModulo.obj.idJornadaSeleccionado>0){
+	          var idJornada = 0;
+	          if(referenciaModulo.obj.idJornadaSeleccionado > 0) {
 	        	  idJornada=referenciaModulo.obj.idJornadaSeleccionado;
-	          }	          
+	          }
+	          
 	          d.idJornada = idJornada;	          
 	          //d.filtroFechaJornada = referenciaModulo.obj.detalleFechaJornada.text();
 	      }
 	    },
 	    "columns": referenciaModulo.columnasGrillaDespacho,
 	    "columnDefs": referenciaModulo.definicionColumnasDespacho
-		});	
+	  });	
 	  
 	  $('#tablaDespacho tbody').on( 'click', 'tr', function () {
 		  if (referenciaModulo.obj.datDespachoAPI.data().length > 0){
@@ -1204,34 +1205,41 @@ moduloDespacho.prototype.verRegistro= function(){
 	});
 };
 
-moduloDespacho.prototype.guardarRegistro= function(){  
+moduloDespacho.prototype.guardarRegistro= function() {  
 	var referenciaModulo = this;
-   referenciaModulo.mostrarDepuracion("guardarRegistro");
-   if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")){
+	referenciaModulo.mostrarDepuracion("guardarRegistro");
+
+	if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
-	} else if (referenciaModulo.obj.frmPrincipal.valid()){
-    referenciaModulo.obj.ocultaContenedorFormulario.show();
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	} else if (referenciaModulo.obj.frmPrincipal.valid()) {
+
+		referenciaModulo.obj.ocultaContenedorFormulario.show();
+		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
+
+		console.log(" -3333-- recuperarValores --- ");
+		console.dir(eRegistro);
+
+
 		$.ajax({
-      type: constantes.PETICION_TIPO_POST,
-      url: referenciaModulo.URL_GUARDAR, 
-      contentType: referenciaModulo.TIPO_CONTENIDO, 
-      data: JSON.stringify(eRegistro),	
-      success: function(respuesta) {
-        if (!respuesta.estado) {
-          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-        } else {
-          referenciaModulo.iniciarListado(respuesta.mensaje);
-        }
-        referenciaModulo.obj.ocultaContenedorFormulario.hide();
-      },			    		    
-      error: function() {
-        referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-      }
+			type: constantes.PETICION_TIPO_POST,
+			url: referenciaModulo.URL_GUARDAR, 
+			contentType: referenciaModulo.TIPO_CONTENIDO, 
+			data: JSON.stringify(eRegistro),	
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+				} else {
+					referenciaModulo.iniciarListado(respuesta.mensaje);
+				}
+				referenciaModulo.obj.ocultaContenedorFormulario.hide();
+			},			    		    
+			error: function() {
+				referenciaModulo.mostrarErrorServidor(xhr, estado, error); 
+			}
 		});
 	} else {
-    referenciaModulo.obj.ocultaContenedorFormulario.hide();
+		referenciaModulo.obj.ocultaContenedorFormulario.hide();
 	}
 };
 

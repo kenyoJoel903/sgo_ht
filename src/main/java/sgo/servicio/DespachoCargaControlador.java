@@ -42,6 +42,7 @@ import sgo.entidad.ParametrosListar;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
+import sgo.utilidades.Utilidades;
 
 @Controller
 public class DespachoCargaControlador {
@@ -220,56 +221,56 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		//Recuperar parametros
 		 parametros = new ParametrosListar();
 		if (httpRequest.getParameter("registrosxPagina") != null) {
-			parametros.setRegistrosxPagina(Integer.parseInt( httpRequest.getParameter("registrosxPagina")));
+			parametros.setRegistrosxPagina(Utilidades.parseInt(httpRequest.getParameter("registrosxPagina")));
 		}
 		
 		if (httpRequest.getParameter("inicioPagina") != null) {
-			parametros.setInicioPaginacion(Integer.parseInt( httpRequest.getParameter("inicioPagina")));
+			parametros.setInicioPaginacion(Utilidades.parseInt(httpRequest.getParameter("inicioPagina")));
 		}
 		
 		if (httpRequest.getParameter("campoOrdenamiento") != null) {
-			parametros.setCampoOrdenamiento(( httpRequest.getParameter("campoOrdenamiento")));
+			parametros.setCampoOrdenamiento(httpRequest.getParameter("campoOrdenamiento"));
 		}
 		
 		if (httpRequest.getParameter("sentidoOrdenamiento") != null) {
-			parametros.setSentidoOrdenamiento(( httpRequest.getParameter("sentidoOrdenamiento")));
+			parametros.setSentidoOrdenamiento(httpRequest.getParameter("sentidoOrdenamiento"));
 		}
 		
 		if (httpRequest.getParameter("valorBuscado") != null) {
-			parametros.setValorBuscado(( httpRequest.getParameter("valorBuscado")));
+			parametros.setValorBuscado(httpRequest.getParameter("valorBuscado"));
 		}
 		
 		if (httpRequest.getParameter("txtFiltro") != null) {
-			parametros.setTxtFiltro((httpRequest.getParameter("txtFiltro")));
+			parametros.setTxtFiltro(httpRequest.getParameter("txtFiltro"));
 		}
 		
 		parametros.setFiltroEstado(Constante.FILTRO_TODOS);
 		if (httpRequest.getParameter("filtroEstado") != null) {
-			parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
+			parametros.setFiltroEstado(Utilidades.parseInt(httpRequest.getParameter("filtroEstado")));
 		}
 		
 		if (httpRequest.getParameter("filtroFechaJornada") != null) {
-			parametros.setFiltroFechaJornada((httpRequest.getParameter("filtroFechaJornada")));
+			parametros.setFiltroFechaJornada(httpRequest.getParameter("filtroFechaJornada"));
 		}
 		
 		if (httpRequest.getParameter("idJornada") != null) {
-			parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
+			parametros.setIdJornada(Utilidades.parseInt(httpRequest.getParameter("idJornada")));
 		}
 		
 		if (httpRequest.getParameter("idCliente") != null) {
-			parametros.setIdCliente(Integer.parseInt(httpRequest.getParameter("idCliente")));
+			parametros.setIdCliente(Utilidades.parseInt(httpRequest.getParameter("idCliente")));
 		}
 		
 		if (httpRequest.getParameter("filtroOperacion") != null) {
-			parametros.setFiltroOperacion(Integer.parseInt(httpRequest.getParameter("filtroOperacion")));
+			parametros.setFiltroOperacion(Utilidades.parseInt(httpRequest.getParameter("filtroOperacion")));
 		}
 
 		if (httpRequest.getParameter("filtroEstacion") != null) {
-			parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
+			parametros.setFiltroEstacion(Utilidades.parseInt(httpRequest.getParameter("filtroEstacion")));
 		}
 		
 		if (httpRequest.getParameter("filtroIdOperario") != null) {
-			parametros.setFiltroIdOperario(Integer.parseInt(httpRequest.getParameter("filtroIdOperario")));
+			parametros.setFiltroIdOperario(Utilidades.parseInt(httpRequest.getParameter("filtroIdOperario")));
 		}
 
 		//Recuperar registros

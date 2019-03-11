@@ -433,14 +433,7 @@ $(document).ready(function(){
             },
             processResults: function (respuesta, pagina) {
                 var resultados = respuesta.contenido.carga;
-                
-                console.log("777 --- contometroJornada/listar ");
-                console.dir(resultados);
-                
                 var resultadosMap = $.map(resultados, function (obj) {
-                	
-                	console.log("777 --- resultadosMap");
-                	
 					obj.id = obj.idContometro;
 					return obj;
             	});
@@ -486,14 +479,7 @@ $(document).ready(function(){
             },
             processResults: function (respuesta, pagina) {
                 var resultados = respuesta.contenido.carga;
-
-                console.log("111 --- this.obj.cmpSelect2Tanque");
-                console.dir(resultados);
-                
                 var resultadosMap = $.map(resultados, function (obj) {
-                	
-                	console.log("111 --- resultadosMap");
-                	
 					obj.id = obj.idTanque;
 					return obj;
             	});
@@ -630,10 +616,7 @@ $(document).ready(function(){
   				estadoDespachando:constantes.ESTADO_DESPACHANDO
   			},
   			success: function(respuesta) {
-
-  				console.log("222 --- moduloActual.seleccionarTanque");
-  				console.dir(respuesta.contenido.carga);
-
+  				
   				if (respuesta.estado) {
   					var tanquejornada = respuesta.contenido.carga.length;
 
@@ -867,7 +850,7 @@ $(document).ready(function(){
   	  this.obj.idTurno.val(registro.idTurno);
   };
 
-  moduloActual.recuperarValores = function(registro){
+  moduloActual.recuperarValores = function(registro) {
     var eRegistro = {};
     var referenciaModulo = this;
     
@@ -902,9 +885,6 @@ $(document).ready(function(){
 	    eRegistro.volumenCorregido = parseFloat(referenciaModulo.obj.cmpVolumen60.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.lecturaInicial = parseFloat(referenciaModulo.obj.cmpLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.lecturaFinal = parseFloat(referenciaModulo.obj.cmpLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-    
-	    console.log(" --- recuperarValores --- ");
-	    console.dir(eRegistro);
     
     }  catch(error){
       console.log(error.message);

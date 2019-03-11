@@ -1,11 +1,12 @@
 package sgo.entidad;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import sgo.utilidades.Utilidades;
 
 public class Despacho extends EntidadBase {
+	
+	private static final long serialVersionUID = 1L;
 	private int id_despacho;
 	private int id_jornada;
 	private int id_vehiculo;

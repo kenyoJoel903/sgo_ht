@@ -409,51 +409,11 @@ $(document).ready(function() {
           
           cmpTemperatura.inputmask("99.9");
           cmpApi60.inputmask("99.9");
-
           cmpVol60.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
-         
-          /*cmpProductosTanques.tipoControl="select2";
-          moduloActual.obj.cmpSelect2ProductoTanque=$(formularioNuevo).find("select[elemento-grupo='productosTanques']").select2({
-    	  ajax: {
-    		    url: "./producto/listarPorOperacion",
-    		    dataType: 'json',
-    		    delay: 250,
-    		    "data": function (parametros) {
-    		    	try{
-    			      return {
-    			    	filtroOperacion : moduloActual.obj.filtroOperacion.val(),
-    			    	// indicadorProducto:
-						// constantes.INDICADOR_PRODUCTO_SIN_DATOS,
-    			        page: parametros.page,
-    			        paginacion:0
-    			    };
-    		      } catch(error){
-    		    		console.log(error.message);
-      		      };
-    		    },
-    		    processResults: function (respuesta, pagina) {
-    		      var resultados= respuesta.contenido.carga;
-    		      return { results: resultados};
-    		    },
-    		    cache: true
-    		  },
-    		"language": "es",
-    		"escapeMarkup": function (markup) { return markup; },
-    		"templateResult": function (registro) {
-    			if (registro.loading) {
-    				return "Buscando...";
-    			}
-    	        return "<div class='select2-user-result'>" + registro.nombre + "</div>";
-    	    },
-    	    "templateSelection": function (registro) {
-               return registro.nombre || registro.text;
-    	    },
-          });*/
-          
+        
           cmpApi60.on("change",function(){
         	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(29);
         	  moduloActual.calcularFactorCorreccion(cmpApi60.val(), cmpTemperatura.val(), "grupoAperturaTanques", indiceFormulario);
-
           });
          
           cmpTemperatura.on("change",function(){
@@ -677,6 +637,7 @@ $(document).ready(function() {
     this.obj.cmpCambioTanqueOperador1=$("#cmpCambioTanqueOperador1");
     this.obj.cmpCambioTanqueOperador2=$("#cmpCambioTanqueOperador2");
     this.obj.cmpCambioTanqueEstado==$("#cmpCambioTanqueEstado");
+    
     // tanque a finalizar
     this.obj.GrupoCambioTanquesFinal = $('#GrupoCambioTanquesFinal').sheepIt({
         separator: '',
@@ -755,12 +716,16 @@ $(document).ready(function() {
 	  	        return "<div class='select2-user-result'>" + registro.descripcionTanque + "</div>";
 	  	    },
 	  	    "templateSelection": function (registro) {
-	  	    	try{
+	  	    	try {
 	  	    		cmpDescripcionTanqueFinal.val(registro.descripcionTanque);
 	  	    		cmpIdTanqueFinal.val(registro.idTanque);
-	  	    		cmpIdProductoFinal.val(registro.producto.id);
-	                cmpDescripcionProductoFinal.val(registro.producto.nombre);
-	  	    	 } catch(error){
+	  	    		
+	  	    		if (typeof registro.producto !== "undefined") {
+		  	    		cmpIdProductoFinal.val(registro.producto.id);
+		                cmpDescripcionProductoFinal.val(registro.producto.nombre);
+	  	    		}
+	  	    		
+	  	    	 } catch(error) {
  		    		console.log(error.message);
 	  	    	 };
 	  	    	
@@ -879,8 +844,12 @@ $(document).ready(function() {
 	  	    	try{
 	  	    		cmpDescripcionTanqueInicial.val(registro.descripcionTanque);
 	  	    		cmpIdTanqueInicial.val(registro.idTanque);
-	  	    		cmpIdProductoInicial.val(registro.producto.id);
-	                cmpDescripcionProductoInicial.val(registro.producto.nombre);
+	  	    		
+	  	    		if (typeof registro.producto !== "undefined") {
+		  	    		cmpIdProductoInicial.val(registro.producto.id);
+		                cmpDescripcionProductoInicial.val(registro.producto.nombre);
+	  	    		}
+
 	  	    	 } catch(error){
  		    		console.log(error.message);
 	  	    	 };
@@ -1691,11 +1660,9 @@ $(document).ready(function() {
 		referenciaModulo.obj.cmpCierreOperador1.text(registro.operario1.nombreCompletoOperario);
 		referenciaModulo.obj.cmpCierreOperador2.text(registro.operario2.nombreCompletoOperario);
 		referenciaModulo.obj.cmpObservacionCierre.val(registro.observacion);
-		
-		
+
 //		Inicio Agregado por req 9000003068===============	
 		referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
-		console.log("numeroDecimalesContometro:: " + registro.estacion.numeroDecimalesContometro);
 //		Fin Agregado por req 9000003068=================
 		
 		if (registro.contometroJornada != null){

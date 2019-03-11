@@ -375,7 +375,7 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		
 		//Recuperar registros
 		respuesta = dDespacho.recuperarRegistros(parametros);
-		respuesta.mensaje= gestorDiccionario.getMessage("sgo.listarExitoso",null,locale);
+		respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso", null, locale);
 	} catch(Exception e) {
 		e.printStackTrace();
 		respuesta.estado = false;
@@ -385,7 +385,7 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 	return respuesta;
 }	
 
-@RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
+@RequestMapping(value = URL_RECUPERAR_RELATIVA, method = RequestMethod.GET)
 public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale){
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
@@ -458,18 +458,19 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		if(!Utilidades.esValido(eDespacho.getFechaHoraInicio())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.errorFechaInicio",null,locale));
 		}
+		
 		if(!Utilidades.esValido(eDespacho.getFechaHoraFin())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.errorFechaFin",null,locale));
 		}
 		
 		//para recuperar el id del contometro
-		respuesta= dContometroJornadaDao.recuperarRegistro(eDespacho.getIdContometro());
-		if (respuesta.estado==false){        	
+		respuesta = dContometroJornadaDao.recuperarRegistro(eDespacho.getIdContometro());
+		if (!respuesta.estado){        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
         }
 		
 		ContometroJornada contometroJornada = (ContometroJornada) respuesta.contenido.carga.get(0);
-		eDespacho.setIdContometro(contometroJornada.getIdContometro());
+		eDespacho.setIdContometro(eDespacho.getIdContometro());
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
        	eDespacho.setCreadoEl(Calendar.getInstance().getTime().getTime());
@@ -499,9 +500,11 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
         
         if (respuesta.estado==false){     	
           	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
-        }           
+        }
+        
     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.guardarExitoso",new Object[] {  eDespacho.getFechaCreacion().substring(0, 9),eDespacho.getFechaCreacion().substring(10),principal.getIdentidad() },locale);
     	this.transaccion.commit(estadoTransaccion);
+    	
 	} catch (Exception e) {
 		this.transaccion.rollback(estadoTransaccion);
 		e.printStackTrace();
