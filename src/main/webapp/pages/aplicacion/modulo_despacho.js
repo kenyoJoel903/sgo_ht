@@ -92,7 +92,7 @@ function moduloDespacho (){
 moduloDespacho.prototype.mostrarDepuracion=function(mensaje){
   var referenciaModulo=this;
   if (referenciaModulo.depuracionActivada=true){
-    console.log(mensaje);
+    //console.log(mensaje);
   }
 };
 
@@ -126,13 +126,13 @@ moduloDespacho.prototype.inicializar=function(){
 };
 
 moduloDespacho.prototype.configurarAjax=function(){
-	console.log("configurarAjax");
+	
 	var csrfConfiguracion = $("#csrf-token");
 	var nombreParametro = csrfConfiguracion.attr("name");
 	var valorParametro = csrfConfiguracion.val();
 	var parametros = {};
 	parametros[nombreParametro]=valorParametro;
-	console.log(parametros);
+	
 	$.ajaxSetup({
         data: parametros,
         headers : {'X-CSRF-TOKEN' : valorParametro}
@@ -152,17 +152,15 @@ moduloDespacho.prototype.resetearFormulario= function(){
 };
 
 moduloDespacho.prototype.validaFormularioXSS= function(formulario){
-	//$(document).ready(function(){
 	var retorno = true;
     $(formulario).find(':input').each(function() {
      var elemento= this;
-     console.log($(this));
+     
      if(!utilitario.validaCaracteresFormulario(elemento.value)){
     	 retorno = false;
      }
     });
     return retorno;
-  // });
 };
 
 moduloDespacho.prototype.inicializarControlesGenericos=function(){
@@ -435,9 +433,9 @@ moduloDespacho.prototype.recuperarTurno = function(accion){
 	    		if(respuesta.contenido.carga==null || respuesta.contenido.carga.length==0){
 	    			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No existe un turno abierto.");
 	    		}else{
-	    			console.log(respuesta.contenido.carga[0]);
+	    			
 	    			var registro = respuesta.contenido.carga[0];
-	    			console.log(registro.fechaHoraApertura);
+	    			
 //	    		    se cambio .text por .val por req 9000003068===========================================================================================	    			
 	    			referenciaModulo.obj.cmpHoraAperturaTurno.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraApertura));
 //	    			  ======================================================================================================================================	
@@ -773,7 +771,7 @@ moduloDespacho.prototype.inicializarGrillaJornada=function(){
       "url": './jornada/listar',
       "type":constantes.PETICION_TIPO_GET,
       "data": function (d) {
-    	  console.log("entra en datJornadaAPI");
+    	  
         var indiceOrdenamiento = d.order[0].column;
         d.registrosxPagina =  d.length; 
         d.inicioPagina = d.start; 
@@ -816,8 +814,7 @@ moduloDespacho.prototype.inicializarGrillaJornada=function(){
 		  		referenciaModulo.obj.btnImportar.addClass(constantes.CSS_CLASE_DESHABILITADA);
 		  		referenciaModulo.obj.btnAgregarDespacho.addClass(constantes.CSS_CLASE_DESHABILITADA);
 		  	}
-		  	console.log(referenciaModulo.obj.filtroEstadoJornada);
-			console.log("referenciaModulo.obj.datJornadaAPI.cell(indiceFila,8).data()" + referenciaModulo.obj.datJornadaAPI.cell(indiceFila,8).data());
+		  	
 			referenciaModulo.obj.btnDetalle.removeClass("disabled");
 		}
 	});
@@ -1055,40 +1052,25 @@ moduloDespacho.prototype.inicializarFormularioPrincipal= function(){
       rules: referenciaModulo.reglasValidacionFormulario,
       messages: referenciaModulo.mensajesValidacionFormulario,
     highlight: function(element, errorClass, validClass) {
-      //$(element.form).find("label[for=" + element.id + "]").addClass(errorClass);
       $("#cnt" + $(element).attr("id")).removeClass(validClass).addClass(errorClass);
     },
     unhighlight: function(element, errorClass, validClass) {
       $("#cnt" + $(element).attr("id")).removeClass(errorClass).addClass(validClass);
-      //$(element.form).find("label[for=" + element.id + "]").removeClass(errorClass);
     },
     errorPlacement: function(error, element) {
-      console.log("errorPlacement");
-      console.log(error);
-      //referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,mensaje);      
+      console.log(error);     
     },
     errorClass: "has-error",
     validClass: "has-success",
     showErrors: function(errorMap, errorList) {
-      // if (($.isEmptyObject(this.errorMap))) {
-        // console.log("checkForm");
-        // this.checkForm();
-      // }
-      console.log("Custom showErrors");
-      console.log("checkForm");
+
       this.checkForm();
-      console.log("this.errorMap");
-      console.log(this.errorMap);
-      console.log("this.errorList");
-      console.log(this.errorList);
       this.defaultShowErrors();
-      console.log("this.errorList.length");
-      console.log(this.errorList.length);
+
       var numeroErrores = this.errorList.length;
       if (numeroErrores > 0) {
         var mensaje = numeroErrores == 1 ? 'Existe un campo con error.' : 'Existen ' + numeroErrores + ' campos con errores';
         for (var indice in this.errorMap){
-          console.log(indice);
           mensaje+=". " + this.errorMap[indice];    
         }        
         referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,mensaje);
@@ -1140,9 +1122,10 @@ moduloDespacho.prototype.actualizarBandaInformacion=function(tipo, mensaje){
 };
 
 moduloDespacho.prototype.recuperarRegistroImportacion= function(){
+	
 	var referenciaModulo = this;
-	console.log("referenciaModulo.obj.idRegistroImportacion " + referenciaModulo.obj.idRegistroImportacion);
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: referenciaModulo.URL_RECUPERAR_IMPORTACION, 
@@ -1153,7 +1136,6 @@ moduloDespacho.prototype.recuperarRegistroImportacion= function(){
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
 	    	} else {		 
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
-	    		console.log(respuesta.contenido.carga[0]);
 	    		referenciaModulo.llenarDetallesImportacion(respuesta.contenido.carga[0]);
 	    		referenciaModulo.obj.ocultaContenedorVistaImportacion.hide();
 	    		//referenciaModulo.obj.ocultaContenedorFormulario.hide();
@@ -1405,7 +1387,7 @@ moduloDespacho.prototype.validarFormulario= function(){
 moduloDespacho.prototype.validaPermisos= function(){
   var referenciaModulo = this;
   try{
-  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
+  
   referenciaModulo.obj.ocultaContenedorTabla.show();
   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
 	  $.ajax({
@@ -1414,7 +1396,7 @@ moduloDespacho.prototype.validaPermisos= function(){
 	    contentType: referenciaModulo.TIPO_CONTENIDO, 
 	    data: { permiso : referenciaModulo.descripcionPermiso, },	
 	    success: function(respuesta) {
-	      console.log("respuesta.estado " + respuesta.estado);
+	      
 	      if(!respuesta.estado){
 	    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 		      referenciaModulo.obj.ocultaContenedorTabla.hide();

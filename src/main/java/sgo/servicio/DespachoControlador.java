@@ -5,8 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,13 +17,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 //9000002843 unused import org.jaxen.function.SubstringAfterFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.codec.Utf8;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -81,7 +77,6 @@ import sgo.entidad.Tolerancia;
 import sgo.entidad.Vehiculo;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.CabeceraReporte;
-import sgo.utilidades.Campo;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Formula;
 import sgo.utilidades.Reporteador;
@@ -359,34 +354,33 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 		}
 
 		if (httpRequest.getParameter("idJornada") != null) {
-			parametros.setIdJornada(Integer.parseInt(httpRequest.getParameter("idJornada")));
+			parametros.setIdJornada(Utilidades.parseInt(httpRequest.getParameter("idJornada")));
 		}
 		
-		
 		if (httpRequest.getParameter("idCliente") != null) {
-			parametros.setIdCliente(Integer.parseInt(httpRequest.getParameter("idCliente")));
+			parametros.setIdCliente(Utilidades.parseInt(httpRequest.getParameter("idCliente")));
 		}
 		
 		if (httpRequest.getParameter("filtroOperacion") != null) {
-			parametros.setFiltroOperacion(Integer.parseInt(httpRequest.getParameter("filtroOperacion")));
+			parametros.setFiltroOperacion(Utilidades.parseInt(httpRequest.getParameter("filtroOperacion")));
 		}
 
 		if (httpRequest.getParameter("filtroEstacion") != null) {
-			parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
+			parametros.setFiltroEstacion(Utilidades.parseInt(httpRequest.getParameter("filtroEstacion")));
 		}
 
 		if (httpRequest.getParameter("filtroCodigoArchivoOrigen") != null) {
-			parametros.setFiltroCodigoArchivoOrigen(Integer.parseInt(httpRequest.getParameter("filtroCodigoArchivoOrigen")));
+			parametros.setFiltroCodigoArchivoOrigen(Utilidades.parseInt(httpRequest.getParameter("filtroCodigoArchivoOrigen")));
 		}
 		
 		//Recuperar registros
 		respuesta = dDespacho.recuperarRegistros(parametros);
 		respuesta.mensaje= gestorDiccionario.getMessage("sgo.listarExitoso",null,locale);
-	} catch(Exception ex){
-		ex.printStackTrace();
-		respuesta.estado=false;
+	} catch(Exception e) {
+		e.printStackTrace();
+		respuesta.estado = false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
 	return respuesta;
 }	
@@ -426,16 +420,17 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale){
 
 @RequestMapping(value = URL_GUARDAR_RELATIVA, method = RequestMethod.POST)
 public @ResponseBody
-RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho,
-		HttpServletRequest peticionHttp, Locale locale) {
+RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletRequest peticionHttp, Locale locale) {
+	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
-	Bitacora eBitacora= null;
-	String ContenidoAuditoria ="";
+	Bitacora eBitacora = null;
+	String ContenidoAuditoria = "";
 	TransactionDefinition definicionTransaccion = null;
 	TransactionStatus estadoTransaccion = null;
-	String direccionIp="";
-	String ClaveGenerada="";
+	String direccionIp = "";
+	String ClaveGenerada = "";
+	
 	try {
 		//Inicia la transaccion
 		this.transaccion = new DataSourceTransactionManager(dDespacho.getDataSource());
@@ -467,22 +462,14 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho,
 			throw new Exception(gestorDiccionario.getMessage("sgo.errorFechaFin",null,locale));
 		}
 		
-//		//para recuperar el id del contometro
+		//para recuperar el id del contometro
 		respuesta= dContometroJornadaDao.recuperarRegistro(eDespacho.getIdContometro());
 		if (respuesta.estado==false){        	
         	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
         }
+		
 		ContometroJornada contometroJornada = (ContometroJornada) respuesta.contenido.carga.get(0);
 		eDespacho.setIdContometro(contometroJornada.getIdContometro());
-		
-//		//para recuperar el id del tanque
-//		respuesta= dTanqueJornadaDao.recuperarRegistro(eDespacho.getIdTanque());
-//		if (respuesta.estado==false){        	
-//        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
-//        }
-//		TanqueJornada tanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(0);
-//		eDespacho.setIdTanque(tanqueJornada.getIdTanque());
-		
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
        	eDespacho.setCreadoEl(Calendar.getInstance().getTime().getTime());
@@ -490,11 +477,13 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho,
         eDespacho.setIpActualizacion(direccionIp);
         eDespacho.setIpCreacion(direccionIp);
         eDespacho.setTipoRegistro(Despacho.ORIGEN_MANUAL);
-        respuesta= dDespacho.guardarRegistro(eDespacho);
+        respuesta = dDespacho.guardarRegistro(eDespacho);
+        
         //Verifica si la accion se ejecuto de forma satisfactoria
         if (respuesta.estado==false){     	
           	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
         }
+        
         ClaveGenerada = respuesta.valor;
         //Guardar en la bitacora
         ObjectMapper mapper = new ObjectMapper(); // no need to do this if you inject via @Autowired
@@ -507,31 +496,36 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho,
         eBitacora.setRealizadoEl(eDespacho.getCreadoEl());
         eBitacora.setRealizadoPor(eDespacho.getCreadoPor());
         respuesta= dBitacora.guardarRegistro(eBitacora);
+        
         if (respuesta.estado==false){     	
           	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
         }           
     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.guardarExitoso",new Object[] {  eDespacho.getFechaCreacion().substring(0, 9),eDespacho.getFechaCreacion().substring(10),principal.getIdentidad() },locale);
     	this.transaccion.commit(estadoTransaccion);
-	} catch (Exception ex){
+	} catch (Exception e) {
 		this.transaccion.rollback(estadoTransaccion);
-		ex.printStackTrace();
+		e.printStackTrace();
 		respuesta.estado=false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
+	
 	return respuesta;
 }
 
 @RequestMapping(value = URL_ACTUALIZAR_RELATIVA, method = RequestMethod.POST)
 public @ResponseBody
 RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServletRequest peticionHttp, Locale locale) {
+	
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
 	TransactionDefinition definicionTransaccion = null;
 	TransactionStatus estadoTransaccion = null;
-	Bitacora eBitacora=null;
-	String direccionIp="";
+	Bitacora eBitacora = null;
+	String direccionIp = "";
+	
 	try {
+		
 		//Inicia la transaccion
 		this.transaccion = new DataSourceTransactionManager(dDespacho.getDataSource());
 		definicionTransaccion = new DefaultTransactionDefinition();
@@ -544,16 +538,19 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
 		if (respuesta.estado==false){
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 		}
+		
 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
-		}			
+		}	
+		
 		//Auditoria local (En el mismo registro)
 		direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");  
 		if (direccionIp == null) {  
 			direccionIp = peticionHttp.getRemoteAddr();  
 		}
+		
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
         eDespacho.setIpActualizacion(direccionIp);
@@ -563,15 +560,18 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
 	    if (respuesta.estado == false) {
 		     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
 		}
+	    
 	    Despacho despachoAnterior=(Despacho)respuesta.contenido.getCarga().get(0);
 	    int estadoDespacho = despachoAnterior.getTipoRegistro();
 	    if(estadoDespacho==Despacho.ORIGEN_FICHERO){
 	    	eDespacho.setTipoRegistro(Despacho.ORIGEN_MIXTO);
 	    }
+	    
         respuesta= dDespacho.actualizarRegistro(eDespacho);
         if (respuesta.estado==false){          	
         	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
         }
+        
         //Guardar en la bitacora
         ObjectMapper mapper = new ObjectMapper();
         eBitacora.setUsuario(principal.getNombre());
@@ -584,16 +584,19 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
         respuesta= dBitacora.guardarRegistro(eBitacora);
         if (respuesta.estado==false){     	
           	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
-        }  
+        }
+        
     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.actualizarExitoso",new Object[] {  eDespacho.getFechaActualizacion().substring(0, 9),eDespacho.getFechaActualizacion().substring(10),principal.getIdentidad() },locale);
     	this.transaccion.commit(estadoTransaccion);
-	} catch (Exception ex){
-		ex.printStackTrace();
+    	
+	} catch (Exception e) {
+		e.printStackTrace();
 		this.transaccion.rollback(estadoTransaccion);
-		respuesta.estado=false;
+		respuesta.estado = false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
+	
 	return respuesta;
 }
 

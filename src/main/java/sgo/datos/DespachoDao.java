@@ -435,22 +435,23 @@ public class DespachoDao {
 			listaParametros.addValue("IpActualizacion", despacho.getIpActualizacion());
 			listaParametros.addValue("Id", despacho.getId());
 			SqlParameterSource namedParameters= listaParametros;
+			
 			/*Ejecuta la consulta y retorna las filas afectadas*/
 			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);		
 			if (cantidadFilasAfectadas>1){
-				respuesta.error= Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-				respuesta.estado=false;
+				respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+				respuesta.estado = false;
 				return respuesta;
 			}
-			respuesta.estado=true;
-		} catch (DataIntegrityViolationException excepcionIntegridadDatos){
-			excepcionIntegridadDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-			respuesta.estado=false;
-		} catch (DataAccessException excepcionAccesoDatos){
-			excepcionAccesoDatos.printStackTrace();
+			respuesta.estado = true;
+		} catch (DataIntegrityViolationException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+			respuesta.estado = false;
+		} catch (DataAccessException e){
+			e.printStackTrace();
 			respuesta.error= Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
+			respuesta.estado = false;
 		}
 		return respuesta;
 	}

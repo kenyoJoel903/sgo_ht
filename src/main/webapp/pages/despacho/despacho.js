@@ -114,7 +114,6 @@ $(document).ready(function(){
     ref.obj.cmpArchivo=$("#cmpArchivo");
     ref.obj.cmpArchivo.on("change",function(event){
     	ref.archivosCargados=event.target.files;
-    	console.log(ref.archivosCargados);
     });
 	
     this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
@@ -186,8 +185,6 @@ $(document).ready(function(){
 		    		}
 		    		moduloActual.obj.filtroEstacion.select2("val", respuesta.contenido.carga[0].id);
 		    		$('#filtroEstacion').val(respuesta.contenido.carga[0].id);
-		    		//moduloActual.obj.filtroEstacion.val(respuesta.contenido.carga[0].id);
-		    		console.log(moduloActual.obj.filtroEstacion.val());
  		    	} else {
 		    		var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
 		    	    elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, -1);
@@ -201,7 +198,7 @@ $(document).ready(function(){
 	        referenciaModulo.mostrarErrorServidor(xhr,estado,error);        
 		    }
 		});
-	   console.log(moduloActual.obj.filtroEstacion.val());
+	   
 	   moduloActual.obj.ocultaContenedorTabla.hide();
 	   e.preventDefault(); 
 	});
@@ -240,90 +237,6 @@ $(document).ready(function(){
 	   e.preventDefault(); 
 	});
     
-	/*this.obj.clienteSeleccionado=$("#clienteSeleccionado");
-    this.obj.operacionSeleccionado=$("#operacionSeleccionado");
-
-	this.obj.filtroOperacion = $("#filtroOperacion");
-	this.obj.filtroOperacion.on('change', function(e){
-	   moduloActual.obj.idOperacionSeleccionado=$(this).val();
-	   moduloActual.obj.operacionSeleccionado=$(this).find("option:selected").attr('data-nombre-operacion');
-	   moduloActual.obj.clienteSeleccionado=$(this).find("option:selected").attr('data-nombre-cliente');
-	   moduloActual.obj.filtroEstacion.select2("val", moduloActual.obj.filtroEstacion.attr("data-valor-inicial"));	
-	   
-	   e.preventDefault(); 
-	});   
-	 
-	this.obj.filtroEstacion = $("#filtroEstacion");
-	this.obj.filtroEstacion.tipoControl="select2";
-    this.obj.cmpSelect2Estacion=$("#filtroEstacion").select2({
-  	  ajax: {
-  		    url: "./estacion/listar",
-  		    dataType: 'json',
-  		    delay: 250,
-  		    data: function (parametros) {
-  		      return {
-  		    	valorBuscado: parametros.term, // search term
-  		        page: parametros.page,
-  		        paginacion:0,
-  		        filtroOperacion: moduloActual.obj.filtroOperacion.find("option:selected").attr('data-idOperacion')
-  		      };
-  		    },
-  		    processResults: function (respuesta, pagina) {
-  		    	console.log("processResults");
-  		    	var resultados= respuesta.contenido.carga;
-  		    	console.log(resultados);
-  		      return { results: resultados};
-  		    },
-  		    cache: true
-  		  },
-  		language: "es",
-  		escapeMarkup: function (markup) { return markup; },
-  		templateResult: function (registro) {
-  			console.log("templateResult");
-  			if (registro.loading) {
-  				return "Buscando...";
-  			}		    	
-		        return "<div class='select2-user-result'>" + registro.nombre + "</div>";
-		    },
-		    templateSelection: function (registro) {
-		    	try {
-		    		if(registro.nombre!=null){
-		    			moduloActual.obj.nombreEstacion = registro.nombre;
-		    			moduloActual.obj.idEstacion= registro.id;
-		    		}
-				} catch (e) {
-					console.log(e.message);
-				}		    	
-		        return registro.nombre || registro.text;
-		    },
-    });
-
-    this.obj.filtroFechaJornada = $("#filtroFechaJornada");
-    //Recupera la fecha actual enviada por el servidor
-    var fechaActual = this.obj.filtroFechaJornada.attr('data-fecha-actual');
-    console.log(" fechaActual -------> " + fechaActual);
-  //PARA QUE COJA LAS ULTIMAS FECHAS CARGADAS
-    var rangoSemana = utilitario.retornarfechaInicialFinal(fechaActual);
-    //var rangoSemana = utilitario.retornarRangoSemana(fechaActual);
-    this.obj.filtroFechaJornada.val(utilitario.formatearFecha2Cadena(rangoSemana.fechaInicial) + " - " +utilitario.formatearFecha2Cadena(rangoSemana.fechaFinal));
-    //Controles de filtro
-    this.obj.filtroOperacion.select2();
-    this.obj.filtroFechaJornada.daterangepicker({
-        singleDatePicker: false,        
-        showDropdowns: false,
-        locale: { 
-          "format": 'DD/MM/YYYY',
-          "applyLabel": "Aceptar",
-          "cancelLabel": "Cancelar",
-          "fromLabel": "Desde",
-          "toLabel": "Hasta",
-          "customRangeLabel": "Seleccionar",
-          "daysOfWeek": [ "Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab" ],
-          "monthNames": [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
-        }
-    });*/
-
     //Campos de detalle de transporte
 	this.obj.detalleIdDOperativo=$("#detalleIdDOperativo");
     this.obj.detalleCliente=$("#detalleCliente");
@@ -425,8 +338,12 @@ $(document).ready(function(){
   	        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
   	    },
   	    templateSelection: function (registro) {
-  	    	try{
-  	    		moduloActual.obj.cmpIdPropietario.val(registro.propietario.razonSocial);
+  	    	try {
+  	    		
+  	    		if (typeof registro.propietario !== "undefined") {
+  	    			moduloActual.obj.cmpIdPropietario.val(registro.propietario.razonSocial);
+  	    		}
+
   	    	} catch(error) {
   	          console.log(error.message);
   	        }
@@ -497,92 +414,112 @@ $(document).ready(function(){
       });
     this.obj.cmpIdContometro=$("#cmpIdContometro");
     this.obj.cmpIdContometro.tipoControl="select2";
+    
     this.obj.cmpSelect2Contometro=$("#cmpIdContometro").select2({
-    	  ajax: {
-  	    url: "./contometroJornada/listar",
-  	    dataType: 'json',
-  	    delay: 250,
-  	    data: function (parametros) {
-  	      return {
-  	    	valorBuscado: parametros.term, // search term
-  	        page: parametros.page,
-  	        paginacion:0,
-  	        filtroEstado: constantes.ESTADO_ACTIVO,
-  	        idJornada: parseInt(moduloActual.obj.idJornadaSeleccionado),
-  	        filtroEstacion:  moduloActual.obj.filtroEstacion.val(),
-  	        filtroProducto: moduloActual.obj.cmpIdProducto.val()
-  	      };
-  	    },
-  	    processResults: function (respuesta, pagina) {
-  	      var resultados= respuesta.contenido.carga;
-  	      return { results: resultados};
-  	    },
-  	    cache: true
-  	  },
-  	language: "es",
-  	escapeMarkup: function (markup) { return markup; },
-  	templateResult: function (registro) {
-  		if (registro.loading) {
-  			return "Buscando...";
-  		}		    	
-  	        return "<div class='select2-user-result'>" + registro.descripcionContometro + "</div>";
-  	    },
-  	    templateSelection: function (registro) {
-  	        return registro.descripcionContometro || registro.text;
-  	    },	
-      });
+        ajax: {
+            url: "./contometroJornada/listar",
+            dataType: 'json',
+            delay: 250,
+            data: function (parametros) {
+                return {
+                    valorBuscado: parametros.term,
+                    page: parametros.page,
+                    paginacion:0,
+                    filtroEstado: constantes.ESTADO_ACTIVO,
+                    idJornada: parseInt(moduloActual.obj.idJornadaSeleccionado),
+                    filtroEstacion:  moduloActual.obj.filtroEstacion.val(),
+                    filtroProducto: moduloActual.obj.cmpIdProducto.val()
+                };
+            },
+            processResults: function (respuesta, pagina) {
+                var resultados = respuesta.contenido.carga;
+                
+                console.log("777 --- contometroJornada/listar ");
+                console.dir(resultados);
+                
+                var resultadosMap = $.map(resultados, function (obj) {
+                	
+                	console.log("777 --- resultadosMap");
+                	
+					obj.id = obj.idContometro;
+					return obj;
+            	});
+                
+                return {
+                	results: resultadosMap
+                };
+            },
+            cache: true
+        },
+        language: "es",
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: function (registro) {
+            if (registro.loading) {
+                return "Buscando...";
+            }		    	
+            return "<div class='select2-user-result'>" + registro.descripcionContometro + "</div>";
+        },
+        templateSelection: function (registro) {
+            return registro.descripcionContometro || registro.text;
+        },	
+    });
+    
     this.obj.cmpIdTanque=$("#cmpIdTanque");
     this.obj.cmpIdTanque.tipoControl="select2";
-    this.obj.cmpSelect2Tanque=$("#cmpIdTanque").select2({
-    	  ajax: {
-  	    url: "./tanqueJornada/listar",
-  	    dataType: 'json',
-  	    delay: 250,
-  	    data: function (parametros) {
-  	      return {
-  	    	valorBuscado: parametros.term, // search term
-  	        page: parametros.page,
-  	        paginacion:0,
-  	        filtroEstado: constantes.ESTADO_ACTIVO,
-  	        filtroEstacion:  moduloActual.obj.filtroEstacion.val(),
-  	        idJornada: parseInt(moduloActual.obj.idJornadaSeleccionado),
-  	        filtroProducto: moduloActual.obj.cmpIdProducto.val(),
-  	        estadoDespachando:constantes.ESTADO_DESPACHANDO
-  	      };
-  	    },
-  	    processResults: function (respuesta, pagina) {
-  	      var resultados = respuesta.contenido.carga;
-  	      
-			var array = [];
-			for (var i = 0; i < respuesta.contenido.carga.length; i++) {
-				
-				var resultado = respuesta.contenido.carga[i];
-				resultado.id = resultado.idTanque;
-				
-				array.push(resultado);
-			}
-			
-			resultados = array;
-  	      
-  	      return { results: resultados};
-  	    },
-  	    cache: true
-  	  },
-  	language: "es",
-  	escapeMarkup: function (markup) { return markup; },
-  	templateResult: function (registro) {
-  		if (registro.loading) {
-  			return "Buscando...";
-  		}		    	
-  	        return "<div class='select2-user-result'>" + registro.descripcionTanque + "</div>";
-  	    },
-  	    templateSelection: function (registro) {
-  	        return registro.descripcionTanque || registro.text;
-  	    },	
-      });
+    
+    this.obj.cmpSelect2Tanque = $("#cmpIdTanque").select2({
+        ajax: {
+            url: "./tanqueJornada/listar",
+            dataType: 'json',
+            delay: 250,
+            data: function (parametros) {
+                return {
+                    valorBuscado: parametros.term,
+                    page: parametros.page,
+                    paginacion:0,
+                    filtroEstado: constantes.ESTADO_ACTIVO,
+                    filtroEstacion:  moduloActual.obj.filtroEstacion.val(),
+                    idJornada: parseInt(moduloActual.obj.idJornadaSeleccionado),
+                    filtroProducto: moduloActual.obj.cmpIdProducto.val(),
+                    estadoDespachando:constantes.ESTADO_DESPACHANDO
+                };
+            },
+            processResults: function (respuesta, pagina) {
+                var resultados = respuesta.contenido.carga;
+
+                console.log("111 --- this.obj.cmpSelect2Tanque");
+                console.dir(resultados);
+                
+                var resultadosMap = $.map(resultados, function (obj) {
+                	
+                	console.log("111 --- resultadosMap");
+                	
+					obj.id = obj.idTanque;
+					return obj;
+            	});
+                
+                return {
+                    results: resultadosMap
+                };
+            },
+            cache: true
+        },
+        language: "es",
+        escapeMarkup: function (markup) {
+        	return markup;
+        },
+        templateResult: function (registro) {
+            if (registro.loading) {
+                return "Buscando...";
+            }		    	
+            return "<div class='select2-user-result'>" + registro.descripcionTanque + "</div>";
+        },
+        templateSelection: function (registro) {
+            return registro.descripcionTanque || registro.text;
+        }
+    });
     
     this.obj.cmpVolObservado=$("#cmpVolObservado");
-    //this.obj.cmpVolObservado.inputmask("99999999.99");
     this.obj.cmpVolObservado.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
     this.obj.cmpLecturaInicial=$("#cmpLecturaInicial");
     this.obj.cmpLecturaFinal=$("#cmpLecturaFinal");
@@ -590,7 +527,6 @@ $(document).ready(function(){
     moduloActual.obj.cmpLecturaFinal.val(0);
     this.obj.cmpLecturaInicial.inputmask('decimal', {digits: 0, groupSeparator:',',autoGroup:true,groupSize:3});
     this.obj.cmpLecturaFinal.inputmask('decimal', {digits: 0, groupSeparator:',',autoGroup:true,groupSize:3});
-    
     
     moduloActual.obj.cmpLecturaInicial.on("input",function(e){
     	var lecturaFinal =  moduloActual.eliminaSeparadorComa(moduloActual.obj.cmpLecturaFinal.val());
@@ -606,20 +542,6 @@ $(document).ready(function(){
     	moduloActual.obj.cmpVolObservado.val(totalVolumen);
     });
     
-    /*moduloActual.obj.cmpLecturaInicial.on("keypress", function(e){
-    	if (e.which == 13) { //valido que se presione la tecla enter
-    		var totalVolumen = parseFloat(moduloActual.obj.cmpLecturaFinal.val()) - parseInt(moduloActual.obj.cmpLecturaInicial.val());  
-        	moduloActual.obj.cmpVolObservado.val(totalVolumen);
-    	}
-    });
-    
-    moduloActual.obj.cmpLecturaFinal.on("keypress", function(e){
-   	  	if (e.which == 13) {  //valido que se presione la tecla enter
-   	  	var totalVolumen = parseFloat(moduloActual.obj.cmpLecturaFinal.val()) - parseInt(moduloActual.obj.cmpLecturaInicial.val()); 
-	    	moduloActual.obj.cmpVolObservado.val(totalVolumen);
-      }
-    });*/
-    
     moduloActual.obj.cmpHoraInicio.on("change",function(e){
     	if(moduloActual.obj.cmpHoraFin.val().length == 0){
     		moduloActual.obj.cmpHoraFin.val(moduloActual.obj.cmpHoraInicio.val());
@@ -627,7 +549,6 @@ $(document).ready(function(){
     });
     
     this.obj.cmpFactor=$("#cmpFactor");
-    //this.obj.cmpFactor.inputmask('decimal', {digits: 6,integerDigits:4, groupSeparator:',',autoGroup:true,groupSize:3});
     this.obj.cmpAPI60=$("#cmpAPI60");
     this.obj.cmpAPI60.inputmask("99.9");
     this.obj.cmpAPI60.on("change",function(){
@@ -642,8 +563,6 @@ $(document).ready(function(){
     
     this.obj.cmpVolumen60=$("#cmpVolumen60");
     this.obj.cmpVolumen60.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
-    //this.obj.cmpVolumen60.inputmask("99999999.99");
-    
     this.obj.cmpTipoRegistro=$("#cmpTipoRegistro");
 
     //Campos vista Despacho
@@ -674,8 +593,6 @@ $(document).ready(function(){
 	this.obj.vistaActualizadoEl=$("#vistaActualizadoEl");
 	this.obj.vistaIpCreacion=$("#vistaIpCreacion");
 	this.obj.vistaIpActualizacion=$("#vistaIpActualizacion");
-	
-	
   };
   
   moduloActual.eliminaSeparadorComa = function(numeroFloat){
@@ -696,61 +613,63 @@ $(document).ready(function(){
   	return retorno;
   };
   
-  moduloActual.seleccionarTanque = function(){
-	  var referenciaModulo=this;
-	  try {
-       	$.ajax({
-  		type: constantes.PETICION_TIPO_GET,
-  	    url: "./tanqueJornada/listar",
-  	    contentType: referenciaModulo.TIPO_CONTENIDO, 
-  	    data: {
-  	        filtroEstado: constantes.ESTADO_ACTIVO,
-  	        filtroEstacion:  referenciaModulo.obj.filtroEstacion.val(),
-  	        idJornada: parseInt(referenciaModulo.obj.idJornadaSeleccionado),
-  	        filtroProducto: $(cmpIdProducto).val(),
-  	        estadoDespachando:constantes.ESTADO_DESPACHANDO
-  	    },
-  	    success: function(respuesta) {
-          if (!respuesta.estado) {
-        	 
-          } else {
-        	  var tanquejornada = respuesta.contenido.carga.length;
+  moduloActual.seleccionarTanque = function() {
+  	var referenciaModulo = this;
 
-        	  if(tanquejornada == 1){
-        		var registro = respuesta.contenido.carga[0];
-        		var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
-        			elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, registro.tanque.id);
-        			elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
-        			moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
-        			$(cmpIdTanque).prop('disabled', true);
-        	  }else{
-        		  
-        		  // 9000003068
-        		  if(tanquejornada > 0){
-	        		  var registros = respuesta.contenido.carga;
-	        		  $(cmpIdTanque).prop('disabled', false);
-	        		  return {results: registro};
-        		  }else{
-        			  var registro = {};
-        			  moduloActual.obj.cmpIdTanque.val(0).trigger('change');
-        			  //$(cmpIdTanque).prop('disabled', true);
-	        		  return {results: registro};
-        		  }
-        	  };
-            };
-          },
-            error: function(xhr,estado,error) {
-            referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-          }
-        }); 
-      } catch(error){
-      referenciaModulo.mostrarDepuracion(error.message);
-      };
+  	try {
+
+  		$.ajax({
+  			type: constantes.PETICION_TIPO_GET,
+  			url: "./tanqueJornada/listar",
+  			contentType: referenciaModulo.TIPO_CONTENIDO, 
+  			data: {
+  				filtroEstado: constantes.ESTADO_ACTIVO,
+  				filtroEstacion:  referenciaModulo.obj.filtroEstacion.val(),
+  				idJornada: parseInt(referenciaModulo.obj.idJornadaSeleccionado),
+  				filtroProducto: $(cmpIdProducto).val(),
+  				estadoDespachando:constantes.ESTADO_DESPACHANDO
+  			},
+  			success: function(respuesta) {
+
+  				console.log("222 --- moduloActual.seleccionarTanque");
+  				console.dir(respuesta.contenido.carga);
+
+  				if (respuesta.estado) {
+  					var tanquejornada = respuesta.contenido.carga.length;
+
+  					if(tanquejornada == 1){
+  						var registro = respuesta.contenido.carga[0];
+  						var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
+  						elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, registro.tanque.id);
+  						elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
+  						moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.tanque.id).trigger('change');
+  						$(cmpIdTanque).prop('disabled', true);
+  					} else {
+
+  						// 9000003068
+  						if(tanquejornada > 0){
+  							var registros = respuesta.contenido.carga;
+  							$(cmpIdTanque).prop('disabled', false);
+  							return {results: registro};
+  						}else{
+  							var registro = {};
+  							moduloActual.obj.cmpIdTanque.val(0).trigger('change');
+  							return {results: registro};
+  						}
+  					}
+  				}
+  			},
+  			error: function(xhr,estado,error) {
+  				referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
+  			}
+  		}); 
+  	} catch(error) {
+  		referenciaModulo.mostrarDepuracion(error.message);
+  	};
   }
-  
+
   moduloActual.calcularFactor= function(){
    var ref=this;
-   //var temp = idElemento.split("_");
    var parametros={};
    var temperatura =  ref.obj.cmpTemperatura.val();
    var apiCorregido = ref.obj.cmpAPI60.val();
@@ -779,7 +698,6 @@ $(document).ready(function(){
           ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
         } else {
           var registro = respuesta.contenido.carga[0];
-          console.log(registro);
           var factorCorrecion = parseFloat(registro.factorCorreccion);
           ref.obj.cmpFactor.val(factorCorrecion);
           ref.obj.cmpVolumen60.val(registro.volumenCorregido);
@@ -872,48 +790,6 @@ $(document).ready(function(){
 		      } catch(error){
 		      referenciaModulo.mostrarDepuracion(error.message);
 		      }
-
-  			      
-  			  	/*try {
-  		           	$.ajax({
-  	   	  	  		type: constantes.PETICION_TIPO_GET,
-  	   	  	  	    url: "./tanqueJornada/listar",
-  	   	  	  	    contentType: referenciaModulo.TIPO_CONTENIDO, 
-  	   	  	  	    data: {
-  	   		  	        filtroEstado: constantes.ESTADO_ACTIVO,
-  	   		  	        filtroEstacion:  moduloActual.obj.filtroEstacion.val(),
-  	   		  	        idJornada: parseInt(moduloActual.obj.idJornadaSeleccionado),
-  	   		  	        filtroProducto: $(cmpIdProducto).val(),
-  	   		  	        estadoDespachando:constantes.ESTADO_DESPACHANDO
-  	   	  	  	    },
-  	   	  	  	    success: function(respuesta) {
-  	   	  	          if (!respuesta.estado) {
-  	   	  	        	 
-  	   	  	          } else {
-  	   	  	        	  var tanquejornada = respuesta.contenido.carga.length;
-  	   	  	        	  if(tanquejornada == 1){
-  	   	  	        		  console.log(respuesta.contenido.carga[0]);
-  	   	  	        		var registro = respuesta.contenido.carga[0];
-  	   	  	        		var elemento2 =constantes.PLANTILLA_OPCION_SELECTBOX;
-  	   	  	        			elemento2 = elemento2.replace(constantes.ID_OPCION_CONTENEDOR, registro.id);
-  	   	  	        			elemento2 = elemento2.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.descripcionTanque);
-  	   	  	                moduloActual.obj.cmpIdTanque.empty().append(elemento2).val(registro.id).trigger('change');
-  	   	  	                $(cmpIdTanque).prop('disabled', true);
-  	   	  	        	  } 
-  	   	  	            }
-  	   	  	          },
-  	   	  	            error: function(xhr,estado,error) {
-  	   	  	            referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-  	   	  	          }
-  	   	  	        }); 
-  	   	  	      } catch(error){
-  	   	  	      referenciaModulo.mostrarDepuracion(error.message);
-  	   	  	      }*/
-  		  
-  		  
-  		//formulario.find("input[elemento-grupo='horaMuestra']").val(utilitario.formatearTimestampToString(registro.muestreo[indice].horaMuestreo));
-  		//referenciaModulo.obj.cmpFechaInicio.val(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));
-  		//referenciaModulo.obj.cmpFechaFin.val(utilitario.formatearFecha(referenciaModulo.obj.fechaJornadaSeleccionado));
   		
   		moduloActual.obj.cmpHoraInicio.val("");
   		moduloActual.obj.cmpHoraFin.val("");
@@ -993,11 +869,9 @@ $(document).ready(function(){
 
   moduloActual.recuperarValores = function(registro){
     var eRegistro = {};
-    var referenciaModulo=this;
+    var referenciaModulo = this;
+    
     try {
-    	
-    	
-    	console.log("xxxx.::: " + referenciaModulo.obj.cmpIdTanque.val());
     	
 	    //datos para el despacho
 	    eRegistro.id = parseInt(referenciaModulo.idDespacho);
@@ -1019,7 +893,6 @@ $(document).ready(function(){
 	    eRegistro.idTurno = referenciaModulo.obj.idTurno.val();
 //	    Fin modificado por req 9000003068
 
-	    
 	    //eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaInicio.val());
 	    //eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaFin.val());
 	    eRegistro.factorCorreccion = parseFloat(referenciaModulo.obj.cmpFactor.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
@@ -1029,7 +902,10 @@ $(document).ready(function(){
 	    eRegistro.volumenCorregido = parseFloat(referenciaModulo.obj.cmpVolumen60.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.lecturaInicial = parseFloat(referenciaModulo.obj.cmpLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.lecturaFinal = parseFloat(referenciaModulo.obj.cmpLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-        console.log(eRegistro);
+    
+	    console.log(" --- recuperarValores --- ");
+	    console.dir(eRegistro);
+    
     }  catch(error){
       console.log(error.message);
     }
@@ -1137,9 +1013,10 @@ $(document).ready(function(){
 		}
   };
 	moduloActual.validarCargaArchivo = function(){
-		console.log("validarCargaArchivo");
+
 		var respuesta = true;
-		var ref=this;		
+		var ref=this;
+		
 		if (typeof ref.archivosCargados[0] == 'undefined'){
 			ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,"No ha seleccionado el archivo a importar");
 			respuesta = false;
@@ -1167,7 +1044,7 @@ $(document).ready(function(){
 			respuesta = false;
 			return respuesta;
 		}
-		console.log("termina de validarCargaArchivo");
+
 		return respuesta;
 	};
 
