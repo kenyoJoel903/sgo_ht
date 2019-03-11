@@ -73,16 +73,15 @@ $(document).ready(function() {
   moduloActual.inicializarCampos= function(){
 	  
 	this.obj.tableGrupoAperturaContometros = $("table.grupo-apertura-contometros");
-	this.obj.cantTurnosEstacion =$("#cantTurnosEstacion");
-    this.obj.idOperacionSeleccionado =$("#idOperacionSeleccionado");
-    this.obj.idEstacionSeleccionado =$("#idEstacionSeleccionado");
-    this.obj.idJornadaSeleccionado =$("#idJornadaSeleccionado");
-	  
-	this.obj.clienteSeleccionado=$("#clienteSeleccionado");
-    this.obj.operacionSeleccionado=$("#operacionSeleccionado");
-
-    
+	this.obj.tableGrupoCierreContometros = $("table.grupo-cierre-contometros");
+	this.obj.cantTurnosEstacion = $("#cantTurnosEstacion");
+    this.obj.idOperacionSeleccionado = $("#idOperacionSeleccionado");
+    this.obj.idEstacionSeleccionado = $("#idEstacionSeleccionado");
+    this.obj.idJornadaSeleccionado = $("#idJornadaSeleccionado");
+	this.obj.clienteSeleccionado = $("#clienteSeleccionado");
+    this.obj.operacionSeleccionado = $("#operacionSeleccionado");
     this.obj.filtroFechaJornada = $("#filtroFechaJornada");
+    
     // Recupera la fecha actual enviada por el servidor
     var fechaActual = this.obj.filtroFechaJornada.attr('data-fecha-actual');
     //PARA QUE COJA LAS ULTIMAS FECHAS CARGADAS
@@ -544,10 +543,10 @@ $(document).ready(function() {
           //Fin Comentado por req 9000003068========================
           
           cmpLecturaFinal.on("input",function(){
-            try{
+            try {
               var diferencia = parseFloat(cmpLecturaFinal.val()) - parseFloat(cmpLecturaInicial.val()); 
               cmpDiferencia.val(diferencia);
-            } catch(error){
+            } catch(error) {
               console.log(error.message);
             }
           }); 
@@ -1267,60 +1266,7 @@ $(document).ready(function() {
   	  moduloActual.mostrarDepuracion(error.message);
     };
   };
-
- /* moduloActual.calcularFactor= function(idElemento){
-	var ref=this;
-	var temp = idElemento.split("_");
-	var indice = temp[1];
-	var parametros={};
-	var temperatura = $("#GrupoAperturaTanques_"+indice+"_Temperatura").val();
-	var apiCorregido = $("#GrupoAperturaTanques_"+indice+"_Api60").val();
-	var volumenObs = $("#GrupoAperturaTanques_"+indice+"_VolObsInicial").val();
-	var camposInvalidos = 0;
-	if ((typeof temperatura == "undefined") || (temperatura == null) || (temperatura == '')){
-	  camposInvalidos++;
-	}
-
-	if ((typeof apiCorregido == "undefined") || (apiCorregido == null) || (apiCorregido == '')){
-	  camposInvalidos++;
-	}
-	     
-	if (camposInvalidos ==0){
-	  parametros.apiCorregido=apiCorregido;
-	  parametros.temperatura=temperatura;
-	  parametros.volumenObservado=0;
-	  $("#ocultaContenedorAperturaJornada").show();
-	  $.ajax({
-	    type: constantes.PETICION_TIPO_GET,
-	    url: '../admin/formula/recuperar-factor-correccion',  
-	    contentType: ref.TIPO_CONTENIDO, 
-	    data: parametros, 
-	    success: function(respuesta) {
-	      if (!respuesta.estado) {
-	        ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-	      } else {
-	        var registro = respuesta.contenido.carga[0];
-	        var factorCorrecion = parseFloat(registro.factorCorreccion);
-	        $("#GrupoAperturaTanques_"+indice+"_Factor").val(factorCorrecion.toFixed(6));
-	        if(factorCorrecion!=null && volumenObs!=null){
-	        	volumenObs=volumenObs.replaceAll(moduloActual.SEPARADOR_MILES,"");
-	        	var volumne60=factorCorrecion*parseFloat(volumenObs);
-	        	$("#GrupoAperturaTanques_"+indice+"_Vol60").val(volumne60.toFixed(6));	
-	        }
-	        
-	        
-	        ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);         
-	      }
-	      $("#ocultaContenedorAperturaJornada").hide();
-	    },                  
-	    error: function(xhr,estado,error) {
-	      ref.mostrarErrorServidor(xhr,estado,error);
-	      $("#ocultaContenedorAperturaJornada").hide();   
-	    }
-	  });
-	}   
-  };*/
-		  
+  
   moduloActual.datosCabecera= function(){
     var referenciaModulo=this;
 	referenciaModulo.obj.idOperacionSeleccionado = referenciaModulo.obj.filtroOperacion.val();
@@ -1351,7 +1297,7 @@ $(document).ready(function() {
   };
 	  
 // =========================================================== Formulario Apertura ================================================================
-  moduloActual.llenarApertura = function(registro){
+  moduloActual.llenarApertura = function(registro) {
 
 	var referenciaModulo = this;
 	var numeroContometros = 0;
@@ -1459,6 +1405,11 @@ $(document).ready(function() {
 		    	  formularioTanque.find("input[elemento-grupo='desp']").prop('checked', false);
 	    	  }
 		    }
+		    
+			/**
+			 * Remove loading
+			 */
+			referenciaModulo.obj.tableGrupoAperturaContometros.removeClass("loading");
 		    
 		}, 300);
 		/**
@@ -1647,8 +1598,6 @@ $(document).ready(function() {
 		return integer + "." + decimal;
 	}
 //    Fin agregamos por req 9000003068
-
-  // ==============================================Formulario Cierre ============================================
   moduloActual.llenarFormularioCierre = function(registro) {
 	  
 	var referenciaModulo = this;
@@ -1665,148 +1614,180 @@ $(document).ready(function() {
 		referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 //		Fin Agregado por req 9000003068=================
 		
-		if (registro.contometroJornada != null){
+		if (registro.contometroJornada != null) {
 	    	numeroContometros = registro.contometroJornada.length;
 	    }
+		
+		/**
+		 * Limpiar table contometros
+		 */
 	    referenciaModulo.obj.GrupoCierreContometros.removeAllForms();
-	    for(var contador = 0; contador < numeroContometros; contador++){
-	      referenciaModulo.obj.GrupoCierreContometros.addForm();
-	      var formulario= referenciaModulo.obj.GrupoCierreContometros.getForm(contador);	      
-	      formulario.find("input[elemento-grupo='idContometroJornadaCierre']").val(registro.contometroJornada[contador].id);
-	      formulario.find("input[elemento-grupo='idContometroCierre']").val(registro.contometroJornada[contador].contometro.id);
-	      formulario.find("input[elemento-grupo='contometrosCierre']").val(registro.contometroJornada[contador].contometro.alias);
-	      formulario.find("input[elemento-grupo='idCierreProductoContometro']").val(registro.contometroJornada[contador].producto.id);	      
-	      formulario.find("input[elemento-grupo='cierreProductoContometro']").val(registro.contometroJornada[contador].producto.nombre);
-	      
-//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
-//	      se agrega lecIni lecFin y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val y formulario.find("input[elemento-grupo='lecturaFinal']").val
-	      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
-	      var lecFin = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinal);
-	      
-	      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
-	      formulario.find("input[elemento-grupo='lecturaFinal']").val(lecFin);
-	      
-	      var diferencia = parseFloat(lecFin) - parseFloat(lecIni);
-//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
-	      
-//	      Inicio Comentado por req 9000003068
-//	      var diferencia = parseFloat(registro.contometroJornada[contador].lecturaFinal) - parseFloat(registro.contometroJornada[contador].lecturaInicial);
-//	      Fin Comentado por req 9000003068
-	      
-	      formulario.find("input[elemento-grupo='diferencia']").val(diferencia);
-	      formulario.find("checkbox[elemento-grupo='servicio']").val(registro.contometroJornada[contador].estadoServicio);
-	    }
 	    
-	    if (registro.tanqueJornadaCierre != null){
-	    	numeroTanques = registro.tanqueJornadaCierre.length;
-	    }
-	    referenciaModulo.obj.GrupoCierreTanques.removeAllForms();
-	    //referenciaModulo.obj.GrupoCierreProducto.removeAllForms();
-	    for(var cont = 0; cont < numeroTanques; cont++){
-	      referenciaModulo.obj.GrupoCierreTanques.addForm();
-	      var formularioCierreTanque= referenciaModulo.obj.GrupoCierreTanques.getForm(cont);
-	      
-//	      agregado por req 9000003068===============================================================================
-	      
-	      if(cont%2){	// par o impar
-	    	    //impar
-	    	  formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#F2DEF5');
-	      }else{
-	    	    //par
-	    		formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#DBF3DF');
-	      }
-//	      ==========================================================================================================	      
-	      
-	      formularioCierreTanque.find("input[elemento-grupo='idTanqueJornadaCierre']").val(registro.tanqueJornadaCierre[cont].idTjornada);
-	      formularioCierreTanque.find("input[elemento-grupo='idTanqueCierre']").val(registro.tanqueJornadaCierre[cont].tanque.id);
-	      formularioCierreTanque.find("input[elemento-grupo='tanqueCierre']").val(registro.tanqueJornadaCierre[cont].tanque.descripcion);
-	      
-	      formularioCierreTanque.find("input[elemento-grupo='idCierreProductoTanque']").val(registro.tanqueJornadaCierre[cont].producto.id);
-	      formularioCierreTanque.find("input[elemento-grupo='cierreProductoTanque']").val(registro.tanqueJornadaCierre[cont].producto.nombre);
-	      // medidas iniciales
-	      formularioCierreTanque.find("input[elemento-grupo='horaInicial']").val(utilitario.formatearTimestampToString(registro.tanqueJornadaCierre[cont].horaInicial));
-	      formularioCierreTanque.find("input[elemento-grupo='medidaInicialTanque']").val(registro.tanqueJornadaCierre[cont].medidaInicial);
-	      formularioCierreTanque.find("input[elemento-grupo='volObsInicialTanque']").val(registro.tanqueJornadaCierre[cont].volumenObservadoInicial.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='api60InicialTanque']").val(registro.tanqueJornadaCierre[cont].apiCorregidoInicial.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='factorInicialTanque']").val(registro.tanqueJornadaCierre[cont].factorCorreccionInicial.toFixed(6));
-	      formularioCierreTanque.find("input[elemento-grupo='temperaturaInicialTanque']").val(registro.tanqueJornadaCierre[cont].temperaturaInicial.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='vol60InicialTanque']").val(registro.tanqueJornadaCierre[cont].volumenCorregidoInicial.toFixed(2));
-	    	  
-          if(registro.tanqueJornadaCierre[cont].estadoServicio == 1) { formularioCierreTanque.find("input[elemento-grupo='fsInicialTanque']").prop('checked', true);  }
-			  													else { formularioCierreTanque.find("input[elemento-grupo='fsInicialTanque']").prop('checked', false); }
-
-          if(registro.tanqueJornadaCierre[cont].enLinea == 1) 	   	 { formularioCierreTanque.find("input[elemento-grupo='despInicialTanque']").prop('checked', true);  }
-			  													else { formularioCierreTanque.find("input[elemento-grupo='despInicialTanque']").prop('checked', false); }
-          // medidas finales
-          if(registro.tanqueJornadaCierre[cont].horaFinal != null){
-        	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").val(utilitario.asignarHoraFinalTimestampToString(registro.tanqueJornadaCierre[cont].horaFinal));
-          } else {
-        	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").val(referenciaModulo.obj.cmpCierreFechaJornada.text());
-          }
-	      formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").val(registro.tanqueJornadaCierre[cont].medidaFinal);
-	      formularioCierreTanque.find("input[elemento-grupo='volObsFinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenObservadoFinal.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='api60FinalTanque']").val(registro.tanqueJornadaCierre[cont].apiCorregidoFinal.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='factorFinalTanque']").val(registro.tanqueJornadaCierre[cont].factorCorreccionFinal.toFixed(6));
-	      formularioCierreTanque.find("input[elemento-grupo='temperaturaFinalTanque']").val(registro.tanqueJornadaCierre[cont].temperaturaFinal.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='vol60FinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenCorregidoFinal.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='volAguaFinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenAguaFinal.toFixed(2));
-	      formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', false);
-	      formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false);
-
-	      if(registro.tanqueJornadaCierre[cont].horaFinal == null){
-	    	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='volObsFinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='api60FinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='factorFinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='temperaturaFinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='vol60FinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='volAguaFinalTanque']").prop('disabled', false);
-	    	  formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('disabled', false);
-	    	  
-	    	  if(registro.tanqueJornadaCierre[cont].enLinea == 1) 	   	 { formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', true);  }
-																	else { formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false);
-  			  }
-	    	  
-	    	  //formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('disabled', true);
-	      } else {
-	    	  //el estado de servicio si es 0 esta activo;
-	    	  //si es 1 esta inactivo
-	    	  if(registro.tanqueJornadaCierre[cont].estadoServicio == 1) { formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', true);  }//inactivo
-																	else { formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', false); }  //activo
-
-	    	  if(registro.tanqueJornadaCierre[cont].enLinea == 1) 	   	 { formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', true);  }
-																	else { formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false); }
-	    	  
-	    	  
-	    	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").prop('disabled', true);
-	    	  /*formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='volObsFinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='api60FinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='factorFinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='temperaturaFinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='vol60FinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='volAguaFinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('disabled', true);
-	    	  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('disabled', true);*/
-	      }
-
-	    }
+		/**
+		 * Modificar altura del tbody de la tabla de contometros
+		 */
+		var contometroRegistros = referenciaModulo.obj.tableGrupoCierreContometros.attr("data-contometro-registros");
+		
+		if (numeroContometros < contometroRegistros) {
+			referenciaModulo.obj.GrupoCierreContometros.css("height", numeroContometros * 25);
+		}
+	    //fin
+		
+		/**
+		 * Timeout
+		 */
+		setTimeout(function() {
 	    
-	    if (registro.producto != null){
-	    	numeroProductos = registro.producto.length;
-	    }
+		    for(var contador = 0; contador < numeroContometros; contador++) {
+		      referenciaModulo.obj.GrupoCierreContometros.addForm();
+		      var formulario= referenciaModulo.obj.GrupoCierreContometros.getForm(contador);	      
+		      formulario.find("input[elemento-grupo='idContometroJornadaCierre']").val(registro.contometroJornada[contador].id);
+		      formulario.find("input[elemento-grupo='idContometroCierre']").val(registro.contometroJornada[contador].contometro.id);
+		      formulario.find("input[elemento-grupo='contometrosCierre']").val(registro.contometroJornada[contador].contometro.alias);
+		      formulario.find("input[elemento-grupo='idCierreProductoContometro']").val(registro.contometroJornada[contador].producto.id);	      
+		      formulario.find("input[elemento-grupo='cierreProductoContometro']").val(registro.contometroJornada[contador].producto.nombre);
+		      
+	//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
+	//	      se agrega lecIni lecFin y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val y formulario.find("input[elemento-grupo='lecturaFinal']").val
+		      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
+		      var lecFin = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinal);
+		      
+		      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
+		      formulario.find("input[elemento-grupo='lecturaFinal']").val(lecFin);
+		      
+		      var diferencia = parseFloat(lecFin) - parseFloat(lecIni);
+	//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
+		      
+	//	      Inicio Comentado por req 9000003068
+	//	      var diferencia = parseFloat(registro.contometroJornada[contador].lecturaFinal) - parseFloat(registro.contometroJornada[contador].lecturaInicial);
+	//	      Fin Comentado por req 9000003068
+		      
+		      formulario.find("input[elemento-grupo='diferencia']").val(diferencia);
+		      formulario.find("checkbox[elemento-grupo='servicio']").val(registro.contometroJornada[contador].estadoServicio);
+		    }
+		    
+		    /**
+		    * Remove loading
+		    */
+		    referenciaModulo.obj.tableGrupoCierreContometros.removeClass("loading");
+		    
+		    if (registro.tanqueJornadaCierre != null){
+		    	numeroTanques = registro.tanqueJornadaCierre.length;
+		    }
+		    
+		    referenciaModulo.obj.GrupoCierreTanques.removeAllForms();
+		    //referenciaModulo.obj.GrupoCierreProducto.removeAllForms();
+		    for(var cont = 0; cont < numeroTanques; cont++){
+		      referenciaModulo.obj.GrupoCierreTanques.addForm();
+		      var formularioCierreTanque= referenciaModulo.obj.GrupoCierreTanques.getForm(cont);
+		      
+//		      agregado por req 9000003068===============================================================================
+		      
+		      if(cont%2){	// par o impar
+		    	  formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#F2DEF5');
+		      }else{
+		    		formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#DBF3DF');
+		      }
+//		      ==========================================================================================================	      
+		      
+		      formularioCierreTanque.find("input[elemento-grupo='idTanqueJornadaCierre']").val(registro.tanqueJornadaCierre[cont].idTjornada);
+		      formularioCierreTanque.find("input[elemento-grupo='idTanqueCierre']").val(registro.tanqueJornadaCierre[cont].tanque.id);
+		      formularioCierreTanque.find("input[elemento-grupo='tanqueCierre']").val(registro.tanqueJornadaCierre[cont].tanque.descripcion);
+		      
+		      formularioCierreTanque.find("input[elemento-grupo='idCierreProductoTanque']").val(registro.tanqueJornadaCierre[cont].producto.id);
+		      formularioCierreTanque.find("input[elemento-grupo='cierreProductoTanque']").val(registro.tanqueJornadaCierre[cont].producto.nombre);
+		      // medidas iniciales
+		      formularioCierreTanque.find("input[elemento-grupo='horaInicial']").val(utilitario.formatearTimestampToString(registro.tanqueJornadaCierre[cont].horaInicial));
+		      formularioCierreTanque.find("input[elemento-grupo='medidaInicialTanque']").val(registro.tanqueJornadaCierre[cont].medidaInicial);
+		      formularioCierreTanque.find("input[elemento-grupo='volObsInicialTanque']").val(registro.tanqueJornadaCierre[cont].volumenObservadoInicial.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='api60InicialTanque']").val(registro.tanqueJornadaCierre[cont].apiCorregidoInicial.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='factorInicialTanque']").val(registro.tanqueJornadaCierre[cont].factorCorreccionInicial.toFixed(6));
+		      formularioCierreTanque.find("input[elemento-grupo='temperaturaInicialTanque']").val(registro.tanqueJornadaCierre[cont].temperaturaInicial.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='vol60InicialTanque']").val(registro.tanqueJornadaCierre[cont].volumenCorregidoInicial.toFixed(2));
+		    	  
+	          if(registro.tanqueJornadaCierre[cont].estadoServicio == 1) {
+	        	  formularioCierreTanque.find("input[elemento-grupo='fsInicialTanque']").prop('checked', true); 
+	          } else {
+	        	  formularioCierreTanque.find("input[elemento-grupo='fsInicialTanque']").prop('checked', false);
+	          }
+
+	          if(registro.tanqueJornadaCierre[cont].enLinea == 1) { 
+	        	  formularioCierreTanque.find("input[elemento-grupo='despInicialTanque']").prop('checked', true);
+	          } else { 
+	        	  formularioCierreTanque.find("input[elemento-grupo='despInicialTanque']").prop('checked', false);
+	          }
+	          
+	          // medidas finales
+	          if(registro.tanqueJornadaCierre[cont].horaFinal != null) {
+	        	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").val(utilitario.asignarHoraFinalTimestampToString(registro.tanqueJornadaCierre[cont].horaFinal));
+	          } else {
+	        	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").val(referenciaModulo.obj.cmpCierreFechaJornada.text());
+	          }
+		      formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").val(registro.tanqueJornadaCierre[cont].medidaFinal);
+		      formularioCierreTanque.find("input[elemento-grupo='volObsFinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenObservadoFinal.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='api60FinalTanque']").val(registro.tanqueJornadaCierre[cont].apiCorregidoFinal.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='factorFinalTanque']").val(registro.tanqueJornadaCierre[cont].factorCorreccionFinal.toFixed(6));
+		      formularioCierreTanque.find("input[elemento-grupo='temperaturaFinalTanque']").val(registro.tanqueJornadaCierre[cont].temperaturaFinal.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='vol60FinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenCorregidoFinal.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='volAguaFinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenAguaFinal.toFixed(2));
+		      formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', false);
+		      formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false);
+
+		      if(registro.tanqueJornadaCierre[cont].horaFinal == null) {
+		    	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='volObsFinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='api60FinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='factorFinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='temperaturaFinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='vol60FinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='volAguaFinalTanque']").prop('disabled', false);
+		    	  formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('disabled', false);
+		    	  
+		    	  if(registro.tanqueJornadaCierre[cont].enLinea == 1) {
+		    		  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', true);
+		    	  } else {
+		    		  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false);
+	  			  }
+		    	  
+		    	  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('disabled', true);
+		      } else {
+		    	  //el estado de servicio si es 0 esta activo;
+		    	  //si es 1 esta inactivo
+		    	  if(registro.tanqueJornadaCierre[cont].estadoServicio == 1) {
+		    		  formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', true);
+		    	  } else {
+		    		  formularioCierreTanque.find("input[elemento-grupo='fsFinalTanque']").prop('checked', false);
+		    	  }
+
+		    	  if(registro.tanqueJornadaCierre[cont].enLinea == 1) {
+		    		  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', true);
+		    	  } else { 
+		    		  formularioCierreTanque.find("input[elemento-grupo='despFinalTanque']").prop('checked', false);
+		    	  }
+		    	  
+		    	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").prop('disabled', true);
+		      }
+
+		    }
+		    
+		    if (registro.producto != null){
+		    	numeroProductos = registro.producto.length;
+		    }
+		    
+		    referenciaModulo.obj.GrupoCierreProducto.removeAllForms();
+
+		    for(var indice = 0; indice < numeroProductos; indice++) {
+		      referenciaModulo.obj.GrupoCierreProducto.addForm();
+			  var formularioMuestreo = referenciaModulo.obj.GrupoCierreProducto.getForm(indice);
+			  formularioMuestreo.find("input[elemento-grupo='idProducto']").val(registro.producto[indice].id);
+			  formularioMuestreo.find("input[elemento-grupo='producto']").val(registro.producto[indice].nombre);
+		    }
 	    
-	    referenciaModulo.obj.GrupoCierreProducto.removeAllForms();
-
-	    for(var indice = 0; indice < numeroProductos; indice++){
-
-	      referenciaModulo.obj.GrupoCierreProducto.addForm();
-		  var formularioMuestreo= referenciaModulo.obj.GrupoCierreProducto.getForm(indice);
-		  formularioMuestreo.find("input[elemento-grupo='idProducto']").val(registro.producto[indice].id);
-		  formularioMuestreo.find("input[elemento-grupo='producto']").val(registro.producto[indice].nombre);
-	    }
+		}, 300);
+		/**
+		 * Timeout
+		 */
   };
   
   moduloActual.recuperarValoresCierre = function(registro) {
@@ -1833,14 +1814,14 @@ $(document).ready(function() {
 	      for(var contador = 0; contador < numeroContometros; contador++){
 	        var contometroJornada = {};
 	        var formularioContometro = referenciaModulo.obj.GrupoCierreContometros.getForm(contador);
-	        var cmpIdContometroJornadaCierre	= formularioContometro.find("input[elemento-grupo='idContometroJornadaCierre']");
-	        var cmpIdProductoJornadaCierre	= formularioContometro.find("input[elemento-grupo='idCierreProductoContometro']");
-	        var cmpLecturaFinal					= formularioContometro.find("input[elemento-grupo='lecturaFinal']");
-	        var cmpLecturaInicial					= formularioContometro.find("input[elemento-grupo='lecturaInicial']");
-	        var cmpIdContometroCierre					= formularioContometro.find("input[elemento-grupo='idContometroCierre']");
-	        var cmpServicio						= formularioContometro.find("input[elemento-grupo='servicio']");  
+	        var cmpIdContometroJornadaCierre = formularioContometro.find("input[elemento-grupo='idContometroJornadaCierre']");
+	        var cmpIdProductoJornadaCierre = formularioContometro.find("input[elemento-grupo='idCierreProductoContometro']");
+	        var cmpLecturaFinal = formularioContometro.find("input[elemento-grupo='lecturaFinal']");
+	        var cmpLecturaInicial = formularioContometro.find("input[elemento-grupo='lecturaInicial']");
+	        var cmpIdContometroCierre = formularioContometro.find("input[elemento-grupo='idContometroCierre']");
+	        var cmpServicio = formularioContometro.find("input[elemento-grupo='servicio']");  
 	        
-	        if(cmpServicio.prop('checked') == true){
+	        if (cmpServicio.prop('checked') == true) {
 	        	contometroJornada.estadoServicio = 1;
 	        } else { 
 	        	contometroJornada.estadoServicio = 0;
@@ -1907,11 +1888,17 @@ $(document).ready(function() {
             tanqueJornada.volumenCorregidoFinal = parseFloat(cmpVol60FinalTanque.val().replace(moduloActual.SEPARADOR_MILES,""));
             tanqueJornada.volumenAguaFinal = parseFloat(cmpVolAguaFinalTanque.val().replace(moduloActual.SEPARADOR_MILES,""));
 
-            if(cmpFsFinalTanque.prop('checked') == true){ tanqueJornada.estadoServicio = 1; 
-	        									 } else { tanqueJornada.estadoServicio = 0; }
+            if(cmpFsFinalTanque.prop('checked') == true){
+            	tanqueJornada.estadoServicio = 1; 
+	        } else {
+	        	tanqueJornada.estadoServicio = 0;
+	        }
             
-            if(cmpDespFinalTanque.prop('checked') == true){ tanqueJornada.enLinea = 1; 
-			 									   } else { tanqueJornada.enLinea = 0; }
+            if(cmpDespFinalTanque.prop('checked') == true){
+            	tanqueJornada.enLinea = 1; 
+			} else {
+				tanqueJornada.enLinea = 0;
+			}
             
 	        eRegistro.tanqueJornada.push(tanqueJornada);
 	      }

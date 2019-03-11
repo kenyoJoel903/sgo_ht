@@ -8,7 +8,6 @@ table.grupo-apertura-contometros
 	width: 100%;
 }
 
-
 table.grupo-apertura-contometros thead tr td:nth-child(1)
 {
 	width: 10% !important;    
@@ -22,13 +21,14 @@ table.grupo-apertura-contometros thead tr td:nth-child(2)
 table.grupo-cierre-contometros
 {
 	width: 100%;
+	border:1px solid black;
+	background-color:#F2DEF5;
 }
 
 table.grupo-cierre-contometros thead tr td:nth-child(1)
 {
 	width: 14.5% !important;    
 }
-
 
 table.grupo-cierre-contometros thead tr td:nth-child(2)
 {

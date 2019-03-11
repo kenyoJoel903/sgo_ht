@@ -591,7 +591,9 @@
 						<br />
 		                <label><B>Cont&oacute;metros </B></label>
 <!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
-		                <table class="grupo-cierre-contometros table-scroll sgo-simple-table table table-condensed" style="border:1px solid black;background-color:#F2DEF5">
+		                <table 
+		                	class="grupo-cierre-contometros loading table-scroll sgo-simple-table table table-condensed" 
+		                	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>" >
 							<thead>
 							  <tr>
 							  <td class="celda-detalle text-center"><label>Cont&oacute;metro	</label></td>
@@ -633,7 +635,7 @@
 <!-- 			      				</tr> -->
 <!-- 								Fin se comenta por req 9000003068 -->
 			      				<tr id="GrupoCierreContometros_noforms_template">
-			      				<td></td>
+			      					<td></td>
 			      				</tr>    
 							</tbody>
 						</table>
