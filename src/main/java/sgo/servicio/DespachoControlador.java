@@ -268,7 +268,7 @@ public ModelAndView mostrarFormulario(Locale locale) {
 	    
 	    parametros = new ParametrosListar();
 		parametros.setPaginacion(Constante.SIN_PAGINACION);
-		parametros.setFiltroEstado(Constante.FILTRO_TODOS);
+		parametros.setFiltroEstado(Constante.ESTADO_ACTIVO);  //se puso estado activo por req 9000003068....antes traia todos
 		parametros.setIdCliente(principal.getCliente().getId());
 		parametros.setFiltroOperacion(op.getId());
 		respuesta = dEstacion.recuperarRegistros(parametros);
@@ -1299,3 +1299,4 @@ private AuthenticatedUserDetails getCurrentUser() {
 }
 
 }
+

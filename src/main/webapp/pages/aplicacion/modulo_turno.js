@@ -301,6 +301,8 @@ moduloTurno.prototype.inicializaApertura = function(registro, valor) {
 		_this.datosCabecera(registro);
 		_this.recuperarTanquesDespachando();
 		
+		console.log('valor: ' + valor);
+		
 		if (valor == 2) {
 			_this.llenarAperturaContometroJornada(registro);
 		}else{

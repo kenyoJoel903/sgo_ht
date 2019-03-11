@@ -36,8 +36,8 @@ public class EstacionDao {
 	public final static String NOMBRE_CAMPO_ORDENAMIENTO_DEFECTO = "nombre";
 	
 	public final static String NOMBRE_CAMPO_FILTRO_ESTADO = "estado";
-	public final static String O = "OR";
-	public final static String Y = "AND";
+	public final static String O = " OR ";
+	public final static String Y = " AND ";
 	public final static String ENTRE = "BETWEEN";
 	
 	@Autowired

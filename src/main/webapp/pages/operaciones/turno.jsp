@@ -204,7 +204,7 @@
 		        			  		type="text" 
 		        			  		class="form-control input-sm text-center" 
 		        			  		value="" 
-		        			  		placeholder="dd/mm/yyyy HH:mm:ss"/>
+		        			  		placeholder="dd/mm/yyyy HH:mm"/> 	<!-- se quita ss del placeholder por req 9000003068-->
 	        			  	  </td>
 		                   </tr>
 		                  </thead>
