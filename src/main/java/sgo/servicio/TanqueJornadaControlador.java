@@ -238,6 +238,8 @@ public class TanqueJornadaControlador {
    if (httpRequest.getParameter("estadoTanque") != null) {
 	    parametros.setEstadoTanque(Integer.parseInt(httpRequest.getParameter("estadoTanque")));
 	   }
+   
+   parametros.setPaginacion(Constante.SIN_PAGINACION);
 //	Fin Agregado por req 9000003068
 
    // Recuperar registros

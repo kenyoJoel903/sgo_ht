@@ -478,7 +478,9 @@ public Respuesta validarCierre(MessageSource gestorDiccionario, Locale locale){
 	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Hora Final" + texto }, locale);
 	return respuesta;
   }
-  if (!Utilidades.esValido(this.medida_final) || this.medida_final == 0){	
+  
+//  se quita || this.medida_final == 0 por req 9000003068
+  if (!Utilidades.esValido(this.medida_final)){	
 	respuesta.estado = false;
 	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Medida Final" + texto }, locale);
 	return respuesta;
