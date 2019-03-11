@@ -2147,3 +2147,45 @@ insert into sgo.perfil_detalle_horario(id_perfil_horario, numero_orden, glosa_tu
 
 update sgo.estacion set id_perfil_horario = (select id_perfil_horario from sgo.perfil_horario where nombre_perfil = 'PERFIL 2 TURNOS'),  cantidad_turnos = 2;
 -- Fin Agregado por HT 04-03-2019 11:08
+
+-- Inicio Agregado por HT 11-03-2019 17:43
+CREATE OR REPLACE VIEW sgo.v_liquidacion_inventario_x_estacion_completo AS
+ SELECT t1.id_operacion,
+    t1.fecha_operativa,
+    t1.id_producto,
+    t1.id_estacion,
+    t1.porcentaje_actual,
+    t1.stock_final_fisico AS stock_final,
+    t1.stock_inicial_fisico AS stock_inicial,
+    t1.volumen_descargado,
+    t1.volumen_despacho,
+    round(t1.stock_final_fisico * (t1.porcentaje_actual / 100::numeric), 0) AS tolerancia,
+    
+	CASE
+            WHEN t3.tipo_volumen_descargado = 1 THEN (t1.stock_inicial_fisico + t1.volumen_descargado_cisterna - t1.volumen_despacho )
+            WHEN t3.tipo_volumen_descargado = 2 THEN (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho )
+            ELSE 0::numeric
+    END AS stock_final_calculado,
+	
+	CASE
+            WHEN t3.tipo_volumen_descargado = 1 THEN (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado_cisterna - t1.volumen_despacho) )
+            WHEN t3.tipo_volumen_descargado = 2 THEN (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho) )
+            ELSE 0::numeric
+    END AS variacion,
+	
+    @ (t1.stock_final_fisico - (t1.stock_inicial_fisico + t1.volumen_descargado - t1.volumen_despacho)) AS variacion_absoluta,
+    t2.nombre AS nombre_producto,
+    t3.nombre AS nombre_operacion,
+    t3.nombre_corto_cliente AS nombre_cliente,
+    t4.nombre AS nombre_estacion,
+    t1.volumen_descargado_cisterna
+   FROM sgo.v_liquidacion_inventario_x_estacion t1
+     JOIN sgo.producto t2 ON t1.id_producto = t2.id_producto
+     JOIN sgo.v_operacion t3 ON t1.id_operacion = t3.id_operacion
+     JOIN sgo.estacion t4 ON t1.id_estacion = t4.id_estacion;
+
+ALTER TABLE sgo.v_liquidacion_inventario_x_estacion_completo
+    OWNER TO sgo_user;
+--Fin por HT 11-03-2019 17:43
+
+
