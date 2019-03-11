@@ -121,6 +121,7 @@ $(document).ready(function(){
   		    	valorBuscado: parametros.term, // search term
   		        page: parametros.page,
   		        paginacion:0,
+  		        filtroEstado: 1, // agregado por req 9000003068
   		        filtroOperacion: moduloActual.obj.filtroOperacion.find("option:selected").attr('data-idOperacion')
   		      };
   		    },
