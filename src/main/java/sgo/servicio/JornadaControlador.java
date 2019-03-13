@@ -1410,13 +1410,40 @@ public class JornadaControlador {
 //            		Fin Agregado por req 9000003068=====================================
                 	
 //                  Inicio Agregado por req 9000003068==================================================
-            		setearVolumenCorregido(eJornada.getId(), locale);
+                	
+//                	ParametrosListar parametros  = new ParametrosListar();
+//            	  parametros.setIdJornada(eJornada.getId());
+//            	  parametros.setCampoOrdenamiento("horaMuestreo");
+//            	  parametros.setSentidoOrdenamiento("ASC");
+//            	  parametros.setPaginacion(Constante.SIN_PAGINACION);
+//            	  respuesta = dMuestreo.recuperarRegistros(parametros);
+//            	  
+//            	  if (respuesta.estado == false){  
+//            		  throw new Exception("Error al recuperar muestreos de la jornada");
+//            	  }
+//            	  
+//            	  List<Muestreo> lstMuestreo = (List<Muestreo>) respuesta.contenido.carga;
+//                	
 //                  Fin Agregado por req 9000003068==================================================
 	    		    
 	            	respuestaMuestreoJornada = dMuestreo.guardarRegistro(eMuestreoJornada);
 					if (respuestaMuestreoJornada.estado == false) {
 						throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
 					}
+					
+	    		    ParametrosListar parametros  = new ParametrosListar();
+	            	  parametros.setIdJornada(eJornada.getId());
+	            	  parametros.setCampoOrdenamiento("horaMuestreo");
+	            	  parametros.setSentidoOrdenamiento("ASC");
+	            	  parametros.setPaginacion(Constante.SIN_PAGINACION);
+	            	  respuesta = dMuestreo.recuperarRegistros(parametros);
+	            	  
+	            	  if (respuesta.estado == false){  
+	            		  throw new Exception("Error al recuperar muestreos de la jornada");
+	            	  }
+	            	  
+	            	  List<Muestreo> lstMuestreo = (List<Muestreo>) respuesta.contenido.carga;
+	            	  setearVolumenCorregido(eJornada.getId(), lstMuestreo, locale);
 					
 					// Guardar en la bitacora
 					mapper = new ObjectMapper();
@@ -2103,7 +2130,7 @@ public @ResponseBody RespuestaCompuesta registrarCambioTanqueJornada(@RequestBod
   }
   
 //  Inicio Agregado por req 9000003068======================================
-  private void setearVolumenCorregido(int idJornada, Locale locale) throws Exception{
+  private void setearVolumenCorregido(int idJornada, List<Muestreo> lstMuestreo, Locale locale) throws Exception{
 	  ParametrosListar parametros;
 	  RespuestaCompuesta respuesta;
 	  
@@ -2116,18 +2143,6 @@ public @ResponseBody RespuestaCompuesta registrarCambioTanqueJornada(@RequestBod
 	  }
 	  
 	  List<Despacho> lstDespacho = (List<Despacho>) respuesta.contenido.carga;
-	  
-	  parametros  = new ParametrosListar();
-	  parametros.setIdJornada(idJornada);
-	  parametros.setCampoOrdenamiento("horaMuestreo");
-	  parametros.setSentidoOrdenamiento("ASC");
-	  respuesta = dMuestreo.recuperarRegistros(parametros);
-	  
-	  if (respuesta.estado == false){  
-		  throw new Exception("Error al recuperar muestreos de la jornada");
-	  }
-	  
-	  List<Muestreo> lstMuestreo = (List<Muestreo>) respuesta.contenido.carga;
 	  
 	  for(Despacho desp : lstDespacho){
 		  
