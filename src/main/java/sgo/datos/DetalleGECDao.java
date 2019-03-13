@@ -128,65 +128,72 @@ public class DetalleGECDao {
     return respuesta;
   }
   
-  public RespuestaCompuesta recuperarRegistrosVista(ParametrosListar argumentosListar) {
-   String sqlLimit = "";
-   int totalRegistros = 0, totalEncontrados = 0;
-   RespuestaCompuesta respuesta = new RespuestaCompuesta();
-   Contenido<DetalleGecVista> contenido = new Contenido<DetalleGecVista>();
-   List<DetalleGecVista> listaRegistros = new ArrayList<DetalleGecVista>();
-   List<Object> parametros = new ArrayList<Object>();
-   String sqlWhere ="";
-   StringBuilder consultaSQL = new StringBuilder();
-   try {
-    
-    sqlWhere = "WHERE t1.id_transportista='"+argumentosListar.getIdTransportista()+"'";
-    sqlWhere+=" AND t1.id_producto='"+argumentosListar.getFiltroProducto()+"'";
-    sqlWhere+=" AND t1.fecha_operativa='"+Utilidades.modificarFormatoFechaddmmaaaa(argumentosListar.getFiltroFechaDiaOperativo())+"'";
-    if (argumentosListar.getFiltroParametro() != null && argumentosListar.getFiltroParametro().equals("agregar") ) {
-    	sqlWhere+=" AND t1.numero_guia_remision not in(select numero_guia from sgo.v_detalle_gec)";
+public RespuestaCompuesta recuperarRegistrosVista(ParametrosListar argumentosListar) {
+
+    String sqlLimit = "";
+    int totalRegistros = 0, totalEncontrados = 0;
+    RespuestaCompuesta respuesta = new RespuestaCompuesta();
+    Contenido<DetalleGecVista> contenido = new Contenido<DetalleGecVista>();
+    List<DetalleGecVista> listaRegistros = new ArrayList<DetalleGecVista>();
+    List<Object> parametros = new ArrayList<Object>();
+    String sqlWhere = "";
+    StringBuilder consultaSQL = new StringBuilder();
+
+    try {
+
+        sqlWhere = " WHERE t1.id_transportista = '" + argumentosListar.getIdTransportista() + "'";
+        sqlWhere += " AND t1.id_producto = '" + argumentosListar.getFiltroProducto() + "'";
+        sqlWhere += " AND t1.fecha_operativa = '" + Utilidades.modificarFormatoFechaddmmaaaa(argumentosListar.getFiltroFechaDiaOperativo()) + "'";
+
+        if (argumentosListar.getFiltroParametro() != null && argumentosListar.getFiltroParametro().equals("agregar")) {
+            sqlWhere += " AND t1.numero_guia_remision NOT IN (SELECT t2.numero_guia FROM sgo.v_detalle_gec t2 WHERE t1.id_producto = t2.id_producto) ";
+        }
+
+        consultaSQL.append("SELECT count(t1.id_dcisterna) as total FROM  sgo.v_guia_combustible_detalle_crear t1 "+ sqlWhere);
+        totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
+
+        consultaSQL.setLength(0);
+        consultaSQL.append("SELECT ");
+        consultaSQL.append("t1.id_transporte,");
+        consultaSQL.append("t1.id_dcisterna,");
+        consultaSQL.append("t1.numero_guia_remision,");
+        consultaSQL.append("t1.fecha_arribo,");
+        consultaSQL.append("t1.fecha_fiscalizacion,");
+        consultaSQL.append("t1.volumen_despachado_observado,");
+        consultaSQL.append("t1.volumen_despachado_corregido,");
+        consultaSQL.append("t1.estado_dia_operativo,");
+        consultaSQL.append("t1.fecha_operativa,");
+        consultaSQL.append("t1.fecha_emision,");
+        consultaSQL.append("t1.volumen_recibido_observado,");
+        consultaSQL.append("t1.volumen_recibido_corregido,");   
+        consultaSQL.append("t1.id_producto,");
+        consultaSQL.append("t1.id_transportista");
+        consultaSQL.append(" FROM  sgo.v_guia_combustible_detalle_crear t1 ");
+        consultaSQL.append(sqlWhere);
+        
+        listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new DetalleGecVistaMapper());
+        totalEncontrados = totalRegistros;
+        contenido.carga = listaRegistros;
+        respuesta.estado = true;
+        respuesta.contenido = contenido;
+        respuesta.contenido.totalRegistros = totalRegistros;
+        respuesta.contenido.totalEncontrados = totalEncontrados;
+        Utilidades.gestionaTrace(sNombreClase, "recuperarRegistrosVista");
+
+    } catch (DataAccessException e) {
+        Utilidades.gestionaWarning(e, sNombreClase, "recuperarRegistrosVista", consultaSQL.toString());
+        respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+        respuesta.estado = false;
+        respuesta.contenido = null;
+    } catch (Exception e) {
+        e.printStackTrace();
+        respuesta.error = Constante.EXCEPCION_GENERICA;
+        respuesta.contenido = null;
+        respuesta.estado = false;
     }
-     consultaSQL.append("SELECT count(t1.id_dcisterna) as total FROM  sgo.v_guia_combustible_detalle_crear t1 "+ sqlWhere);
-     totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
-     consultaSQL.setLength(0);
-     consultaSQL.append("SELECT ");
-     consultaSQL.append("t1.id_transporte,");
-     consultaSQL.append("t1.id_dcisterna,");
-     consultaSQL.append("t1.numero_guia_remision,");
-     consultaSQL.append("t1.fecha_arribo,");
-     consultaSQL.append("t1.fecha_fiscalizacion,");
-     consultaSQL.append("t1.volumen_despachado_observado,");
-     consultaSQL.append("t1.volumen_despachado_corregido,");
-     consultaSQL.append("t1.estado_dia_operativo,");
-     consultaSQL.append("t1.fecha_operativa,");
-     consultaSQL.append("t1.fecha_emision,");
-     consultaSQL.append("t1.volumen_recibido_observado,");
-     consultaSQL.append("t1.volumen_recibido_corregido,");   
-     consultaSQL.append("t1.id_producto,");
-     consultaSQL.append("t1.id_transportista");
-     consultaSQL.append(" FROM  sgo.v_guia_combustible_detalle_crear t1 ");
-     consultaSQL.append(sqlWhere);
-     listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new DetalleGecVistaMapper());
-     totalEncontrados =totalRegistros;
-     contenido.carga = listaRegistros;
-     respuesta.estado = true;
-     respuesta.contenido = contenido;
-     respuesta.contenido.totalRegistros = totalRegistros;
-     respuesta.contenido.totalEncontrados = totalEncontrados;
-     Utilidades.gestionaTrace(sNombreClase, "recuperarRegistrosVista");
-   } catch (DataAccessException excepcionAccesoDatos) {
-	 Utilidades.gestionaWarning(excepcionAccesoDatos, sNombreClase, "recuperarRegistrosVista", consultaSQL.toString());
-     respuesta.error=  Constante.EXCEPCION_ACCESO_DATOS;
-     respuesta.estado = false;
-     respuesta.contenido=null;
-   } catch (Exception excepcionGenerica) {
-     excepcionGenerica.printStackTrace();
-     respuesta.error= Constante.EXCEPCION_GENERICA;
-     respuesta.contenido=null;
-     respuesta.estado = false;
-   }
-   return respuesta;
- }
-  
+
+    return respuesta;
+}
   
   public RespuestaCompuesta recuperarRegistro(int ID){
       StringBuilder consultaSQL= new StringBuilder();   

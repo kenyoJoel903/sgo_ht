@@ -2262,3 +2262,19 @@ ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
 --Fin Agregado por HT 12-03-2019 15:44
 
 
+-- ******************** Modificaciones en VIEW v_detalle_gec 20190313-1000 *************************
+CREATE OR REPLACE VIEW sgo.v_detalle_gec AS
+ SELECT t1.id_dgec,
+    t1.id_gcombustible,
+    t1.volumen_despachado,
+    t1.volumen_recibido,
+    t1.numero_guia,
+    t1.fecha_emision,
+    t1.fecha_recepcion,
+    t1.estado,
+t2.id_producto
+   FROM sgo.detalle_gec t1
+   JOIN sgo.guia_combustible t2 ON t1.id_gcombustible = t2.id_gcombustible;
+ 
+ALTER TABLE sgo.v_detalle_gec
+    OWNER TO sgo_user;
