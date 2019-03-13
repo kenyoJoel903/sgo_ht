@@ -2188,4 +2188,77 @@ ALTER TABLE sgo.v_liquidacion_inventario_x_estacion_completo
     OWNER TO sgo_user;
 --Fin por HT 11-03-2019 17:43
 
+--Inicio Agregado por HT 12-03-2019 10:41
+CREATE OR REPLACE VIEW sgo.v_liquidacion_carga1 AS
+ SELECT t1.id_ctanque,
+    t1.id_doperativo,
+    t1.id_estacion,
+    t1.id_tanque,
+    t2.fecha_operativa,
+    t2.id_operacion,
+    sum(t4.volumen_recibido_observado) AS volumen_cargado_observado_cisterna,
+    sum(t4.volumen_recibido_corregido) AS volumen_cargado_corregido_cisterna,
+        CASE
+            WHEN t5.tipo_volumen_descargado = 2 THEN t1.volumen_observado_final - t1.volumen_observado_inicial
+            WHEN t5.tipo_volumen_descargado = 1 THEN ( SELECT sum(dcomp.volumen_recibido_observado) AS sum
+               FROM sgo.descarga_cisterna dcist
+                 LEFT JOIN sgo.descarga_compartimento dcomp ON dcomp.id_dcisterna = dcist.id_dcisterna
+              WHERE dcist.id_ctanque = t1.id_ctanque)
+            ELSE NULL::numeric
+        END AS volumen_cargado_observado,
+        CASE
+            WHEN t5.tipo_volumen_descargado = 2 THEN t1.volumen_corregido_final - t1.volumen_corregido_inicial
+            WHEN t5.tipo_volumen_descargado = 1 THEN ( SELECT sum(dcomp.volumen_recibido_corregido) AS sum
+               FROM sgo.descarga_cisterna dcist
+                 LEFT JOIN sgo.descarga_compartimento dcomp ON dcomp.id_dcisterna = dcist.id_dcisterna
+              WHERE dcist.id_ctanque = t1.id_ctanque)
+            ELSE NULL::numeric
+        END AS volumen_cargado_corregido
+   FROM sgo.carga_tanque t1
+     JOIN sgo.dia_operativo t2 ON t1.id_doperativo = t2.id_doperativo
+     LEFT JOIN sgo.descarga_cisterna t3 ON t1.id_ctanque = t3.id_ctanque
+     LEFT JOIN sgo.descarga_compartimento t4 ON t3.id_dcisterna = t4.id_dcisterna
+     LEFT JOIN sgo.v_operacion t5 ON t5.id_operacion = t2.id_operacion
+  GROUP BY t1.id_ctanque, t1.id_doperativo, t1.id_estacion, t1.id_tanque, t1.volumen_observado_final, t1.volumen_observado_inicial, t1.volumen_corregido_final, t1.volumen_corregido_inicial, t2.fecha_operativa, t2.id_operacion, t5.tipo_volumen_descargado;
+
+ALTER TABLE sgo.v_liquidacion_carga1
+    OWNER TO sgo_user;
+--Fin Agregado por HT 12-03-2019 10:41
+
+--Inicio Agregado por HT 12-03-2019 15:44
+CREATE OR REPLACE VIEW sgo.v_reporte_conciliacion_volumetrica AS
+ SELECT t1.id_operacion,
+    t2.fecha_operativa AS diaoperativo,
+    t1.nombre_estacion AS estacion,
+    t1.nombre_producto AS producto,
+    t1.stock_inicial AS invinicial,
+    t1.volumen_descargado AS descargas,
+    round(t1.volumen_despacho, 2) AS despachos,
+    0 AS otrosmovimientos,
+    t1.stock_final_calculado AS invfinalteorico,
+    t1.stock_final AS invfinalfisico,
+    t1.variacion AS diferencia,
+    t1.tolerancia * '-1'::integer::numeric AS tolerancia,
+        CASE
+            WHEN t2.estado = 1 THEN 'ABIERTO'::text
+            WHEN t2.estado = 2 THEN 'REGISTRADO'::text
+            WHEN t2.estado = 3 THEN 'CERRADO'::text
+            WHEN t2.estado = 4 THEN 'LIQUIDADO'::text
+            ELSE ''::text
+        END AS estadojornada,
+        CASE
+            WHEN t1.faltante < 0::numeric THEN 'OBSERVADO'::text
+            ELSE 'OK'::text
+        END AS situacionregistro,
+    t2.comentario AS observaciones,
+    t1.id_operacion AS idoperacion,
+    t1.nombre_operacion AS operacion
+   FROM sgo.v_liquidacion_inventario_x_estacion_completo_total t1
+     JOIN sgo.jornada t2 ON t1.fecha_operativa = t2.fecha_operativa AND t1.id_estacion = t2.id_estacion
+     JOIN sgo.operacion t3 ON t1.id_operacion = t3.id_operacion;
+
+ALTER TABLE sgo.v_reporte_conciliacion_volumetrica
+    OWNER TO sgo_user;
+--Fin Agregado por HT 12-03-2019 15:44
+
 
