@@ -998,7 +998,8 @@ moduloJornada.prototype.recuperarRegistro= function(){
 	    	if (!respuesta.estado) {
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	} else {		 
-	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,respuesta.mensaje);
+	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);
+
 	    		if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA){
 	    			referenciaModulo.obj.cntTabla.hide();
 	    			referenciaModulo.obj.ocultaContenedorTabla.hide();

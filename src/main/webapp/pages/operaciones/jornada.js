@@ -1955,7 +1955,7 @@ $(document).ready(function() {
   };
 
 //============================================== Detalle de Jornada ============================================
-  moduloActual.llenarDetalleJornada = function(registro){
+  moduloActual.llenarDetalleJornada = function(registro) {
 	var referenciaModulo = this;
 	var indiceContometros = 0;
 	var indiceTanque 	= 0;
@@ -1974,6 +1974,7 @@ $(document).ready(function() {
     if (registro.contometroJornada != null){
     	indiceContometros = registro.contometroJornada.length;
     }
+    
     $('#lista_contometros_jornada').html("");
     g_tr = '<thead><tr><th class="text-center">Cont&oacute;metro</th>' +
     				  '<th class="text-center">Producto			</th>' + 
@@ -1981,16 +1982,26 @@ $(document).ready(function() {
     				  '<th class="text-center">Lect. Final		</th>' + 
     				  '<th class="text-center">Dif. Vol. Obs.	</th></tr></thead>'; 
     filaContometro.append(g_tr);
-    for(var k = 0; k < indiceContometros; k++){ 	
+    for(var k = 0; k < indiceContometros; k++) {
+    	
+    	var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
+    	var objCon = registro.contometroJornada[k];
+    	
+        console.log(" FOR ::: " + k);
+        console.dir(parseFloat(objCon.lecturaFinalStr));
+        console.dir(parseFloat(objCon.lecturaInicialStr));
+        console.log(" ***************** :: " + decimalesContometro);
 
-      var diferencia = parseFloat(registro.contometroJornada[k].lecturaFinal) - parseFloat(registro.contometroJornada[k].lecturaInicial);
-      g_tr  = '<tr><td class="text-left">'+registro.contometroJornada[k].contometro.alias  	+ '</td>' + // contometro
-    		'    <td class="text-left">'  +registro.contometroJornada[k].producto.nombre   	+ '</td>' + // producto
-    		'    <td class="text-right">' +registro.contometroJornada[k].lecturaInicial  	+ '</td>' + // lectura inicial
-    		'    <td class="text-right">' +registro.contometroJornada[k].lecturaFinal 		+ '</td>' + // lectura final
-    		'    <td class="text-right">' +diferencia										+ '</td></tr>'; // diferencia
+        //var diferencia = parseFloat(objCon.lecturaFinalStr) - parseFloat(objCon.lecturaInicial);
+        var diferencia = trailingZerosDiferencia(objCon);
+      
+	      g_tr  = '<tr><td class="text-left">'+objCon.contometro.alias  + '</td>' + // contometro
+	    		'    <td class="text-left">'  +objCon.producto.nombre   + '</td>' + // producto
+	    		'    <td class="text-right">' +objCon.lecturaInicialStr + '</td>' + // lectura inicial
+	    		'    <td class="text-right">' +objCon.lecturaFinalStr 	+ '</td>' + // lectura final
+	    		'    <td class="text-right">' +diferencia + '</td></tr>'; // diferencia
 
-      filaContometro.append(g_tr);
+	      filaContometro.append(g_tr);
     }
 
     // detalle de tanques
@@ -2361,6 +2372,35 @@ function delay(callback, ms) {
             callback.apply(context, args);
         }, ms || 0);
     };
+}
+
+function trailingZerosDiferencia(objCon) {
+	
+	var different = parseFloat(objCon.lecturaFinalStr) - parseFloat(objCon.lecturaInicialStr);
+	
+	if (!different.toString().includes(".") || !different.toString().split(".").length >= 2) {
+		return different;
+	}
+	  
+	var lecturaFinalArray = objCon.lecturaFinalStr.toString().split(".");
+	var integerLecturaFinal = lecturaFinalArray[0];
+	var decimalLecturaFinal = lecturaFinalArray[1];
+	
+	var differentArray = different.toString().split(".");
+	var integerDifferent = differentArray[0];
+	var decimalDifferent = differentArray[1];
+	
+	/*
+	if (decimal.length > decimalesContometro) {
+		return integer + "." + decimal.substring(0, decimalesContometro);
+	}
+	*/
+	
+	while (decimalDifferent.length < decimalLecturaFinal.length) {
+		decimalDifferent = decimalDifferent + "0";
+	}
+
+	return integerDifferent + "." + decimalDifferent;
 }
 //Fin Agregado por req 9000003068===========================	
 

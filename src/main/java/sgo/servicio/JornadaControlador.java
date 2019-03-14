@@ -384,10 +384,12 @@ public class JornadaControlador {
 	}	
 
 	@RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
-	public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID, Locale locale){
+	public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID, Locale locale) {
+		
 		RespuestaCompuesta respuesta = null;
 		ParametrosListar parametros = null;
 		AuthenticatedUserDetails principal = null;
+		
 		try {			
 			//Recupera el usuario actual
 			principal = this.getCurrentUser(); 
@@ -423,17 +425,29 @@ public class JornadaControlador {
             parametros.setIdJornada(ID);
             parametros.setPaginacion(Constante.SIN_PAGINACION);
             
-//            se cambia id por alias por req 9000003068
-            parametros.setCampoOrdenamiento("alias");
-            
+		    //se cambia id por alias por req 9000003068
+            parametros.setCampoOrdenamiento("alias_contometro");
 			parametros.setSentidoOrdenamiento("asc");
+			
             //recuperamos los contometros de la jornada
 			respuesta = dContometroJornada.recuperarRegistros(parametros);
-            if (respuesta.estado==false){        	
-            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+            if (!respuesta.estado) {        	
+            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null,locale));
             }
+            
             for (int i = 0; i < respuesta.contenido.carga.size(); i++){
             	ContometroJornada eContometroJornada = (ContometroJornada) respuesta.contenido.carga.get(i);
+            	eContometroJornada.setLecturaInicialStr(
+        			Utilidades.trailingZeros(
+    					eContometroJornada.getLecturaInicial(), 
+    					eJornada.getEstacion().getNumeroDecimalesContometro())
+        			);
+            	eContometroJornada.setLecturaFinalStr(
+        			Utilidades.trailingZeros(
+    					eContometroJornada.getLecturaFinal(), 
+    					eJornada.getEstacion().getNumeroDecimalesContometro())
+        			);
+            	
 				listaContometroJornada.add(eContometroJornada);
 			}
 
@@ -442,9 +456,10 @@ public class JornadaControlador {
             parametros.setCampoOrdenamiento("nombre_tanque");
             parametros.setSentidoOrdenamiento("DESC");
 			respuesta = dTurno.recuperarRegistros(parametros);
-            if (respuesta.estado==false){        	
+            if (!respuesta.estado){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             if(respuesta.contenido.carga.size() > 0) {
 	            Turno eTurno = (Turno) respuesta.contenido.carga.get(0);
 	
@@ -468,23 +483,25 @@ public class JornadaControlador {
             parametros.setFiltroEstado(Constante.FILTRO_TODOS);
             parametros.setCampoOrdenamiento("fecha_hora_cierre");
             parametros.setSentidoOrdenamiento("DESC");
+            
             //recuperamos los tanques de la jornada
             respuesta = dTanqueJornada.recuperarRegistros(parametros);
             if (respuesta.estado==false){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             for (int k = 0; k < respuesta.contenido.carga.size(); k++){
             	TanqueJornada eTanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(k);
             	listaTanqueJornada.add(eTanqueJornada);
 				
-            	if(listaProducto.size() > 0){
+            	if(listaProducto.size() > 0) {
             		boolean existeProducto = false;
             		for(int r = 0; r < listaProducto.size(); r++){
             			if(eTanqueJornada.getProducto().getId() == listaProducto.get(r).getId()){
             				existeProducto = true;
             			}
             		}
-            		if(!existeProducto){
+            		if(!existeProducto) {
             			listaProducto.add(eTanqueJornada.getProducto());	
             		}
             	} else {
@@ -497,6 +514,7 @@ public class JornadaControlador {
             if (respuesta.estado==false){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             for (int r = 0; r < respuesta.contenido.carga.size(); r++){
             	Muestreo eMuestreo = (Muestreo) respuesta.contenido.carga.get(r);
 				listaMuestreo.add(eMuestreo);
@@ -514,7 +532,6 @@ public class JornadaControlador {
             	listaTanqueJornadaApertura.add(eTanqueJornada);
 			}
             
-            //TODO
             //recuperamos los tanque para el cierre de la jornada
             //primero los tanques que se encuentra despachando
             ParametrosListar parametrosCierre = new ParametrosListar();
@@ -523,30 +540,30 @@ public class JornadaControlador {
             parametrosCierre.setEstadoDespachando(TanqueJornada.ESTADO_DESPACHANDO);
             //recuperamos los tanques de la jornada
             respuesta = dTanqueJornada.recuperarRegistros(parametrosCierre);
-            if (respuesta.estado==false){        	
+            
+            if (!respuesta.estado){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             for (int a = 0; a < respuesta.contenido.carga.size(); a++){
             	TanqueJornada eTanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(a);
             	listaTanqueJornadaCierre.add(eTanqueJornada);
 			}
-            
-            
-            
+
             //recuperamos los tanque para el cierre de la jornada
             //luego los tanque que no estan despachando, que sean tanques de apertura y que tengan medida_final = 0 --es decir no ha sido cerrada
             parametrosCierre.setIdJornada(ID);
             parametrosCierre.setPaginacion(Constante.SIN_PAGINACION);
             parametrosCierre.setEstadoDespachando(TanqueJornada.ESTADO_NO_DESPACHANDO);
             parametrosCierre.setTanqueDeApertura(TanqueJornada.TANQUE_APERTURA);
-            //parametrosCierre.setTxtFiltro(" hora_final is null ");
             parametrosCierre.setTxtFiltro(" id_tanque not in (select id_tanque from sgo.v_tanque_jornada where en_linea = 1 and id_jornada = " + ID + " ) and medida_final = 0 ");
-            //parametrosCierre.setTxtFiltro(" id_tanque not in (select id_tanque from sgo.v_tanque_jornada where en_linea = 1 and id_jornada = " + ID + " )  and cierre = 2 ");
+           
             //recuperamos los tanques de la jornada
             respuesta = dTanqueJornada.recuperarRegistros(parametrosCierre);
             if (respuesta.estado==false){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             for (int a = 0; a < respuesta.contenido.carga.size(); a++){
             	TanqueJornada eTanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(a);
             	listaTanqueJornadaCierre.add(eTanqueJornada);
@@ -555,19 +572,18 @@ public class JornadaControlador {
             //recuperamos los tanque para el cierre de la jornada
             //luego los tanque que no estan despachando, 
             //que no son de apertura
-            //
             parametrosCierre.setIdJornada(ID);
             parametrosCierre.setPaginacion(Constante.SIN_PAGINACION);
             parametrosCierre.setEstadoDespachando(TanqueJornada.ESTADO_NO_DESPACHANDO);
-            //parametrosCierre.setTanqueDeApertura(TanqueJornada.TANQUE_NO_APERTURA);
             parametrosCierre.setTanqueDeApertura(Constante.FILTRO_NINGUNO);
-            //parametrosCierre.setTxtFiltro(" id_tanque not in (SELECT id_tanque FROM sgo.v_tanque_jornada where en_linea = 1) and hora_final not in(select hora_final from sgo.v_tanque_jornada where hora_final is not null and id_jornada = " + ID + ") ");
             parametrosCierre.setTxtFiltro("");
+            
             //recuperamos los tanques de la jornada
             respuesta = dTanqueJornada.recuperarRegistros(parametrosCierre);
             if (respuesta.estado==false){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             TanqueJornada otroTanqueJornada = new TanqueJornada();
             boolean existe = false;
 
@@ -578,16 +594,7 @@ public class JornadaControlador {
             	int idTanqueTemp = tanqueJornadaTemp.getIdTanque();
             	existe = false;
             	
-            	//verificamos si ya existe ese tanque en el listado de tanques para el cierre
-            	/*for(int c = 0; c < listaTanqueJornadaCierre.size(); c++) {
-            		TanqueJornada tanqueJornadaCierreTemp = listaTanqueJornadaCierre.get(c);
-            		if(tanqueJornadaTemp.getIdTanque() == tanqueJornadaCierreTemp.getIdTanque()){
-            			existe = true;
-            		}
-            	}*/
-            	
             	//si no existe
-            	//if(!existe){
 	            	for(int a = 0; a < respuesta.contenido.carga.size(); a++){
 	                	TanqueJornada tanqueJornadaTemp2 = (TanqueJornada) respuesta.contenido.carga.get(a);
 	                	int idTanqueTemp2 = tanqueJornadaTemp2.getIdTanque();
@@ -609,15 +616,7 @@ public class JornadaControlador {
 	            	if(!existe){
 	            		listaTanqueJornadaCierre.add(otroTanqueJornada);
 	            	}
-            	//}
-            	
             }
-            
-            
-            /*if(respuesta.contenido.carga.size() > 0){
-	            otroTanqueJornada = (TanqueJornada) respuesta.contenido.carga.get(respuesta.contenido.carga.size() - 1);
-	            listaTanqueJornadaCierre.add(otroTanqueJornada);
-            }*/
             
             //buscamos el operario de entrada y de salida
             respuesta = dOperario.recuperarRegistro(eJornada.getIdOperario1());
@@ -644,14 +643,14 @@ public class JornadaControlador {
             contenido.carga = listaRegistros;
 			respuesta.contenido = contenido;
             
-         	respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
-		} catch (Exception ex){
-			Utilidades.gestionaError(ex, sNombreClase, "recuperaRegistro");
-			//ex.printStackTrace();
+         	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
+		} catch (Exception e) {
+			Utilidades.gestionaError(e, sNombreClase, "recuperaRegistro");
 			respuesta.estado=false;
 			respuesta.contenido = null;
-			respuesta.mensaje=ex.getMessage();
+			respuesta.mensaje = e.getMessage();
 		}
+		
 		return respuesta;
 	}
 	
