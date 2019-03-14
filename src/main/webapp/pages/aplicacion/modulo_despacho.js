@@ -1217,10 +1217,6 @@ moduloDespacho.prototype.guardarRegistro= function() {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
 
-		console.log(" -3333-- recuperarValores --- ");
-		console.dir(eRegistro);
-
-
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: referenciaModulo.URL_GUARDAR, 

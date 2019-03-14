@@ -464,12 +464,12 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		}
 		
 		//para recuperar el id del contometro
-		respuesta = dContometroJornadaDao.recuperarRegistro(eDespacho.getIdContometro());
-		if (!respuesta.estado){        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
-        }
+//		respuesta = dContometroJornadaDao.recuperarRegistro(eDespacho.getIdContometro());
+//		if (!respuesta.estado){        	
+//        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+//        }
 		
-		ContometroJornada contometroJornada = (ContometroJornada) respuesta.contenido.carga.get(0);
+//		ContometroJornada contometroJornada = (ContometroJornada) respuesta.contenido.carga.get(0);
 		eDespacho.setIdContometro(eDespacho.getIdContometro());
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
