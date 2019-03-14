@@ -301,11 +301,11 @@ $(document).ready(function() {
         	  autoGroup: true,
         	  groupSize: 3,
           });
-          cmpLecturaInicial.keyup(delay(function(e) {
+          cmpLecturaInicial.keyup(delay(function(e) {        	  
     		var num = $(this).val();
     		num = trailingZeros(num);
     		$(this).val(num);
-          }, 900));
+          }, 2700));
           
       		function trailingZeros(num) {
 	    		
