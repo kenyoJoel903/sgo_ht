@@ -304,50 +304,58 @@ public class DetalleTurnoDao {
     return respuesta;
   }
   
-  public RespuestaCompuesta actualizarRegistro(DetalleTurno detalleTurno){
-    RespuestaCompuesta respuesta = new RespuestaCompuesta();
-    StringBuilder consultaSQL= new StringBuilder();
-    int cantidadFilasAfectadas=0;
-    try {
-      consultaSQL.append("UPDATE ");
-      consultaSQL.append(NOMBRE_TABLA);
-      consultaSQL.append(" SET ");
-      consultaSQL.append("id_turno=:IdTurno,");
-      consultaSQL.append("lectura_inicial=:LecturaInicial,");
-      consultaSQL.append("lectura_final=:LecturaFinal,");
-      consultaSQL.append("id_producto=:IdProducto,");
-      consultaSQL.append("id_contometro=:IdContometro");
-      consultaSQL.append(" WHERE ");
-      consultaSQL.append(NOMBRE_CAMPO_CLAVE);
-      consultaSQL.append("=:Id");
-      MapSqlParameterSource listaParametros= new MapSqlParameterSource();
-      listaParametros.addValue("IdTurno", detalleTurno.getIdTurno());
-      listaParametros.addValue("LecturaInicial", detalleTurno.getLecturaInicial());
-      listaParametros.addValue("LecturaFinal", detalleTurno.getLecturaFinal());
-      listaParametros.addValue("IdProducto", detalleTurno.getIdProducto());
-      listaParametros.addValue("IdContometro", detalleTurno.getIdContometro());
-      //Valores Auditoria
-      listaParametros.addValue("Id", detalleTurno.getId());
-      SqlParameterSource namedParameters= listaParametros;
-      /*Ejecuta la consulta y retorna las filas afectadas*/
-      cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);   
-      if (cantidadFilasAfectadas>1){
-        respuesta.error= Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-        respuesta.estado=false;
-        return respuesta;
-      }
-      respuesta.estado=true;
-    } catch (DataIntegrityViolationException excepcionIntegridadDatos){
-      excepcionIntegridadDatos.printStackTrace();
-      respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-      respuesta.estado=false;
-    } catch (DataAccessException excepcionAccesoDatos){
-      excepcionAccesoDatos.printStackTrace();
-      respuesta.error= Constante.EXCEPCION_ACCESO_DATOS;
-      respuesta.estado=false;
-    }
-    return respuesta;
-  }
+  public RespuestaCompuesta actualizarRegistro(DetalleTurno detalleTurno) {
+
+	    RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	    StringBuilder consultaSQL = new StringBuilder();
+	    int cantidadFilasAfectadas = 0;
+
+	    try {
+	    	
+	        consultaSQL.append("UPDATE ");
+	        consultaSQL.append(NOMBRE_TABLA);
+	        consultaSQL.append(" SET ");
+	        consultaSQL.append("id_turno = :IdTurno,");
+	        consultaSQL.append("lectura_inicial = :LecturaInicial,");
+	        consultaSQL.append("lectura_final = :LecturaFinal,");
+	        consultaSQL.append("id_producto = :IdProducto,");
+	        consultaSQL.append("id_contometro = :IdContometro");
+	        consultaSQL.append(" WHERE ");
+	        consultaSQL.append(NOMBRE_CAMPO_CLAVE);
+	        consultaSQL.append(" = :Id"); 
+	        
+	        MapSqlParameterSource parameters = new MapSqlParameterSource();
+	        parameters.addValue("IdTurno", detalleTurno.getIdTurno());
+	        parameters.addValue("LecturaInicial", detalleTurno.getLecturaInicial());
+	        parameters.addValue("LecturaFinal", detalleTurno.getLecturaFinalBigDecimal());
+	        parameters.addValue("IdProducto", detalleTurno.getIdProducto());
+	        parameters.addValue("IdContometro", detalleTurno.getIdContometro());
+	        parameters.addValue("Id", detalleTurno.getId());
+	        SqlParameterSource namedParameters = parameters;
+	        
+	        /*Ejecuta la consulta y retorna las filas afectadas*/
+	        cantidadFilasAfectadas = namedJdbcTemplate.update(consultaSQL.toString(), namedParameters);
+
+	        if (cantidadFilasAfectadas > 1) {
+	            respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+	            respuesta.estado = false;
+	            return respuesta;
+	        }
+
+	        respuesta.estado = true;
+	        
+	    } catch (DataIntegrityViolationException e) {
+	        e.printStackTrace();
+	        respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+	        respuesta.estado = false;
+	    } catch (DataAccessException e) {
+	        e.printStackTrace();
+	        respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+	        respuesta.estado = false;
+	    }
+
+	    return respuesta;
+	}
   
   public RespuestaCompuesta eliminarRegistros(int idRegistro){   
     RespuestaCompuesta respuesta = new RespuestaCompuesta();

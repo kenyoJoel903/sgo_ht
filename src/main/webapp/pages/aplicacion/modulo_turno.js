@@ -1041,13 +1041,13 @@ moduloTurno.prototype.guardarCierre = function() {
 	var referenciaModulo = this;
 
 	if (!referenciaModulo.validaFormularioXSS("#frmCierre")) {
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,  cadenas.ERROR_VALORES_FORMULARIO);
+		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.validarCierre()) {
 		
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		referenciaModulo.obj.ocultaContenedorCierre.show();
 		var eRegistro = referenciaModulo.recuperarValores();
-	    
+
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: referenciaModulo.URL_ACTUALIZAR, 
@@ -1474,15 +1474,17 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		    	
 		    	$("#GrupoCierre_" + i + "_LecturaFinal").val("");
 		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
-		    	
+
 		    	var lecturaInicial = parseFloat(_this.obj.listCronometro[i].lectura_inicial);
-		    	var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);;
+		    	//var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);
+		    	var lecturaFinal = trailingZeros(_this.excelRowsObj[i].LECTURA_FINAL);
 		    	
 		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
 		    		continue;
 		    	}
 		    	
-		    	var diferencia = (lecturaFinal - lecturaInicial).toFixed(_this.obj.numeroDecimalesContometro);
+		    	//var diferencia = (lecturaFinal - lecturaInicial).toFixed(_this.obj.numeroDecimalesContometro);
+		    	var diferencia = trailingZeros(lecturaFinal - lecturaInicial);
 		    	
 		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(lecturaFinal);
 		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val(diferencia);
@@ -1491,6 +1493,30 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
     	} catch (error) {
     		
     	};
+	}
+	
+	function trailingZeros(num) {
+		
+		var decimalesContometro = _this.obj.numeroDecimalesContometro;
+		
+		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
+			return num;
+		}
+		  
+		var result = num.toString().split(".");
+		
+		var integer = result[0];
+		var decimal = result[1];
+		
+		if (decimal.length > decimalesContometro) {
+			return integer + "." + decimal.substring(0, decimalesContometro);
+		}
+		
+		while (decimal.length < decimalesContometro) {
+			decimal = decimal + "0";
+		}
+
+		return integer + "." + decimal;
 	}
 	
 };

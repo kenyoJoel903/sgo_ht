@@ -446,8 +446,6 @@ $(document).ready(function() {
         	
         	function trailingZeros(num) {
         		
-        		console.log("trailingZeros ::: " + moduloActual.obj.numeroDecimalesContometro);
-        		
         		var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
         		
         		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
@@ -850,7 +848,8 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	          var cmpElementoLecturaFinal   = formulario.find("input[elemento-grupo='lecturaFinal']");
 	          var cmpElementoId				= formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno");
 	          detalles.lecturaInicial  		= parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-	          detalles.lecturaFinal  		= parseFloat(cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
+	          //detalles.lecturaFinal  		= parseFloat(cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
+	          detalles.lecturaFinalStr      = cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES, "");
 	          detalles.idProducto  			= parseInt(cmpElementoProducto);
 	          detalles.idContometro  		= parseInt(cmpElementoContometro);
 	          detalles.id  					= parseInt(cmpElementoId);

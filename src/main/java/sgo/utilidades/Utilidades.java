@@ -680,6 +680,19 @@ public static boolean strToBool(String s) {
     return out;
 }
 
+public static BigDecimal strToBigDecimal(String s) {
+	
+	BigDecimal out = new BigDecimal(0);
+	
+    try { 
+    	out = new BigDecimal(s);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 public static boolean intToBool(int i) {
 	
 	boolean out = false;

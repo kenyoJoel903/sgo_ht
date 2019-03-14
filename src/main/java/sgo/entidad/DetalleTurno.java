@@ -1,5 +1,9 @@
 package sgo.entidad;
 
+import java.math.BigDecimal;
+
+import sgo.utilidades.Utilidades;
+
 public class DetalleTurno {
 	
   private int id_dturno;	
@@ -80,6 +84,11 @@ public class DetalleTurno {
 	public String getLecturaFinalStr() {
 		return lecturaFinalStr;
 	}
+	
+	public BigDecimal getLecturaFinalBigDecimal() {
+		return Utilidades.strToBigDecimal(lecturaFinalStr);
+	}
+	
 	public void setLecturaFinalStr(String lecturaFinalStr) {
 		this.lecturaFinalStr = lecturaFinalStr;
 	}

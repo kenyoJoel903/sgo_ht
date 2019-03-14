@@ -395,7 +395,7 @@
 		                <label><B>Cont&oacute;metros </B></label>
 <!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
 		                <table 
-		                	class="grupo-apertura-contometros table-scroll sgo-simple-table table table-condensed" 
+		                	class="grupo-apertura-contometros loading table-scroll sgo-simple-table table table-condensed" 
 		                	style="border:1px solid black; background-color:#F2DEF5"
 		                	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>" >
 							<thead>

@@ -798,10 +798,10 @@ moduloJornada.prototype.inicializarGrillaJornada=function(){
 	});
 };
 
-moduloJornada.prototype.recuperarApertura= function() {
+moduloJornada.prototype.recuperarApertura = function() {
 
 	var referenciaModulo = this;
-	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 	
 	$.ajax({
         type: constantes.PETICION_TIPO_GET,
@@ -812,10 +812,10 @@ moduloJornada.prototype.recuperarApertura= function() {
         	filtroEstacion : referenciaModulo.obj.filtroEstacion.val()
 	    },
         success: function(respuesta) {
+        	
           if (!respuesta.estado) {
             referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
           } else {
-        	  
         	referenciaModulo.resetearFormularioApertura();
             referenciaModulo.modoEdicion = constantes.MODO_APERTURAR_JORNADA;
             referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_APERTURA_JORNADA);
@@ -830,8 +830,8 @@ moduloJornada.prototype.recuperarApertura= function() {
             referenciaModulo.obj.cntFormularioMuestreoJornada.hide();
             referenciaModulo.llenarApertura(respuesta.contenido.carga[0]);
             referenciaModulo.obj.cntFormularioAperturaJornada.show();
-
           }
+          
           referenciaModulo.obj.ocultaContenedorTabla.hide();
           referenciaModulo.obj.ocultaContenedorAperturaJornada.hide();
         },
@@ -841,7 +841,7 @@ moduloJornada.prototype.recuperarApertura= function() {
 	}); 
 };
 
-moduloJornada.prototype.guardarApertura= function(){  
+moduloJornada.prototype.guardarApertura = function() {
 	var referenciaModulo = this;
    referenciaModulo.mostrarDepuracion("guardarApertura");
    
@@ -852,7 +852,6 @@ moduloJornada.prototype.guardarApertura= function(){
 	   var formularioContometro = referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
 	   var cmpLecturaInicial	= formularioContometro.find("input[elemento-grupo='lecturaInicial']");
 	   
-	   console.log("#" + cmpLecturaInicial.val() +"#");
 	   if(cmpLecturaInicial.val() == ''){
 		   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El campo Lectura Inicial no debe estar vacío");
 		   return;
@@ -864,7 +863,6 @@ moduloJornada.prototype.guardarApertura= function(){
 	   var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);
 	   var cmpMedidaInicial = formularioTanque.find("input[elemento-grupo='medidaInicial']");
 	   
-	   console.log("#" + cmpMedidaInicial.val() +"#");
 	   if(cmpMedidaInicial.val() == ''){
 		   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El campo Medida Inicial no debe estar vacío");
 		   return;
@@ -873,10 +871,12 @@ moduloJornada.prototype.guardarApertura= function(){
    
    //Fin agregado por req 9000003068
    
-	if (referenciaModulo.obj.frmApertura.valid()){
+	if (referenciaModulo.obj.frmApertura.valid()) {
+		
 		referenciaModulo.obj.ocultaContenedorAperturaJornada.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValoresApertura();
+		
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: referenciaModulo.URL_GUARDAR, 
@@ -895,7 +895,7 @@ moduloJornada.prototype.guardarApertura= function(){
 			}
 		});
 	} else {
-    referenciaModulo.obj.ocultaContenedorFormulario.hide();
+		referenciaModulo.obj.ocultaContenedorFormulario.hide();
 	}
 };
 

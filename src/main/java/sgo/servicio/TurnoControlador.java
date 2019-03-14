@@ -1135,7 +1135,7 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
         //valida que la hora de cierre debe ser mayor a la hora de apertura
         //recupera turno a cerrar
 		respuesta = dTurno.recuperarRegistro(eTurno.getId());
-		if (respuesta.estado==false){
+		if (!respuesta.estado){
 			throw new Exception("Error al obtener el Turno");
 		}
 		
@@ -1158,9 +1158,9 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Turno eTurno, HttpServletRequ
         }
         
         //Guardar detalle
-        List<DetalleTurno> listaTurno=eTurno.getTurnoDetalles();
-        for(DetalleTurno detalleTurno:listaTurno){
-        	respuesta= dDetalleTurnoDao.actualizarRegistro(detalleTurno);
+        List<DetalleTurno> listaTurno = eTurno.getTurnoDetalles();
+        for(DetalleTurno detalleTurno:listaTurno) {
+        	respuesta = dDetalleTurnoDao.actualizarRegistro(detalleTurno);
             if (respuesta.estado==false){          	
             	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
             }

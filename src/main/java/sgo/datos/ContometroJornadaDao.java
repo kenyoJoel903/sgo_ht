@@ -239,44 +239,51 @@ public class ContometroJornadaDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta guardarRegistro(ContometroJornada contometroJornada){
+	public RespuestaCompuesta guardarRegistro(ContometroJornada contometroJornada) {
+		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
-		StringBuilder consultaSQL= new StringBuilder();
+		StringBuilder consultaSQL = new StringBuilder();
 		KeyHolder claveGenerada = null;
-		int cantidadFilasAfectadas=0;
+		int cantidadFilasAfectadas = 0;
+		
 		try {
+			
 			consultaSQL.append("INSERT INTO ");
 			consultaSQL.append(NOMBRE_TABLA);
 			consultaSQL.append(" (id_jornada, lectura_inicial, lectura_final, estado_servicio, id_contometro, id_producto)");
 			consultaSQL.append(" VALUES (:Jornada,:LecturaInicial,:LecturaFinal,:EstadoServicio,:Contometro,:Producto) ");
-			MapSqlParameterSource listaParametros= new MapSqlParameterSource();   
-			listaParametros.addValue("Jornada", contometroJornada.getIdJornada());
-			listaParametros.addValue("LecturaInicial", contometroJornada.getLecturaInicial());
-			listaParametros.addValue("LecturaFinal", contometroJornada.getLecturaFinal());
-			listaParametros.addValue("EstadoServicio", contometroJornada.getEstadoServicio());
-			listaParametros.addValue("Contometro", contometroJornada.getIdContometro());
-			listaParametros.addValue("Producto", contometroJornada.getIdProducto());
 			
-			SqlParameterSource namedParameters= listaParametros;
+			MapSqlParameterSource parameter = new MapSqlParameterSource();   
+			parameter.addValue("Jornada", contometroJornada.getIdJornada());
+			parameter.addValue("LecturaInicial", contometroJornada.getLecturaInicialBigDecimal());
+			parameter.addValue("LecturaFinal", contometroJornada.getLecturaFinal());
+			parameter.addValue("EstadoServicio", contometroJornada.getEstadoServicio());
+			parameter.addValue("Contometro", contometroJornada.getIdContometro());
+			parameter.addValue("Producto", contometroJornada.getIdProducto());
+			SqlParameterSource namedParameters = parameter;
+			
 			/*Ejecuta la consulta y retorna las filas afectadas*/
 			claveGenerada = new GeneratedKeyHolder();
-			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters,claveGenerada,new String[] {NOMBRE_CAMPO_CLAVE});		
-			if (cantidadFilasAfectadas>1){
-				respuesta.error=Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-				respuesta.estado=false;
+			cantidadFilasAfectadas = namedJdbcTemplate.update(consultaSQL.toString(), namedParameters, claveGenerada, new String[] {NOMBRE_CAMPO_CLAVE});		
+			
+			if (cantidadFilasAfectadas > 1) {
+				respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+				respuesta.estado = false;
 				return respuesta;
 			}
-			respuesta.estado=true;
-			respuesta.valor= claveGenerada.getKey().toString();
-		} catch (DataIntegrityViolationException excepcionIntegridadDatos){
-			excepcionIntegridadDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-			respuesta.estado=false;
-		} catch (DataAccessException excepcionAccesoDatos){
-			excepcionAccesoDatos.printStackTrace();
-			respuesta.error=Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
+			
+			respuesta.estado = true;
+			respuesta.valor = claveGenerada.getKey().toString();
+		} catch (DataIntegrityViolationException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+			respuesta.estado = false;
+		} catch (DataAccessException e){
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	

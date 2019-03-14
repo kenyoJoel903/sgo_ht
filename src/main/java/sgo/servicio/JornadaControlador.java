@@ -955,16 +955,16 @@ public class JornadaControlador {
 //	Fin agregado por req 9000003068====================================================================================================
 	
 	@RequestMapping(value = URL_GUARDAR_RELATIVA ,method = RequestMethod.POST)
-	public @ResponseBody RespuestaCompuesta guardarRegistro(@RequestBody Jornada eJornada,HttpServletRequest peticionHttp,Locale locale) {
+	public @ResponseBody RespuestaCompuesta guardarRegistro(@RequestBody Jornada eJornada, HttpServletRequest peticionHttp, Locale locale) {
 		
 		RespuestaCompuesta respuesta = null;
 		AuthenticatedUserDetails principal = null;
-		Bitacora eBitacora= null;
-		String ContenidoAuditoria ="";
+		Bitacora eBitacora = null;
+		String ContenidoAuditoria = "";
 		TransactionDefinition definicionTransaccion = null;
 		TransactionStatus estadoTransaccion = null;
-		String direccionIp="";
-		String ClaveGenerada="";
+		String direccionIp = "";
+		String ClaveGenerada = "";
 		ContometroJornada eContometroJornada = null;
 		TanqueJornada eTanqueJornada = null;
 		ObjectMapper mapper = null;
@@ -1045,34 +1045,7 @@ public class JornadaControlador {
 				}
 				
 			}
-			
-			//TODO
-			//validacion de producto por tanque
-//			Inicio comentado por req 9000003068====================================================================================================
-//			ParametrosListar argumentosProd = new ParametrosListar();
-//			//argumentosProd.setFiltroOperacion(eJornada.get)
-//			argumentosProd.setFiltroEstacion(eJornada.getIdEstacion());
-//			RespuestaCompuesta listaProdPorEstacion = dProducto.recuperarRegistrosPorOperacion(argumentosProd);
-//			for (int b = 0; b < listaProdPorEstacion.contenido.carga.size(); b++) {
-//				Producto prodEstacion =(Producto) listaProdPorEstacion.contenido.carga.get(b);
-//				int atencionProducto = 0;
-//				
-//				for (int a = 0; a < tanqueApertura.size(); a++) {
-//					int idProd = tanqueApertura.get(a).getIdProducto();
-//					
-//					if(idProd == prodEstacion.getId()){
-//						atencionProducto++;
-//					}
-//				}
-//
-//				if(atencionProducto == 0){
-//					throw new Exception(gestorDiccionario.getMessage("sgo.jornada.soloUnTanquePorProducto", new Object[] {  prodEstacion.getNombre() }, locale));
-//				}
-//			}
-//			Fin comentado por req 9000003068===========================================================================================================
-			
-//			Inicio agregado por req 9000003068====================================================================================================
-			
+
 			int idPerfilHorarioTemp = validaPerfilHorarioEnEstacion(eJornada.getIdEstacion(), locale);
 			
 			PerfilHorario perfilHorario = new PerfilHorario();
@@ -1127,6 +1100,7 @@ public class JornadaControlador {
     		    if (validacion.estado == false) {
     		      throw new Exception(validacion.valor);
     		    }
+    		    
             	RespuestaCompuesta respuestaContJornada = dContometroJornada.guardarRegistro(eContometroJornada);
 				if (respuestaContJornada.estado == false) {
 					throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
@@ -1167,11 +1141,6 @@ public class JornadaControlador {
     		    if (validacion.estado == false) {
     		      throw new Exception(validacion.valor);
     		    }
-    		    
-    		   /* boolean validaFechas = Utilidades.comparaTimestampConDate(eTanqueJornada.getHoraInicial(), eJornada.getFechaOperativa());
-    		    if (validaFechas == false) {
-					throw new Exception("La Fecha de Hora Inicial del tanque " + eTanqueJornada.getDescripcionTanque() + " debe ser igual a la fecha del dÃƒÂ­a operativo: " + Utilidades.convierteDateAString(eJornada.getFechaOperativa(), Constante.FORMATO_FECHA_DDMMYYYY) );
-				}*/
      		   
     		    eTanqueJornada.setHoraFinal(null);
     		    
@@ -1205,6 +1174,7 @@ public class JornadaControlador {
 			respuesta.contenido = null;
 			respuesta.mensaje = e.getMessage();
 		}
+		
 		return respuesta;
 	}
 	

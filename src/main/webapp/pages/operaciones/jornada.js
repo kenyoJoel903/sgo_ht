@@ -1267,8 +1267,8 @@ $(document).ready(function() {
     };
   };
   
-  moduloActual.datosCabecera= function(){
-    var referenciaModulo=this;
+  moduloActual.datosCabecera = function(){
+    var referenciaModulo = this;
 	referenciaModulo.obj.idOperacionSeleccionado = referenciaModulo.obj.filtroOperacion.val();
 	referenciaModulo.obj.idCliente = $(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-idCliente');
     referenciaModulo.obj.idEstacionSeleccionado = referenciaModulo.obj.filtroEstacion.val();
@@ -1293,7 +1293,6 @@ $(document).ready(function() {
     // para cambio muestreo
     this.obj.cmpMuestreoCliente.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-cliente'));
     this.obj.cmpMuestreoOperacion.text($(referenciaModulo.obj.filtroOperacion).find("option:selected").attr('data-nombre-operacion'));
-    
   };
 	  
 // =========================================================== Formulario Apertura ================================================================
@@ -1308,7 +1307,7 @@ $(document).ready(function() {
 	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 //	Fin Agregado por req 9000003068=================
 	
-	if(registro.registroNuevo == false) {
+	if (!registro.registroNuevo) {
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
 				
 		referenciaModulo.obj.cmpAperturaFechaJornada.text(utilitario.retornarSumaRestaFechas(1, utilitario.formatearFecha(registro.fechaOperativa)));
@@ -1423,7 +1422,10 @@ $(document).ready(function() {
 		if (registro.contometro != null){
 	    	numeroContometros = registro.contometro.length;
 	    }
-
+		
+		/**
+		 * Limpiar table contometros
+		 */
 	    referenciaModulo.obj.GrupoAperturaContometros.removeAllForms();
 	    
 		/**
@@ -1483,6 +1485,11 @@ $(document).ready(function() {
 		      formularioTanque.find("input[elemento-grupo='factor']").prop('disabled', false);
 		      formularioTanque.find("input[elemento-grupo='vol60']").prop('disabled', false);
 		    }
+		    
+			/**
+			 * Remove loading
+			 */
+			referenciaModulo.obj.tableGrupoAperturaContometros.removeClass("loading");
 			
 		}, 300);
 		/**
@@ -1491,9 +1498,10 @@ $(document).ready(function() {
 	}
   };
   
-  moduloActual.recuperarValoresApertura = function(registro){
+  moduloActual.recuperarValoresApertura = function(registro) {
     var eRegistro = {};
-    var referenciaModulo=this;
+    var referenciaModulo = this;
+    
     try {
 
 	    // datos para la jornada
@@ -1513,7 +1521,8 @@ $(document).ready(function() {
 	    eRegistro.contometroJornada = [];
 	    // datos para los contometros de la jornada
 	    var numeroContometros = referenciaModulo.obj.GrupoAperturaContometros.getForms().length;
-	      for(var contador = 0; contador < numeroContometros; contador++){
+	    
+        for(var contador = 0; contador < numeroContometros; contador++){
 	        var contometroJornada = {};
 	        var formularioContometro = referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
 	        
@@ -1522,7 +1531,8 @@ $(document).ready(function() {
 	        var cmpProductoContometro	= formularioContometro.find("select[elemento-grupo='productosContometros']");
 	        var cmpLecturaInicial		= formularioContometro.find("input[elemento-grupo='lecturaInicial']");
 
-	        contometroJornada.lecturaInicial = parseFloat(cmpLecturaInicial.val().replace(moduloActual.SEPARADOR_MILES,""));
+	        //contometroJornada.lecturaInicial = parseFloat(cmpLecturaInicial.val().replace(moduloActual.SEPARADOR_MILES,""));
+	        contometroJornada.lecturaInicialStr = cmpLecturaInicial.val().replace(moduloActual.SEPARADOR_MILES,"");
 	        contometroJornada.idContometro = parseInt(cmpIdContometros.val());
 	        contometroJornada.idProducto = parseInt(cmpProductoContometro.val());
 	        eRegistro.contometroJornada.push(contometroJornada);
@@ -1532,7 +1542,7 @@ $(document).ready(function() {
 	      // datos para los contometros de la jornada
 	      var numeroTanques = referenciaModulo.obj.grupoAperturaTanques.getForms().length;
 
-	      for(var contador = 0; contador < numeroTanques; contador++){
+	      for(var contador = 0; contador < numeroTanques; contador++) {
 	        var tanqueJornada = {};
 	        var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);
 
@@ -1549,8 +1559,16 @@ $(document).ready(function() {
             var cmpFs=$(formularioTanque).find("input[elemento-grupo='fs']");
             var cmpDesp=$(formularioTanque).find("input[elemento-grupo='desp']");
 
-	        if(cmpFs.prop('checked') == true)	{ tanqueJornada.estadoServicio = 1; } else { contometroJornada.estadoServicio = 0; }
-	        if(cmpDesp.prop('checked') == true) { tanqueJornada.enLinea = 1; }		  else { contometroJornada.enLinea = 0; }
+	        if(cmpFs.prop('checked') == true) {
+	        	tanqueJornada.estadoServicio = 1;
+        	} else {
+        		contometroJornada.estadoServicio = 0;
+    		}
+	        if(cmpDesp.prop('checked') == true) {
+	        	tanqueJornada.enLinea = 1;
+        	} else {
+        		contometroJornada.enLinea = 0;
+        	}
 
             tanqueJornada.idTanque = parseInt(cmpIdTanques.val());
             tanqueJornada.idProducto = parseInt(cmpIdProductosTanques.val());
@@ -2242,12 +2260,9 @@ $(document).ready(function() {
 	  eRegistro.muestreo = [];
       // datos para los contometros de la jornada
       var numeroMuestreos = referenciaModulo.obj.GrupoMuestreo.getForms().length;
-      for(var i = 0; i < numeroMuestreos; i++){
+      for(var i = 0; i < numeroMuestreos; i++) {
         var muestreo = {};
         var formulario 		= referenciaModulo.obj.GrupoMuestreo.getForm(i);
-        
-        console.log(formulario.find("input[elemento-grupo='horaMuestra']").val());
-
         var id 				= formulario.find("input[elemento-grupo='identificador']");
         var cmpHoraMuestra	= formulario.find("input[elemento-grupo='horaMuestra']");
 		var cmpIdProducto	= formulario.find("select[elemento-grupo='producto']");

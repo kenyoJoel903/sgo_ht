@@ -1,5 +1,6 @@
 package sgo.entidad;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
@@ -222,6 +223,11 @@ public class ContometroJornada {
 	public String getLecturaInicialStr() {
 		return lecturaInicialStr;
 	}
+	
+	public BigDecimal getLecturaInicialBigDecimal() {
+		return Utilidades.strToBigDecimal(lecturaInicialStr);
+	}
+	
 	public void setLecturaInicialStr(String lecturaInicialStr) {
 		this.lecturaInicialStr = lecturaInicialStr;
 	}
