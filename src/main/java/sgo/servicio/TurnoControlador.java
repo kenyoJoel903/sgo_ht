@@ -610,6 +610,10 @@ public @ResponseBody RespuestaCompuesta recuperarApertura(HttpServletRequest htt
                 	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
                 }
            	 	
+           	 	if (oRespuesta.getContenido().getCarga().size() <= 0) {
+                	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+                }
+           	 	
            	 	/**
            	 	 * PRIMER ROW: del ContometroJornada array.
            	 	 */

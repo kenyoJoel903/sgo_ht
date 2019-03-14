@@ -727,7 +727,7 @@ public static String trailingZeros(float f, int leadingZeros) {
 	String out = "0";
 	
     try {
-    	out = String.format("%16." + leadingZeros + "f", f).trim();
+    	out = String.format("%16." + leadingZeros + "f", f).trim().replaceAll(",", ".");
     } catch(Exception e) { 
     	e.getStackTrace();
     }
