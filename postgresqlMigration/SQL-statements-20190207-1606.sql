@@ -1322,6 +1322,7 @@ CREATE OR REPLACE VIEW sgo.v_despacho AS
     t1.codigo_archivo_origen,
     t1.volumen_observado,
 	t1.id_turno,
+	t1.flag_calculo_corregido,
 	t7.numero_decimales_contometro
    FROM sgo.despacho t1
      JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario

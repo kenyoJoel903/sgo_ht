@@ -56,6 +56,10 @@ public class DespachoMapper implements RowMapper<Despacho>{
 			eDespacho.setIdTurno(rs.getInt("id_turno"));
 			eDespacho.setNroDecimales(rs.getInt("numero_decimales_contometro"));
 			
+			//Inicio Agregado por req 9000003068  9000003068
+			eDespacho.setFlagCalculoCorregido(rs.getInt("flag_calculo_corregido"));
+			//Fin Inicio Agregado por req 9000003068  9000003068
+			
 			eOperacion = new Operacion();
 			eOperacion.setId(rs.getInt("id_operacion"));
 			eOperacion.setNombre(Utilidades.cleanXSS(rs.getString("nombre_operacion")));
