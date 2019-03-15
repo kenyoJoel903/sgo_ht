@@ -228,19 +228,20 @@ public class EstacionDao {
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=?");
 			
-			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),new Object[] {ID},new EstacionMapper());
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(), new Object[] {ID}, new EstacionMapper());
 			contenido.totalRegistros = listaRegistros.size();
 			contenido.totalEncontrados = listaRegistros.size();
 			contenido.carga = listaRegistros;
 			respuesta.mensaje = "OK";
 			respuesta.estado = true;
 			respuesta.contenido = contenido;			
-		} catch (DataAccessException excepcionAccesoDatos) {
-			excepcionAccesoDatos.printStackTrace();
+		} catch (DataAccessException e) {
+			e.printStackTrace();
 			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
-			respuesta.contenido=null;
+			respuesta.estado = false;
+			respuesta.contenido = null;
 		}
+		
 		return respuesta;
 	}
 	

@@ -1055,10 +1055,11 @@ RespuestaCompuesta guardarRegistro(@RequestBody Turno eTurno, HttpServletRequest
         //guardar Detalle
         List<DetalleTurno> listaTurno = eTurno.getTurnoDetalles();
         if (!listaTurno.isEmpty()) {      	
-        	for(DetalleTurno detalleTurno:listaTurno ){
+        	for(DetalleTurno detalleTurno:listaTurno ) { 
         		detalleTurno.setIdTurno(Integer.parseInt(ClaveGenerada));
-        		respuesta=dDetalleTurnoDao.guardarRegistro(detalleTurno);
-                if (respuesta.estado==false){     	
+        		respuesta = dDetalleTurnoDao.guardarRegistro(detalleTurno);
+        		
+                if (!respuesta.estado) {     	
                   	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
                 }        	
         	}         	

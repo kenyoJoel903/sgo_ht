@@ -435,18 +435,16 @@ public class JornadaControlador {
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null,locale));
             }
             
-            for (int i = 0; i < respuesta.contenido.carga.size(); i++){
+            for (int i = 0; i < respuesta.contenido.carga.size(); i++) {
             	ContometroJornada eContometroJornada = (ContometroJornada) respuesta.contenido.carga.get(i);
-            	eContometroJornada.setLecturaInicialStr(
-        			Utilidades.trailingZeros(
+            	eContometroJornada.setLecturaInicialStr(Utilidades.trailingZeros(
     					eContometroJornada.getLecturaInicial(), 
-    					eJornada.getEstacion().getNumeroDecimalesContometro())
-        			);
-            	eContometroJornada.setLecturaFinalStr(
-        			Utilidades.trailingZeros(
+    					eJornada.getEstacion().getNumeroDecimalesContometro()
+    			));
+            	eContometroJornada.setLecturaFinalStr(Utilidades.trailingZeros(
     					eContometroJornada.getLecturaFinal(), 
-    					eJornada.getEstacion().getNumeroDecimalesContometro())
-        			);
+    					eJornada.getEstacion().getNumeroDecimalesContometro()
+    			));
             	
 				listaContometroJornada.add(eContometroJornada);
 			}
@@ -969,8 +967,9 @@ public class JornadaControlador {
 		ObjectMapper mapper = null;
 		int idJornadaGenerada;
 		
+		
 		try {
-			
+            
 			//Inicia la transaccion
 			this.transaccion = new DataSourceTransactionManager(dJornada.getDataSource());
 			definicionTransaccion = new DefaultTransactionDefinition();
@@ -1036,7 +1035,7 @@ public class JornadaControlador {
 				// se agrega tipoAperTanque en el if por req 9000003068
 				if(cantidadProductos > 1 && tipoAperTanque == 1){
 					RespuestaCompuesta producto = dProducto.recuperarRegistro(idProd);
-					if (respuesta.estado==false){     	
+					if (!respuesta.estado) {     	
 		              	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
 		            }
 					Producto respuestaProducto = (Producto) producto.contenido.carga.get(0);
@@ -1066,7 +1065,7 @@ public class JornadaControlador {
 		      throw new Exception(validacion.valor);
 		    }
             
-            respuesta= dJornada.guardarRegistro(eJornada);
+            respuesta = dJornada.guardarRegistro(eJornada);
             //Verifica si la accion se ejecuto de forma satisfactoria
             if (respuesta.estado==false){     	
               	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
@@ -1076,7 +1075,7 @@ public class JornadaControlador {
             idJornadaGenerada = Integer.parseInt(respuesta.valor);
             //Guardar en la bitacora
             mapper = new ObjectMapper(); // no need to do this if you inject via @Autowired
-            ContenidoAuditoria =  mapper.writeValueAsString(eJornada);
+            ContenidoAuditoria = mapper.writeValueAsString(eJornada);
             eBitacora.setUsuario(principal.getNombre());
             eBitacora.setAccion(URL_GUARDAR_COMPLETA);
             eBitacora.setTabla(JornadaDao.NOMBRE_TABLA);
@@ -1084,24 +1083,39 @@ public class JornadaControlador {
             eBitacora.setContenido(ContenidoAuditoria);
             eBitacora.setRealizadoEl(eJornada.getCreadoEl());
             eBitacora.setRealizadoPor(eJornada.getCreadoPor());
-            respuesta= dBitacora.guardarRegistro(eBitacora);
+            respuesta = dBitacora.guardarRegistro(eBitacora);
             if (respuesta.estado==false){     	
               	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
-            }    
+            }
+            
+            RespuestaCompuesta respuestaEstacion = dEstacion.recuperarRegistro(eJornada.getIdEstacion());
+            if (!respuestaEstacion.estado) {
+            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+            }
+            
+            Estacion eEstacion = (Estacion) respuestaEstacion.getContenido().getCarga().get(0);
             
             //esto para guardar los contometros de la jornada
             for (int contador = 0; contador < eJornada.getContometroJornada().size(); contador++) {
             	eContometroJornada = eJornada.getContometroJornada().get(contador);
             	eContometroJornada.setIdJornada(idJornadaGenerada);
             	eContometroJornada.setEstadoServicio(ContometroJornada.ESTADO_ABIERTO);
+            	eContometroJornada.setLecturaInicialStr(Utilidades.trailingZeros(
+					eContometroJornada.getLecturaInicialStr(), 
+					eEstacion.getNumeroDecimalesContometro()
+				));
+            	eContometroJornada.setLecturaFinalStr(Utilidades.trailingZeros(
+					eContometroJornada.getLecturaFinalStr(), 
+					eEstacion.getNumeroDecimalesContometro()
+				));
 
             	validacion = Utilidades.validacionContometroAperturaXSS(eContometroJornada, gestorDiccionario, locale);
-    		    if (validacion.estado == false) {
+    		    if (!validacion.estado) {
     		      throw new Exception(validacion.valor);
     		    }
     		    
             	RespuestaCompuesta respuestaContJornada = dContometroJornada.guardarRegistro(eContometroJornada);
-				if (respuestaContJornada.estado == false) {
+				if (!respuestaContJornada.estado) {
 					throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
 				}
 				
@@ -1115,8 +1129,8 @@ public class JornadaControlador {
 				eBitacora.setContenido(ContenidoAuditoria);
 				eBitacora.setRealizadoEl(eJornada.getActualizadoEl());
 				eBitacora.setRealizadoPor(principal.getID());
-				respuesta= dBitacora.guardarRegistro(eBitacora);
-				if (respuesta.estado==false){     	
+				respuesta = dBitacora.guardarRegistro(eBitacora);
+				if (!respuesta.estado){     	
 	              	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
 	            }
 			}
@@ -1134,7 +1148,6 @@ public class JornadaControlador {
             	diaHoradeApertura.setMinutes(00);
             	diaHoradeApertura.setSeconds(00);
             	eTanqueJornada.setHoraInicial(diaHoradeApertura);
-            	
             	
             	validacion = Utilidades.validacionTanqueAperturaXSS(eTanqueJornada, gestorDiccionario, locale);
     		    if (validacion.estado == false) {
@@ -1166,6 +1179,7 @@ public class JornadaControlador {
             
         	respuesta.mensaje=gestorDiccionario.getMessage("sgo.guardarExitoso",new Object[] {  eJornada.getFechaCreacion().substring(0, 9),eJornada.getFechaCreacion().substring(10),principal.getIdentidad() },locale);
         	this.transaccion.commit(estadoTransaccion);
+        	
 		} catch (Exception e){
 			this.transaccion.rollback(estadoTransaccion);
 			Utilidades.gestionaError(e, sNombreClase, "guardarRegistro");
@@ -1564,9 +1578,7 @@ public class JornadaControlador {
 		if(fechaMuestreo.before(fechaJornadaInicio) || fechaMuestreo.after(fechaJornadaFin)){
 			throw new Exception("Fecha y hora (" + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(fechaMuestreo) + ") está fuera de horario de jornada, por favor verifique");
 		}
-		
-		
-		
+
 	}
 	
 	private List<PerfilDetalleHorario> obtenerLstPerfilDetalleHorarioPorIdEstacion(int idEstacion, Locale locale) throws Exception{

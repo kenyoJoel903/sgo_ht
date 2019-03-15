@@ -554,7 +554,8 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	
 	//actualiza cabecera operador ay
 	var numeroDetalles = registro.length;
-	moduloActual.obj.cmpHoraInicio.val(moduloActual.obj.cmpDiaOperativoApertura.text());		//se agrega moduloActual.obj.cmpDiaOperativoApertura.text() por req 9000003068
+	moduloActual.obj.cmpHoraInicio.val(moduloActual.obj.cmpDiaOperativoApertura.text());
+	//se agrega moduloActual.obj.cmpDiaOperativoApertura.text() por req 9000003068
 	moduloActual.obj.cmpObservacionApertura.val("");
 	
 	/**
@@ -637,8 +638,9 @@ moduloActual.llenarAperturaContometroJornada = function(registro) {
 	    if (!formulario) {
 	    	continue;
 	    }
-	    
-	    formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);  	  
+    	
+	    formulario.find("input[elemento-grupo='secuencia']").val(contador + 1);
+	    formulario.find("input[elemento-grupo='contometro']").val(registro[contador].contometro.alias);
 	    formulario.find("input[elemento-grupo='contometro']").attr("data-idContometro", registro[contador].contometro.id);
 	    formulario.find("input[elemento-grupo='producto']").val(registro[contador].producto.nombre);  	  
 	    formulario.find("input[elemento-grupo='producto']").attr("data-idProducto", registro[contador].producto.id);
@@ -847,7 +849,8 @@ moduloActual.llenarFormularioCierre = function(registro) {
 	          var cmpElementoLecturaInicial = formulario.find("input[elemento-grupo='lecturaInicial']");
 	          var cmpElementoLecturaFinal   = formulario.find("input[elemento-grupo='lecturaFinal']");
 	          var cmpElementoId				= formulario.find("input[elemento-grupo='lecturaInicial']").attr("data-idDetalleTurno");
-	          detalles.lecturaInicial  		= parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
+	          detalles.lecturaInicialStr  	= cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
+	          //detalles.lecturaInicial  		= parseFloat(cmpElementoLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	          //detalles.lecturaFinal  		= parseFloat(cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	          detalles.lecturaFinalStr      = cmpElementoLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES, "");
 	          detalles.idProducto  			= parseInt(cmpElementoProducto);

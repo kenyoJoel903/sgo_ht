@@ -2383,18 +2383,11 @@ function trailingZerosDiferencia(objCon) {
 	}
 	  
 	var lecturaFinalArray = objCon.lecturaFinalStr.toString().split(".");
-	var integerLecturaFinal = lecturaFinalArray[0];
 	var decimalLecturaFinal = lecturaFinalArray[1];
 	
 	var differentArray = different.toString().split(".");
 	var integerDifferent = differentArray[0];
 	var decimalDifferent = differentArray[1];
-	
-	/*
-	if (decimal.length > decimalesContometro) {
-		return integer + "." + decimal.substring(0, decimalesContometro);
-	}
-	*/
 	
 	while (decimalDifferent.length < decimalLecturaFinal.length) {
 		decimalDifferent = decimalDifferent + "0";

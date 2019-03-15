@@ -735,6 +735,29 @@ public static String trailingZeros(float f, int leadingZeros) {
     return out;
 }
 
+public static String trailingZeros(String s, int leadingZeros) {
+	
+	String out = "0";
+	
+    try {
+
+    	if (!s.contains(".")) {
+    		return s;
+    	}
+    	
+    	String array[] = s.split("\\.");
+        String integer = array[0];
+        String decimal = array[1];
+        
+        out =  integer + "." + decimal.substring(0, leadingZeros);
+        
+    } catch(Exception e) {
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 public static boolean arrayContainsInt(final int[] array, final int key) {     
     return ArrayUtils.contains(array, key);
 }

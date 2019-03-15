@@ -78,6 +78,11 @@ public class DetalleTurno {
 	public String getLecturaInicialStr() {
 		return lecturaInicialStr;
 	}
+	
+	public BigDecimal getLecturaInicialBigDecimal() {
+		return Utilidades.strToBigDecimal(lecturaInicialStr);
+	}
+	
 	public void setLecturaInicialStr(String lecturaInicialStr) {
 		this.lecturaInicialStr = lecturaInicialStr;
 	}

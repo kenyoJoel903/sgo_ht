@@ -276,7 +276,7 @@ public class DetalleTurnoDao {
       consultaSQL.append(" VALUES (:IdTurno,:Lectura_inicial,:Lectura_final,:IdProducto,:IdContometro) ");
       MapSqlParameterSource listaParametros= new MapSqlParameterSource();   
       listaParametros.addValue("IdTurno", detalle_turno.getIdTurno());
-      listaParametros.addValue("Lectura_inicial", detalle_turno.getLecturaInicial());
+      listaParametros.addValue("Lectura_inicial", detalle_turno.getLecturaInicialBigDecimal());
       listaParametros.addValue("Lectura_final", detalle_turno.getLecturaFinal());
       listaParametros.addValue("IdProducto", detalle_turno.getIdProducto());
       listaParametros.addValue("IdContometro", detalle_turno.getIdContometro());

@@ -874,9 +874,9 @@ moduloJornada.prototype.guardarApertura = function() {
 	if (referenciaModulo.obj.frmApertura.valid()) {
 		
 		referenciaModulo.obj.ocultaContenedorAperturaJornada.show();
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValoresApertura();
-		
+
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: referenciaModulo.URL_GUARDAR, 
@@ -884,14 +884,14 @@ moduloJornada.prototype.guardarApertura = function() {
 			data: JSON.stringify(eRegistro),	
 			success: function(respuesta) {
 				if (!respuesta.estado) {
-					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 				} else {
 					referenciaModulo.iniciarListado(respuesta.mensaje);
 				}
 				referenciaModulo.obj.ocultaContenedorAperturaJornada.hide();
 			},			    		    
 			error: function() {
-			referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
+				referenciaModulo.mostrarErrorServidor(xhr, estado, error); 
 			}
 		});
 	} else {
@@ -1071,32 +1071,37 @@ moduloJornada.prototype.verRegistro= function(){
 	});
 };
 
-moduloJornada.prototype.guardarRegistro= function(){  
+moduloJornada.prototype.guardarRegistro = function() {
+
 	var referenciaModulo = this;
-   referenciaModulo.mostrarDepuracion("guardarRegistro");
-	if (referenciaModulo.obj.frmPrincipal.valid()){
-    referenciaModulo.obj.ocultaContenedorFormulario.show();
-		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	referenciaModulo.mostrarDepuracion("guardarRegistro");
+
+	if (referenciaModulo.obj.frmPrincipal.valid()) {
+		
+		referenciaModulo.obj.ocultaContenedorFormulario.show();
+		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
+
 		$.ajax({
-      type: constantes.PETICION_TIPO_POST,
-      url: referenciaModulo.URL_GUARDAR, 
-      contentType: referenciaModulo.TIPO_CONTENIDO, 
-      data: JSON.stringify(eRegistro),	
-      success: function(respuesta) {
-        if (!respuesta.estado) {
-          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-        } else {
-          referenciaModulo.iniciarListado(respuesta.mensaje);
-        }
-        referenciaModulo.obj.ocultaContenedorFormulario.hide();
-      },			    		    
-      error: function() {
-        referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-      }
+			type: constantes.PETICION_TIPO_POST,
+			url: referenciaModulo.URL_GUARDAR, 
+			contentType: referenciaModulo.TIPO_CONTENIDO, 
+			data: JSON.stringify(eRegistro),	
+			success: function(respuesta) {
+				if (!respuesta.estado) {
+					referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
+				} else {
+					referenciaModulo.iniciarListado(respuesta.mensaje);
+				}
+				referenciaModulo.obj.ocultaContenedorFormulario.hide();
+			},			    		    
+			error: function() {
+				referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
+			}
 		});
+
 	} else {
-    referenciaModulo.obj.ocultaContenedorFormulario.hide();
+		referenciaModulo.obj.ocultaContenedorFormulario.hide();
 	}
 };
 

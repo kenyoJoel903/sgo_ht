@@ -10,6 +10,7 @@ import sgo.utilidades.Utilidades;
 
 
 public class ContometroJornada {
+	
 	private int id_cjornada;
 	private int id_jornada;
 	

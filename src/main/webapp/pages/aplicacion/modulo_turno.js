@@ -1010,6 +1010,9 @@ moduloTurno.prototype.guardarApertura = function() {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
 		
+		console.log(" *** moduloTurno.prototype.guardarApertura *** ");
+		console.dir(eRegistro);
+		
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: referenciaModulo.URL_GUARDAR, 
