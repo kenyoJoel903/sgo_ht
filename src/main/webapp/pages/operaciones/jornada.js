@@ -1310,9 +1310,6 @@ $(document).ready(function() {
 	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 //	Fin Agregado por req 9000003068=================
 	
-	console.log("registro.registroNuevo ::: " + registro.registroNuevo); 
-	
-	
 	if (!registro.registroNuevo) {
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
 				
@@ -1527,7 +1524,6 @@ $(document).ready(function() {
         for(var contador = 0; contador < numeroContometros; contador++){
 	        var contometroJornada = {};
 	        var formularioContometro = referenciaModulo.obj.GrupoAperturaContometros.getForm(contador);
-	        
 	        var cmpIdContometros		= formularioContometro.find("input[elemento-grupo='idContometros']");
 	        var cmpContometros			= formularioContometro.find("input[elemento-grupo='contometros']");
 	        var cmpProductoContometro	= formularioContometro.find("select[elemento-grupo='productosContometros']");
@@ -1547,7 +1543,6 @@ $(document).ready(function() {
 	      for(var contador = 0; contador < numeroTanques; contador++) {
 	        var tanqueJornada = {};
 	        var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);
-
 	        var cmpIdTanques=$(formularioTanque).find("input[elemento-grupo='idTanques']");
             var cmpTanques=$(formularioTanque).find("input[elemento-grupo='tanques']");
             var cmpIdProductosTanques=$(formularioTanque).find("input[elemento-grupo='idProductosTanques']");
@@ -1678,10 +1673,6 @@ $(document).ready(function() {
 		      var diferencia = parseFloat(lecFin) - parseFloat(lecIni);
 	//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
 		      
-	//	      Inicio Comentado por req 9000003068
-	//	      var diferencia = parseFloat(registro.contometroJornada[contador].lecturaFinal) - parseFloat(registro.contometroJornada[contador].lecturaInicial);
-	//	      Fin Comentado por req 9000003068
-		      
 		      formulario.find("input[elemento-grupo='diferencia']").val(diferencia);
 		      formulario.find("checkbox[elemento-grupo='servicio']").val(registro.contometroJornada[contador].estadoServicio);
 		    }
@@ -1703,17 +1694,16 @@ $(document).ready(function() {
 		      
 //		      agregado por req 9000003068===============================================================================
 		      
-		      if(cont%2){	// par o impar
+		      if (cont%2) {	// par o impar
 		    	  formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#F2DEF5');
-		      }else{
-		    		formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#DBF3DF');
+		      } else {
+		    	  formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#DBF3DF');
 		      }
 //		      ==========================================================================================================	      
 		      
 		      formularioCierreTanque.find("input[elemento-grupo='idTanqueJornadaCierre']").val(registro.tanqueJornadaCierre[cont].idTjornada);
 		      formularioCierreTanque.find("input[elemento-grupo='idTanqueCierre']").val(registro.tanqueJornadaCierre[cont].tanque.id);
 		      formularioCierreTanque.find("input[elemento-grupo='tanqueCierre']").val(registro.tanqueJornadaCierre[cont].tanque.descripcion);
-		      
 		      formularioCierreTanque.find("input[elemento-grupo='idCierreProductoTanque']").val(registro.tanqueJornadaCierre[cont].producto.id);
 		      formularioCierreTanque.find("input[elemento-grupo='cierreProductoTanque']").val(registro.tanqueJornadaCierre[cont].producto.nombre);
 		      // medidas iniciales
@@ -1743,6 +1733,7 @@ $(document).ready(function() {
 	          } else {
 	        	  formularioCierreTanque.find("input[elemento-grupo='horaFinal']").val(referenciaModulo.obj.cmpCierreFechaJornada.text());
 	          }
+	          
 		      formularioCierreTanque.find("input[elemento-grupo='medidaFinalTanque']").val(registro.tanqueJornadaCierre[cont].medidaFinal);
 		      formularioCierreTanque.find("input[elemento-grupo='volObsFinalTanque']").val(registro.tanqueJornadaCierre[cont].volumenObservadoFinal.toFixed(2));
 		      formularioCierreTanque.find("input[elemento-grupo='api60FinalTanque']").val(registro.tanqueJornadaCierre[cont].apiCorregidoFinal.toFixed(2));
@@ -1985,8 +1976,6 @@ $(document).ready(function() {
     	
     	var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
     	var objCon = registro.contometroJornada[k];
-
-        //var diferencia = parseFloat(objCon.lecturaFinalStr) - parseFloat(objCon.lecturaInicial);
         var diferencia = trailingZerosDiferencia(objCon);
       
 	      g_tr  = '<tr><td class="text-left">'+objCon.contometro.alias  + '</td>' + // contometro
@@ -2232,15 +2221,13 @@ $(document).ready(function() {
 	  formulario.find("input[elemento-grupo='identificador']").val(registro.muestreo[indice].id);
       formulario.find("input[elemento-grupo='horaMuestra']").val(utilitario.formatearTimestampToString(registro.muestreo[indice].horaMuestreo));
       
-      var elemento1=constantes.PLANTILLA_OPCION_SELECTBOX;
+      var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
       elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR,registro.muestreo[indice].producto.id);
       elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.muestreo[indice].producto.nombre);
       formulario.find("select[elemento-grupo='producto']").empty().append(elemento1).val(registro.muestreo[indice].producto.id).trigger('change');
-
       formulario.find("input[elemento-grupo='api60']").val(registro.muestreo[indice].apiMuestreo.toFixed(2));
       formulario.find("input[elemento-grupo='temperatura']").val(registro.muestreo[indice].temperaturaMuestreo.toFixed(2));
       formulario.find("input[elemento-grupo='factor']").val(registro.muestreo[indice].factorMuestreo.toFixed(6));
-      
       formulario.find("input[elemento-grupo='horaMuestra']").prop('disabled', true);
       formulario.find("select[elemento-grupo='producto']").prop('disabled', true);
       formulario.find("input[elemento-grupo='api60']").prop('disabled', true);
