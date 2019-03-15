@@ -438,11 +438,11 @@ public class JornadaControlador {
             for (int i = 0; i < respuesta.contenido.carga.size(); i++) {
             	ContometroJornada eContometroJornada = (ContometroJornada) respuesta.contenido.carga.get(i);
             	eContometroJornada.setLecturaInicialStr(Utilidades.trailingZeros(
-    					eContometroJornada.getLecturaInicial(), 
+    					eContometroJornada.getLecturaInicialStr(), 
     					eJornada.getEstacion().getNumeroDecimalesContometro()
     			));
             	eContometroJornada.setLecturaFinalStr(Utilidades.trailingZeros(
-    					eContometroJornada.getLecturaFinal(), 
+    					eContometroJornada.getLecturaFinalStr(),
     					eJornada.getEstacion().getNumeroDecimalesContometro()
     			));
             	
@@ -757,7 +757,7 @@ public class JornadaControlador {
 		
 //		Inicio agregado por req 9000003068====================================================================================================
 		
-		validaPerfilHorarioEnEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")), locale);
+		validaPerfilHorarioEnEstacion(Utilidades.parseInt(httpRequest.getParameter("filtroEstacion")), locale);
 		
 //		Fin agregado por req 9000003068===========================================================================================================
 		
@@ -817,7 +817,7 @@ public class JornadaControlador {
             parametros.setCampoOrdenamiento("id");
 			parametros.setSentidoOrdenamiento("asc");
             //recuperamos los contometros de la jornada
-			oRespuesta = dContometroJornada.recuperarRegistros(parametros);
+			oRespuesta = dContometroJornada.recuperarRegistros(parametros); 
             if (oRespuesta.estado==false){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
@@ -879,7 +879,7 @@ public class JornadaControlador {
 			 
 			 oRespuesta = dContometro.recuperarRegistros(parametros3);
 			 if (oRespuesta.estado == false || oRespuesta.contenido.carga.size() == 0) {
-			   throw new Exception(gestorDiccionario.getMessage("sgo.EstacionSinContometro",new Object[] {  eJornada.getEstacion().getNombre() },locale));
+			   throw new Exception(gestorDiccionario.getMessage("sgo.EstacionSinContometro",new Object[] {eJornada.getEstacion().getNombre() },locale));
 			 }
 			 
 			 for (int k = 0; k < oRespuesta.contenido.carga.size(); k++){
@@ -889,7 +889,7 @@ public class JornadaControlador {
 			 
 			 oRespuesta = dTanque.recuperarRegistros(parametros3);
 			 if (oRespuesta.estado == false || oRespuesta.contenido.carga.size() == 0) {
-			   throw new Exception(gestorDiccionario.getMessage("sgo.EstacionSinTanque",new Object[] {  eJornada.getEstacion().getNombre() },locale));
+			   throw new Exception(gestorDiccionario.getMessage("sgo.EstacionSinTanque",new Object[] {eJornada.getEstacion().getNombre() },locale));
 			 }
 			 
 			 for (int k = 0; k < oRespuesta.contenido.carga.size(); k++){
@@ -1200,8 +1200,9 @@ public class JornadaControlador {
 		ContometroJornada eContometroJornada = null;
 		TanqueJornada eTanqueJornada = null;
 		Muestreo eMuestreoJornada = null;
-		Bitacora eBitacora=null;
-		String direccionIp="";
+		Bitacora eBitacora = null;
+		String direccionIp = "";
+		
 		try {
 			//Inicia la transaccion
 			this.transaccion = new DataSourceTransactionManager(dJornada.getDataSource());
@@ -1215,16 +1216,19 @@ public class JornadaControlador {
 			if (respuesta.estado==false){
 				throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 			}
+			
 			Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 			//Verificar si cuenta con el permiso necesario			
 			if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 				throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
-    		}			
+    		}	
+			
 			//Auditoria local (En el mismo registro)
 			direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");
 			if (direccionIp == null) {
 				direccionIp = peticionHttp.getRemoteAddr();  
 			}
+			
 			eJornada.setActualizadoEl(Calendar.getInstance().getTime().getTime());
 			eJornada.setActualizadoPor(principal.getID()); 
 			eJornada.setIpActualizacion(direccionIp);
@@ -1232,6 +1236,7 @@ public class JornadaControlador {
             if (respuesta.estado==false){          	
             	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
             }
+            
             //Guardar en la bitacora
             ObjectMapper mapper = new ObjectMapper();
             eBitacora.setUsuario(principal.getNombre());
@@ -1300,12 +1305,6 @@ public class JornadaControlador {
     		    if (validacion.estado == false) {
     		      throw new Exception(validacion.valor);
     		    }
-
-    		    
-    		   /* boolean validaFechas = Utilidades.comparaTimestampConDate(eTanqueJornada.getHoraFinal(), eJornada.getFechaOperativa());
-    		    if (validaFechas == false) {
-					throw new Exception("La Fecha de Hora Final del tanque " + eTanqueJornada.getDescripcionTanque() + " debe ser igual a la fecha del dÃƒÂ­a operativo: " + Utilidades.convierteDateAString(eJornada.getFechaOperativa(), Constante.FORMATO_FECHA_DDMMYYYY) );
-				}*/
     		    
             	RespuestaCompuesta respuestaTanqueJornada = dTanqueJornada.actualizarRegistro(eTanqueJornada);
 				if (respuestaTanqueJornada.estado == false) {
@@ -1326,22 +1325,6 @@ public class JornadaControlador {
 	            }
 			}
             
-            //Se quito del for y se agrego aqui por incidencia 7000002340=====================================================
-   		    //primero eliminamos los registros que hayan sido muestreados al cerrar la jornada (si los hubiera)
-            //Comentado por req 9000003068====================================================================================
-//	        long time = eJornada.getFechaOperativa().getTime();
-//	      	Timestamp diaHoradeCierre = new Timestamp(time);
-//	      	diaHoradeCierre.setHours(23);
-//	      	diaHoradeCierre.setMinutes(59);
-//	      	diaHoradeCierre.setSeconds(59);
-//	      	
-//        	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre);
-//        	if (respuestaEliminaMuestreo.estado == false) {
-//				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
-//			}
-        	//================================================================================================================
-        	//================================================================================================================
-            
 //          Inicio Agregado por req 9000003068==================================================
             
             Timestamp diaHoradeCierre = obtenerDiaHoraCierre(eJornada.getIdEstacion(), eJornada.getFechaOperativa().getTime(), locale);
@@ -1356,15 +1339,6 @@ public class JornadaControlador {
 
             	if(eMuestreoJornada.getOrigen() == Muestreo.ORIGEN_CIERRE){
             		
-            		//Se comento por incidencia 7000002340 ya que se subio fuera del for================================
-            		 //primero eliminamos los registros que hayan sido muestreados al cerrar la jornada (si los hubiera)
-//                    long time = eJornada.getFechaOperativa().getTime();
-//                	Timestamp diaHoradeCierre = new Timestamp(time);
-//                	diaHoradeCierre.setHours(23);
-//                	diaHoradeCierre.setMinutes(59);
-//                	diaHoradeCierre.setSeconds(59);
-                	//==================================================================================================
-            		
                 	eMuestreoJornada.setHoraMuestreo(diaHoradeCierre);
                 	
 	            	Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
@@ -1372,43 +1346,11 @@ public class JornadaControlador {
 	    		      throw new Exception(validacion.valor);
 	    		    }
                 	
-	    		    //Se comento por incidencia 7000002340 ya que se subio fuera del for================================
-//                	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre);
-//                	if (respuestaEliminaMuestreo.estado == false) {
-//        				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
-//        			}
-                	//==================================================================================================
-
-//	    		    boolean validaFechas = Utilidades.comparaTimestampConDate(eMuestreoJornada.getHoraMuestreo(), eJornada.getFechaOperativa());
-//	    		    if (validaFechas == false) {
-//						throw new Exception("La Fecha de Hora Final del muestreo debe ser igual a la fecha del dÃƒÂ­a operativo: " + Utilidades.convierteDateAString(eJornada.getFechaOperativa(), Constante.FORMATO_FECHA_DDMMYYYY) );
-//					}
-	    		    
-//            		Inicio Agregado por req 9000003068==================================
                 	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre, eMuestreoJornada.getProductoMuestreado());
                 	if (respuestaEliminaMuestreo.estado == false) {
         				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
         			}
-            		
-//            		Fin Agregado por req 9000003068=====================================
-                	
-//                  Inicio Agregado por req 9000003068==================================================
-                	
-//                	ParametrosListar parametros  = new ParametrosListar();
-//            	  parametros.setIdJornada(eJornada.getId());
-//            	  parametros.setCampoOrdenamiento("horaMuestreo");
-//            	  parametros.setSentidoOrdenamiento("ASC");
-//            	  parametros.setPaginacion(Constante.SIN_PAGINACION);
-//            	  respuesta = dMuestreo.recuperarRegistros(parametros);
-//            	  
-//            	  if (respuesta.estado == false){  
-//            		  throw new Exception("Error al recuperar muestreos de la jornada");
-//            	  }
-//            	  
-//            	  List<Muestreo> lstMuestreo = (List<Muestreo>) respuesta.contenido.carga;
-//                	
-//                  Fin Agregado por req 9000003068==================================================
-	    		    
+
 	            	respuestaMuestreoJornada = dMuestreo.guardarRegistro(eMuestreoJornada);
 					if (respuestaMuestreoJornada.estado == false) {
 						throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
@@ -1452,10 +1394,7 @@ public class JornadaControlador {
     	    		    if (validacion.estado == false) {
     	    		      throw new Exception(validacion.valor);
     	    		    }
-    	    		    /*boolean validaFechas = Utilidades.comparaTimestampConDate(eMuestreoJornada.getHoraMuestreo(), eJornada.getFechaOperativa());
-    	    		    if (validaFechas == false) {
-    						throw new Exception("La Fecha del muestreo debe ser igual a la fecha del dÃƒÂ­a operativo: " + Utilidades.convierteDateAString(eJornada.getFechaOperativa(), Constante.FORMATO_FECHA_DDMMYYYY) );
-    					}*/
+
             			respuestaMuestreoJornada= dMuestreo.actualizarRegistro(eMuestreoJornada);
             	        //Verifica si la accion se ejecuto de forma satisfactoria
             	        if (respuestaMuestreoJornada.estado==false){     	
@@ -1471,28 +1410,12 @@ public class JornadaControlador {
                         eBitacora.setRealizadoEl(Calendar.getInstance().getTime().getTime());
                         eBitacora.setRealizadoPor(principal.getID());
             		} else {
-            			/*//valido que no exista un tegistro con los mismos valores
-            			parametros = new ParametrosListar();
-            			parametros.setFiltroPerteneceA(eVigencia.getPerteneceA());
-            			parametros.setFiltroIdDocumento(eVigencia.getIdEntidad());
-            			respuesta = dVigencia.recuperarRegistros(parametros);
-            			if (respuesta.estado==false){     	
-            	          	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
-            	        }
-            			for(int i = 0; i < respuesta.contenido.carga.size(); i++){
-            				Vigencia temp = (Vigencia) respuesta.contenido.carga.get(i);
-            				if(temp.getIdDocumento() == eVigencia.getIdDocumento() && temp.getFechaEmision() == eVigencia.getFechaEmision() && temp.getFechaExpiracion() == eVigencia.getFechaExpiracion()){
-            					throw new Exception(gestorDiccionario.getMessage("Ya existe un registro con los mismos valores",null,locale));
-            				}
-            			}*/
+
             			Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
     	    		    if (validacion.estado == false) {
     	    		      throw new Exception(validacion.valor);
     	    		    }
-    	    		    /*boolean validaFechas = Utilidades.comparaTimestampConDate(eMuestreoJornada.getHoraMuestreo(), eJornada.getFechaOperativa());
-    	    		    if (validaFechas == false) {
-    						throw new Exception("La Fecha de Hora Final del muestreo debe ser igual a la fecha del dÃƒÂ­a operativo: " + Utilidades.convierteDateAString(eJornada.getFechaOperativa(), Constante.FORMATO_FECHA_DDMMYYYY) );
-    					}*/
+
             			respuestaMuestreoJornada = dMuestreo.guardarRegistro(eMuestreoJornada);
     					if (respuestaMuestreoJornada.estado == false) {
     						throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));

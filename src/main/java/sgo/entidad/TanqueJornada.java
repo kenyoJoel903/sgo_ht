@@ -441,7 +441,7 @@ public Respuesta validarCierre(MessageSource gestorDiccionario, Locale locale){
 	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Hora Inicial" }, locale);
 	return respuesta;
   }
-  if (!Utilidades.esValido(this.medida_inicial) || this.medida_inicial == 0){	
+  if (!Utilidades.esValido(this.medida_inicial)) { //  || this.medida_inicial == 0
 	respuesta.estado = false;
 	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Medida Inicial" }, locale);
 	return respuesta;
@@ -510,12 +510,6 @@ public Respuesta validarCierre(MessageSource gestorDiccionario, Locale locale){
 	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Volumen 60F Final" + texto }, locale);
 	return respuesta;
   }
-  //se quita la validacion de registro de volumen de agua final
-/*  if (!Utilidades.esValido(this.volumen_agua_final) || this.volumen_agua_final == 0){	
-	respuesta.estado = false;
-	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Volumen de Agua" + texto }, locale);
-	return respuesta;
-  }*/
   if (!Utilidades.esValido(this.estado_servicio)){	
 	respuesta.estado = false;
 	respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "F/S" }, locale);

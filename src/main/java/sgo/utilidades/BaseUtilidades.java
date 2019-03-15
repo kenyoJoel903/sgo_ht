@@ -972,18 +972,21 @@ public static Respuesta validacionTanqueCierreXSS(TanqueJornada eEntidad, Messag
 			  respuesta.valor = gestorDiccionario.getMessage("sgo.erroValoresFormulario", null, locale);
 			  return respuesta;
 		  } 
+		  
 		  respuesta = eEntidad.validarCierre(gestorDiccionario, locale);
 		  if (respuesta.estado == false){
 			  return respuesta;
 		  } 
-	 respuesta.estado = true;
-	 respuesta.valor = "";
-	} catch (Exception ex) {
-	ex.printStackTrace();
-	respuesta.error = Constante.EXCEPCION_GENERICA;
-	respuesta.valor = gestorDiccionario.getMessage("sgo.errorGenericoServidor", null, locale);
-	respuesta.estado = false;
+		  
+		 respuesta.estado = true;
+		 respuesta.valor = "";
+	} catch (Exception e) {
+		e.printStackTrace();
+		respuesta.error = Constante.EXCEPCION_GENERICA;
+		respuesta.valor = gestorDiccionario.getMessage("sgo.errorGenericoServidor", null, locale);
+		respuesta.estado = false;
 	}
+	
 	return respuesta;
 }
 

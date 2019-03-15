@@ -1310,6 +1310,9 @@ $(document).ready(function() {
 	referenciaModulo.obj.numeroDecimalesContometro = registro.estacion.numeroDecimalesContometro;
 //	Fin Agregado por req 9000003068=================
 	
+	console.log("registro.registroNuevo ::: " + registro.registroNuevo); 
+	
+	
 	if (!registro.registroNuevo) {
 		referenciaModulo.obj.cmpAperturaEstacion.text(registro.estacion.nombre);
 				
@@ -1352,7 +1355,7 @@ $(document).ready(function() {
 		      
 	//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
 	//	      se agrega lecIni y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val
-		      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
+		      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinalStr);
 		      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
 		      
 	//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
@@ -1384,8 +1387,6 @@ $(document).ready(function() {
 		      
 		      formularioTanque.find("input[elemento-grupo='idTanques']").val(registro.tanqueJornada[cont].tanque.id);
 		      formularioTanque.find("input[elemento-grupo='tanques']").val(registro.tanqueJornada[cont].tanque.descripcion);
-		      
-		      
 		      formularioTanque.find("input[elemento-grupo='idProductosTanques']").val(registro.tanqueJornada[cont].producto.id);
 		      formularioTanque.find("input[elemento-grupo='productosTanques']").val(registro.tanqueJornada[cont].producto.nombre);
 		      formularioTanque.find("input[elemento-grupo='medidaInicial']").val(registro.tanqueJornada[cont].medidaFinal);
@@ -1986,11 +1987,6 @@ $(document).ready(function() {
     	
     	var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
     	var objCon = registro.contometroJornada[k];
-    	
-        console.log(" FOR ::: " + k);
-        console.dir(parseFloat(objCon.lecturaFinalStr));
-        console.dir(parseFloat(objCon.lecturaInicialStr));
-        console.log(" ***************** :: " + decimalesContometro);
 
         //var diferencia = parseFloat(objCon.lecturaFinalStr) - parseFloat(objCon.lecturaInicial);
         var diferencia = trailingZerosDiferencia(objCon);
@@ -2389,11 +2385,7 @@ function trailingZerosDiferencia(objCon) {
 	var integerDifferent = differentArray[0];
 	var decimalDifferent = differentArray[1];
 	
-	while (decimalDifferent.length < decimalLecturaFinal.length) {
-		decimalDifferent = decimalDifferent + "0";
-	}
-
-	return integerDifferent + "." + decimalDifferent;
+	return integerDifferent + "." + decimalDifferent.substring(0, decimalLecturaFinal.length);
 }
 //Fin Agregado por req 9000003068===========================	
 

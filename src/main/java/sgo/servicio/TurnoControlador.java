@@ -1359,7 +1359,7 @@ public @ResponseBody RespuestaCompuesta generarPlantillaContometros(HttpServletR
 			hm.put("secuencia", Integer.toString(i));
 			hm.put("contometro", iDT.getContometro().getAlias());
 			hm.put("producto", iDT.getProducto().getNombre());
-			hm.put("lectura_inicial", Utilidades.trailingZeros(iDT.getLecturaInicial(), eEstacion.getNumeroDecimalesContometro()));
+			hm.put("lectura_inicial", Utilidades.trailingZeros(iDT.getLecturaInicialStr(), eEstacion.getNumeroDecimalesContometro()));
 			hm.put("lectura_final", "");
 			listaRegistros.add(hm);
 			i++;

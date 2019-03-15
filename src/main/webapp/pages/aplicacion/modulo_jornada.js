@@ -863,6 +863,8 @@ moduloJornada.prototype.guardarApertura = function() {
 	   var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);
 	   var cmpMedidaInicial = formularioTanque.find("input[elemento-grupo='medidaInicial']");
 	   
+	   console.log("cmpMedidaInicial ::: " + cmpMedidaInicial.val() );
+	   
 	   if(cmpMedidaInicial.val() == ''){
 		   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El campo Medida Inicial no debe estar vacío");
 		   return;
@@ -1105,43 +1107,41 @@ moduloJornada.prototype.guardarRegistro = function() {
 	}
 };
 
-moduloJornada.prototype.actualizarRegistro= function(){
-  //Ocultar alertas de mensaje
-  var referenciaModulo = this;
-  var eRegistro = {};
+moduloJornada.prototype.actualizarRegistro = function() {
+    //Ocultar alertas de mensaje
+    var referenciaModulo = this;
+    var eRegistro = {};
 
-  	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
-  	if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA){
-  		referenciaModulo.obj.ocultaContenedorCierreJornada.show();
-  		eRegistro = referenciaModulo.recuperarValoresCierre();
-  	} else if (referenciaModulo.modoEdicion == constantes.MODO_MUESTREO_JORNADA){
-  		referenciaModulo.obj.ocultaContenedorMuestreoJornada.show();
-  		eRegistro = referenciaModulo.recuperarValoresMuestreo();
-	}
-  	
+    referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+    if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA){
+        referenciaModulo.obj.ocultaContenedorCierreJornada.show();
+        eRegistro = referenciaModulo.recuperarValoresCierre();
+    } else if (referenciaModulo.modoEdicion == constantes.MODO_MUESTREO_JORNADA){
+        referenciaModulo.obj.ocultaContenedorMuestreoJornada.show();
+        eRegistro = referenciaModulo.recuperarValoresMuestreo();
+    }
+
     $.ajax({
-      type: constantes.PETICION_TIPO_POST,
-      url: referenciaModulo.URL_ACTUALIZAR, 
-      contentType: referenciaModulo.TIPO_CONTENIDO,
-      data: JSON.stringify(eRegistro),	
-      success: function(respuesta) {
-        if (!respuesta.estado) {
-          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-        } else {
-          referenciaModulo.iniciarListado(respuesta.mensaje);
-        }
-        referenciaModulo.obj.ocultaContenedorCierreJornada.hide();
-        referenciaModulo.obj.ocultaContenedorMuestreoJornada.hide();
-      },			    		    
-      error: function() {
-        referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
-        referenciaModulo.obj.ocultaContenedorCierreJornada.hide();
-        referenciaModulo.obj.ocultaContenedorMuestreoJornada.hide();
-      }
-    });
-  /*} else {
+        type: constantes.PETICION_TIPO_POST,
+        url: referenciaModulo.URL_ACTUALIZAR, 
+        contentType: referenciaModulo.TIPO_CONTENIDO,
+        data: JSON.stringify(eRegistro),	
+        success: function(respuesta) {
 
-  }	*/
+            if (!respuesta.estado) {
+                referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+            } else {
+                referenciaModulo.iniciarListado(respuesta.mensaje);
+            }
+            referenciaModulo.obj.ocultaContenedorCierreJornada.hide();
+            referenciaModulo.obj.ocultaContenedorMuestreoJornada.hide();
+        },			    		    
+        error: function() {
+            referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
+            referenciaModulo.obj.ocultaContenedorCierreJornada.hide();
+            referenciaModulo.obj.ocultaContenedorMuestreoJornada.hide();
+        }
+    });
 };
 
 moduloJornada.prototype.guardarCambioTanque= function(){  
