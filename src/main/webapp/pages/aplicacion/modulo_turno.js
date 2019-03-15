@@ -1484,14 +1484,12 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
 
 		    	var lecturaInicial = parseFloat(_this.obj.listCronometro[i].lectura_inicial);
-		    	//var lecturaFinal = parseFloat(_this.excelRowsObj[i].LECTURA_FINAL).toFixed(_this.obj.numeroDecimalesContometro);
 		    	var lecturaFinal = trailingZeros(_this.excelRowsObj[i].LECTURA_FINAL);
 		    	
-		    	if (isNaN(lecturaFinal) || lecturaFinal <= 0) {
+		    	if (isNaN(lecturaFinal)) {
 		    		continue;
 		    	}
 		    	
-		    	//var diferencia = (lecturaFinal - lecturaInicial).toFixed(_this.obj.numeroDecimalesContometro);
 		    	var diferencia = trailingZeros(lecturaFinal - lecturaInicial);
 		    	
 		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(lecturaFinal);
