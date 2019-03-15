@@ -693,6 +693,19 @@ public static BigDecimal strToBigDecimal(String s) {
     return out;
 }
 
+public static String bigDecimalToStr(BigDecimal bd) {
+	
+	String out = "0";
+	
+    try { 
+    	out = bd.toString();
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 public static boolean intToBool(int i) {
 	
 	boolean out = false;

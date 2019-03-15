@@ -274,33 +274,41 @@ public class DetalleTurnoDao {
       consultaSQL.append(NOMBRE_TABLA);
       consultaSQL.append(" (id_turno, lectura_inicial, lectura_final, id_producto,id_contometro) ");
       consultaSQL.append(" VALUES (:IdTurno,:Lectura_inicial,:Lectura_final,:IdProducto,:IdContometro) ");
-      MapSqlParameterSource listaParametros= new MapSqlParameterSource();   
-      listaParametros.addValue("IdTurno", detalle_turno.getIdTurno());
-      listaParametros.addValue("Lectura_inicial", detalle_turno.getLecturaInicialBigDecimal());
-      listaParametros.addValue("Lectura_final", detalle_turno.getLecturaFinal());
-      listaParametros.addValue("IdProducto", detalle_turno.getIdProducto());
-      listaParametros.addValue("IdContometro", detalle_turno.getIdContometro());
       
-      SqlParameterSource namedParameters= listaParametros;
+      MapSqlParameterSource parameter = new MapSqlParameterSource();   
+      parameter.addValue("IdTurno", detalle_turno.getIdTurno());
+      parameter.addValue("Lectura_inicial", detalle_turno.getLecturaInicialBigDecimal());
+      parameter.addValue("Lectura_final", detalle_turno.getLecturaFinal());
+      parameter.addValue("IdProducto", detalle_turno.getIdProducto());
+      parameter.addValue("IdContometro", detalle_turno.getIdContometro());
+      SqlParameterSource namedParameters = parameter;
+      
       /*Ejecuta la consulta y retorna las filas afectadas*/
       claveGenerada = new GeneratedKeyHolder();
-      cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters,claveGenerada,new String[] {NOMBRE_CAMPO_CLAVE});   
-      if (cantidadFilasAfectadas>1){
+      cantidadFilasAfectadas = namedJdbcTemplate.update(
+		  consultaSQL.toString(),
+		  namedParameters,
+		  claveGenerada,
+		  new String[] {NOMBRE_CAMPO_CLAVE}
+	  );   
+      
+      if (cantidadFilasAfectadas > 1) {
         respuesta.error=Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
         respuesta.estado=false;
         return respuesta;
       }
-      respuesta.estado=true;
-      respuesta.valor= claveGenerada.getKey().toString();
-    } catch (DataIntegrityViolationException excepcionIntegridadDatos){
-      excepcionIntegridadDatos.printStackTrace();
-      respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-      respuesta.estado=false;
-    } catch (DataAccessException excepcionAccesoDatos){
-      excepcionAccesoDatos.printStackTrace();
-      respuesta.error=Constante.EXCEPCION_ACCESO_DATOS;
-      respuesta.estado=false;
-    }
+      
+      respuesta.estado = true;
+      respuesta.valor = claveGenerada.getKey().toString();
+    } catch (DataIntegrityViolationException e){
+      e.printStackTrace();
+      respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+      respuesta.estado = false;
+    } catch (DataAccessException e){
+      e.printStackTrace();
+      respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+      respuesta.estado = false;
+    } 
     return respuesta;
   }
   
@@ -326,7 +334,7 @@ public class DetalleTurnoDao {
 	        
 	        MapSqlParameterSource parameters = new MapSqlParameterSource();
 	        parameters.addValue("IdTurno", detalleTurno.getIdTurno());
-	        parameters.addValue("LecturaInicial", detalleTurno.getLecturaInicial());
+	        parameters.addValue("LecturaInicial", detalleTurno.getLecturaInicialBigDecimal());
 	        parameters.addValue("LecturaFinal", detalleTurno.getLecturaFinalBigDecimal());
 	        parameters.addValue("IdProducto", detalleTurno.getIdProducto());
 	        parameters.addValue("IdContometro", detalleTurno.getIdContometro());

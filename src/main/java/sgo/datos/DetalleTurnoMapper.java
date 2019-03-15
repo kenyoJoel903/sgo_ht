@@ -38,7 +38,8 @@ public class DetalleTurnoMapper implements RowMapper<DetalleTurno> {
     	eJornada = new Jornada();
     	eJornada.setId(rs.getInt("id_jornada"));
     	eJornada.setFechaOperativa(rs.getDate("fecha_operativa"));
-    	eEstacion=new Estacion();
+    	
+    	eEstacion = new Estacion();
     	eEstacion.setId(rs.getInt("id_estacion"));
     	eEstacion.setNombre(Utilidades.cleanXSS(rs.getString("estacion")));
     	eJornada.setEstacion(eEstacion);
@@ -57,7 +58,9 @@ public class DetalleTurnoMapper implements RowMapper<DetalleTurno> {
     	
     	eDetalleTurno.setTurno(eTurno);
     	eDetalleTurno.setLecturaInicial(rs.getFloat("lectura_inicial"));
+    	eDetalleTurno.setLecturaInicialStr(Utilidades.bigDecimalToStr(rs.getBigDecimal("lectura_inicial")));
     	eDetalleTurno.setLecturaFinal(rs.getFloat("lectura_final"));
+    	eDetalleTurno.setLecturaFinalStr(Utilidades.bigDecimalToStr(rs.getBigDecimal("lectura_final")));
     	
     	eProducto = new Producto();
     	eProducto.setId(rs.getInt("id_producto"));

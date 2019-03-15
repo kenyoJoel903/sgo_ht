@@ -122,15 +122,17 @@ moduloTurno.prototype.configurarAjax=function(){
     });
 };
 
-moduloTurno.prototype.validaFormularioXSS= function(formulario){
+moduloTurno.prototype.validaFormularioXSS = function(formulario){
 	var retorno = true;
-    $(formulario).find(':input').each(function() {
-     var elemento= this;
-     if(!utilitario.validaCaracteresFormulario(elemento.value)){
-    	 retorno = false;
-     }
-    });
-    return retorno;
+
+	$(formulario).find(':input').each(function() {
+		var elemento = this;
+		if(!utilitario.validaCaracteresFormulario(elemento.value)){
+			retorno = false;
+		}
+	});
+
+	return retorno;
 };
 	
 moduloTurno.prototype.resetearFormulario= function(){
@@ -301,7 +303,7 @@ moduloTurno.prototype.inicializaApertura = function(registro, valor) {
 		_this.datosCabecera(registro);
 		_this.recuperarTanquesDespachando();
 		
-		console.log('valor: ' + valor);
+		console.log('inicializaApertura - valor :: ' + valor);
 		
 		if (valor == 2) {
 			_this.llenarAperturaContometroJornada(registro);
@@ -962,7 +964,6 @@ moduloTurno.prototype.botonGuardarCierre = function() {
 	try {
 		
 		//_this.guardarCierre();
-		
 		_this.modalGuardarCierre();
 	} catch(error) {
 	  console.log(error.message);
@@ -1051,6 +1052,10 @@ moduloTurno.prototype.guardarCierre = function() {
 		referenciaModulo.obj.ocultaContenedorCierre.show();
 		var eRegistro = referenciaModulo.recuperarValores();
 
+		console.log(" ***** guardarCierre ******* ");
+		console.dir(eRegistro);
+		
+		
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,
 			url: referenciaModulo.URL_ACTUALIZAR, 

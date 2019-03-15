@@ -42,7 +42,11 @@ public class ContometroJornadaMapper implements RowMapper<ContometroJornada> {
 			
 			eContometroJornada.setJornada(eJornada);
 			eContometroJornada.setLecturaInicial(rs.getFloat("lectura_inicial"));
+			eContometroJornada.setLecturaInicialStr(Utilidades.bigDecimalToStr(rs.getBigDecimal("lectura_inicial")));
+			
 			eContometroJornada.setLecturaFinal(rs.getFloat("lectura_final"));
+			eContometroJornada.setLecturaFinalStr(Utilidades.bigDecimalToStr(rs.getBigDecimal("lectura_inicial")));
+			
 			eContometroJornada.setEstadoServicio(rs.getInt("estado_servicio"));
 			eContometroJornada.setIdContometro(rs.getInt("id_contometro"));
 			
