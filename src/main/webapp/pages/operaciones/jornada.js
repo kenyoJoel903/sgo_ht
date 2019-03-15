@@ -1350,14 +1350,12 @@ $(document).ready(function() {
 		      var productoContometro=constantes.PLANTILLA_OPCION_SELECTBOX;
 		      productoContometro = productoContometro.replace(constantes.ID_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.id);
 		      productoContometro = productoContometro.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.contometroJornada[contador].producto.nombre);
-	
 		      formulario.find("select[elemento-grupo='productosContometros']").empty().append(productoContometro).val(registro.contometroJornada[contador].producto.id).trigger('change');
 		      
 	//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
 	//	      se agrega lecIni y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val
 		      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinalStr);
 		      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
-		      
 	//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
 		    }
 		    
