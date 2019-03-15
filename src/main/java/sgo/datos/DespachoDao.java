@@ -200,6 +200,11 @@ public class DespachoDao {
 			consultaSQL.append("t1.codigo_archivo_origen,");
 			consultaSQL.append("t1.id_turno,");
 			consultaSQL.append("t1.numero_decimales_contometro,");
+			
+			//Inicio Agregado por req 9000003068  9000003068
+			consultaSQL.append("flag_calculo_corregido,");
+			//Fin Inicio Agregado por req 9000003068  9000003068
+			
 			//Campos de auditoria
 			consultaSQL.append("t1.creado_el,");
 			consultaSQL.append("t1.creado_por,");
@@ -290,6 +295,11 @@ public class DespachoDao {
 			consultaSQL.append("t1.ip_creacion,");
 			consultaSQL.append("t1.ip_actualizacion,");
 			consultaSQL.append("t1.id_turno,");
+			
+			//Inicio Agregado por req 9000003068  9000003068
+			consultaSQL.append("flag_calculo_corregido,");
+			//Fin Inicio Agregado por req 9000003068  9000003068
+			
 			consultaSQL.append("t1.numero_decimales_contometro");
 			consultaSQL.append(" FROM ");				
 			consultaSQL.append(NOMBRE_VISTA);
@@ -415,6 +425,9 @@ public class DespachoDao {
 			consultaSQL.append("estado			=:Estado,");
 			consultaSQL.append("actualizado_por	=:ActualizadoPor,");
 			consultaSQL.append("actualizado_el	=:ActualizadoEl,");
+			
+			consultaSQL.append("flag_calculo_corregido=:FlagCalculoCorregido,");
+			
 			consultaSQL.append("ip_actualizacion=:IpActualizacion");
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
@@ -439,6 +452,7 @@ public class DespachoDao {
 			listaParametros.addValue("IdTanque", despacho.getIdTanque());
 			listaParametros.addValue("IdContometro", despacho.getIdContometro());
 			listaParametros.addValue("Estado", despacho.getEstado());
+			listaParametros.addValue("FlagCalculoCorregido", despacho.getFlagCalculoCorregido());
 			//Valores Auditoria
 			listaParametros.addValue("ActualizadoEl", despacho.getActualizadoEl());
 			listaParametros.addValue("ActualizadoPor", despacho.getActualizadoPor());

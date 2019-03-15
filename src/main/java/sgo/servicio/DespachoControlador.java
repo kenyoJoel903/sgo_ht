@@ -570,6 +570,7 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
 	    	eDespacho.setTipoRegistro(Despacho.ORIGEN_MIXTO);
 	    }
 	    
+	    eDespacho.setFlagCalculoCorregido(despachoAnterior.getFlagCalculoCorregido());
         respuesta= dDespacho.actualizarRegistro(eDespacho);
         if (respuesta.estado==false){          	
         	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
