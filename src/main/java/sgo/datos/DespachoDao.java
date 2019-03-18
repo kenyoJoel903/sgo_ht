@@ -351,13 +351,13 @@ public class DespachoDao {
 			listaParametros.addValue("FechaHoraFin", despacho.getFechaHoraFin());
 			listaParametros.addValue("Clasificacion", despacho.getClasificacion());
 			listaParametros.addValue("IdProducto", despacho.getIdProducto());
-			listaParametros.addValue("LecturaInicial", despacho.getLecturaInicial());
-			listaParametros.addValue("LecturaFinal", despacho.getLecturaFinal());
+			listaParametros.addValue("LecturaInicial", despacho.getLecturaInicialBigDecimal());
+			listaParametros.addValue("LecturaFinal", despacho.getLecturaFinalBigDecimal());
 			listaParametros.addValue("FactorCorreccion", despacho.getFactorCorreccion());
 			listaParametros.addValue("ApiCorregido", despacho.getApiCorregido());
 			listaParametros.addValue("Temperatura", despacho.getTemperatura());
 			listaParametros.addValue("VolumenCorregido", despacho.getVolumenCorregido());
-			listaParametros.addValue("VolumenObservado", despacho.getVolumenObservado());
+			listaParametros.addValue("VolumenObservado", despacho.getVolumenObservadoBigDecimal());
 			listaParametros.addValue("IdTanque", despacho.getIdTanque());
 			listaParametros.addValue("IdContometro", despacho.getIdContometro());
 			listaParametros.addValue("Estado", despacho.getEstado());

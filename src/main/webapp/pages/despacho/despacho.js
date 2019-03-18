@@ -63,9 +63,18 @@ $(document).ready(function(){
   moduloActual.columnasGrillaDespacho.push({ "data": 'producto.nombre'});//Target5
   moduloActual.columnasGrillaDespacho.push({ "data": 'contometro.alias'});//Target6
   //moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicial'});//Target7
-  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicial', "render" : function(data, type, row){ return parseFloat(row.lecturaInicial).toFixed(parseInt(row.nroDecimales)); }});//Target7
-  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaFinal', "render" : function(data, type, row){ return parseFloat(row.lecturaFinal).toFixed(parseInt(row.nroDecimales)); }});//Target8
-  moduloActual.columnasGrillaDespacho.push({ "data": 'volumenObservado', "render" : function(data, type, row){ return parseFloat(row.volumenObservado).toFixed(parseInt(row.nroDecimales)); }});//Target9
+  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicialBigDecimal', "render" : function(data, type, row) {
+	  return row.lecturaInicialBigDecimal;
+	  return parseFloat(row.lecturaInicial).toFixed(parseInt(row.nroDecimales));
+  }});//Target7
+  moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaFinalBigDecimal', "render" : function(data, type, row) {
+	  return row.lecturaFinalBigDecimal;
+	  return parseFloat(row.lecturaFinal).toFixed(parseInt(row.nroDecimales));
+  }});//Target8
+  moduloActual.columnasGrillaDespacho.push({ "data": 'volumenObservadoBigDecimal', "render" : function(data, type, row) {
+	  return row.volumenObservadoBigDecimal;
+	  return parseFloat(row.volumenObservado).toFixed(parseInt(row.nroDecimales));
+  }});//Target9
   moduloActual.columnasGrillaDespacho.push({ "data": 'tipoRegistro'});//Target10
   
   //Columnas Despacho
@@ -682,8 +691,9 @@ $(document).ready(function(){
         } else {
           var registro = respuesta.contenido.carga[0];
           var factorCorrecion = parseFloat(registro.factorCorreccion);
+          
           ref.obj.cmpFactor.val(factorCorrecion);
-          ref.obj.cmpVolumen60.val(registro.volumenCorregido);
+          ref.obj.cmpVolumen60.val(registro.volumenCorregidoStr);
           ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);         
         }
         $("#ocultaContenedorFormulario").hide();
@@ -876,16 +886,14 @@ $(document).ready(function(){
 	    eRegistro.idTurno = referenciaModulo.obj.idTurno.val();
 //	    Fin modificado por req 9000003068
 
-	    //eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaInicio.val());
-	    //eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFechaFin.val());
 	    eRegistro.factorCorreccion = parseFloat(referenciaModulo.obj.cmpFactor.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.apiCorregido = parseFloat(referenciaModulo.obj.cmpAPI60.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.temperatura = parseFloat(referenciaModulo.obj.cmpTemperatura.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.volumenObservado = parseFloat(referenciaModulo.obj.cmpVolObservado.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.volumenCorregido = parseFloat(referenciaModulo.obj.cmpVolumen60.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-	    eRegistro.lecturaInicial = parseFloat(referenciaModulo.obj.cmpLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-	    eRegistro.lecturaFinal = parseFloat(referenciaModulo.obj.cmpLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-    
+	    eRegistro.lecturaInicialBigDecimal = referenciaModulo.obj.cmpLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
+	    eRegistro.lecturaFinalBigDecimal = referenciaModulo.obj.cmpLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
+
     }  catch(error){
       console.log(error.message);
     }
@@ -979,6 +987,10 @@ $(document).ready(function(){
 				    	if(!respuesta.estado){
 				    		ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);				    		
 				    	}else{
+				    		
+				    		console.log("respuesta ***");
+				    		console.dir(respuesta);
+				    		
 				    		ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,"La importaci\u00f3n de registros fue exitosa");
 				    		moduloActual.actualizarDetalle();
 				    	}				    					    	

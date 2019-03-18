@@ -693,6 +693,32 @@ public static BigDecimal strToBigDecimal(String s) {
     return out;
 }
 
+public static double strToDouble(String s) {
+	
+	double out = 0;
+	
+    try { 
+    	out = Double.parseDouble(s);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
+public static BigDecimal floatToBigDecimal(float f) {
+	
+	BigDecimal out = new BigDecimal(0);
+	
+    try { 
+    	out = BigDecimal.valueOf(f);
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 public static String bigDecimalToStr(BigDecimal bd) {
 	
 	String out = "0";
@@ -748,6 +774,19 @@ public static String trailingZeros(float f, int leadingZeros) {
     return out;
 }
 
+public static String trailingZeros(double d, int leadingZeros) {
+	
+	String out = "0";
+	
+    try {
+    	out = String.valueOf(d).format("%16." + leadingZeros + "f", d).trim().replaceAll(",", ".");
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 public static String trailingZeros(String s, int leadingZeros) {
 	
 	String out = "0";
@@ -761,6 +800,13 @@ public static String trailingZeros(String s, int leadingZeros) {
     	String array[] = s.split("\\.");
         String integer = array[0];
         String decimal = array[1];
+        
+    	if (decimal.length() < leadingZeros) {
+    		while (decimal.length() < leadingZeros) {
+    			decimal = decimal + "0";
+    		}
+    		return integer + "." + decimal;
+    	}
         
         out =  integer + "." + decimal.substring(0, leadingZeros);
         
@@ -795,5 +841,31 @@ public static String subtractDateDays(String date, int subtractDays) {
     
     return newDate;
 }
+
+
+public static int numberOfDecimals(double d) {
+	
+	int out = 0;
+	
+    try {
+
+    	if (d % 1 == 0) {
+    		return out;
+    	}
+    	
+    	String text = Double.toString(Math.abs(d));
+    	String array[] = text.split("\\.");
+        String decimal = array[1];
+        
+        out = decimal.length();
+        
+    } catch(Exception e) {
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
+
 
 }

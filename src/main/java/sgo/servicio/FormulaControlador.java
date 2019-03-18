@@ -25,6 +25,7 @@ import sgo.entidad.Tolerancia;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
 import sgo.utilidades.Formula;
+import sgo.utilidades.Utilidades;
 
 @Controller
 public class FormulaControlador {
@@ -438,64 +439,73 @@ public class FormulaControlador {
   }
   return respuesta;
  }
- 
- @RequestMapping(value = URL_RECUPERAR_FACTOR_CORRECCION_RELATIVA, method = RequestMethod.GET)
- public @ResponseBody
- RespuestaCompuesta recuperarFactorCorreccion(HttpServletRequest httpRequest, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  ParametrosListar parametros = null;
-  AuthenticatedUserDetails principal = null;
-  String mensajeRespuesta = "";
-  double volumenObservado=0;
-  double volumenCorregido=0;
-  double factorCorreccionVolumen=0; 
-  double apiObservado=0;  
-  double apiCorregido=0;
-  double temperaturaCentro=0; 
-  double temperaturaProbeta=0;  
-  Contenido<FormulaRespuesta> contenido =null;
-  FormulaRespuesta eFormulaRespuesta=null;
-  try {
-   principal = this.getCurrentUser();
-   respuesta = new RespuestaCompuesta();
-   parametros = new ParametrosListar();   
-    if ((httpRequest.getParameter("apiCorregido") != null) && (esDouble(httpRequest.getParameter("apiCorregido")))) {
-     apiCorregido = (Double.parseDouble(httpRequest.getParameter("apiCorregido")));
-    } else {
-     throw new Exception(gestorDiccionario.getMessage("sgo.errorApiCorregidoInvalido",null,locale));
-    }
-    
-    if ((httpRequest.getParameter("temperatura") != null) && (esDouble(httpRequest.getParameter("temperatura")))) {
-     temperaturaCentro = (Double.parseDouble(httpRequest.getParameter("temperatura")));
-    } else {
-     throw new Exception(gestorDiccionario.getMessage("sgo.errorTemperaturaInvalida",null,locale));
-    }
-   
-   if (httpRequest.getParameter("volumenObservado") != null) {
-    volumenObservado=(Double.parseDouble(httpRequest.getParameter("volumenObservado")));
-   }   
 
-   factorCorreccionVolumen = Formula.calcularFactorCorreccion( apiCorregido, temperaturaCentro);
-   volumenCorregido = factorCorreccionVolumen * volumenObservado;
-   volumenCorregido = (double)Math.round(volumenCorregido* 1000)/1000;
-   eFormulaRespuesta =  new FormulaRespuesta();
-   eFormulaRespuesta.setApiCorregido(apiCorregido);
-   eFormulaRespuesta.setFactorCorreccion(factorCorreccionVolumen);
-   eFormulaRespuesta.setVolumenCorregido(volumenCorregido);
-   contenido = new Contenido<FormulaRespuesta>();
-   contenido.carga =  new ArrayList<FormulaRespuesta>();
-   contenido.carga.add(eFormulaRespuesta);   
-   respuesta.contenido = contenido;
-   respuesta.estado=true;
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarFormulaExitoso", null, locale);
-  } catch (Exception ex) {
-   respuesta.estado = false;
-   respuesta.contenido = null;
-   respuesta.mensaje = ex.getMessage();
-  }
-  return respuesta;
- }
- 
+@RequestMapping(value = URL_RECUPERAR_FACTOR_CORRECCION_RELATIVA, method = RequestMethod.GET)
+public @ResponseBody
+RespuestaCompuesta recuperarFactorCorreccion(HttpServletRequest httpRequest, Locale locale) {
+
+    RespuestaCompuesta respuesta = null;
+    ParametrosListar parametros = null;
+    AuthenticatedUserDetails principal = null;
+    String mensajeRespuesta = "";
+    double volumenObservado = 0;
+    double volumenCorregido = 0;
+    double factorCorreccionVolumen = 0; 
+    double apiObservado = 0;  
+    double apiCorregido = 0;
+    double temperaturaCentro = 0; 
+    double temperaturaProbeta = 0;  
+    Contenido<FormulaRespuesta> contenido = null;
+    FormulaRespuesta eFormulaRespuesta = null;
+
+    try {
+
+        principal = this.getCurrentUser();
+        respuesta = new RespuestaCompuesta();
+        parametros = new ParametrosListar();
+
+        if ((httpRequest.getParameter("apiCorregido") != null) && (esDouble(httpRequest.getParameter("apiCorregido")))) {
+            apiCorregido = (Double.parseDouble(httpRequest.getParameter("apiCorregido")));
+        } else {
+            throw new Exception(gestorDiccionario.getMessage("sgo.errorApiCorregidoInvalido",null,locale));
+        }
+
+        if ((httpRequest.getParameter("temperatura") != null) && (esDouble(httpRequest.getParameter("temperatura")))) {
+            temperaturaCentro = (Double.parseDouble(httpRequest.getParameter("temperatura")));
+        } else {
+            throw new Exception(gestorDiccionario.getMessage("sgo.errorTemperaturaInvalida",null,locale));
+        }
+
+        if (httpRequest.getParameter("volumenObservado") != null) {
+            volumenObservado = (Double.parseDouble(httpRequest.getParameter("volumenObservado")));
+        }   
+
+        factorCorreccionVolumen = Formula.calcularFactorCorreccion(apiCorregido, temperaturaCentro);
+        volumenCorregido = factorCorreccionVolumen * volumenObservado;
+
+        int decimals = Utilidades.numberOfDecimals(volumenObservado);
+        String volumenCorregidoStr = Utilidades.trailingZeros(volumenCorregido, decimals);
+        
+        eFormulaRespuesta = new FormulaRespuesta();
+        eFormulaRespuesta.setApiCorregido(apiCorregido);
+        eFormulaRespuesta.setFactorCorreccion(factorCorreccionVolumen);
+        eFormulaRespuesta.setVolumenCorregidoStr(volumenCorregidoStr);
+        contenido = new Contenido<FormulaRespuesta>();
+        contenido.carga = new ArrayList<FormulaRespuesta>();
+        contenido.carga.add(eFormulaRespuesta);   
+        respuesta.contenido = contenido;
+        respuesta.estado = true;
+        respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarFormulaExitoso", null, locale);
+
+    } catch (Exception e) {
+        respuesta.estado = false;
+        respuesta.contenido = null;
+        respuesta.mensaje = e.getMessage();
+    }
+
+    return respuesta;
+}
+
  private AuthenticatedUserDetails getCurrentUser() {
   return (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
  }

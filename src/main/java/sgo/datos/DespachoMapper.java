@@ -42,21 +42,23 @@ public class DespachoMapper implements RowMapper<Despacho>{
 			eDespacho.setClasificacion(Utilidades.cleanXSS(rs.getString("clasificacion")));
 			eDespacho.setIdProducto(rs.getInt("id_producto"));
 			eDespacho.setLecturaInicial(rs.getFloat("lectura_inicial"));
+			eDespacho.setLecturaInicialBigDecimal(rs.getBigDecimal("lectura_inicial"));
 			eDespacho.setLecturaFinal(rs.getFloat("lectura_final"));
+			eDespacho.setLecturaFinalBigDecimal(rs.getBigDecimal("lectura_final"));
 			eDespacho.setFactorCorreccion(rs.getFloat("factor_correccion"));
 			eDespacho.setApiCorregido(rs.getFloat("api_corregido"));
 			eDespacho.setTemperatura(rs.getFloat("temperatura"));
 			eDespacho.setVolumenCorregido(rs.getFloat("volumen_corregido"));
 			eDespacho.setVolumenObservado(rs.getFloat("volumen_observado"));
+			eDespacho.setVolumenObservadoBigDecimal(rs.getBigDecimal("volumen_observado"));
 			eDespacho.setIdTanque(rs.getInt("id_tanque"));
 			eDespacho.setIdContometro(rs.getInt("id_contometro"));
 			eDespacho.setCodigoArchivoOrigen(rs.getInt("codigo_archivo_origen"));
 			eDespacho.setEstado(rs.getInt("estado"));
+			
 			// DECIMALES DE LA ESTACION - 9000003068
 			eDespacho.setIdTurno(rs.getInt("id_turno"));
 			eDespacho.setNroDecimales(rs.getInt("numero_decimales_contometro"));
-			
-			//Inicio Agregado por req 9000003068  9000003068
 			eDespacho.setFlagCalculoCorregido(rs.getInt("flag_calculo_corregido"));
 			//Fin Inicio Agregado por req 9000003068  9000003068
 			

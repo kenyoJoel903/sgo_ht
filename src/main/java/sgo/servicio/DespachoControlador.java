@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,7 +62,6 @@ import sgo.datos.TransportistaDao;
 import sgo.datos.VehiculoDao;
 import sgo.entidad.Bitacora;
 import sgo.entidad.Contometro;
-import sgo.entidad.ContometroJornada;
 import sgo.entidad.Despacho;
 import sgo.entidad.DespachoCarga;
 import sgo.entidad.Enlace;
@@ -432,6 +432,7 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 	String ClaveGenerada = "";
 	
 	try {
+		
 		//Inicia la transaccion
 		this.transaccion = new DataSourceTransactionManager(dDespacho.getDataSource());
 		definicionTransaccion = new DefaultTransactionDefinition();
@@ -448,7 +449,7 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		//Verificar si cuenta con el permiso necesario			
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
-		}			
+		}
 		//Actualiza los datos de auditoria local
 		direccionIp = peticionHttp.getHeader("X-FORWARDED-FOR");  
 		if (direccionIp == null) {  
@@ -462,14 +463,8 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		if(!Utilidades.esValido(eDespacho.getFechaHoraFin())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.errorFechaFin",null,locale));
 		}
-		
-		//para recuperar el id del contometro
-//		respuesta = dContometroJornadaDao.recuperarRegistro(eDespacho.getIdContometro());
-//		if (!respuesta.estado){        	
-//        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
-//        }
-		
-//		ContometroJornada contometroJornada = (ContometroJornada) respuesta.contenido.carga.get(0);
+
+        eDespacho.setVolumenObservadoBigDecimal(eDespacho.getLecturaFinalBigDecimal().subtract(eDespacho.getLecturaInicialBigDecimal()));
 		eDespacho.setIdContometro(eDespacho.getIdContometro());
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
@@ -481,8 +476,8 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
         respuesta = dDespacho.guardarRegistro(eDespacho);
         
         //Verifica si la accion se ejecuto de forma satisfactoria
-        if (respuesta.estado==false){     	
-          	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
+        if (!respuesta.estado) {     	
+          	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
         }
         
         ClaveGenerada = respuesta.valor;
@@ -498,17 +493,24 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
         eBitacora.setRealizadoPor(eDespacho.getCreadoPor());
         respuesta= dBitacora.guardarRegistro(eBitacora);
         
-        if (respuesta.estado==false){     	
-          	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
+        if (!respuesta.estado) {     	
+          	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
         }
         
-    	respuesta.mensaje=gestorDiccionario.getMessage("sgo.guardarExitoso",new Object[] {  eDespacho.getFechaCreacion().substring(0, 9),eDespacho.getFechaCreacion().substring(10),principal.getIdentidad() },locale);
+    	respuesta.mensaje = gestorDiccionario.getMessage(
+			"sgo.guardarExitoso",
+			new Object[] {
+				eDespacho.getFechaCreacion().substring(0, 9),
+				eDespacho.getFechaCreacion().substring(10),
+				principal.getIdentidad()
+			},
+		locale);
     	this.transaccion.commit(estadoTransaccion);
     	
 	} catch (Exception e) {
 		this.transaccion.rollback(estadoTransaccion);
 		e.printStackTrace();
-		respuesta.estado=false;
+		respuesta.estado = false;
 		respuesta.contenido = null;
 		respuesta.mensaje = e.getMessage();
 	}
@@ -668,14 +670,15 @@ RespuestaCompuesta actualizarEstadoRegistro(@RequestBody Despacho eDespacho, Htt
  return respuesta;
 }
 	
-@RequestMapping(value = URL_CARGAR_ARCHIVO_RELATIVA+"/{idJornada}/{idOperario}/{idTurno}/{nroDecimales}/{comentario}" ,method = RequestMethod.POST)
-public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file") MultipartFile file,
+@RequestMapping(value = URL_CARGAR_ARCHIVO_RELATIVA+"/{idJornada}/{idOperario}/{idTurno}/{nroDecimales}/{comentario}", method = RequestMethod.POST)
+public @ResponseBody RespuestaCompuesta cargarArchivo(
+  @RequestParam(value="file") MultipartFile file,
   @PathVariable("idJornada") String idJornada,
   @PathVariable("idOperario") String idOperario,
   @PathVariable("idTurno") String idTurno,
   @PathVariable("nroDecimales") String nroDecimales,
   @PathVariable("comentario") String comentario,
-//  @PathVariable("borrar") int borrar,
+
   HttpServletRequest peticionHttp,Locale locale){
   RespuestaCompuesta respuesta = null;
   AuthenticatedUserDetails principal = null;
@@ -683,7 +686,9 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
   String direccionIp="";
   TransactionDefinition definicionTransaccion = null;
   TransactionStatus estadoTransaccion = null;
-  try {     
+  
+  try {
+	  
 	//Inicia la transaccion
 	this.transaccion = new DataSourceTransactionManager(dDespacho.getDataSource());
 	definicionTransaccion = new DefaultTransactionDefinition();
@@ -699,11 +704,13 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     if (respuesta.estado==false) {
       throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
     }
+    
     Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
     //Verificar si cuenta con el permiso necesario      
     if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
         throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
     }
+    
     ParametrosListar argumentosListar=null;
     //valido si existe una carga con el mismo archivo
     argumentosListar=new ParametrosListar();
@@ -713,6 +720,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     if (respuesta.estado==false){  
     	throw new Exception("Error al validar la existencia del archivo de carga");
     }
+    
     if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
     	throw new Exception("Ya existe una carga del archivo "+file.getOriginalFilename());
     }    
@@ -760,6 +768,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     if (respuesta.estado == false) {
   	  throw new Exception("Error al obtener jornada");        	  
     }
+    
     if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
     	jornada=(Jornada)respuesta.contenido.getCarga().get(0);  	 
     }
@@ -779,35 +788,36 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     despachoCarga.setCreadoPor(principal.getID());
     despachoCarga.setIpActualizacion(direccionIp);
     despachoCarga.setIpCreacion(direccionIp);
+    
     //buscar jornada 
-    respuesta=dDespachoCargaDao.guardarRegistro(despachoCarga);
-    if (respuesta.estado==false){       
-      //listaAlturasNoProcesadas.add(columnas[1]);
+    respuesta = dDespachoCargaDao.guardarRegistro(despachoCarga);
+    if (!respuesta.estado) {       
       throw new Exception("No se pudo registrar Despacho Carga.");
     }
     ClaveGenerada = respuesta.valor;
     
-    int numero_columna=0; 
-    
-    
-  //  int cantidad_columnas_csv = bufferedReader.readLine().split(SEPARADOR_CSV).length;
+    int numero_columna = 0;
     
     while ((linea = bufferedReader.readLine()) != null)
     {
-     if (numeroLineas > 0){
-      columnas= linea.split(SEPARADOR_CSV,-1);
+    	
+     if (numeroLineas > 0) {
+    	 
+      columnas = linea.split(SEPARADOR_CSV,-1);
       numero_columna=columnas.length;
       despacho = new Despacho();
       despacho.setIdTurno(Integer.parseInt(idTurno));
-      nombre_corto_vehiculo=columnas[0];
-      if(nombre_corto_vehiculo!=null && !nombre_corto_vehiculo.isEmpty()){
-          argumentosListar=new ParametrosListar();
+      nombre_corto_vehiculo = columnas[0];
+      
+      if(nombre_corto_vehiculo != null && !nombre_corto_vehiculo.isEmpty()) {
+          argumentosListar = new ParametrosListar();
           argumentosListar.setVehiculoNombreCorto(nombre_corto_vehiculo);   
-          respuesta=dVehiculoDao.recuperarRegistros(argumentosListar);
-          if (respuesta.estado == false) {
+          respuesta = dVehiculoDao.recuperarRegistros(argumentosListar);
+          
+          if (!respuesta.estado) {
         	  throw new Exception("Error al obtener el identificador del vehiculo :"+nombre_corto_vehiculo);        	  
           }else{
-              if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
+              if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0) {
             	  vehiculo=(Vehiculo)respuesta.contenido.getCarga().get(0);
             	  despacho.setIdVehiculo(vehiculo.getId());
               }else{
@@ -815,38 +825,40 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
             	  throw new Exception("No se encontro el vehiculo con el nombre :"+nombre_corto_vehiculo);            	 
               }
           }
-      }else{    	  
+      } else {    	  
     	  throw new Exception("Nombre Corto Vehiculo es requerido. Fila:"+numeroLineas);    	 
       }
 
-
-      if(columnas[1]!=null && !columnas[1].isEmpty()){
-    	kilometro_horometro= Float.parseFloat(columnas[1]); 
+      if(columnas[1] != null && !columnas[1].isEmpty()){
+    	kilometro_horometro = Float.parseFloat(columnas[1]); 
     	despacho.setKilometroHorometro(kilometro_horometro);
       }      
       
-      numero_vale=columnas[2];   
-      if(numero_vale!=null && !numero_vale.isEmpty()){
+      numero_vale = columnas[2];   
+      if (numero_vale != null && !numero_vale.isEmpty()) {
     	despacho.setNumeroVale(numero_vale);    	 
-      }else{
+      } else {
     	throw new Exception("Numero Vale es requerido. Fila:"+numeroLineas);    	
-      }      
+      }
+     
       sHoraInicio = columnas[3];      
       sHoraFin = columnas[4];  
       String fechaOperativa=Utilidades.convierteDateAString(jornada.getFechaOperativa(), "yyyyMMdd");
-      if(sHoraInicio!=null && !sHoraInicio.isEmpty()){     	  
+      
+      if (sHoraInicio!=null && !sHoraInicio.isEmpty()) {     	  
           Date fechaInicio=Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampIni = new java.sql.Timestamp(fechaInicio.getTime());
           despacho.setFechaHoraInicio(currentTimestampIni);
-      }else{
+      } else {
     	throw new Exception("Hora de inicio es requerido. Fila:"+numeroLineas);    	
       }
-      if(sHoraFin!=null && !sHoraFin.isEmpty()){
+      
+      if (sHoraFin!=null && !sHoraFin.isEmpty()) {
     	  Date fechaFin=Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampFin = new java.sql.Timestamp(fechaFin.getTime());
           despacho.setFechaHoraFin(currentTimestampFin);   	 
-      }else{
-    	throw new Exception("Hora de Fin es requerido. Fila:"+numeroLineas);    	
+      } else {
+    	  throw new Exception("Hora de Fin es requerido. Fila:"+numeroLineas);    	
       }
       
       clasificacion= columnas[5];     
@@ -865,7 +877,8 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     	  
       }else{
     	throw new Exception("Clasificacion es requerido. Fila:"+numeroLineas);    	
-      }  
+      }
+      
       abreviatura_producto=columnas[6];
       if(abreviatura_producto!=null && !abreviatura_producto.isEmpty()){
           argumentosListar=new ParametrosListar();
@@ -884,8 +897,8 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
           }
       }else{
     	  throw new Exception("Abreviatura Producto es requerido Fila:"+numeroLineas);
-    	  
       }
+      
       contrometro_alias=columnas[7];
       if(contrometro_alias!=null && !contrometro_alias.isEmpty()){
           argumentosListar=new ParametrosListar();
@@ -921,6 +934,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
       }else{
     	throw new Exception("Hora de inicio es requerido. Fila:"+numeroLineas);    	
       }
+      
       if(sHoraFin!=null && !sHoraFin.isEmpty()){
     	  Date fechaFin=Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampFin = new java.sql.Timestamp(fechaFin.getTime());
@@ -958,76 +972,71 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
     	      }
     	  }
       }
+      
+      sVolumen_observado = (columnas[9]==null) ? "" : columnas[9];
+      sLectura_inicial = (columnas[10]==null) ? "" : columnas[10];
+      sLectura_final = (columnas[11]==null) ? "" : columnas[11];
+      
+      if(sVolumen_observado.isEmpty() && (!sLectura_inicial.isEmpty() && !sLectura_final.isEmpty())) {
+    	  
+          String lectInicialD = Utilidades.trailingZeros(sLectura_inicial, nroDec);
+          BigDecimal lectInicialBd = Utilidades.strToBigDecimal(lectInicialD);
+          despacho.setLecturaInicialBigDecimal(lectInicialBd);
+    	  
+          String lectFinalD = Utilidades.trailingZeros(sLectura_final, nroDec);
+          BigDecimal lectFinalBd = Utilidades.strToBigDecimal(lectFinalD);
+    	  despacho.setLecturaFinalBigDecimal(lectFinalBd);
+    	  
+    	  despacho.setVolumenObservadoBigDecimal(lectFinalBd.subtract(lectInicialBd));
 
-      //descripcion_tanque=columnas[8];
-      /*if(descripcion_tanque!=null && !descripcion_tanque.isEmpty()){
-          argumentosListar=new ParametrosListar();
-          argumentosListar.setValorBuscado(descripcion_tanque);
-          argumentosListar.setFiltroEstacion(jornada.getEstacion().getId());
-          respuesta=dTanqueDao.recuperarRegistros(argumentosListar);
-          if (respuesta.estado == false) {
-        	  throw new Exception("Error al obtener el identificador del tanque :"+descripcion_tanque);
-          }else{
-        	  if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
-        		  tanque=(Tanque)respuesta.contenido.getCarga().get(0); 
-        		  despacho.setIdTanque(tanque.getId());
-              }else{
-            	  throw new Exception("No se encontro en la estacion " + jornada.getEstacion().getNombre()+" el tanque con la descripcion "+descripcion_tanque);            	  
-              } 
-          }
-      }else{
-    	  throw new Exception("Descripcion del tanque es requerido. Fila:"+numeroLineas);    	  
-      }*/
-      //volumen observado
-      
-      sVolumen_observado=(columnas[9]==null)?"":columnas[9];
-      sLectura_inicial=(columnas[10]==null)?"":columnas[10];
-      sLectura_final=(columnas[11]==null)?"":columnas[11];
-      
-      if(sVolumen_observado.isEmpty() && (!sLectura_inicial.isEmpty() && !sLectura_final.isEmpty())){
-    	  lectura_inicial=Float.parseFloat(sLectura_inicial);
-    	  lectura_final=Float.parseFloat(sLectura_final);
-    	  volumen_observado=lectura_final-lectura_inicial;
-    	  despacho.setLecturaInicial(lectura_inicial);
-    	  despacho.setLecturaFinal(lectura_final);
-    	  despacho.setVolumenObservado(volumen_observado);    	  
-      }      
-      else if(!sVolumen_observado.isEmpty() && (sLectura_inicial.isEmpty() || sLectura_final.isEmpty())){    	   
-    	  volumen_observado=Float.parseFloat(sVolumen_observado);
-    	  lectura_inicial=0;
-    	  lectura_final=volumen_observado;
-    	  volumen_observado=lectura_final-lectura_inicial;
-    	  despacho.setLecturaInicial(lectura_inicial);
-    	  despacho.setLecturaFinal(lectura_final);
-    	  despacho.setVolumenObservado(volumen_observado);
+      } else if (!sVolumen_observado.isEmpty() && (sLectura_inicial.isEmpty() || sLectura_final.isEmpty())) {
+
+    	  lectura_inicial = 0;
+    	  
+          String lectInicialD = Utilidades.trailingZeros(lectura_inicial, nroDec);
+          BigDecimal lectInicialBd = Utilidades.strToBigDecimal(lectInicialD);
+          despacho.setLecturaInicialBigDecimal(lectInicialBd);
+    	  
+          String lectFinalD = Utilidades.trailingZeros(sVolumen_observado, nroDec);
+          BigDecimal lectFinalBd = Utilidades.strToBigDecimal(lectFinalD);
+    	  despacho.setLecturaFinalBigDecimal(lectFinalBd);
+    	  
+          String volObservadoD = Utilidades.trailingZeros(sVolumen_observado, nroDec);
+          BigDecimal volObservadoBd = Utilidades.strToBigDecimal(volObservadoD);
+    	  despacho.setVolumenObservadoBigDecimal(volObservadoBd);
+
       }else if(sVolumen_observado.isEmpty() && (sLectura_inicial.isEmpty() || sLectura_final.isEmpty())){
-    	  throw new Exception("El volumen Observado o las lecturas inicial y final son requeridas. Fila:"+numeroLineas);
+    	  throw new Exception("El volumen Observado o las lecturas inicial y final son requeridas. Fila:" + numeroLineas);
       }else if(!sVolumen_observado.isEmpty() && (!sLectura_inicial.isEmpty() && !sLectura_final.isEmpty())){
-    	  lectura_inicial=Float.parseFloat(sLectura_inicial);
-    	  lectura_final=Float.parseFloat(sLectura_final);
-    	  volumen_observado=lectura_final-lectura_inicial;
-    	  despacho.setLecturaInicial(lectura_inicial);
-    	  despacho.setLecturaFinal(lectura_final);
-    	  despacho.setVolumenObservado(volumen_observado); 
+
+          String lectInicialD = Utilidades.trailingZeros(sLectura_inicial, nroDec);
+          BigDecimal lectInicialBd = Utilidades.strToBigDecimal(lectInicialD);
+          despacho.setLecturaInicialBigDecimal(lectInicialBd);
+    	  
+          String lectFinalD = Utilidades.trailingZeros(sLectura_final, nroDec);
+          BigDecimal lectFinalBd = Utilidades.strToBigDecimal(lectFinalD);
+    	  despacho.setLecturaFinalBigDecimal(lectFinalBd);
+    	  
+    	  despacho.setVolumenObservadoBigDecimal(lectFinalBd.subtract(lectInicialBd));
       }   
       
-      if(columnas[13]==null || columnas[13].isEmpty()){
+      if(columnas[13] == null || columnas[13].isEmpty()){
     	  api_60 = 0;  
       }else{
-    	  api_60= Float.parseFloat(columnas[13]);
+    	  api_60 = Float.parseFloat(columnas[13]);
       }      
       despacho.setApiCorregido(api_60);
       
       
-      if(columnas[14]==null || columnas[14].isEmpty()){
+      if(columnas[14] == null || columnas[14].isEmpty()){
     	  temperatura= 0;
       }else{
-    	  temperatura= Float.parseFloat(columnas[14]);    	  
+    	  temperatura = Float.parseFloat(columnas[14]);    	  
       }
       despacho.setTemperatura(temperatura);
       
-      if(despacho.getApiCorregido()>0 && despacho.getTemperatura()>0) {
-    	  factorCorreccionVolumen = Formula.calcularFactorCorreccion( despacho.getApiCorregido(), despacho.getTemperatura());
+      if (despacho.getApiCorregido()>0 && despacho.getTemperatura()>0) {
+    	  factorCorreccionVolumen = Formula.calcularFactorCorreccion(despacho.getApiCorregido(), despacho.getTemperatura());
       }
       //Se agrega else por incidencia 7000002349========================
       else{
@@ -1035,55 +1044,39 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
       }
       //================================================================
       
-      if(columnas[12]!=null && !columnas[12].isEmpty()){
-    	  factor_correccion= Float.parseFloat(columnas[12]);
+      if(columnas[12] != null && !columnas[12].isEmpty()){
+    	  factor_correccion = Float.parseFloat(columnas[12]);
     	  despacho.setFactorCorreccion(factor_correccion);
       }else {
-    	  if(factorCorreccionVolumen>0){
+    	  if(factorCorreccionVolumen > 0) {
     		  despacho.setFactorCorreccion((float) factorCorreccionVolumen);
     	  }
-    	 
       }
       
-      if(numero_columna>15){
-          if(columnas[15]!=null && !columnas[15].isEmpty()){
-        	  volumen_corregido= Float.parseFloat(columnas[15]);
+      if (numero_columna > 15) {
+          if(columnas[15] != null && !columnas[15].isEmpty()) {
+        	  volumen_corregido = Float.parseFloat(columnas[15]);
         	  despacho.setVolumenCorregido(volumen_corregido);
-          }else{
-        	  if(despacho.getFactorCorreccion()>0){
-            	  volumen_corregido=despacho.getFactorCorreccion()*despacho.getVolumenObservado();
-            	  //volumen_corregido = (Math.round(volumen_corregido* 1000)/1000);
+          } else {
+        	  if (despacho.getFactorCorreccion() > 0) {
+            	  volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
             	  volumen_corregido = (volumen_corregido* 1000)/1000;
             	  despacho.setVolumenCorregido(volumen_corregido);
         	  }
           }
-      }else{
-    	  if(despacho.getFactorCorreccion()>0){
-        	  volumen_corregido=despacho.getFactorCorreccion()*despacho.getVolumenObservado();
-        	  //volumen_corregido = Math.round(volumen_corregido* 1000.00)/1000;
+      } else {
+    	  if (despacho.getFactorCorreccion() > 0) {
+        	  volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
         	  volumen_corregido = (volumen_corregido* 1000)/1000;
         	  despacho.setVolumenCorregido(volumen_corregido);
     	  }
       }
-      
-      // 9000003068 - Nro Decimales Estacion
-      double lectIni = (double) despacho.getLecturaInicial();
-      float lectIniD = (float) Formula.redondearDouble(lectIni, nroDec);
-      despacho.setLecturaInicial(lectIniD);
-      double lectFin = (double) despacho.getLecturaFinal();
-      float lectFinD = (float) Formula.redondearDouble(lectFin, nroDec);
-      despacho.setLecturaFinal(lectFinD);
-      double volObs = (double) despacho.getVolumenObservado();
-      float volObsD = (float) Formula.redondearDouble(volObs, nroDec);
-      despacho.setVolumenObservado(volObsD);
-      double volCor = (double) despacho.getVolumenCorregido();
-      float volCorD = (float) Formula.redondearDouble(volCor, nroDec);
-      despacho.setVolumenCorregido(volCorD);
-      
+
       despacho.setIdJornada(jornada.getId());
       despacho.setTipoRegistro(Despacho.ORIGEN_FICHERO);
       despacho.setEstado(Despacho.ESTADO_ACTIVO);
       despacho.setCodigoArchivoOrigen(Integer.parseInt(ClaveGenerada));
+      
       //auditoria
       despacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
       despacho.setActualizadoPor(principal.getID()); 
@@ -1091,20 +1084,15 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(@RequestParam(value="file"
       despacho.setCreadoPor(principal.getID());
       despacho.setIpActualizacion(direccionIp);
       despacho.setIpCreacion(direccionIp);
-      respuesta= dDespacho.guardarRegistro(despacho);
-      if (respuesta.estado==false){       
-       //listaAlturasNoProcesadas.add(columnas[1]);
+      
+      respuesta = dDespacho.guardarRegistro(despacho);
+      if (!respuesta.estado){       
     	  throw new Exception("No se pudo registrar el despacho.");
       }       
       
      }
      numeroLineas++;
     }
-//    if (borrar==1){
-//     listaAlturas=null;
-//    }
-    //respuesta = dAforoCisterna.eliminarRegistros(listaIds, listaAlturas,Integer.parseInt(idTracto),Integer.parseInt(idCisterna),Integer.parseInt(idCompartimento));      
-    //respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);    
     
     this.transaccion.commit(estadoTransaccion);
   } catch (Exception ex){

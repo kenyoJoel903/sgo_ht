@@ -1,9 +1,10 @@
 package sgo.entidad;
 
 public class FormulaRespuesta {
- private double apiCorregido =0;
+ private double apiCorregido = 0;
  private double factorCorreccion = 0;
- private  double volumenCorregido=0;
+ private double volumenCorregido = 0;
+ private String volumenCorregidoStr = "0";
  private double tolerancia = 0 ;
  private int tipoVolumen = 0;
  public double getApiCorregido() {
@@ -48,4 +49,11 @@ public class FormulaRespuesta {
  public void setTipoVolumen(int tipoVolumen) {
   this.tipoVolumen = tipoVolumen;
  }
+public String getVolumenCorregidoStr() {
+	return volumenCorregidoStr;
+}
+public void setVolumenCorregidoStr(String volumenCorregidoStr) {
+	this.volumenCorregidoStr = volumenCorregidoStr;
+}
+ 
 }

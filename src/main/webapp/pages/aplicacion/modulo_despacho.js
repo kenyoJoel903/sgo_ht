@@ -1,4 +1,5 @@
-function moduloDespacho (){
+function moduloDespacho () {
+	
   this.obj={};
   this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA;
   this.TOPES_PAGINACION = constantes.TOPES_PAGINACION;
@@ -975,7 +976,7 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 	    referenciaModulo.mostrarDepuracion(constantes.DT_EVENTO_ORDENACION);
 	  });
 
-	  this.obj.datDespachoAPI= this.obj.tablaDespacho.DataTable({
+	  this.obj.datDespachoAPI = this.obj.tablaDespacho.DataTable({
 	    processing: true,
 	    responsive: true,
 	    dom: constantes.DT_ESTRUCTURA,
@@ -996,14 +997,13 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 	          d.sentidoOrdenamiento = "desc"; //d.order[0].dir;
 	          d.filtroOperacion = referenciaModulo.obj.filtroOperacion.val();
 	          d.filtroEstacion = referenciaModulo.obj.filtroEstacion.val();
-	          //d.idJornada = referenciaModulo.obj.filtroJornada.val();	          
+	                
 	          var idJornada = 0;
 	          if(referenciaModulo.obj.idJornadaSeleccionado > 0) {
 	        	  idJornada=referenciaModulo.obj.idJornadaSeleccionado;
 	          }
 	          
-	          d.idJornada = idJornada;	          
-	          //d.filtroFechaJornada = referenciaModulo.obj.detalleFechaJornada.text();
+	          d.idJornada = idJornada;
 	      }
 	    },
 	    "columns": referenciaModulo.columnasGrillaDespacho,
@@ -1205,7 +1205,7 @@ moduloDespacho.prototype.verRegistro= function(){
 	});
 };
 
-moduloDespacho.prototype.guardarRegistro= function() {  
+moduloDespacho.prototype.guardarRegistro = function() {  
 	var referenciaModulo = this;
 	referenciaModulo.mostrarDepuracion("guardarRegistro");
 

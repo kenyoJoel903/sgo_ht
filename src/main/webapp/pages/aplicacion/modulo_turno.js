@@ -924,11 +924,11 @@ moduloTurno.prototype.obtieneUltimaJornada= function() {
 	}
 };
 
-moduloTurno.prototype.verRegistro= function() {
+moduloTurno.prototype.verRegistro = function() {
 	
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
-	
+
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: referenciaModulo.URL_RECUPERAR, 

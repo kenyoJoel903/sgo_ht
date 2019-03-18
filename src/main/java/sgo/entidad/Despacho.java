@@ -1,5 +1,6 @@
 package sgo.entidad;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import sgo.utilidades.Utilidades;
@@ -20,6 +21,8 @@ public class Despacho extends EntidadBase {
 	private int id_producto;
 	private float lectura_inicial;
 	private float lectura_final;
+	private BigDecimal lecturaInicialBigDecimal;
+	private BigDecimal lecturaFinalBigDecimal;
 	private float factor_correccion;
 	private float api_corregido;
 	private float temperatura;
@@ -28,6 +31,7 @@ public class Despacho extends EntidadBase {
 	private int id_contometro;
 	private int codigo_archivo_origen;
 	private float volumen_observado;
+	private BigDecimal volumenObservadoBigDecimal;
 	private int estado;
 	private Jornada jornada;
 	private Producto producto;
@@ -160,6 +164,30 @@ public class Despacho extends EntidadBase {
 
 	public float getLecturaFinal() {
 		return lectura_final;
+	}
+
+	public BigDecimal getLecturaInicialBigDecimal() {
+		return lecturaInicialBigDecimal;
+	}
+
+	public void setLecturaInicialBigDecimal(BigDecimal lecturaInicialBigDecimal) {
+		this.lecturaInicialBigDecimal = lecturaInicialBigDecimal;
+	}
+
+	public BigDecimal getLecturaFinalBigDecimal() {
+		return lecturaFinalBigDecimal;
+	}
+
+	public void setLecturaFinalBigDecimal(BigDecimal lecturaFinalBigDecimal) {
+		this.lecturaFinalBigDecimal = lecturaFinalBigDecimal;
+	}
+
+	public BigDecimal getVolumenObservadoBigDecimal() {
+		return volumenObservadoBigDecimal;
+	}
+
+	public void setVolumenObservadoBigDecimal(BigDecimal volumenObservadoBigDecimal) {
+		this.volumenObservadoBigDecimal = volumenObservadoBigDecimal;
 	}
 
 	public void setLecturaFinal(float lecturaFinal) {

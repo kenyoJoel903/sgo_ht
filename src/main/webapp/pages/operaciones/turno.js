@@ -997,7 +997,6 @@ moduloActual.llenarTanquesCierre = function(registro){
 		    	lecturaInicial= registro[k].lecturaInicialStr;
 		    	lecturaFinal= registro[k].lecturaFinalStr;
 		    	
-		    	//diferenciaVolumen = parseInt(lecturaFinal) - parseInt(lecturaInicial);	
 		    	diferenciaVolumen = trailingZerosDiferencia(registro[k].lecturaInicialStr, registro[k].lecturaFinalStr);	
 		    	filaNueva='<tr><td>'+contometro+'</td>'
 		    	+'<td class="text-left">'+producto+'</td>'
@@ -1036,20 +1035,41 @@ moduloActual.llenarTanquesCierre = function(registro){
   
   function trailingZerosDiferencia(lecturaInicialStr, lecturaFinalStr) {
 		
-		var different = parseFloat(lecturaFinalStr) - parseFloat(lecturaInicialStr);
-		
-		if (!different.toString().includes(".") || !different.toString().split(".").length >= 2) {
-			return different;
+    var different = lecturaFinalStr - lecturaInicialStr;
+	different = Math.round(different * 100000) / 100000;
+	
+	var lecturaInicialArray = lecturaInicialStr.toString().split(".");
+	var decimalLecturaInicial = lecturaInicialArray[1];
+	
+	if (different.toString() == "0") {
+		return "0.000000".substring(0, (decimalLecturaInicial.length + 2));
+	}
+	
+	if (different.toString().indexOf(".") < 0 || !different.toString().split(".").length >= 2) {
+		return different;
+	}
+	
+	var differentArray = different.toString().split(".");
+	var integerDifferent = differentArray[0];
+	var decimalDifferent = differentArray[1];
+	
+	if (decimalDifferent.length < decimalLecturaInicial.length) {
+		while (decimalDifferent.length < decimalLecturaInicial.length) {
+			decimalDifferent = decimalDifferent + "0";
 		}
-		  
-		var lecturaFinalArray = lecturaFinalStr.toString().split(".");
-		var decimalLecturaFinal = lecturaFinalArray[1];
-		
-		var differentArray = different.toString().split(".");
-		var integerDifferent = differentArray[0];
-		var decimalDifferent = differentArray[1];
+		return integerDifferent + "." + decimalDifferent;
+	}
 
-		return integerDifferent + "." + decimalDifferent.substring(0, decimalLecturaFinal.length);
+	return integerDifferent + "." + decimalDifferent.substring(0, decimalLecturaInicial.length);
+  }
+  
+	function mathRoundDiferencia(num) {
+		
+		var decimalesContometro = (_this.obj.numeroDecimalesContometro + 1);
+		var roundPad = "1000000".substring(0, decimalesContometro);
+		roundPad = parseInt(roundPad);
+		
+		return Math.round(num * roundPad) / roundPad;
 	}
 	
   moduloActual.inicializar();
