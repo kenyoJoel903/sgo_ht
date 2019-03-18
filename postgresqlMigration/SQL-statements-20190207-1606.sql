@@ -1321,9 +1321,9 @@ CREATE OR REPLACE VIEW sgo.v_despacho AS
     t9.abreviatura,
     t1.codigo_archivo_origen,
     t1.volumen_observado,
-	t1.id_turno,
-	t1.flag_calculo_corregido,
-	t7.numero_decimales_contometro
+	t1.id_turno,	
+	t7.numero_decimales_contometro,
+	t1.flag_calculo_corregido
    FROM sgo.despacho t1
      JOIN seguridad.usuario u1 ON t1.creado_por = u1.id_usuario
      JOIN seguridad.usuario u2 ON t1.actualizado_por = u2.id_usuario
