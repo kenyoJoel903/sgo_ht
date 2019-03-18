@@ -1482,15 +1482,17 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		    	
 		    	$("#GrupoCierre_" + i + "_LecturaFinal").val("");
 		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val("");
-
-		    	var lecturaInicial = parseFloat(_this.obj.listCronometro[i].lectura_inicial);
-		    	var lecturaFinal = trailingZeros(_this.excelRowsObj[i].LECTURA_FINAL);
 		    	
+		    	var lecturaInicial = _this.obj.listCronometro[i].lectura_inicial;
+		    	var lecturaFinal = mathRound(_this.excelRowsObj[i].LECTURA_FINAL);
+
 		    	if (isNaN(lecturaFinal)) {
 		    		continue;
 		    	}
 		    	
-		    	var diferencia = trailingZeros(lecturaFinal - lecturaInicial);
+		    	var diferencia = mathRound(lecturaFinal - lecturaInicial);
+		    	diferencia = trailingZeros(diferencia);
+		    	lecturaFinal = trailingZeros(lecturaFinal);
 		    	
 		    	$("#GrupoCierre_" + i + "_LecturaFinal").val(lecturaFinal);
 		    	$("#GrupoCierre_" + i + "_LecturaDifVolEncontrado").val(diferencia);
@@ -1505,12 +1507,15 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		
 		var decimalesContometro = _this.obj.numeroDecimalesContometro;
 		
-		if (!num.toString().includes(".") || !num.toString().split(".").length >= 2) {
+		if (num.toString() == "0") {
+			return "0.000000".substring(0, (decimalesContometro + 2));
+		}
+		
+		if (num.toString().indexOf(".") < 0 || !num.toString().split(".").length >= 2) {
 			return num;
 		}
-		  
+
 		var result = num.toString().split(".");
-		
 		var integer = result[0];
 		var decimal = result[1];
 		
@@ -1523,6 +1528,15 @@ moduloTurno.prototype.procesarArchivoContometros = function() {
 		}
 
 		return integer + "." + decimal;
+	}
+	
+	function mathRound(num) {
+		
+		var decimalesContometro = (_this.obj.numeroDecimalesContometro + 1);
+		var roundPad = "1000000".substring(0, decimalesContometro);
+		roundPad = parseInt(roundPad);
+		
+		return Math.round(num * roundPad) / roundPad;
 	}
 	
 };
