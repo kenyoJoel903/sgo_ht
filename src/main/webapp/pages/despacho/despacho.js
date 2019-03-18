@@ -1,4 +1,5 @@
-$(document).ready(function(){
+$(document).ready(function() {
+	
   var moduloActual = new moduloDespacho();
   moduloActual.urlBase='despacho';
   moduloActual.SEPARADOR_MILES = ",";
@@ -27,7 +28,6 @@ $(document).ready(function(){
   moduloActual.columnasGrillaJornada.push({ "data": 'usuarioActualizacion'});//Target7
   moduloActual.columnasGrillaJornada.push({ "data": 'estado'});//Target8
 
-    
   //Columnas jornada
   moduloActual.definicionColumnasJornada.push({"targets" : 1, "searchable" : true, "orderable" : false, "visible" : false });
   moduloActual.definicionColumnasJornada.push({"targets" : 2, "searchable" : true, "orderable" : false, "visible" : false });
@@ -37,7 +37,6 @@ $(document).ready(function(){
   moduloActual.definicionColumnasJornada.push({"targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center" });
   moduloActual.definicionColumnasJornada.push({"targets" : 7, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-rigth" });
   moduloActual.definicionColumnasJornada.push({"targets" : 8, "searchable" : true, "orderable" : false, "visible" : true, "class": "text-center", "render" : utilitario.formatearEstadoJornada });
-
 
   //listado de despacho carga
   moduloActual.ordenGrillaDespachoCarga=[[ 2, 'asc' ]];
@@ -64,16 +63,13 @@ $(document).ready(function(){
   moduloActual.columnasGrillaDespacho.push({ "data": 'contometro.alias'});//Target6
   //moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicial'});//Target7
   moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaInicialBigDecimal', "render" : function(data, type, row) {
-	  return row.lecturaInicialBigDecimal;
-	  return parseFloat(row.lecturaInicial).toFixed(parseInt(row.nroDecimales));
+	  return trailingZeros(row.lecturaInicialBigDecimal, row.nroDecimales);
   }});//Target7
   moduloActual.columnasGrillaDespacho.push({ "data": 'lecturaFinalBigDecimal', "render" : function(data, type, row) {
-	  return row.lecturaFinalBigDecimal;
-	  return parseFloat(row.lecturaFinal).toFixed(parseInt(row.nroDecimales));
+	  return trailingZeros(row.lecturaFinalBigDecimal, row.nroDecimales);
   }});//Target8
   moduloActual.columnasGrillaDespacho.push({ "data": 'volumenObservadoBigDecimal', "render" : function(data, type, row) {
-	  return row.volumenObservadoBigDecimal;
-	  return parseFloat(row.volumenObservado).toFixed(parseInt(row.nroDecimales));
+	  return trailingZeros(row.volumenObservadoBigDecimal, row.nroDecimales);
   }});//Target9
   moduloActual.columnasGrillaDespacho.push({ "data": 'tipoRegistro'});//Target10
   
@@ -889,8 +885,8 @@ $(document).ready(function(){
 	    eRegistro.factorCorreccion = parseFloat(referenciaModulo.obj.cmpFactor.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.apiCorregido = parseFloat(referenciaModulo.obj.cmpAPI60.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
 	    eRegistro.temperatura = parseFloat(referenciaModulo.obj.cmpTemperatura.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-	    eRegistro.volumenObservado = parseFloat(referenciaModulo.obj.cmpVolObservado.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
-	    eRegistro.volumenCorregido = parseFloat(referenciaModulo.obj.cmpVolumen60.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
+	    eRegistro.volumenObservadoBigDecimal = referenciaModulo.obj.cmpVolObservado.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
+	    eRegistro.volumenCorregidoBigDecimal = referenciaModulo.obj.cmpVolumen60.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
 	    eRegistro.lecturaInicialBigDecimal = referenciaModulo.obj.cmpLecturaInicial.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
 	    eRegistro.lecturaFinalBigDecimal = referenciaModulo.obj.cmpLecturaFinal.val().replaceAll(moduloActual.SEPARADOR_MILES,"");
 
@@ -939,16 +935,15 @@ $(document).ready(function(){
 	this.obj.vistaIdProducto.text(registro.producto.nombre);
 	this.obj.vistaIdContometro.text(registro.contometro.alias);
 	this.obj.vistaIdTanque.text(registro.tanque.descripcion);
-	//this.obj.vistaVolObservado.text(registro.volumenObservado);
 	this.obj.vistaVolObservado.text(parseFloat(registro.volumenObservado).toFixed(registro.nroDecimales));
-	//this.obj.vistaLecturaInicial.text(registro.lecturaInicial);
 	this.obj.vistaLecturaInicial.text(parseFloat(registro.lecturaInicial).toFixed(registro.nroDecimales));
-	//this.obj.vistaLecturaFinal.text(registro.lecturaFinal);
 	this.obj.vistaLecturaFinal.text(parseFloat(registro.lecturaFinal).toFixed(registro.nroDecimales));
 	this.obj.vistaFactor.text(registro.factorCorreccion);
 	this.obj.vistaAPI60.text(registro.apiCorregido);
 	this.obj.vistaTemperatura.text(registro.temperatura);
-	//this.obj.vistaVolumen60.text(registro.volumenCorregido.toFixed(2));
+	
+	console.log("registro.volumenCorregido::: " + registro.volumenCorregido);
+	
 	this.obj.vistaVolumen60.text(parseFloat(registro.volumenCorregido).toFixed(registro.nroDecimales));
 	this.obj.vistaCreadoEl.text(registro.fechaCreacion);
 	this.obj.vistaCreadoPor.text(registro.usuarioCreacion);
@@ -956,12 +951,12 @@ $(document).ready(function(){
 	this.obj.vistaActualizadoEl.text(registro.fechaActualizacion);
 	this.obj.vistaIpCreacion.text(registro.ipCreacion);
 	this.obj.vistaIpActualizacion.text(registro.ipActualizacion);
-
-	
-  };
- moduloActual.recuperaExtension = function(str, suffix) {
+};
+  
+moduloActual.recuperaExtension = function(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
- };
+};
+ 
   moduloActual.botonGuardarImportacion = function(){	  
 		var ref=this;		
 		var nroDecimales = ref.obj.nroDecimales.val();
@@ -1047,12 +1042,14 @@ $(document).ready(function(){
 			var inicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraInicio.val());
 			var fin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraFin.val());
 			var turno = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraAperturaTurno.text());
+			
 			if(fin.getTime() < inicio.getTime()){
 				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La hora Fin no puede ser menor a la Hora inicio. Favor verifique.");
 		    	referenciaModulo.obj.ocultaContenedorFormulario.hide();
 		    	retorno = false;
 		    	return retorno;
 			}
+			
 			if(inicio.getTime() < turno.getTime()){
 				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La hora Inicio no puede ser menor a la Hora de apertura del turno. Favor verifique.");
 		    	referenciaModulo.obj.ocultaContenedorFormulario.hide();
@@ -1065,6 +1062,30 @@ $(document).ready(function(){
 		}
 		return retorno;
 	};
+	
+	function trailingZeros(num, decimals) {
+
+		if (num.toString() == "0") {
+			return "0.000000".substring(0, (decimals + 2));
+		}
+		
+		if (num.toString().indexOf(".") < 0 || !num.toString().split(".").length >= 2) {
+			return different;
+		}
+		
+		var numArray = num.toString().split(".");
+		var integer = numArray[0];
+		var decimal = numArray[1];
+		
+		if (decimal.length < decimals) {
+			while (decimal.length < decimals) {
+				decimal = decimal + "0";
+			}
+			return integer + "." + decimal;
+		}
+
+		return integer + "." + decimal.substring(0, decimals);
+	}
 	
   moduloActual.inicializar();
 });

@@ -1055,20 +1055,55 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
       
       if (numero_columna > 15) {
           if(columnas[15] != null && !columnas[15].isEmpty()) {
+        	  /*
         	  volumen_corregido = Float.parseFloat(columnas[15]);
         	  despacho.setVolumenCorregido(volumen_corregido);
+        	  */
+        	  
+              String volCorregido = Utilidades.trailingZeros(columnas[15], nroDec);
+              BigDecimal volCorregidoBd = Utilidades.strToBigDecimal(volCorregido);
+              despacho.setVolumenCorregidoBigDecimal(volCorregidoBd);
+              
+              if (volCorregidoBd.floatValue() > 0) {
+            	  despacho.setFlagCalculoCorregido(1);
+              }
+              
           } else {
         	  if (despacho.getFactorCorreccion() > 0) {
+        		  /*
             	  volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
             	  volumen_corregido = (volumen_corregido* 1000)/1000;
             	  despacho.setVolumenCorregido(volumen_corregido);
+            	  */
+                  //String volCorregido = Utilidades.trailingZeros(volumen_corregido, nroDec);
+                  //BigDecimal volCorregidoBd = Utilidades.strToBigDecimal(volCorregido);
+            	  
+        		  BigDecimal volCorregidoBd = despacho.getVolumenObservadoBigDecimal().multiply(
+        				Utilidades.floatToBigDecimal(despacho.getFactorCorreccion())
+        		  );
+                  despacho.setVolumenCorregidoBigDecimal(volCorregidoBd);
+                  if (volCorregidoBd.floatValue() > 0) {
+                	  despacho.setFlagCalculoCorregido(1);
+                  }
         	  }
           }
       } else {
     	  if (despacho.getFactorCorreccion() > 0) {
+    		  /*
         	  volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
         	  volumen_corregido = (volumen_corregido* 1000)/1000;
         	  despacho.setVolumenCorregido(volumen_corregido);
+        	  */
+        	  
+    		  //volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
+    		  
+    		  BigDecimal volCorregidoBd = despacho.getVolumenObservadoBigDecimal().multiply(
+    				Utilidades.floatToBigDecimal(despacho.getFactorCorreccion())
+    		  );
+              despacho.setVolumenCorregidoBigDecimal(volCorregidoBd);
+              if (volCorregidoBd.floatValue() > 0) {
+            	  despacho.setFlagCalculoCorregido(1);
+              }
     	  }
       }
 

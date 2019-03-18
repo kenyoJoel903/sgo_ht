@@ -27,6 +27,7 @@ public class Despacho extends EntidadBase {
 	private float api_corregido;
 	private float temperatura;
 	private float volumen_corregido;
+	private BigDecimal volumenCorregidoBigDecimal;
 	private int id_tanque;
 	private int id_contometro;
 	private int codigo_archivo_origen;
@@ -188,6 +189,14 @@ public class Despacho extends EntidadBase {
 
 	public void setVolumenObservadoBigDecimal(BigDecimal volumenObservadoBigDecimal) {
 		this.volumenObservadoBigDecimal = volumenObservadoBigDecimal;
+	}
+
+	public BigDecimal getVolumenCorregidoBigDecimal() {
+		return volumenCorregidoBigDecimal;
+	}
+
+	public void setVolumenCorregidoBigDecimal(BigDecimal volumenCorregidoBigDecimal) {
+		this.volumenCorregidoBigDecimal = volumenCorregidoBigDecimal;
 	}
 
 	public void setLecturaFinal(float lecturaFinal) {
