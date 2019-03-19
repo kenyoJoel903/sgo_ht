@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import sgo.datos.BitacoraDao;
 import sgo.datos.EnlaceDao;
+import sgo.datos.EstacionDao;
 import sgo.datos.Tabla13Dao;
 import sgo.datos.Tabla5BDao;
 import sgo.datos.ToleranciaDao;
 import sgo.entidad.Contenido;
 import sgo.entidad.Enlace;
+import sgo.entidad.Estacion;
 import sgo.entidad.FormulaRespuesta;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.RespuestaCompuesta;
@@ -36,6 +38,8 @@ public class FormulaControlador {
  @Autowired
  private EnlaceDao dEnlace;
  @Autowired
+ private EstacionDao dEstacion;
+ @Autowired
  private ToleranciaDao dTolerancia;
  @Autowired
  private Tabla5BDao dTabla5B;
@@ -55,40 +59,44 @@ public class FormulaControlador {
  
  @RequestMapping(value = URL_RECUPERAR_TOLERANCIA_RELATIVA, method = RequestMethod.GET)
  public @ResponseBody RespuestaCompuesta recuperarTolerancia(HttpServletRequest httpRequest, Locale locale) {
-  RespuestaCompuesta respuesta = null;
-  ParametrosListar parametros = null;
-  AuthenticatedUserDetails principal = null;
-  String mensajeRespuesta = "";
-  try {
-   principal = this.getCurrentUser();
-   respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_TOLERANCIA_COMPLETA);
-   if (respuesta.estado == false) {
-    mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
-    throw new Exception(mensajeRespuesta);
-   }
-   Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
-   if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
-    mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale);
-    throw new Exception(mensajeRespuesta);
-   }
-   parametros = new ParametrosListar();
-   parametros.setPaginacion(Constante.SIN_PAGINACION);
-   if (httpRequest.getParameter("filtroProducto") != null) {
-    parametros.setFiltroProducto(Integer.parseInt(httpRequest.getParameter("filtroProducto")));
-   }   
-   if (httpRequest.getParameter("filtroEstacion") != null) {
-    parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
-   } 
-   respuesta =  dTolerancia.recuperarRegistros(parametros);
-   if (respuesta.estado==false){
-    throw new Exception(gestorDiccionario.getMessage("sgo.noToleranciaConfigurada", null, locale));
-   }
-   respuesta.estado=true;
-   respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarFormulaExitoso", null, locale);   
-   } catch(Exception ex){
-    
-   }
-  return respuesta;
+
+     RespuestaCompuesta respuesta = null;
+     ParametrosListar parametros = null;
+     AuthenticatedUserDetails principal = null;
+     String mensajeRespuesta = "";
+
+     try {
+         principal = this.getCurrentUser();
+         respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_TOLERANCIA_COMPLETA);
+         if (respuesta.estado == false) {
+             mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+             throw new Exception(mensajeRespuesta);
+         }
+         Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
+         if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
+             mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale);
+             throw new Exception(mensajeRespuesta);
+         }
+         parametros = new ParametrosListar();
+         parametros.setPaginacion(Constante.SIN_PAGINACION);
+         if (httpRequest.getParameter("filtroProducto") != null) {
+             parametros.setFiltroProducto(Integer.parseInt(httpRequest.getParameter("filtroProducto")));
+         }   
+         if (httpRequest.getParameter("filtroEstacion") != null) {
+             parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
+         } 
+         respuesta = dTolerancia.recuperarRegistros(parametros);
+         if (respuesta.estado==false){
+             throw new Exception(gestorDiccionario.getMessage("sgo.noToleranciaConfigurada", null, locale));
+         }
+         respuesta.estado = true;
+         respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarFormulaExitoso", null, locale);
+
+     } catch(Exception ex){
+
+     }
+     
+     return respuesta;
  }
  
  @RequestMapping(value = URL_RECUPERAR_FACTOR_MASA_RELATIVA, method = RequestMethod.GET)
@@ -478,13 +486,16 @@ RespuestaCompuesta recuperarFactorCorreccion(HttpServletRequest httpRequest, Loc
 
         if (httpRequest.getParameter("volumenObservado") != null) {
             volumenObservado = (Double.parseDouble(httpRequest.getParameter("volumenObservado")));
-        }   
+        }
+        
+        int idEstacion = Utilidades.parseInt(httpRequest.getParameter("idEstacion"));
+        RespuestaCompuesta respuestaEstacion = dEstacion.recuperarRegistro(idEstacion);
+        Estacion eEstacion = (Estacion) respuestaEstacion.contenido.carga.get(0);
 
         factorCorreccionVolumen = Formula.calcularFactorCorreccion(apiCorregido, temperaturaCentro);
         volumenCorregido = factorCorreccionVolumen * volumenObservado;
-
-        int decimals = Utilidades.numberOfDecimals(volumenObservado);
-        String volumenCorregidoStr = Utilidades.trailingZeros(volumenCorregido, decimals);
+        String volumenCorregidoStr = Utilidades.doubleToStr(volumenCorregido);
+        volumenCorregidoStr = Utilidades.trailingZeros(volumenCorregido, eEstacion.getNumeroDecimalesContometro());
         
         eFormulaRespuesta = new FormulaRespuesta();
         eFormulaRespuesta.setApiCorregido(apiCorregido);

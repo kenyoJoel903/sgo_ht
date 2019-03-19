@@ -656,52 +656,58 @@ $(document).ready(function() {
   	};
   }
 
-  moduloActual.calcularFactor= function(){
-   var ref=this;
-   var parametros={};
-   var temperatura =  ref.obj.cmpTemperatura.val();
-   var apiCorregido = ref.obj.cmpAPI60.val();
-   var volObs = moduloActual.eliminaSeparadorComa(ref.obj.cmpVolObservado.val());
-   var camposInvalidos = 0;
-   if ((typeof temperatura == "undefined") || (temperatura == null) || (temperatura == '')){
-    camposInvalidos++;
-   }
-   
-   if ((typeof apiCorregido == "undefined") || (apiCorregido == null) || (apiCorregido == '')){
-    camposInvalidos++;
-   }
-     
-   if (camposInvalidos ==0){
-    parametros.apiCorregido=apiCorregido;
-    parametros.temperatura=temperatura;
-    parametros.volumenObservado=volObs;
-    $("#ocultaContenedorFormulario").show();
-     $.ajax({
-      type: constantes.PETICION_TIPO_GET,
-      url: "../admin/formula/recuperar-factor-correccion", 
-      contentType: ref.TIPO_CONTENIDO, 
-      data: parametros, 
-      success: function(respuesta) {
-        if (!respuesta.estado) {
-          ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
-        } else {
-          var registro = respuesta.contenido.carga[0];
-          var factorCorrecion = parseFloat(registro.factorCorreccion);
-          
-          ref.obj.cmpFactor.val(factorCorrecion);
-          ref.obj.cmpVolumen60.val(registro.volumenCorregidoStr);
-          ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);         
-        }
-        $("#ocultaContenedorFormulario").hide();
-      },                  
-      error: function(xhr,estado,error) {
-        ref.mostrarErrorServidor(xhr,estado,error);
-        $("#ocultaContenedorFormulario").hide();   
+  moduloActual.calcularFactor = function() {
+
+      var ref = this;
+      var parametros = {};
+      var temperatura = ref.obj.cmpTemperatura.val();
+      var apiCorregido = ref.obj.cmpAPI60.val();
+      var volObs = moduloActual.eliminaSeparadorComa(ref.obj.cmpVolObservado.val());
+      var camposInvalidos = 0;
+
+      if ((typeof temperatura == "undefined") || (temperatura == null) || (temperatura == '')) {
+          camposInvalidos++;
       }
-    });
-   }   
+
+      if ((typeof apiCorregido == "undefined") || (apiCorregido == null) || (apiCorregido == '')) {
+          camposInvalidos++;
+      }
+
+      if (camposInvalidos == 0) {
+          parametros.apiCorregido = apiCorregido;
+          parametros.temperatura = temperatura;
+          parametros.volumenObservado = volObs;
+          parametros.idEstacion = ref.obj.idEstacionSeleccionado;
+          
+          $.ajax({
+              type: constantes.PETICION_TIPO_GET,
+              url: "../admin/formula/recuperar-factor-correccion", 
+              contentType: ref.TIPO_CONTENIDO, 
+              data: parametros,
+              beforeSend: function() {
+            	  $("#ocultaContenedorFormulario").show();
+              },
+              success: function(respuesta) {
+                  if (!respuesta.estado) {
+                      ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);
+                  } else {
+                      var registro = respuesta.contenido.carga[0];
+                      var factorCorrecion = parseFloat(registro.factorCorreccion);
+
+                      ref.obj.cmpFactor.val(factorCorrecion);
+                      ref.obj.cmpVolumen60.val(registro.volumenCorregidoStr);
+                      ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, respuesta.mensaje);         
+                  }
+                  $("#ocultaContenedorFormulario").hide();
+              },                  
+              error: function(xhr,estado,error) {
+                  ref.mostrarErrorServidor(xhr,estado,error);
+                  $("#ocultaContenedorFormulario").hide();   
+              }
+          });
+      }   
   };
-	  
+  
   moduloActual.datosCabecera= function(){
 	  var referenciaModulo=this;
 	  referenciaModulo.obj.idOperacionSeleccionado = referenciaModulo.obj.filtroOperacion.val();

@@ -706,6 +706,20 @@ public static double strToDouble(String s) {
     return out;
 }
 
+public static String doubleToStr(double d) {
+	
+	String out = "0";
+	
+    try { 
+    	BigDecimal bd = new BigDecimal(d);
+    	out = bd.toString();
+    } catch(Exception e) { 
+    	e.getStackTrace();
+    }
+
+    return out;
+}
+
 public static BigDecimal floatToBigDecimal(float f) {
 	
 	BigDecimal out = new BigDecimal(0);
