@@ -2261,8 +2261,10 @@ $(document).ready(function() {
       eRegistro.contometroJornada = [];
 	  eRegistro.tanqueJornada = [];
 	  eRegistro.muestreo = [];
+	  
       // datos para los contometros de la jornada
       var numeroMuestreos = referenciaModulo.obj.GrupoMuestreo.getForms().length;
+      
       for(var i = 0; i < numeroMuestreos; i++) {
         var muestreo = {};
         var formulario 		= referenciaModulo.obj.GrupoMuestreo.getForm(i);
@@ -2279,8 +2281,7 @@ $(document).ready(function() {
         muestreo.apiMuestreo = parseFloat(cmpApi.val().replace(moduloActual.SEPARADOR_MILES,""));
         muestreo.temperaturaMuestreo = parseFloat(cmpTemperatura.val().replace(moduloActual.SEPARADOR_MILES,""));
         muestreo.factorMuestreo = parseFloat(cmpFactor.val().replace(moduloActual.SEPARADOR_MILES,""));
-        muestreo.horaMuestreo=utilitario.formatearStringToDateHour(cmpHoraMuestra.val());
-        //muestreo.horaMuestreoDate = utilitario.formatearStringToDateHour(cmpHoraMuestra.val());
+        muestreo.horaMuestreo = utilitario.formatearStringToDateHour(cmpHoraMuestra.val());
         muestreo.origen = 1; // ORIGEN_MUESTREO
         eRegistro.muestreo.push(muestreo);
       }
@@ -2369,8 +2370,6 @@ function trailingZerosDiferencia(lecturaInicial, lecturaFinal) {
 	
 	var different = lecturaFinal - lecturaInicial;
 	different = Math.round(different * 1000000) / 1000000;
-	
-	console.log("lecturaFinal:: " + lecturaFinal + " -- different:: " + different);
 	
 	if (different.toString() == "0") {
 		return "0.000000".substring(0, (numeroDecimalesContometro + 2));

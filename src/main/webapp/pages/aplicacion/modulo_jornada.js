@@ -1127,7 +1127,6 @@ moduloJornada.prototype.actualizarRegistro = function() {
         contentType: referenciaModulo.TIPO_CONTENIDO,
         data: JSON.stringify(eRegistro),	
         success: function(respuesta) {
-
             if (!respuesta.estado) {
                 referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
             } else {
