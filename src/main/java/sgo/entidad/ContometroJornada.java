@@ -18,6 +18,8 @@ public class ContometroJornada {
 	private float lectura_final;
 	private String lecturaInicialStr;
 	private String lecturaFinalStr;
+	private BigDecimal lecturaInicialBigDecimal;
+	private BigDecimal lecturaFinalBigDecimal;
 	
 	private int estado_servicio;
 	private int id_contometro;
@@ -237,6 +239,15 @@ public class ContometroJornada {
 	}
 	public void setLecturaFinalStr(String lecturaFinalStr) {
 		this.lecturaFinalStr = lecturaFinalStr;
+	}
+	public BigDecimal getLecturaFinalBigDecimal() {
+		return lecturaFinalBigDecimal;
+	}
+	public void setLecturaFinalBigDecimal(BigDecimal lecturaFinalBigDecimal) {
+		this.lecturaFinalBigDecimal = lecturaFinalBigDecimal;
+	}
+	public void setLecturaInicialBigDecimal(BigDecimal lecturaInicialBigDecimal) {
+		this.lecturaInicialBigDecimal = lecturaInicialBigDecimal;
 	}
 
 }

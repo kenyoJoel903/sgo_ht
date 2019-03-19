@@ -437,12 +437,14 @@ public class JornadaControlador {
             
             for (int i = 0; i < respuesta.contenido.carga.size(); i++) {
             	ContometroJornada eContometroJornada = (ContometroJornada) respuesta.contenido.carga.get(i);
-            	eContometroJornada.setLecturaInicialStr(Utilidades.trailingZeros(
-    					eContometroJornada.getLecturaInicialStr(), 
+            	eContometroJornada.setLecturaInicialStr(
+        			Utilidades.trailingZeros(
+    					Utilidades.bigDecimalToStr(eContometroJornada.getLecturaInicialBigDecimal()), 
     					eJornada.getEstacion().getNumeroDecimalesContometro()
     			));
-            	eContometroJornada.setLecturaFinalStr(Utilidades.trailingZeros(
-    					eContometroJornada.getLecturaFinalStr(),
+            	eContometroJornada.setLecturaFinalStr(
+        			Utilidades.trailingZeros(
+        					Utilidades.bigDecimalToStr(eContometroJornada.getLecturaFinalBigDecimal()),
     					eJornada.getEstacion().getNumeroDecimalesContometro()
     			));
             	
@@ -472,7 +474,12 @@ public class JornadaControlador {
 	                for(int c = 0; c < listaContometroJornada.size(); c++ ){
 	                	ContometroJornada eContometroJornada = listaContometroJornada.get(c);
 	                	if(eContometroJornada.getIdContometro() == eDetalleTurno.getContometro().getId()){
-	                		eContometroJornada.setLecturaFinal(eDetalleTurno.getLecturaFinal());
+	                		//eContometroJornada.setLecturaFinal(eDetalleTurno.getLecturaFinal());
+	                    	eContometroJornada.setLecturaFinalStr(
+                    			Utilidades.trailingZeros(
+                					eDetalleTurno.getLecturaFinalStr(),
+                					eJornada.getEstacion().getNumeroDecimalesContometro()
+                			));
 	                	}
 	                }
 				}

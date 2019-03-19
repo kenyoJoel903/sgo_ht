@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
   
   var moduloActual = new moduloBase();  
   moduloActual.urlBase='otroMovimiento';
@@ -99,15 +99,10 @@ $(document).ready(function(){
         moduloActual.nombreOperacion=$(this).find("option:selected").attr('data-nombre-operacion');
         moduloActual.nombreCliente=$(this).find("option:selected").attr('data-nombre-cliente');   
         moduloActual.obj.cmpFiltroEstacion.select2("val", moduloActual.obj.cmpFiltroEstacion.attr("data-valor-inicial"));        
-        
-        //$("#cmpFiltroEstacion").find("option:selected").val(0);        
-        //$("#cmpFiltroEstacion").val(0).trigger('change');
-        //moduloActual.obj.cmpEstacion.val(0);
-        		
-     
         e.preventDefault(); 
     }); 
     this.obj.filtroOperacion.select2();
+    
     //FILTRO ESTACION
     this.obj.cmpFiltroEstacion=$("#cmpFiltroEstacion");
     this.obj.cmpFiltroEstacion.tipoControl="select2";
@@ -126,9 +121,7 @@ $(document).ready(function(){
   		      };
   		    },
   		    processResults: function (respuesta, pagina) {
-  		    	console.log("processResults");
   		    	var resultados= respuesta.contenido.carga;
-  		    	console.log(resultados);
   		      return { results: resultados};
   		    },
   		    cache: true
@@ -136,24 +129,24 @@ $(document).ready(function(){
   		language: "es",
   		escapeMarkup: function (markup) { return markup; },
   		templateResult: function (registro) {
-  			console.log("templateResult");
   			if (registro.loading) {
   				return "Buscando...";
   			}		    	
-		        return "<div class='select2-user-result'>" + registro.nombre + "</div>";
-		    },
-		    templateSelection: function (registro) {
-		    	try {
-		    		if(registro.nombre!=null){
-		    			moduloActual.obj.nombreEstacion = registro.nombre;
-		    			moduloActual.obj.idEstacion= registro.id;
-		    		}
-				} catch (e) {
-					console.log(e.message);
-				}		    	
-		        return registro.nombre || registro.text;
-		    },
+	        return "<div class='select2-user-result'>" + registro.nombre + "</div>";
+	    },
+	    templateSelection: function (registro) {
+	    	try {
+	    		if(registro.nombre!=null){
+	    			moduloActual.obj.nombreEstacion = registro.nombre;
+	    			moduloActual.obj.idEstacion= registro.id;
+	    		}
+			} catch (e) {
+				console.log(e.message);
+			}		    	
+	        return registro.nombre || registro.text;
+	    },
     });
+    
     //FILTRO DIA OPERATIVO
     this.obj.filtroFechaPlanificada = $("#filtroFechaPlanificada");
     var fechaActual = this.obj.filtroFechaPlanificada.attr('data-fecha-actual');
@@ -193,8 +186,9 @@ $(document).ready(function(){
             "Diciembre"
           ]
         }
-    });    
-  //FILTRO TANQUE ORIGEN
+    });
+    
+    //FILTRO TANQUE ORIGEN
     this.obj.cmpTanqueOrigen=$("#cmpTanqueOrigen");
     this.obj.cmpTanqueOrigen.tipoControl="select2";
     this.obj.cmpSelect2TanqueOrigen=$("#cmpTanqueOrigen").select2({
@@ -211,27 +205,25 @@ $(document).ready(function(){
   		      };
   		    },
   		    processResults: function (respuesta, pagina) {
-  		    	console.log("processResults");
   		    	var resultados= respuesta.contenido.carga;
-  		    	console.log(resultados);
   		      return { results: resultados};
   		    },
   		    cache: true
-  		  },
+	    },
   		language: "es",
   		escapeMarkup: function (markup) { return markup; },
   		templateResult: function (registro) {
-  			console.log("templateResult");
   			if (registro.loading) {
   				return "Buscando...";
   			}		    	
-		        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
-		    },
-		    templateSelection: function (registro) {	    	
-		        return registro.descripcion || registro.text;
-		    },
+	        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
+	    },
+	    templateSelection: function (registro) {	    	
+	        return registro.descripcion || registro.text;
+	    },
     });
-  //FILTRO TANQUE DESTINO
+    
+    //FILTRO TANQUE DESTINO
     this.obj.cmpTanqueDestino=$("#cmpTanqueDestino");
     this.obj.cmpTanqueDestino.tipoControl="select2";
     this.obj.cmpSelect2TanqueDestino=$("#cmpTanqueDestino").select2({
@@ -248,47 +240,24 @@ $(document).ready(function(){
   		      };
   		    },
   		    processResults: function (respuesta, pagina) {
-  		    	console.log("processResults");
   		    	var resultados= respuesta.contenido.carga;
-  		    	console.log(resultados);
   		      return { results: resultados};
   		    },
   		    cache: true
-  		  },
+	    },
   		language: "es",
   		escapeMarkup: function (markup) { return markup; },
   		templateResult: function (registro) {
-  			console.log("templateResult");
   			if (registro.loading) {
   				return "Buscando...";
   			}		    	
-		        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
-		    },
-		    templateSelection: function (registro) {    	
-		        return registro.descripcion || registro.text;
-		    },
+	        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
+	    },
+	    templateSelection: function (registro) {    	
+	        return registro.descripcion || registro.text;
+	    },
     });
- /*   //TANQUE ORIGEN Y DESTINO - VALIDACIONES
-    this.obj.cmpTanqueOrigen.on('change', function(e){
-    	try {
-    		 if($("#cmpTanqueOrigen").val()!=0 && $("#cmpTanqueDestino").val()!=0 && ($("#cmpTanqueOrigen").val()==$("#cmpTanqueDestino").val())){
-    	        	moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Los tanques origen y destino no deben ser iguales");
-    	        }
-		} catch (e) { 
-			 console.log('e:'+e.message);
-		}       
-       
-    }); 
-    this.obj.cmpTanqueDestino.on('change', function(e){
-    	try {
-    		 if($("#cmpTanqueOrigen").val()!=0 && $("#cmpTanqueDestino").val()!=0 && ($("#cmpTanqueOrigen").val()==$("#cmpTanqueDestino").val())){
-    	        	moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "Los tanques origen y destino no deben ser iguales");
-    	        }
-		} catch (e) {
-			 console.log('e:'+e.message);
-		}
-       
-    });*/
+
     this.obj.btnAgregarOtroMovimiento=$("#btnAgregarOtroMovimiento");
     this.obj.btnModificarOtroMovimiento=$("#btnModificarOtroMovimiento");
     this.obj.btnVerOtroMovimiento=$("#btnVerOtroMovimiento");
@@ -296,19 +265,16 @@ $(document).ready(function(){
     moduloActual.obj.btnAgregarOtroMovimiento.on(constantes.NOMBRE_EVENTO_CLICK,function(){
     	moduloActual.descripcionPermiso = 'CREAR_OTRO_MOVIMIENTO';
     	moduloActual.validaPermisos();
-	    //referenciaModulo.iniciarAgregar();
 	});
 	
     moduloActual.obj.btnModificarOtroMovimiento.on(constantes.NOMBRE_EVENTO_CLICK,function(){
 		moduloActual.descripcionPermiso = 'ACTUALIZAR_OTRO_MOVIMIENTO';
     	moduloActual.validaPermisos();
-	    //referenciaModulo.iniciarModificar();
 	});
 	
     moduloActual.obj.btnVerOtroMovimiento.on(constantes.NOMBRE_EVENTO_CLICK,function(){
 		moduloActual.descripcionPermiso = 'RECUPERAR_OTRO_MOVIMIENTO';
-    	moduloActual.validaPermisos();
-		//referenciaModulo.iniciarVer();		
+    	moduloActual.validaPermisos();	
 	});
   };
   
@@ -327,9 +293,6 @@ $(document).ready(function(){
 		
 		$("#cmpFiltroEstacion").find("option:selected").val(moduloActual.obj.idEstacion);
 		referenciaModulo.obj.cmpFiltroEstacion.val(moduloActual.obj.idEstacion);
-
-//	    $("#cmpFiltroEstacion").val(moduloActual.obj.idEstacion).trigger('change');
-//		referenciaModulo.obj.cmpFiltroEstacion.val(moduloActual.obj.idEstacion);
 		  
 	    var indiceOrdenamiento = d.order[0].column;
 	    d.registrosxPagina =  d.length; 
@@ -350,13 +313,13 @@ $(document).ready(function(){
   moduloActual.resetearFormulario= function(){
 	  var referenciaModulo= this;
 	  referenciaModulo.obj.frmPrincipal[0].reset();
-	  console.log("Verificador");
 	  referenciaModulo.obj.verificadorFormulario.resetForm();
+	  
 	  jQuery.each( this.obj, function( i, val ) {
 	    if (typeof referenciaModulo.obj[i].tipoControl != constantes.CONTROL_NO_DEFINIDO ){
 	    	if (referenciaModulo.obj[i].tipoControl == constantes.TIPO_CONTROL_SELECT2){
 	            referenciaModulo.obj[i].select2("val", null);
-	          }
+	        }
 	    }
 	  });
 	};
@@ -373,27 +336,17 @@ $(document).ready(function(){
 		      $("#cnt" + $(element).attr("id")).removeClass(errorClass).addClass(validClass);
 		    },
 		    errorPlacement: function(error, element) {
-		      console.log("errorPlacement");
 		      console.log(error);     
 		    },
 		    errorClass: "has-error",
 		    validClass: "has-success",
 		    showErrors: function(errorMap, errorList) {
-		      console.log("Custom showErrors");
-		      console.log("checkForm");
 		      this.checkForm();
-		      console.log("this.errorMap");
-		      console.log(this.errorMap);
-		      console.log("this.errorList");
-		      console.log(this.errorList);
 		      this.defaultShowErrors();
-		      console.log("this.errorList.length");
-		      console.log(this.errorList.length);
 		      var numeroErrores = this.errorList.length;
 		      if (numeroErrores > 0) {
 		        var mensaje = numeroErrores == 1 ? 'Existe un campo con error.' : 'Existen ' + numeroErrores + ' campos con errores';
 		        for (var indice in this.errorMap){
-		          console.log(indice);
 		          mensaje+=". " + this.errorMap[indice];    
 		        }        
 		        referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,mensaje);
@@ -560,10 +513,9 @@ $(document).ready(function(){
   
   moduloActual.validaTurnoAbierto = function(){
 		var referenciaModulo = this;
-		console.log("referenciaModulo.obj.moduloActual.obj.cmpFiltroEstacion.val() " + referenciaModulo.obj.cmpFiltroEstacion.val());
 		referenciaModulo.obj.ocultaContenedorTabla.show();
+		
 		if(referenciaModulo.obj.cmpFiltroEstacion.val() > 0){
-			//referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 			$.ajax({
 			    type: constantes.PETICION_TIPO_GET,
 			    url: './turno/obtieneUltimaJornada', 
@@ -572,7 +524,6 @@ $(document).ready(function(){
 			        	filtroEstado : constantes.TIPO_JORNADA_ABIERTO},	 
 			    success: function(respuesta) {
 			    	if (!respuesta.estado) {
-			    		console.log("respuesta.mensaje " + respuesta.mensaje);
 			    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 			    		referenciaModulo.obj.ocultaContenedorTabla.hide();
 			    	} else {
@@ -624,24 +575,23 @@ $(document).ready(function(){
   
   moduloActual.validaPermisos= function(){
 	  var referenciaModulo = this;
+	  
 	  try{
-	  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
 	  referenciaModulo.obj.ocultaContenedorTabla.show();
 	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+	  
 		  $.ajax({
 		    type: constantes.PETICION_TIPO_GET,
 		    url: './validaPermisos/validar',
 		    contentType: referenciaModulo.TIPO_CONTENIDO, 
 		    data: { permiso : referenciaModulo.descripcionPermiso, },	
 		    success: function(respuesta) {
-		      console.log("respuesta.estado " + respuesta.estado);
 		      if(!respuesta.estado){
 		    	  referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 			      referenciaModulo.obj.ocultaContenedorTabla.hide();
 		      } else {
 			      if (referenciaModulo.descripcionPermiso == 'CREAR_OTRO_MOVIMIENTO'){
 			    	  moduloActual.validaTurnoAbierto();
-//			    	  referenciaModulo.iniciarAgregar();
 			      } else if (referenciaModulo.descripcionPermiso == 'ACTUALIZAR_OTRO_MOVIMIENTO'){
 			    	  referenciaModulo.iniciarModificar();
 			      } else if (referenciaModulo.descripcionPermiso == 'RECUPERAR_OTRO_MOVIMIENTO'){
@@ -655,7 +605,7 @@ $(document).ready(function(){
 		    	referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
 		    }
 		  });
-	  } catch(error){
+	  } catch(error) {
 		  referenciaModulo.obj.ocultaContenedorTabla.hide();
 		  referenciaModulo.mostrarDepuracion(error.message);
 	  };

@@ -987,7 +987,7 @@ moduloJornada.prototype.actualizarBandaInformacion=function(tipo, mensaje){
 	referenciaModulo.obj.bandaInformacion.text(mensaje);
 };
 
-moduloJornada.prototype.recuperarRegistro= function(){
+moduloJornada.prototype.recuperarRegistro = function(){
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 	referenciaModulo.obj.ocultaContenedorTabla.show();

@@ -1,5 +1,3 @@
-//borrar 	
-
 package sgo.servicio;
 
 import java.util.ArrayList;
@@ -150,12 +148,14 @@ public class TanqueControlador {
 	return vista;
 }
 	
-	@RequestMapping(value = URL_LISTAR_RELATIVA ,method = RequestMethod.GET)
-	public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale locale){
+	@RequestMapping(value = URL_LISTAR_RELATIVA, method = RequestMethod.GET)
+	public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest httpRequest, Locale locale) {
+		
 		RespuestaCompuesta respuesta = null;
-		ParametrosListar parametros= null;
+		ParametrosListar parametros = null;
 		AuthenticatedUserDetails principal = null;
-		String mensajeRespuesta="";
+		String mensajeRespuesta = "";
+		
 		try {
 			//Recuperar el usuario actual
 			principal = this.getCurrentUser(); 
@@ -164,11 +164,13 @@ public class TanqueControlador {
 			if (respuesta.estado==false){
 				throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 			}
+			
 			Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 			//Verificar si cuenta con el permiso necesario			
 			if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
 				throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
     		}
+			
 			//Recuperar parametros
 			 parametros = new ParametrosListar();
 			if (httpRequest.getParameter("paginacion") != null) {
@@ -203,9 +205,11 @@ public class TanqueControlador {
 			if (httpRequest.getParameter("filtroEstacion") != null) {
 				parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
 			}
+			
 			if (httpRequest.getParameter("idTanque") != null) {
 				parametros.setIdTanque(Integer.parseInt(httpRequest.getParameter("idTanque")));
 			}
+			
 			if (httpRequest.getParameter("txtFiltro") != null) {
 				parametros.setTxtFiltro(httpRequest.getParameter("txtFiltro"));
 			}
@@ -213,12 +217,13 @@ public class TanqueControlador {
 			//Recuperar registros
 			respuesta = dTanque.recuperarRegistros(parametros);
 			respuesta.mensaje= gestorDiccionario.getMessage("sgo.listarExitoso",null,locale);
-		} catch(Exception ex){
-			ex.printStackTrace();
-			respuesta.estado=false;
+		} catch(Exception e) {
+			e.printStackTrace();
+			respuesta.estado = false;
 			respuesta.contenido = null;
-			respuesta.mensaje=ex.getMessage();
+			respuesta.mensaje = e.getMessage();
 		}
+		
 		return respuesta;
 	}	
 

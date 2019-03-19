@@ -590,7 +590,7 @@
 						</table>
 						<br />
 		                <label><B>Cont&oacute;metros </B></label>
-<!-- 		                se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
+						<!-- se agrego background-color:#F2DEF5 al style por req 9000003068 se quita width 100% tambien se agrego grupo-apertura-contometros table-scroll-->
 		                <table 
 		                	class="grupo-cierre-contometros loading table-scroll sgo-simple-table table table-condensed" 
 		                	data-contometro-registros="<%=tableAttributes.getContometroRegistros() %>" >
@@ -601,11 +601,11 @@
 							  <td class="celda-detalle text-center"><label>Lectura Inicial		</label></td>
 							  <td class="celda-detalle text-center"><label>Lectura Final		</label></td>
 							  <td class="celda-detalle text-center"><label>Dif. Vol. Encontrado	</label></td>
-<!-- 							  se quita class por req 9000003068 -->
+								<!-- se quita class por req 9000003068 -->
 							  <td><label>F/S</label></td>
 							  </tr>
 							</thead>
-<%-- 							se agrega  style="<%=tableAttributes.getBodyStyle() %>" por req 9000003068--%>							
+							<%-- se agrega  style="<%=tableAttributes.getBodyStyle() %>" por req 9000003068--%>							
 							<tbody id="GrupoCierreContometros" style="<%=tableAttributes.getBodyStyle() %>">
 			      				<tr id="GrupoCierreContometros_template">
 			      					<td class="celda-detalle"  style="width:15%;">

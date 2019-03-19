@@ -837,7 +837,7 @@ $(document).ready(function(){
   };
 
   
-  moduloActual.calcularFactor= function(idElemento){
+  moduloActual.calcularFactor = function(idElemento){
    var ref=this;
    var temp = idElemento.split("_");
    var indice = temp[1];
@@ -857,12 +857,16 @@ $(document).ready(function(){
     parametros.apiCorregido=apiCorregido;
     parametros.temperatura=temperatura;
     parametros.volumenObservado=0;
-    $("#ocultaContenedorFormulario").show();
+    parametros.idEstacion = ref.obj.idEstacionSeleccionado;
+
      $.ajax({
       type: constantes.PETICION_TIPO_GET,
       url: ref.URL_RECUPERAR_FACTOR, 
       contentType: ref.TIPO_CONTENIDO, 
-      data: parametros, 
+      data: parametros,
+      beforeSend: function() {
+    	  $("#ocultaContenedorFormulario").show();
+      },
       success: function(respuesta) {
         if (!respuesta.estado) {
           ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);

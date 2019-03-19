@@ -542,7 +542,7 @@ $(document).ready(function() {
           var cmpServicio=$(formularioNuevo).find("input[elemento-grupo='servicio']");
 
           //Inicio Comentado por req 9000003068========================
-//          cmpLecturaFinal.inputmask('decimal', {digits: 0});
+          //cmpLecturaFinal.inputmask('decimal', {digits: 0});
           //Fin Comentado por req 9000003068========================
           
           cmpLecturaFinal.on("input",function(){
@@ -566,11 +566,13 @@ $(document).ready(function() {
         minFormsCount: 0,
         iniFormsCount: 0,
         afterAdd: function(origen, formularioNuevo) {
+        	
        	  var cmpIdTanqueJornadaCierre=$(formularioNuevo).find("input[elemento-grupo='idTanqueJornadaCierre']");
           var cmpIdTanqueCierre=$(formularioNuevo).find("input[elemento-grupo='idTanqueCierre']");
           var cmpTanqueCierre=$(formularioNuevo).find("input[elemento-grupo='tanqueCierre']");
           var cmpIdCierreProductoTanque=$(formularioNuevo).find("input[elemento-grupo='idCierreProductoTanque']");
           var cmpCierreProductoTanque=$(formularioNuevo).find("input[elemento-grupo='cierreProductoTanque']");
+          
           // medidas iniciales
           var cmpMedidaInicialTanque=$(formularioNuevo).find("input[elemento-grupo='medidaInicialTanque']");
           var cmpVolObsInicialTanque=$(formularioNuevo).find("input[elemento-grupo='volObsInicialTanque']");
@@ -580,6 +582,7 @@ $(document).ready(function() {
           var cmpVol60InicialTanque=$(formularioNuevo).find("input[elemento-grupo='vol60InicialTanque']");
           var cmpFsInicialTanque=$(formularioNuevo).find("input[elemento-grupo='fsInicialTanque']");
           var cmpDespInicialTanque=$(formularioNuevo).find("input[elemento-grupo='despInicialTanque']");
+          
           // medidas finales
           var cmpMedidaFinalTanque=$(formularioNuevo).find("input[elemento-grupo='medidaFinalTanque']");
           var cmpVolObsFinalTanque=$(formularioNuevo).find("input[elemento-grupo='volObsFinalTanque']");
@@ -592,7 +595,6 @@ $(document).ready(function() {
           var cmpDespFinalTanque=$(formularioNuevo).find("input[elemento-grupo='despFinalTanque']");
           
           cmpMedidaInicialTanque.inputmask('decimal', {digits: 0, groupSeparator:',',autoGroup:true,groupSize:3});
-          //cmpMedidaFinalTanque.inputmask('decimal', {digits: 0, groupSeparator:',',autoGroup:true,groupSize:3});
           cmpVolObsInicialTanque.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
           cmpVolObsFinalTanque.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
           
@@ -603,21 +605,20 @@ $(document).ready(function() {
           cmpVol60FinalTanque.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
           cmpVolAguaFinalTanque.inputmask('decimal', {digits: 2, groupSeparator:',',autoGroup:true,groupSize:3});
           
-          cmpMedidaFinalTanque.on("change",function(){
+          cmpMedidaFinalTanque.on("change",function() {
         	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
         	  moduloActual.calcularVolumenObservadoFinal(cmpMedidaFinalTanque.val(), "GrupoCierreTanques", indiceFormulario);
           });
           
-          cmpTemperaturaFinalTanque.on("change",function(){
+          cmpTemperaturaFinalTanque.on("change",function() {
         	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
         	  moduloActual.calcularFactorCorreccion(cmpApi60FinalTanque.val(), cmpTemperaturaFinalTanque.val(), "GrupoCierreTanques", indiceFormulario);
           });
          
-          cmpApi60FinalTanque.on("change",function(){
+          cmpApi60FinalTanque.on("change",function() {
         	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(27);
         	  moduloActual.calcularFactorCorreccion(cmpApi60FinalTanque.val(), cmpTemperaturaFinalTanque.val(), "GrupoCierreTanques", indiceFormulario);
           });
-
       },
     });
 
@@ -651,12 +652,14 @@ $(document).ready(function() {
         minFormsCount: 1,
         iniFormsCount: 1,
         afterAdd: function(origen, formularioNuevo) {
+        	
           //tanque a cerrar
        	  var cmpIdTanqueJornadaFinal = $(formularioNuevo).find("select[elemento-grupo='idTanqueJornadaFinal']");
        	  var cmpIdTanqueFinal=$(formularioNuevo).find("input[elemento-grupo='idTanqueFinal']");
        	  var cmpDescripcionTanqueFinal=$(formularioNuevo).find("input[elemento-grupo='descripcionTanqueFinal']");
           var cmpIdProductoFinal=$(formularioNuevo).find("input[elemento-grupo='idProductoFinal']");
           var cmpDescripcionProductoFinal=$(formularioNuevo).find("input[elemento-grupo='descripcionProductoFinal']");
+          
           //medidas del tanque a cerrar
           var cmpHoraFinal=$(formularioNuevo).find("input[elemento-grupo='horaFinal']");
           var cmpMedidaFinal=$(formularioNuevo).find("input[elemento-grupo='medidaFinal']");
@@ -726,7 +729,6 @@ $(document).ready(function() {
 		  	    		cmpIdProductoFinal.val(registro.producto.id);
 		                cmpDescripcionProductoFinal.val(registro.producto.nombre);
 	  	    		}
-	  	    		
 	  	    	 } catch(error) {
  		    		console.log(error.message);
 	  	    	 };
@@ -1123,23 +1125,27 @@ $(document).ready(function() {
   	return retorno;
   };
 	  
-  moduloActual.calcularFactorCorreccion= function(apiCorregido, temperatura, nombreSheepit, indiceFormulario){
-	var ref=this;
-	var parametros={};
+  moduloActual.calcularFactorCorreccion = function(apiCorregido, temperatura, nombreSheepit, indiceFormulario) {
+	var ref = this;
+	var parametros = {};
 	var camposInvalidos = 0;
 	var factorCorreccion = 0;
 	var volumenCorregido = 0;
+
 	try {
+		
 		if ((typeof temperatura == "undefined") || (temperatura == null) || (temperatura == '')){
 		  camposInvalidos++;
 		}
 		if ((typeof apiCorregido == "undefined") || (apiCorregido == null) || (apiCorregido == '')){
 		  camposInvalidos++;
 		}
-		if (camposInvalidos == 0){
-		  parametros.apiCorregido=apiCorregido;
-		  parametros.temperatura=temperatura;
+		
+		if (camposInvalidos == 0) {
+		  parametros.apiCorregido = apiCorregido;
+		  parametros.temperatura = temperatura;
 		  parametros.volumenObservado = 0;
+		  parametros.idEstacion = ref.obj.idEstacionSeleccionado;
 
 		  $.ajax({
 		    type: constantes.PETICION_TIPO_GET,
@@ -1188,7 +1194,6 @@ $(document).ready(function() {
 		        	volumenCorregido = parseFloat(moduloActual.eliminaSeparadorComa(volObs)) * parseFloat(factorCorreccion);
 		  	      	formulario.find("input[elemento-grupo='factorInicial']").val(factorCorreccion.toFixed(6));
 		  	      	formulario.find("input[elemento-grupo='vol60Inicial']").val(volumenCorregido.toFixed(2));
-
 		        }
 		      }
 		    },
@@ -1197,7 +1202,7 @@ $(document).ready(function() {
 		    }
 		  });
 	  } 
-	} catch(error){
+	} catch(error) {
   	  moduloActual.mostrarDepuracion(error.message);
     };	
 };
@@ -1641,6 +1646,7 @@ $(document).ready(function() {
 		/**
 		 * Modificar altura del tbody de la tabla de contometros
 		 */
+	    referenciaModulo.obj.tableGrupoCierreContometros.addClass("loading");
 		var contometroRegistros = referenciaModulo.obj.tableGrupoCierreContometros.attr("data-contometro-registros");
 		
 		if (numeroContometros < contometroRegistros) {
@@ -1664,13 +1670,16 @@ $(document).ready(function() {
 		      
 	//	      Inicio se agrego matodo trailingZerosGlobal por req 9000003068
 	//	      se agrega lecIni lecFin y se setea en  formulario.find("input[elemento-grupo='lecturaInicial']").val y formulario.find("input[elemento-grupo='lecturaFinal']").val
-		      var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
-		      var lecFin = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinal);
+		      //var lecIni = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaInicial);
+		      //var lecFin = referenciaModulo.trailingZerosGlobal(registro.contometroJornada[contador].lecturaFinal);
+		      var lecIni = registro.contometroJornada[contador].lecturaInicialBigDecimal;
+		      var lecFin = registro.contometroJornada[contador].lecturaFinalStr; //lecturaFinalBigDecimal
 		      
-		      formulario.find("input[elemento-grupo='lecturaInicial']").val(lecIni);
-		      formulario.find("input[elemento-grupo='lecturaFinal']").val(lecFin);
+		      formulario.find("input[elemento-grupo='lecturaInicial']").val(trailingZeros(lecIni));
+		      formulario.find("input[elemento-grupo='lecturaFinal']").val(trailingZeros(lecFin));
 		      
-		      var diferencia = parseFloat(lecFin) - parseFloat(lecIni);
+		      //var diferencia = parseFloat(lecFin) - parseFloat(lecIni);
+		      var diferencia = trailingZerosDiferencia(lecIni, lecFin);
 	//	      Fin se agrego matodo trailingZerosGlobal por req 9000003068
 		      
 		      formulario.find("input[elemento-grupo='diferencia']").val(diferencia);
@@ -1687,14 +1696,13 @@ $(document).ready(function() {
 		    }
 		    
 		    referenciaModulo.obj.GrupoCierreTanques.removeAllForms();
-		    //referenciaModulo.obj.GrupoCierreProducto.removeAllForms();
 		    for(var cont = 0; cont < numeroTanques; cont++){
 		      referenciaModulo.obj.GrupoCierreTanques.addForm();
 		      var formularioCierreTanque= referenciaModulo.obj.GrupoCierreTanques.getForm(cont);
 		      
 //		      agregado por req 9000003068===============================================================================
 		      
-		      if (cont%2) {	// par o impar
+		      if (cont % 2) {	// par o impar
 		    	  formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#F2DEF5');
 		      } else {
 		    	  formularioCierreTanque.find("table[elemento-grupo='idTablaTanque']").css('background-color','#DBF3DF');
@@ -1976,7 +1984,7 @@ $(document).ready(function() {
     	
     	var decimalesContometro = moduloActual.obj.numeroDecimalesContometro;
     	var objCon = registro.contometroJornada[k];
-        var diferencia = trailingZerosDiferencia(objCon);
+        var diferencia = trailingZerosDiferencia(objCon.lecturaInicialStr, objCon.lecturaFinalStr);
       
 	      g_tr  = '<tr><td class="text-left">'+objCon.contometro.alias  + '</td>' + // contometro
 	    		'    <td class="text-left">'  +objCon.producto.nombre   + '</td>' + // producto
@@ -2328,9 +2336,9 @@ moduloActual.resetearFormularioCambioTanque= function(){
   moduloActual.obj.cmpOperador2.empty().append(elemento1).val(0).trigger('change');
 };
 
-moduloActual.resetearFormularioMuestreo= function(){
+moduloActual.resetearFormularioMuestreo = function(){
 
-  var referenciaModulo= this;
+  var referenciaModulo = this;
   referenciaModulo.obj.frmMuestreo[0].reset();
 
   var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
@@ -2355,22 +2363,62 @@ function delay(callback, ms) {
     };
 }
 
-function trailingZerosDiferencia(objCon) {
+function trailingZerosDiferencia(lecturaInicial, lecturaFinal) {
+
+	var numeroDecimalesContometro = moduloActual.obj.numeroDecimalesContometro;
 	
-	var different = parseFloat(objCon.lecturaFinalStr) - parseFloat(objCon.lecturaInicialStr);
+	var different = lecturaFinal - lecturaInicial;
+	different = Math.round(different * 1000000) / 1000000;
 	
-	if (!different.toString().includes(".") || !different.toString().split(".").length >= 2) {
+	console.log("lecturaFinal:: " + lecturaFinal + " -- different:: " + different);
+	
+	if (different.toString() == "0") {
+		return "0.000000".substring(0, (numeroDecimalesContometro + 2));
+	}
+	
+	if (different.toString().indexOf(".") < 0 || !different.toString().split(".").length >= 2) {
 		return different;
 	}
-	  
-	var lecturaFinalArray = objCon.lecturaFinalStr.toString().split(".");
-	var decimalLecturaFinal = lecturaFinalArray[1];
 	
 	var differentArray = different.toString().split(".");
-	var integerDifferent = differentArray[0];
-	var decimalDifferent = differentArray[1];
+	var integer = differentArray[0];
+	var decimal = differentArray[1];
 	
-	return integerDifferent + "." + decimalDifferent.substring(0, decimalLecturaFinal.length);
+	if (decimal.length < numeroDecimalesContometro) {
+		while (decimal.length < numeroDecimalesContometro) {
+			decimal = decimal + "0";
+		}
+		return integer + "." + decimal;
+	}
+	
+	return integer + "." + decimal.substring(0, numeroDecimalesContometro);
+}
+
+
+function trailingZeros(num) {
+
+	var numeroDecimalesContometro = moduloActual.obj.numeroDecimalesContometro;
+	
+	if (num.toString() == "0") {
+		return "0.000000".substring(0, (numeroDecimalesContometro + 2));
+	}
+	
+	if (num.toString().indexOf(".") < 0 || !num.toString().split(".").length >= 2) {
+		return num;
+	}
+	
+	var numArray = num.toString().split(".");
+	var integer = numArray[0];
+	var decimal = numArray[1];
+	
+	if (decimal.length < numeroDecimalesContometro) {
+		while (decimal.length < numeroDecimalesContometro) {
+			decimal = decimal + "0";
+		}
+		return integer + "." + decimal;
+	}
+	
+	return integer + "." + decimal.substring(0, numeroDecimalesContometro);
 }
 //Fin Agregado por req 9000003068===========================	
 

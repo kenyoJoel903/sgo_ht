@@ -65,14 +65,12 @@ $(document).ready(function() {
 	moduloActual.definicionColumnasTurno.push({"targets" : 9, "searchable" : true, "orderable" : false, "visible" : false });
 	moduloActual.definicionColumnasTurno.push({"targets" : 10, "searchable" : true, "orderable" : false, "visible" : false });
 
-	moduloActual.reglasValidacionFormulario={
-	   //cmpFechaHoraInicio : { fechahora: true },
+	moduloActual.reglasValidacionFormulario = {
 	   cmpHoraInicio :     { required: true },
 	   cmpOperarioResponsable: { required: true}
 	};
 
-  moduloActual.mensajesValidacionFormulario={
-	//cmpFechaHoraInicio: 	{ fechahora: "El campo 'Fecha y Hora Inicio' es obligatorio" },
+  moduloActual.mensajesValidacionFormulario = {
 	cmpHoraInicio: 			{ required: "El campo 'Hora Apertura' es obligatorio" },
 	cmpOperarioResponsable: { required: "El campo 'Responsable' es obligatorio" },
   };
@@ -84,17 +82,13 @@ $(document).ready(function() {
 	      rules: referenciaModulo.reglasValidacionFormulario,
 	      messages: referenciaModulo.mensajesValidacionFormulario,
 	    highlight: function(element, errorClass, validClass) {
-	      //$(element.form).find("label[for=" + element.id + "]").addClass(errorClass);
 	      $("#cnt" + $(element).attr("id")).removeClass(validClass).addClass(errorClass);
 	    },
 	    unhighlight: function(element, errorClass, validClass) {
 	      $("#cnt" + $(element).attr("id")).removeClass(errorClass).addClass(validClass);
-	      //$(element.form).find("label[for=" + element.id + "]").removeClass(errorClass);
 	    },
 	    errorPlacement: function(error, element) {
-	      console.log("errorPlacement");
-	      console.log(error);
-	      //referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,mensaje);      
+	      console.log(error);     
 	    },
 	    errorClass: "has-error",
 	    validClass: "has-success",
@@ -508,7 +502,6 @@ moduloActual.llenarApertura = function(registro) {
 	moduloActual.obj.grupoApertura.css("height", contometroRegistros * 25);
 	
     var numeroDetalles = registro.length;
-    //moduloActual.obj.cmpHoraInicio.val(utilitario.formatearTimestampToStringSoloHora(registro[0].turno.fechaHoraCierre));
     var cmpHoraInicioDate = utilitario.formatearTimestampToString(registro[0].turno.fechaHoraCierre);
     moduloActual.obj.cmpHoraInicio.val(cmpHoraInicioDate);
     moduloActual.obj.cmpObservacionApertura.val("");

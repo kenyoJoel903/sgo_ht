@@ -78,53 +78,59 @@ public class TanqueDao {
 	}
 
 	public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+		
 		String sqlLimit = "";
 		String sqlOrderBy="";
-		List<String> filtrosWhere= new ArrayList<String>();
-		String sqlWhere="";
+		List<String> filtrosWhere = new ArrayList<String>();
+		String sqlWhere = "";
 		int totalRegistros = 0, 
 		totalEncontrados = 0;
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		Contenido<Tanque> contenido = new Contenido<Tanque>();
 		List<Tanque> listaRegistros = new ArrayList<Tanque>();
 		List<Object> parametros = new ArrayList<Object>();
+		
 		try {
+			
 			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
 				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
 				parametros.add(argumentosListar.getInicioPaginacion());
 				parametros.add(argumentosListar.getRegistrosxPagina());
 			}
 			
-			sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
+			sqlOrderBy = " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
 			
 			StringBuilder consultaSQL = new StringBuilder();
 			consultaSQL.setLength(0);
 			consultaSQL.append("SELECT count(" + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_TABLA);
 			totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
-			totalEncontrados=totalRegistros;
+			totalEncontrados = totalRegistros;
 			
-			if (!argumentosListar.getValorBuscado().isEmpty()){
+			if (!argumentosListar.getValorBuscado().isEmpty()) {
 				filtrosWhere.add("lower(t1."+NOMBRE_CAMPO_FILTRO+") like lower('%"+ argumentosListar.getValorBuscado() +"%') ");
 			}
-			if (!argumentosListar.getTxtFiltro().isEmpty()){
+			
+			if (!argumentosListar.getTxtFiltro().isEmpty()) {
 				filtrosWhere.add("lower(t1."+NOMBRE_CAMPO_FILTRO+") like lower('%"+ argumentosListar.getTxtFiltro() +"%') ");
 			}
-			if(argumentosListar.getFiltroEstado() != Constante.FILTRO_TODOS){
+			
+			if(argumentosListar.getFiltroEstado() != Constante.FILTRO_TODOS) {
 				filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTADO + "=" + argumentosListar.getFiltroEstado());
 			}
 			
-			if ((argumentosListar.getFiltroOperacion() != Constante.FILTRO_TODOS) && ((argumentosListar.getFiltroOperacion() != Constante.FILTRO_NINGUNO))){
+			if ((argumentosListar.getFiltroOperacion() != Constante.FILTRO_TODOS) && ((argumentosListar.getFiltroOperacion() != Constante.FILTRO_NINGUNO))) {
 		        filtrosWhere.add(" t1.id_operacion = " + argumentosListar.getFiltroOperacion());
-		      }
+		    }
+			
 			if ((argumentosListar.getIdTanque() != Constante.FILTRO_TODOS) && ((argumentosListar.getIdTanque() != Constante.FILTRO_NINGUNO))){
 		        filtrosWhere.add(" t1.id_tanque = " + argumentosListar.getIdTanque());
-		      }
+	        }
 			
-	    if ((argumentosListar.getFiltroEstacion() != Constante.FILTRO_TODOS) && ((argumentosListar.getFiltroEstacion() != Constante.FILTRO_NINGUNO))){
-        filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTACION + "=" + argumentosListar.getFiltroEstacion());
-      }
+		    if ((argumentosListar.getFiltroEstacion() != Constante.FILTRO_TODOS) && ((argumentosListar.getFiltroEstacion() != Constante.FILTRO_NINGUNO))) {
+		    	filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTACION + "=" + argumentosListar.getFiltroEstacion());
+		    }
 			
-			if(!filtrosWhere.isEmpty()){
+			if (!filtrosWhere.isEmpty()) {
 				consultaSQL.setLength(0);
 				sqlWhere = "WHERE " + StringUtils.join(filtrosWhere, Constante.SQL_Y);				
 				consultaSQL.append("SELECT count(t1." + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_VISTA + " t1 " + sqlWhere);
@@ -160,23 +166,25 @@ public class TanqueDao {
 			consultaSQL.append(sqlWhere);
 			consultaSQL.append(sqlOrderBy);
 			consultaSQL.append(sqlLimit);
-			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new TanqueMapper());
+			
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(), parametros.toArray(), new TanqueMapper());
 			contenido.carga = listaRegistros;
 			respuesta.estado = true;
 			respuesta.contenido = contenido;
 			respuesta.contenido.totalRegistros = totalRegistros;
 			respuesta.contenido.totalEncontrados = totalEncontrados;
-		} catch (DataAccessException excepcionAccesoDatos) {
-			excepcionAccesoDatos.printStackTrace();
-			respuesta.error=  Constante.EXCEPCION_ACCESO_DATOS;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			respuesta.error =  Constante.EXCEPCION_ACCESO_DATOS;
 			respuesta.estado = false;
-			respuesta.contenido=null;
-		} catch (Exception excepcionGenerica) {
-			excepcionGenerica.printStackTrace();
+			respuesta.contenido = null;
+		} catch (Exception e) {
+			e.printStackTrace();
 			respuesta.error= Constante.EXCEPCION_GENERICA;
-			respuesta.contenido=null;
+			respuesta.contenido = null;
 			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	
