@@ -808,8 +808,8 @@ $(document).ready(function() {
 	  $("#cmpIdTanque").prop('disabled', true);
   };
 
-  moduloActual.llenarFormulario = function(registro){
-	  var referenciaModulo=this;
+  moduloActual.llenarFormulario = function(registro) {
+	  var referenciaModulo = this;
 	  this.idRegistro = referenciaModulo.idDespacho;
 
 	  var elemento1 = constantes.PLANTILLA_OPCION_SELECTBOX;
@@ -831,28 +831,45 @@ $(document).ready(function() {
 	  elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, registro.tanque.id);
 	  elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.tanque.descripcion);
 	  this.obj.cmpIdTanque.empty().append(elemento1).val(registro.tanque.id).trigger('change');
+	  
 	  this.obj.cmpTipoRegistro = registro.tipoRegistro;
 	  this.obj.cmpIdClasificacion.val(registro.clasificacion);
 	  this.obj.cmpIdPropietario.val(registro.vehiculo.propietario.razonSocial);
 	  this.obj.cmpKmHorometro.val(registro.kilometroHorometro);
 	  this.obj.cmpNumeroVale.val(registro.numeroVale);
-	  //this.obj.cmpFechaInicio.val(utilitario.formatearTimestampToString(registro.fechaHoraInicio));
-	  //this.obj.cmpFechaFin.val(utilitario.formatearTimestampToString(registro.fechaHoraFin));
 	  this.obj.cmpHoraInicio.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraInicio));
 	  this.obj.cmpHoraFin.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraFin));
-	  this.obj.cmpVolObservado.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
-	  this.obj.cmpVolObservado.val(registro.volumenObservado.toFixed(2));
-	  this.obj.cmpVolumen60.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
-	  this.obj.cmpVolumen60.val(registro.volumenCorregido.toFixed(2));
-	
-	  this.obj.cmpLecturaInicial.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
+	  this.obj.cmpVolObservado.inputmask('decimal', {
+		  	digits: registro.nroDecimales,
+		  	groupSeparator:',',
+		  	autoGroup:true,
+		  	groupSize:3
+	  });
+	  this.obj.cmpVolObservado.val(registro.volumenObservadoBigDecimal.toFixed(registro.nroDecimales));
+	  this.obj.cmpVolumen60.inputmask('decimal', {
+		  digits: registro.nroDecimales,
+		  groupSeparator:',',
+		  autoGroup:true,
+		  groupSize:3
+	  });
+	  this.obj.cmpVolumen60.val(registro.volumenCorregidoBigDecimal.toFixed(registro.nroDecimales));
+	  this.obj.cmpLecturaInicial.inputmask('decimal', {
+		  digits: registro.nroDecimales,
+		  groupSeparator:',',
+		  autoGroup:true,
+		  groupSize:3
+	  });
 	  this.obj.cmpLecturaInicial.val(parseFloat(registro.lecturaInicial).toFixed(registro.nroDecimales));
-	  this.obj.cmpLecturaFinal.inputmask('decimal', {digits: registro.nroDecimales, groupSeparator:',',autoGroup:true,groupSize:3});
+	  this.obj.cmpLecturaFinal.inputmask('decimal', {
+		  digits: registro.nroDecimales,
+		  groupSeparator:',',
+		  autoGroup:true,
+		  groupSize:3
+	  });
 	  this.obj.cmpLecturaFinal.val(parseFloat(registro.lecturaFinal).toFixed(registro.nroDecimales));
 	  this.obj.cmpFactor.val(registro.factorCorreccion.toFixed(6));	  
 	  this.obj.cmpAPI60.val(registro.apiCorregido.toFixed(1));
   	  this.obj.cmpTemperatura.val(registro.temperatura.toFixed(2));
-  	  
   	  this.obj.idTurno.val(registro.idTurno);
   };
 

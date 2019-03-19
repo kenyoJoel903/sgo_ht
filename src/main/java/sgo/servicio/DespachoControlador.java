@@ -386,9 +386,10 @@ public @ResponseBody RespuestaCompuesta recuperarRegistros(HttpServletRequest ht
 }	
 
 @RequestMapping(value = URL_RECUPERAR_RELATIVA, method = RequestMethod.GET)
-public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale){
+public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
 	RespuestaCompuesta respuesta = null;
 	AuthenticatedUserDetails principal = null;
+	
 	try {			
 		//Recupera el usuario actual
 		principal = this.getCurrentUser(); 
@@ -400,21 +401,22 @@ public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale){
 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
-			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
+			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
 		}
 		//Recuperar el registro
     	respuesta= dDespacho.recuperarRegistro(ID);
     	//Verifica el resultado de la accion
         if (respuesta.estado==false){        	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+        	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
         }
-     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
-	} catch (Exception ex){
-		ex.printStackTrace();
-		respuesta.estado=false;
+     	respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+	} catch (Exception e) {
+		e.printStackTrace();
+		respuesta.estado = false;
 		respuesta.contenido = null;
-		respuesta.mensaje=ex.getMessage();
+		respuesta.mensaje = e.getMessage();
 	}
+	
 	return respuesta;
 }
 

@@ -49,6 +49,7 @@ public class DespachoMapper implements RowMapper<Despacho>{
 			eDespacho.setApiCorregido(rs.getFloat("api_corregido"));
 			eDespacho.setTemperatura(rs.getFloat("temperatura"));
 			eDespacho.setVolumenCorregido(rs.getFloat("volumen_corregido"));
+			eDespacho.setVolumenCorregidoBigDecimal(rs.getBigDecimal("volumen_corregido"));
 			eDespacho.setVolumenObservado(rs.getFloat("volumen_observado"));
 			eDespacho.setVolumenObservadoBigDecimal(rs.getBigDecimal("volumen_observado"));
 			eDespacho.setIdTanque(rs.getInt("id_tanque"));

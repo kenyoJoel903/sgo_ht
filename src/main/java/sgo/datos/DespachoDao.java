@@ -240,11 +240,12 @@ public class DespachoDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta recuperarRegistro(int ID){
-		StringBuilder consultaSQL= new StringBuilder();		
-		List<Despacho> listaRegistros=new ArrayList<Despacho>();
+	public RespuestaCompuesta recuperarRegistro(int ID) {
+		StringBuilder consultaSQL = new StringBuilder();		
+		List<Despacho> listaRegistros = new ArrayList<Despacho>();
 		Contenido<Despacho> contenido = new Contenido<Despacho>();
-		RespuestaCompuesta respuesta= new RespuestaCompuesta();
+		RespuestaCompuesta respuesta = new RespuestaCompuesta();
+		
 		try {
 			consultaSQL.setLength(0);
 			consultaSQL.append("SELECT ");
@@ -307,19 +308,21 @@ public class DespachoDao {
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=?");
-			listaRegistros= jdbcTemplate.query(consultaSQL.toString(),new Object[] {ID},new DespachoMapper());
-			contenido.totalRegistros=listaRegistros.size();
-			contenido.totalEncontrados=listaRegistros.size();
-			contenido.carga= listaRegistros;
-			respuesta.mensaje="OK";
-			respuesta.estado=true;
+			
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(), new Object[] {ID}, new DespachoMapper());
+			contenido.totalRegistros = listaRegistros.size();
+			contenido.totalEncontrados = listaRegistros.size();
+			contenido.carga = listaRegistros;
+			respuesta.mensaje = "OK";
+			respuesta.estado = true;
 			respuesta.contenido = contenido;			
-		} catch (DataAccessException excepcionAccesoDatos) {
-			excepcionAccesoDatos.printStackTrace();
+		} catch (DataAccessException e) {
+			e.printStackTrace();
 			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
-			respuesta.contenido=null;
+			respuesta.estado = false;
+			respuesta.contenido = null;
 		}
+		
 		return respuesta;
 	}
 	
