@@ -561,21 +561,21 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
         eDespacho.setIpActualizacion(direccionIp);
         
         //RECUPERAR DESPACHO ANTES DE LA MODIFICACION
-        respuesta= dDespacho.recuperarRegistro(eDespacho.getId());
-	    if (respuesta.estado == false) {
+        respuesta = dDespacho.recuperarRegistro(eDespacho.getId());
+	    if (!respuesta.estado) {
 		     throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
 		}
 	    
-	    Despacho despachoAnterior=(Despacho)respuesta.contenido.getCarga().get(0);
+	    Despacho despachoAnterior = (Despacho)respuesta.contenido.getCarga().get(0);
 	    int estadoDespacho = despachoAnterior.getTipoRegistro();
-	    if(estadoDespacho==Despacho.ORIGEN_FICHERO){
+	    if(estadoDespacho == Despacho.ORIGEN_FICHERO) {
 	    	eDespacho.setTipoRegistro(Despacho.ORIGEN_MIXTO);
 	    }
 	    
 	    eDespacho.setFlagCalculoCorregido(despachoAnterior.getFlagCalculoCorregido());
         respuesta= dDespacho.actualizarRegistro(eDespacho);
-        if (respuesta.estado==false){          	
-        	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido",null,locale));
+        if (!respuesta.estado) {          	
+        	throw new Exception(gestorDiccionario.getMessage("sgo.actualizarFallido", null, locale));
         }
         
         //Guardar en la bitacora
@@ -587,12 +587,19 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
         eBitacora.setContenido( mapper.writeValueAsString(eDespacho));
         eBitacora.setRealizadoEl(eDespacho.getActualizadoEl());
         eBitacora.setRealizadoPor(eDespacho.getActualizadoPor());
-        respuesta= dBitacora.guardarRegistro(eBitacora);
-        if (respuesta.estado==false){     	
+        respuesta = dBitacora.guardarRegistro(eBitacora);
+        if (!respuesta.estado){     	
           	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
         }
         
-    	respuesta.mensaje=gestorDiccionario.getMessage("sgo.actualizarExitoso",new Object[] {  eDespacho.getFechaActualizacion().substring(0, 9),eDespacho.getFechaActualizacion().substring(10),principal.getIdentidad() },locale);
+    	respuesta.mensaje = gestorDiccionario.getMessage(
+			"sgo.actualizarExitoso",
+			new Object[] {
+    			eDespacho.getFechaActualizacion().substring(0, 9),
+    			eDespacho.getFechaActualizacion().substring(10),
+    			principal.getIdentidad()
+			},
+			locale);
     	this.transaccion.commit(estadoTransaccion);
     	
 	} catch (Exception e) {

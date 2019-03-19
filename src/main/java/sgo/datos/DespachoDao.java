@@ -426,44 +426,43 @@ public class DespachoDao {
 			consultaSQL.append("estado			=:Estado,");
 			consultaSQL.append("actualizado_por	=:ActualizadoPor,");
 			consultaSQL.append("actualizado_el	=:ActualizadoEl,");
-			
 			consultaSQL.append("flag_calculo_corregido=:FlagCalculoCorregido,");
-			
 			consultaSQL.append("ip_actualizacion=:IpActualizacion");
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=:Id");
-			MapSqlParameterSource listaParametros= new MapSqlParameterSource();
-			listaParametros.addValue("IdJornada", despacho.getIdJornada());
-			listaParametros.addValue("IdVehiculo", despacho.getIdVehiculo());
-			listaParametros.addValue("KilometroHorometro", despacho.getKilometroHorometro());
-			listaParametros.addValue("NumeroVale", despacho.getNumeroVale());
-			listaParametros.addValue("TipoRegistro", despacho.getTipoRegistro());
-			listaParametros.addValue("FechaHoraInicio", despacho.getFechaHoraInicio());
-			listaParametros.addValue("FechaHoraFin", despacho.getFechaHoraFin());
-			listaParametros.addValue("Clasificacion", despacho.getClasificacion());
-			listaParametros.addValue("IdProducto", despacho.getIdProducto());
-			listaParametros.addValue("LecturaInicial", despacho.getLecturaInicial());
-			listaParametros.addValue("LecturaFinal", despacho.getLecturaFinal());
-			listaParametros.addValue("FactorCorreccion", despacho.getFactorCorreccion());
-			listaParametros.addValue("ApiCorregido", despacho.getApiCorregido());
-			listaParametros.addValue("Temperatura", despacho.getTemperatura());
-			listaParametros.addValue("VolumenCorregido", despacho.getVolumenCorregido());
-			listaParametros.addValue("VolumenObservado", despacho.getVolumenObservado());
-			listaParametros.addValue("IdTanque", despacho.getIdTanque());
-			listaParametros.addValue("IdContometro", despacho.getIdContometro());
-			listaParametros.addValue("Estado", despacho.getEstado());
-			listaParametros.addValue("FlagCalculoCorregido", despacho.getFlagCalculoCorregido());
+			
+			MapSqlParameterSource parameter = new MapSqlParameterSource();
+			parameter.addValue("IdJornada", despacho.getIdJornada());
+			parameter.addValue("IdVehiculo", despacho.getIdVehiculo());
+			parameter.addValue("KilometroHorometro", despacho.getKilometroHorometro());
+			parameter.addValue("NumeroVale", despacho.getNumeroVale());
+			parameter.addValue("TipoRegistro", despacho.getTipoRegistro());
+			parameter.addValue("FechaHoraInicio", despacho.getFechaHoraInicio());
+			parameter.addValue("FechaHoraFin", despacho.getFechaHoraFin());
+			parameter.addValue("Clasificacion", despacho.getClasificacion());
+			parameter.addValue("IdProducto", despacho.getIdProducto());
+			parameter.addValue("LecturaInicial", despacho.getLecturaInicialBigDecimal());
+			parameter.addValue("LecturaFinal", despacho.getLecturaFinalBigDecimal());
+			parameter.addValue("FactorCorreccion", despacho.getFactorCorreccion());
+			parameter.addValue("ApiCorregido", despacho.getApiCorregido());
+			parameter.addValue("Temperatura", despacho.getTemperatura());
+			parameter.addValue("VolumenCorregido", despacho.getVolumenCorregidoBigDecimal());
+			parameter.addValue("VolumenObservado", despacho.getVolumenObservadoBigDecimal());
+			parameter.addValue("IdTanque", despacho.getIdTanque());
+			parameter.addValue("IdContometro", despacho.getIdContometro());
+			parameter.addValue("Estado", despacho.getEstado());
+			parameter.addValue("FlagCalculoCorregido", despacho.getFlagCalculoCorregido());
 			//Valores Auditoria
-			listaParametros.addValue("ActualizadoEl", despacho.getActualizadoEl());
-			listaParametros.addValue("ActualizadoPor", despacho.getActualizadoPor());
-			listaParametros.addValue("IpActualizacion", despacho.getIpActualizacion());
-			listaParametros.addValue("Id", despacho.getId());
-			SqlParameterSource namedParameters= listaParametros;
+			parameter.addValue("ActualizadoEl", despacho.getActualizadoEl());
+			parameter.addValue("ActualizadoPor", despacho.getActualizadoPor());
+			parameter.addValue("IpActualizacion", despacho.getIpActualizacion());
+			parameter.addValue("Id", despacho.getId());
+			SqlParameterSource namedParameters = parameter;
 			
 			/*Ejecuta la consulta y retorna las filas afectadas*/
-			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);		
-			if (cantidadFilasAfectadas>1){
+			cantidadFilasAfectadas = namedJdbcTemplate.update(consultaSQL.toString(), namedParameters);		
+			if (cantidadFilasAfectadas > 1) {
 				respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
 				respuesta.estado = false;
 				return respuesta;
@@ -478,14 +477,17 @@ public class DespachoDao {
 			respuesta.error= Constante.EXCEPCION_ACCESO_DATOS;
 			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta eliminarRegistro(int idRegistro){		
+	public RespuestaCompuesta eliminarRegistro(int idRegistro) {
+		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		int cantidadFilasAfectadas=0;	
 		String consultaSQL="";
 		Object[] parametros = {idRegistro};
+		
 		try {
 			consultaSQL="DELETE FROM " + NOMBRE_TABLA + " WHERE " + NOMBRE_CAMPO_CLAVE + "=?";
         	cantidadFilasAfectadas = jdbcTemplate.update(consultaSQL, parametros);
@@ -522,7 +524,7 @@ public class DespachoDao {
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=:Id");
-			MapSqlParameterSource listaParametros= new MapSqlParameterSource();
+			MapSqlParameterSource listaParametros = new MapSqlParameterSource();
 			listaParametros.addValue("Estado", despacho.getEstado());
 			listaParametros.addValue("ActualizadoEl", despacho.getActualizadoEl());
 			listaParametros.addValue("ActualizadoPor", despacho.getActualizadoPor());
