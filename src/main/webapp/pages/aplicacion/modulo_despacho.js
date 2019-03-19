@@ -1239,15 +1239,17 @@ moduloDespacho.prototype.guardarRegistro = function() {
 	}
 };
 
-moduloDespacho.prototype.actualizarRegistro= function(){
+moduloDespacho.prototype.actualizarRegistro = function(){
   //Ocultar alertas de mensaje
   var referenciaModulo = this;
   if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")){
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
-	} else if (referenciaModulo.obj.frmPrincipal.valid()){
+  } else if (referenciaModulo.obj.frmPrincipal.valid()) {
+	  
     referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
     referenciaModulo.obj.ocultaContenedorFormulario.show();
     var eRegistro = referenciaModulo.recuperarValores();
+    
     $.ajax({
       type: constantes.PETICION_TIPO_POST,
       url: referenciaModulo.URL_ACTUALIZAR, 

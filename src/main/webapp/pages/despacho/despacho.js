@@ -840,10 +840,10 @@ $(document).ready(function() {
 	  this.obj.cmpHoraInicio.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraInicio));
 	  this.obj.cmpHoraFin.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraFin));
 	  this.obj.cmpVolObservado.inputmask('decimal', {
-		  	digits: registro.nroDecimales,
-		  	groupSeparator:',',
-		  	autoGroup:true,
-		  	groupSize:3
+		  digits: registro.nroDecimales,
+		  groupSeparator:',',
+		  autoGroup:true,
+		  groupSize:3
 	  });
 	  this.obj.cmpVolObservado.val(registro.volumenObservadoBigDecimal.toFixed(registro.nroDecimales));
 	  this.obj.cmpVolumen60.inputmask('decimal', {
@@ -859,14 +859,14 @@ $(document).ready(function() {
 		  autoGroup:true,
 		  groupSize:3
 	  });
-	  this.obj.cmpLecturaInicial.val(parseFloat(registro.lecturaInicial).toFixed(registro.nroDecimales));
+	  this.obj.cmpLecturaInicial.val(registro.lecturaInicialBigDecimal.toFixed(registro.nroDecimales));
 	  this.obj.cmpLecturaFinal.inputmask('decimal', {
 		  digits: registro.nroDecimales,
 		  groupSeparator:',',
 		  autoGroup:true,
 		  groupSize:3
 	  });
-	  this.obj.cmpLecturaFinal.val(parseFloat(registro.lecturaFinal).toFixed(registro.nroDecimales));
+	  this.obj.cmpLecturaFinal.val(registro.lecturaFinalBigDecimal.toFixed(registro.nroDecimales));
 	  this.obj.cmpFactor.val(registro.factorCorreccion.toFixed(6));	  
 	  this.obj.cmpAPI60.val(registro.apiCorregido.toFixed(1));
   	  this.obj.cmpTemperatura.val(registro.temperatura.toFixed(2));
@@ -895,7 +895,6 @@ $(document).ready(function() {
 //	    Inicio modificado por req 9000003068
 	    eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraInicio.val());
 	    eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraFin.val());
-	    
 	    eRegistro.idTurno = referenciaModulo.obj.idTurno.val();
 //	    Fin modificado por req 9000003068
 
