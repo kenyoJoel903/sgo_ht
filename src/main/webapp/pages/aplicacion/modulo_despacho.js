@@ -638,8 +638,6 @@ moduloDespacho.prototype.actualizarDetalle = function(){
 	var referenciaModulo = this;
 	try {
 		referenciaModulo.modoEdicion = constantes.MODO_DETALLE_DESPACHO;
-	    //referenciaModulo.obj.tituloSeccion.text(cadenas.TITULO_DETALLE_DESPACHO);
-	    //referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, cadenas.INICIAR_DETALLE_DESPACHO);
 	    referenciaModulo.obj.cntTabla.hide();
 	    referenciaModulo.obj.cntImportacion.hide();
 	    referenciaModulo.obj.cntVistaImportacion.hide();
@@ -1004,6 +1002,7 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 	          }
 	          
 	          d.idJornada = idJornada;
+	          referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, "Listado con éxito.");
 	      }
 	    },
 	    "columns": referenciaModulo.columnasGrillaDespacho,
