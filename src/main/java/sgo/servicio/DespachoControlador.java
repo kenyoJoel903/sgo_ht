@@ -444,12 +444,12 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		principal = this.getCurrentUser(); 
 		//Recuperar el enlace de la accion
 		respuesta = dEnlace.recuperarRegistro(URL_GUARDAR_COMPLETA);
-		if (respuesta.estado==false){
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 		}
 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
-		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
+		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
 		}
 		//Actualiza los datos de auditoria local
@@ -466,7 +466,9 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 			throw new Exception(gestorDiccionario.getMessage("sgo.errorFechaFin",null,locale));
 		}
 
-        eDespacho.setVolumenObservadoBigDecimal(eDespacho.getLecturaFinalBigDecimal().subtract(eDespacho.getLecturaInicialBigDecimal()));
+		eDespacho.setVolumenCorregidoBigDecimal(
+			eDespacho.getVolumenCorregidoBigDecimal() != null ? eDespacho.getVolumenCorregidoBigDecimal() : new BigDecimal(0)
+		);
 		eDespacho.setIdContometro(eDespacho.getIdContometro());
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
@@ -542,7 +544,7 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
 		principal = this.getCurrentUser();
 		//Recuperar el enlace de la accion
 		respuesta = dEnlace.recuperarRegistro(URL_ACTUALIZAR_COMPLETA);
-		if (respuesta.estado==false){
+		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 		}
 		
@@ -574,6 +576,9 @@ RespuestaCompuesta actualizarRegistro(@RequestBody Despacho eDespacho, HttpServl
 	    	eDespacho.setTipoRegistro(Despacho.ORIGEN_MIXTO);
 	    }
 	    
+		eDespacho.setVolumenCorregidoBigDecimal(
+				eDespacho.getVolumenCorregidoBigDecimal() != null ? eDespacho.getVolumenCorregidoBigDecimal() : new BigDecimal(0)
+		);
 	    eDespacho.setFlagCalculoCorregido(despachoAnterior.getFlagCalculoCorregido());
         respuesta= dDespacho.actualizarRegistro(eDespacho);
         if (!respuesta.estado) {          	
@@ -1062,13 +1067,10 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
     	  }
       }
       
+      despacho.setVolumenCorregidoBigDecimal(new BigDecimal(0));
       if (numero_columna > 15) {
           if(columnas[15] != null && !columnas[15].isEmpty()) {
-        	  /*
-        	  volumen_corregido = Float.parseFloat(columnas[15]);
-        	  despacho.setVolumenCorregido(volumen_corregido);
-        	  */
-        	  
+
               String volCorregido = Utilidades.trailingZeros(columnas[15], nroDec);
               BigDecimal volCorregidoBd = Utilidades.strToBigDecimal(volCorregido);
               despacho.setVolumenCorregidoBigDecimal(volCorregidoBd);
@@ -1079,13 +1081,6 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
               
           } else {
         	  if (despacho.getFactorCorreccion() > 0) {
-        		  /*
-            	  volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
-            	  volumen_corregido = (volumen_corregido* 1000)/1000;
-            	  despacho.setVolumenCorregido(volumen_corregido);
-            	  */
-                  //String volCorregido = Utilidades.trailingZeros(volumen_corregido, nroDec);
-                  //BigDecimal volCorregidoBd = Utilidades.strToBigDecimal(volCorregido);
             	  
         		  BigDecimal volCorregidoBd = despacho.getVolumenObservadoBigDecimal().multiply(
         				Utilidades.floatToBigDecimal(despacho.getFactorCorreccion())
@@ -1098,14 +1093,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
           }
       } else {
     	  if (despacho.getFactorCorreccion() > 0) {
-    		  /*
-        	  volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
-        	  volumen_corregido = (volumen_corregido* 1000)/1000;
-        	  despacho.setVolumenCorregido(volumen_corregido);
-        	  */
-        	  
-    		  //volumen_corregido = despacho.getFactorCorreccion() * despacho.getVolumenObservado();
-    		  
+
     		  BigDecimal volCorregidoBd = despacho.getVolumenObservadoBigDecimal().multiply(
     				Utilidades.floatToBigDecimal(despacho.getFactorCorreccion())
     		  );

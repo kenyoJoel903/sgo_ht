@@ -845,6 +845,7 @@ $(document).ready(function() {
 		  autoGroup:true,
 		  groupSize:3
 	  });
+
 	  this.obj.cmpVolObservado.val(registro.volumenObservadoBigDecimal.toFixed(registro.nroDecimales));
 	  this.obj.cmpVolumen60.inputmask('decimal', {
 		  digits: registro.nroDecimales,
