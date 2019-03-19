@@ -1070,7 +1070,7 @@ moduloActual.recuperaExtension = function(str, suffix) {
 		}
 		
 		if (num.toString().indexOf(".") < 0 || !num.toString().split(".").length >= 2) {
-			return different;
+			return num;
 		}
 		
 		var numArray = num.toString().split(".");
