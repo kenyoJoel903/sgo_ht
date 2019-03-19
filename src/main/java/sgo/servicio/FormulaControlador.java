@@ -495,7 +495,7 @@ RespuestaCompuesta recuperarFactorCorreccion(HttpServletRequest httpRequest, Loc
         factorCorreccionVolumen = Formula.calcularFactorCorreccion(apiCorregido, temperaturaCentro);
         volumenCorregido = factorCorreccionVolumen * volumenObservado;
         String volumenCorregidoStr = Utilidades.doubleToStr(volumenCorregido);
-        volumenCorregidoStr = Utilidades.trailingZeros(volumenCorregido, eEstacion.getNumeroDecimalesContometro());
+        volumenCorregidoStr = Utilidades.trailingZeros(volumenCorregidoStr, eEstacion.getNumeroDecimalesContometro());
         
         eFormulaRespuesta = new FormulaRespuesta();
         eFormulaRespuesta.setApiCorregido(apiCorregido);
