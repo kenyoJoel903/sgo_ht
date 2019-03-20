@@ -177,7 +177,7 @@ public class ContometroJornada {
 			return respuesta;
 		  }
 		  
-		  if (!Utilidades.esValido(this.lectura_final)){//  || this.lectura_final == 0
+		  if (!Utilidades.esValido(this.lectura_final)){
 			respuesta.estado = false;
 			respuesta.valor = gestorDiccionario.getMessage("sgo.errorValoresNulosEntidad", new Object[] { "Lectura Final" }, locale);
 			return respuesta;

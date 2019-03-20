@@ -1001,75 +1001,95 @@ $(document).ready(function() {
     
 //	Inicio Agregado por req 9000003068===============
 	this.obj.btnConfirmGuardarApertura = $("#btnConfirmGuardarApertura");
-	
 	this.obj.btnConfirmGuardarApertura.on('click', function(e) {
-		
+
 		var valido = 0;
-		
-        var filasPrincipal = moduloActual.obj.grupoAperturaTanques;
-		  var numTanques = filasPrincipal.getForms().length;
-		  for(var j = 0; j < numTanques; j++){
-			  	var formularioTanques= filasPrincipal.getForm(j);
-				var cmpProductosTanques = formularioTanques.find("input[elemento-grupo='productosTanques']");
-				var cmpIdTanques = formularioTanques.find("input[elemento-grupo='idTanques']");
-				var cmpDesp = formularioTanques.find("input[elemento-grupo='desp']");
-				
-				  var check = cmpDesp.prop('checked');
-				  
-				  if(check){
 
-					  var tipoApTanque = moduloActual.obj.tipoAperturaTanque.val();
-					  
-					  if(tipoApTanque == 1){
-						  
-						  var filas = moduloActual.obj.grupoAperturaTanques;
-						  var numTanquesTemp = filas.getForms().length;
-						  for(var j = 0; j < numTanquesTemp; j++){
-								var formularioTanque= filas.getForm(j);
-								var cmpIdTanque=formularioTanque.find("input[elemento-grupo='idTanques']");
-								var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
-								var cmpDespTemp=formularioTanque.find("input[elemento-grupo='desp']");
-								var nombreProductoTanque = cmpProductoTanque.val();
-								var idTanque = cmpIdTanque.val();
-								var checkTemp = cmpDespTemp.prop('checked');
+		var filasPrincipal = moduloActual.obj.grupoAperturaTanques;
+		var numTanques = filasPrincipal.getForms().length;
+		
+		console.log(" *** btnConfirmGuardarApertura *** ");
+		console.log("1 - numTanques ::: " + numTanques);
 
-								if(cmpProductosTanques.val() == nombreProductoTanque && cmpIdTanques.val() != idTanque && checkTemp){  								
-									moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede desplegar más de un tanque para el producto " + nombreProductoTanque+ ". Corrija su selección o verifique el diseño de la Estación de Servicio");
-									valido = 1;
-									break;
-								}
-						  }
-					  }
-					  
-				  }
-		  }
-		
-		
-	  
-	  if (valido == 0){
-		  var filas = moduloActual.obj.grupoAperturaTanques;
+		loop1:
+		for(var j = 0; j < numTanques; j++) {
+			var formularioTanques = filasPrincipal.getForm(j);
+			var cmpProductosTanques = formularioTanques.find("input[elemento-grupo='productosTanques']");
+			var cmpIdTanques = formularioTanques.find("input[elemento-grupo='idTanques']");
+			var cmpDesp = formularioTanques.find("input[elemento-grupo='desp']");
+			var check = cmpDesp.prop('checked');
+			var tipoApTanque = moduloActual.obj.tipoAperturaTanque.val();
 			
+			console.log("check:: " + check + " -- tipoApTanque:: " + tipoApTanque);
+
+			if (!check) {
+				continue;
+			}
+			
+			/*
+			 * Estacion
+			 * 1: uno por producto
+			 * 2: varios por producto
+			 */
+			if (tipoApTanque == 2) {
+				continue;
+			}
+			
+			console.log("::: PASE EL CONTINUE :::");
+			
+			var filas = moduloActual.obj.grupoAperturaTanques;
+			var numTanquesTemp = filas.getForms().length;
+
+			console.log("2 - numTanquesTemp ::: " + numTanquesTemp);
+			
+			loop2:
+			for(var j = 0; j < numTanquesTemp; j++) {
+				
+				var formularioTanque = filas.getForm(j);
+				var cmpIdTanque = formularioTanque.find("input[elemento-grupo='idTanques']");
+				var cmpProductoTanque = formularioTanque.find("input[elemento-grupo='productosTanques']");
+				var cmpDespTemp = formularioTanque.find("input[elemento-grupo='desp']");
+				var nombreProductoTanque = cmpProductoTanque.val();
+				var idTanque = cmpIdTanque.val();
+				var checkTemp = cmpDespTemp.prop('checked');
+				
+				if(cmpProductosTanques.val() == nombreProductoTanque && cmpIdTanques.val() != idTanque && checkTemp) {
+					
+					console.log("*** ENTRE AL IF *** ");
+					
+					moduloActual.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No se puede desplegar más de un tanque para el producto " + nombreProductoTanque+ ". Corrija su selección o verifique el diseño de la Estación de Servicio");
+					valido = 1;
+					break loop1;
+					break loop2;
+				}
+			}
+			
+		}
+
+		if (valido == 0) {
+			var filas = moduloActual.obj.grupoAperturaTanques;
+
 			$.ajax({
-			    type: constantes.PETICION_TIPO_GET,
-			    url: "./producto/listarPorOperacion",
-			    contentType: "application/json",
-			    data: {
-			    	filtroOperacion : moduloActual.obj.filtroOperacion.val(),
-			    	filtroEstacion: moduloActual.obj.filtroEstacion.val(),
-			    	filtroEstado: constantes.ESTADO_ACTIVO,		    	
-			        paginacion:0
-			    },
-			    success: function(respuesta) {
-			    	
-			    	var encontrado;
-			    	var mensaje = "";
-			    	var resultados= respuesta.contenido.carga;
-			    	
-			    	resultados.forEach(function(element) {
-			    		
-			    		encontrado = 0;
-			    		var numTanques = filas.getForms().length;
-			    		for(var j = 0; j < numTanques; j++){
+				type: constantes.PETICION_TIPO_GET,
+				url: "./producto/listarPorOperacion",
+				contentType: "application/json",
+				data: {
+					filtroOperacion : moduloActual.obj.filtroOperacion.val(),
+					filtroEstacion: moduloActual.obj.filtroEstacion.val(),
+					filtroEstado: constantes.ESTADO_ACTIVO,		    	
+					paginacion:0
+				},
+				success: function(respuesta) {
+
+					var encontrado;
+					var mensaje = "";
+					var resultados= respuesta.contenido.carga;
+
+					resultados.forEach(function(element) {
+
+						encontrado = 0;
+						var numTanques = filas.getForms().length;
+						for(var j = 0; j < numTanques; j++) {
 							var formularioTanque= filas.getForm(j);
 							var cmpProductoTanque=formularioTanque.find("input[elemento-grupo='productosTanques']");
 							var nombreProductoTanque = cmpProductoTanque.val();
@@ -1079,29 +1099,25 @@ $(document).ready(function() {
 								break;
 							}
 						}
-			    		
-			    		if(encontrado == 0){
-			    			mensaje = mensaje + element.nombre + ","
-			    		}
-		    		});
-			    	
-			    	if(mensaje != ""){			    		
-			    		mensaje = mensaje.substring(0, mensaje.length - 1);
-				    	$("#cmpMensajeConfirmGuardarApertura").text("Los productos " + mensaje + " no tienen tanque asignado. ¿Desea continuar? Esta configuración es irreversible");
-			    		$("#frmConfirmarGuardarApertura").show();
-			    	}else{
-			    		moduloActual.botonGuardarApertura();
-			    	}
-			
-			    },
-			    error: function(xhr,estado,error) {
-			      
-			    }
-			  });  
-	  }
 
-		
-		
+						if(encontrado == 0){
+							mensaje = mensaje + element.nombre + ","
+						}
+					});
+
+					if(mensaje != "") {		    		
+						mensaje = mensaje.substring(0, mensaje.length - 1);
+						$("#cmpMensajeConfirmGuardarApertura").text("Los productos " + mensaje + " no tienen tanque asignado. ¿Desea continuar? Esta configuración es irreversible");
+						$("#frmConfirmarGuardarApertura").show();
+					}else{
+						moduloActual.botonGuardarApertura();
+					}
+				},
+				error: function(xhr,estado,error) {
+
+				}
+			});  
+		}
 	});
 //	Fin Agregado por req 9000003068=================
 

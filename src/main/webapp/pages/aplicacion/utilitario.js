@@ -449,7 +449,6 @@ var utilitario={
 		 var dia= fecha.getDate();
 		 mes = (mes < 10) ? ("0" + mes) : mes;
 		 dia = (dia < 10) ? ("0" + dia) : dia;
-		 console.log(dia+sep+mes+sep+anno);
 		 var fechaFinal = dia+sep+mes+sep+anno;
 		 return (fechaFinal);
 	},

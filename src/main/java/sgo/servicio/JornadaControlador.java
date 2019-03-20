@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -1327,48 +1328,49 @@ public class JornadaControlador {
 				eBitacora.setRealizadoEl(eJornada.getActualizadoEl());
 				eBitacora.setRealizadoPor(principal.getID());
 				respuesta= dBitacora.guardarRegistro(eBitacora);
-				if (respuesta.estado==false){     	
-	              	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
+				if (!respuesta.estado) {     	
+	              	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
 	            }
 			}
             
-//          Inicio Agregado por req 9000003068==================================================
-            
-            Timestamp diaHoradeCierre = obtenerDiaHoraCierre(eJornada.getIdEstacion(), eJornada.getFechaOperativa().getTime(), locale);
-            
-//          Fin Agregado por req 9000003068==================================================
+            //Inicio Agregado por req 9000003068==================================================
+            Timestamp diaHoradeCierre = obtenerDiaHoraCierre(eJornada.getIdEstacion(), eJornada.getFechaOperativa(), locale);
+            //Fin Agregado por req 9000003068==================================================
 
             RespuestaCompuesta respuestaMuestreoJornada = null;
-            //esto para actualizar los tanques de la jornada
+            
+            /**
+             * Muestreo: esto para actualizar los tanques de la jornada
+             */
             for (int indice = 0; indice < eJornada.getMuestreo().size(); indice++) {
             	eMuestreoJornada = eJornada.getMuestreo().get(indice);
             	eMuestreoJornada.setIdJornada(eJornada.getId());
 
-            	if(eMuestreoJornada.getOrigen() == Muestreo.ORIGEN_CIERRE){
+            	if(eMuestreoJornada.getOrigen() == Muestreo.ORIGEN_CIERRE) {
             		
                 	eMuestreoJornada.setHoraMuestreo(diaHoradeCierre);
                 	
 	            	Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
-	    		    if (validacion.estado == false) {
+	    		    if (!validacion.estado) {
 	    		      throw new Exception(validacion.valor);
 	    		    }
                 	
                 	RespuestaCompuesta respuestaEliminaMuestreo = dMuestreo.eliminarRegistroPorHoraMuestreo(eJornada.getId(), diaHoradeCierre, eMuestreoJornada.getProductoMuestreado());
-                	if (respuestaEliminaMuestreo.estado == false) {
+                	if (!respuestaEliminaMuestreo.estado) {
         				throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
         			}
 
 	            	respuestaMuestreoJornada = dMuestreo.guardarRegistro(eMuestreoJornada);
-					if (respuestaMuestreoJornada.estado == false) {
+					if (!respuestaMuestreoJornada.estado) {
 						throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
 					}
 					
 	    		    ParametrosListar parametros  = new ParametrosListar();
-	            	  parametros.setIdJornada(eJornada.getId());
-	            	  parametros.setCampoOrdenamiento("horaMuestreo");
-	            	  parametros.setSentidoOrdenamiento("ASC");
-	            	  parametros.setPaginacion(Constante.SIN_PAGINACION);
-	            	  respuesta = dMuestreo.recuperarRegistros(parametros);
+	    		    parametros.setIdJornada(eJornada.getId());
+	    		    parametros.setCampoOrdenamiento("horaMuestreo");
+	    		    parametros.setSentidoOrdenamiento("ASC");
+	    		    parametros.setPaginacion(Constante.SIN_PAGINACION);
+	    		    respuesta = dMuestreo.recuperarRegistros(parametros);
 	            	  
 	            	  if (respuesta.estado == false){  
 	            		  throw new Exception("Error al recuperar muestreos de la jornada");
@@ -1398,13 +1400,13 @@ public class JornadaControlador {
             		
             		if(Utilidades.esValido(eMuestreoJornada.getId()) && eMuestreoJornada.getId() > 0){
             			Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
-    	    		    if (validacion.estado == false) {
+    	    		    if (!validacion.estado) {
     	    		      throw new Exception(validacion.valor);
     	    		    }
 
             			respuestaMuestreoJornada= dMuestreo.actualizarRegistro(eMuestreoJornada);
             	        //Verifica si la accion se ejecuto de forma satisfactoria
-            	        if (respuestaMuestreoJornada.estado==false){     	
+            	        if (!respuestaMuestreoJornada.estado) {     	
             	          	throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido",null,locale));
             	        }
             	        //Guardar en la bitacora
@@ -1419,7 +1421,7 @@ public class JornadaControlador {
             		} else {
 
             			Respuesta validacion = Utilidades.validacionXSS(eMuestreoJornada, gestorDiccionario, locale);
-    	    		    if (validacion.estado == false) {
+    	    		    if (!validacion.estado) {
     	    		      throw new Exception(validacion.valor);
     	    		    }
 
@@ -1440,22 +1442,29 @@ public class JornadaControlador {
             		}
 
                     respuesta= dBitacora.guardarRegistro(eBitacora);
-                    if (respuesta.estado==false){     	
+                    if (!respuesta.estado) {     	
                       	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
                     }     
             	}
 			}
 
-         	respuesta.mensaje=gestorDiccionario.getMessage("sgo.actualizarExitoso",new Object[] {  eJornada.getFechaActualizacion().substring(0, 9),eJornada.getFechaActualizacion().substring(10),principal.getIdentidad() },locale);;
+         	respuesta.mensaje = gestorDiccionario.getMessage(
+     			"sgo.actualizarExitoso",
+     			new Object[] {
+ 					eJornada.getFechaActualizacion().substring(0, 9),
+ 					eJornada.getFechaActualizacion().substring(10),
+ 					principal.getIdentidad()
+ 				},
+     			locale);
         	this.transaccion.commit(estadoTransaccion);
-		} catch (Exception ex){
-			Utilidades.gestionaError(ex, sNombreClase, "actualizarJornada");
-			//ex.printStackTrace();
+		} catch (Exception e) {
+			Utilidades.gestionaError(e, sNombreClase, "actualizarJornada");
 			this.transaccion.rollback(estadoTransaccion);
-			respuesta.estado=false;
+			respuesta.estado = false;
 			respuesta.contenido = null;
-			respuesta.mensaje=ex.getMessage();
+			respuesta.mensaje = e.getMessage();
 		}
+		
 		return respuesta;
 	}
 	
@@ -1541,21 +1550,59 @@ public class JornadaControlador {
 		return lstPerfilDetalleHorario;
 	}
 
-	private Timestamp obtenerDiaHoraCierre(int idEstacion, long time, Locale locale) throws Exception{
-		
-		Timestamp diaHoradeCierre = new Timestamp(time);
-		
+	private Timestamp obtenerDiaHoraCierre(int idEstacion, Date date, Locale locale) throws Exception {
+
 		List<PerfilDetalleHorario> lstPerfilDetalleHorario = obtenerLstPerfilDetalleHorarioPorIdEstacion(idEstacion, locale);
 		
 		//El ultimo turno
 		PerfilDetalleHorario perfilDetalleHorarioTemp = lstPerfilDetalleHorario.get(lstPerfilDetalleHorario.size() - 1);
 		
-		String horFin = perfilDetalleHorarioTemp.getHoraFinTurno();
+		String horaInicio = perfilDetalleHorarioTemp.getHoraInicioTurno();
+		String horaFin = perfilDetalleHorarioTemp.getHoraFinTurno();
 		
-		String hora[] = horFin.split(":");
-		
-      	diaHoradeCierre.setHours(Integer.parseInt(hora[0]));
-      	diaHoradeCierre.setMinutes(Integer.parseInt(hora[1]));
+		String horaInicioArray[] = horaInicio.split(":");
+		String horaFinArray[] = horaFin.split(":");
+      	
+		/**
+		 * Perfil ultimo turno: hora inicio
+		 */
+		Calendar calInicio = Calendar.getInstance();  
+		calInicio.setTime(date);  
+		calInicio.set(Calendar.HOUR_OF_DAY, Integer.parseInt(horaInicioArray[0]));  
+		calInicio.set(Calendar.MINUTE, Integer.parseInt(horaInicioArray[1]));  
+		calInicio.set(Calendar.SECOND, 59); 
+        
+		/**
+		 * Perfil ultimo turno: hora fin
+		 */
+		Calendar calFin = Calendar.getInstance();  
+		calFin.setTime(date);  
+		calFin.set(Calendar.HOUR_OF_DAY, Integer.parseInt(horaFinArray[0]));  
+		calFin.set(Calendar.MINUTE, Integer.parseInt(horaFinArray[1]));  
+		calFin.set(Calendar.SECOND, 59); 
+      	
+        /**
+         * Compara si el ultimo turno esta dentro del dia
+         */
+		boolean sameDate = calInicio.before(calFin);
+
+        /**
+         * Hora de cierre: Setea el dia y hora de cierre
+         */
+        Timestamp diaHoradeCierre = new Timestamp(date.getTime());
+        
+        if (!sameDate) {
+        	
+        	Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.DATE, 1);
+            java.util.Date dateOneMoreDay = cal.getTime();
+        	
+        	diaHoradeCierre = new Timestamp(dateOneMoreDay.getTime());
+        }
+
+      	diaHoradeCierre.setHours(Integer.parseInt(horaFinArray[0]));
+      	diaHoradeCierre.setMinutes(Integer.parseInt(horaFinArray[1]));
       	diaHoradeCierre.setSeconds(59);
 
 		return diaHoradeCierre;
