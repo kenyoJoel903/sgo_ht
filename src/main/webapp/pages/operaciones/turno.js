@@ -400,11 +400,13 @@ $(document).ready(function() {
         		autoGroup: true,
         		groupSize: 3,
         	});
+        	/*
         	cmpElementoLecturaFinal.keyup(delay(function(e) {
         		var num = $(this).val();
         		num = trailingZeros(num);
         		$(this).val(num);
         	}, 900));
+        	*/
         	cmpElementoLecturaFinal.keyup(function(e) {
         		elementoLecturaFinalFunction();
         	});

@@ -1854,8 +1854,8 @@ $(document).ready(function() {
 	        contometroJornada.id = parseInt(cmpIdContometroJornadaCierre.val());
 	        contometroJornada.idProducto = parseInt(cmpIdProductoJornadaCierre.val());
 	        contometroJornada.idContometro = parseInt(cmpIdContometroCierre.val());
-	        contometroJornada.lecturaInicial = parseFloat(cmpLecturaInicial.val().replace(moduloActual.SEPARADOR_MILES,""));
-	        contometroJornada.lecturaFinal = parseFloat(cmpLecturaFinal.val().replace(moduloActual.SEPARADOR_MILES,""));
+	        contometroJornada.lecturaInicialBigDecimal = cmpLecturaInicial.val().replace(moduloActual.SEPARADOR_MILES,"");
+	        contometroJornada.lecturaFinalBigDecimal = cmpLecturaFinal.val().replace(moduloActual.SEPARADOR_MILES,"");
 	        eRegistro.contometroJornada.push(contometroJornada);
 	      }
 	      
@@ -2251,7 +2251,7 @@ $(document).ready(function() {
 
   moduloActual.recuperarValoresMuestreo = function(registro){
     var eRegistro = {};
-    var referenciaModulo=this;
+    var referenciaModulo = this;
     
     try {
 	  // datos para la jornada

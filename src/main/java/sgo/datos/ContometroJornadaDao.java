@@ -295,39 +295,36 @@ public class ContometroJornadaDao {
 			consultaSQL.append("UPDATE ");
 			consultaSQL.append(NOMBRE_TABLA);
 			consultaSQL.append(" SET ");
-			//consultaSQL.append("lectura_inicial=:LecturaInicial,");
-			consultaSQL.append("lectura_final=:LecturaFinal,");
-			consultaSQL.append("estado_servicio=:EstadoServicio");
-			//consultaSQL.append("id_contometro=:Contometro,");
-			//consultaSQL.append("id_producto=:Producto");
+			consultaSQL.append("lectura_final = :LecturaFinal,");
+			consultaSQL.append("estado_servicio = :EstadoServicio");
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
-			consultaSQL.append("=:Id");
-			MapSqlParameterSource listaParametros= new MapSqlParameterSource();
-			//listaParametros.addValue("LecturaInicial", contometroJornada.getLecturaInicial());
-			listaParametros.addValue("LecturaFinal", contometroJornada.getLecturaFinal());
-			listaParametros.addValue("EstadoServicio", contometroJornada.getEstadoServicio());
-			//listaParametros.addValue("Contometro", contometroJornada.getIdContometro());
-			//listaParametros.addValue("Producto", contometroJornada.getIdProducto());
-			listaParametros.addValue("Id", contometroJornada.getId());
-			SqlParameterSource namedParameters= listaParametros;
+			consultaSQL.append(" = :Id");
+			
+			MapSqlParameterSource parameter = new MapSqlParameterSource();
+			parameter.addValue("LecturaFinal", contometroJornada.getLecturaFinalBigDecimal());
+			parameter.addValue("EstadoServicio", contometroJornada.getEstadoServicio());
+			parameter.addValue("Id", contometroJornada.getId());
+			SqlParameterSource namedParameters = parameter;
+			
 			/*Ejecuta la consulta y retorna las filas afectadas*/
-			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(),namedParameters);		
-			if (cantidadFilasAfectadas>1){
-				respuesta.error= Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
-				respuesta.estado=false;
+			cantidadFilasAfectadas= namedJdbcTemplate.update(consultaSQL.toString(), namedParameters);		
+			if (cantidadFilasAfectadas > 1) {
+				respuesta.error = Constante.EXCEPCION_CANTIDAD_REGISTROS_INCORRECTA;
+				respuesta.estado = false;
 				return respuesta;
 			}
-			respuesta.estado=true;
-		} catch (DataIntegrityViolationException excepcionIntegridadDatos){
-			excepcionIntegridadDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_INTEGRIDAD_DATOS;
-			respuesta.estado=false;
-		} catch (DataAccessException excepcionAccesoDatos){
-			excepcionAccesoDatos.printStackTrace();
-			respuesta.error= Constante.EXCEPCION_ACCESO_DATOS;
-			respuesta.estado=false;
+			respuesta.estado = true;
+		} catch (DataIntegrityViolationException e) {
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_INTEGRIDAD_DATOS;
+			respuesta.estado = false;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			respuesta.error = Constante.EXCEPCION_ACCESO_DATOS;
+			respuesta.estado = false;
 		}
+		
 		return respuesta;
 	}
 	

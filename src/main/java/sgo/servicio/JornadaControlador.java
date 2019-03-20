@@ -8,10 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -25,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import sgo.datos.BitacoraDao;
 import sgo.datos.ContometroDao;
 import sgo.datos.ContometroJornadaDao;
@@ -391,7 +386,8 @@ public class JornadaControlador {
 		ParametrosListar parametros = null;
 		AuthenticatedUserDetails principal = null;
 		
-		try {			
+		try {
+			
 			//Recupera el usuario actual
 			principal = this.getCurrentUser(); 
 			//Recuperar el enlace de la accion
@@ -399,10 +395,11 @@ public class JornadaControlador {
 			if (respuesta.estado==false){
 				throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 			}
+			
 			Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 			//Verificar si cuenta con el permiso necesario			
 			if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
-					throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
+				throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
     		}
 			//Recuperar el registro
         	respuesta= dJornada.recuperarRegistro(ID);
@@ -410,6 +407,7 @@ public class JornadaControlador {
             if (respuesta.estado==false){        	
             	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
             }
+            
             Contenido<Jornada> contenido = new Contenido<Jornada>();
             List<ContometroJornada> listaContometroJornada = new ArrayList<ContometroJornada>();
             List<TanqueJornada> listaTanqueJornada = new ArrayList<TanqueJornada>();
@@ -475,7 +473,6 @@ public class JornadaControlador {
 	                for(int c = 0; c < listaContometroJornada.size(); c++ ){
 	                	ContometroJornada eContometroJornada = listaContometroJornada.get(c);
 	                	if(eContometroJornada.getIdContometro() == eDetalleTurno.getContometro().getId()){
-	                		//eContometroJornada.setLecturaFinal(eDetalleTurno.getLecturaFinal());
 	                    	eContometroJornada.setLecturaFinalStr(
                     			Utilidades.trailingZeros(
                 					eDetalleTurno.getLecturaFinalStr(),
@@ -593,14 +590,14 @@ public class JornadaControlador {
             TanqueJornada otroTanqueJornada = new TanqueJornada();
             boolean existe = false;
 
-            for(int h = 0; h < respuesta.contenido.carga.size(); h++){
+            for(int h = 0; h < respuesta.contenido.carga.size(); h++) {
             	otroTanqueJornada = new TanqueJornada();
             	TanqueJornada tanqueJornadaTemp = (TanqueJornada) respuesta.contenido.carga.get(h);
             	otroTanqueJornada = tanqueJornadaTemp;
             	int idTanqueTemp = tanqueJornadaTemp.getIdTanque();
             	existe = false;
             	
-            	//si no existe
+            		//si no existe
 	            	for(int a = 0; a < respuesta.contenido.carga.size(); a++){
 	                	TanqueJornada tanqueJornadaTemp2 = (TanqueJornada) respuesta.contenido.carga.get(a);
 	                	int idTanqueTemp2 = tanqueJornadaTemp2.getIdTanque();
@@ -648,8 +645,8 @@ public class JornadaControlador {
 
             contenido.carga = listaRegistros;
 			respuesta.contenido = contenido;
-            
-         	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
+         	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+         	
 		} catch (Exception e) {
 			Utilidades.gestionaError(e, sNombreClase, "recuperaRegistro");
 			respuesta.estado=false;
@@ -744,7 +741,7 @@ public class JornadaControlador {
 		parametros = new ParametrosListar();
 		if (httpRequest.getParameter("filtroEstacion") != null) {
 			parametros.setFiltroEstacion(Utilidades.parseInt( httpRequest.getParameter("filtroEstacion")));
-			if(parametros.getFiltroEstacion() <= 0){
+			if(parametros.getFiltroEstacion() <= 0) {
 				throw new Exception(gestorDiccionario.getMessage("sgo.estacionVacia",null,locale));
 			}
 		} else {
@@ -763,11 +760,9 @@ public class JornadaControlador {
 			parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
 		}
 		
-//		Inicio agregado por req 9000003068====================================================================================================
-		
+		//Inicio agregado por req 9000003068====================================================================================================
 		validaPerfilHorarioEnEstacion(Utilidades.parseInt(httpRequest.getParameter("filtroEstacion")), locale);
-		
-//		Fin agregado por req 9000003068===========================================================================================================
+		//Fin agregado por req 9000003068===========================================================================================================
 		
 		parametros.setFiltroEstado(Jornada.ESTADO_ABIERTO);
 		oRespuesta = dJornada.recuperarRegistros(parametros);
@@ -1201,6 +1196,7 @@ public class JornadaControlador {
 	
 	@RequestMapping(value = URL_ACTUALIZAR_RELATIVA ,method = RequestMethod.POST)
 	public @ResponseBody RespuestaCompuesta actualizarJornada(@RequestBody Jornada eJornada, HttpServletRequest peticionHttp,Locale locale){
+		
 		RespuestaCompuesta respuesta = null;
 		AuthenticatedUserDetails principal = null;
 		TransactionDefinition definicionTransaccion = null;
@@ -1251,21 +1247,21 @@ public class JornadaControlador {
             eBitacora.setAccion(URL_ACTUALIZAR_COMPLETA);
             eBitacora.setTabla(JornadaDao.NOMBRE_TABLA);
             eBitacora.setIdentificador(String.valueOf(eJornada.getId()));
-            eBitacora.setContenido( mapper.writeValueAsString(eJornada));
+            eBitacora.setContenido(mapper.writeValueAsString(eJornada));
             eBitacora.setRealizadoEl(eJornada.getActualizadoEl());
             eBitacora.setRealizadoPor(eJornada.getActualizadoPor());
             respuesta= dBitacora.guardarRegistro(eBitacora);
             if (respuesta.estado==false){     	
               	throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
             }  
-
+        	
             //esto para actualizar los contometros de la jornada
             for (int contador = 0; contador < eJornada.getContometroJornada().size(); contador++) {
             	eContometroJornada = eJornada.getContometroJornada().get(contador);
             	eContometroJornada.setIdJornada(eJornada.getId());
             	
             	Respuesta validacion = Utilidades.validacionContometroCierreXSS(eContometroJornada, gestorDiccionario, locale);
-    		    if (validacion.estado == false) {
+    		    if (!validacion.estado) {
     		      throw new Exception(validacion.valor);
     		    }
     		    

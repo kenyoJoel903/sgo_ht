@@ -863,8 +863,6 @@ moduloJornada.prototype.guardarApertura = function() {
 	   var formularioTanque = referenciaModulo.obj.grupoAperturaTanques.getForm(contador);
 	   var cmpMedidaInicial = formularioTanque.find("input[elemento-grupo='medidaInicial']");
 	   
-	   console.log("cmpMedidaInicial ::: " + cmpMedidaInicial.val() );
-	   
 	   if(cmpMedidaInicial.val() == ''){
 		   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "El campo Medida Inicial no debe estar vacío");
 		   return;
@@ -1212,12 +1210,14 @@ moduloJornada.prototype.solicitarActualizarEstado= function(){
 	}
 };
 
-moduloJornada.prototype.actualizarEstadoRegistro= function(){
+moduloJornada.prototype.actualizarEstadoRegistro = function() {
+	
   var eRegistro = {};
-  var referenciaModulo=this;
-	referenciaModulo.obj.frmConfirmarModificarEstado.modal("hide");
+  var referenciaModulo = this;
+  referenciaModulo.obj.frmConfirmarModificarEstado.modal("hide");
   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
-  if (referenciaModulo.estadoRegistro==constantes.ESTADO_ACTIVO){
+  
+  if (referenciaModulo.estadoRegistro==constantes.ESTADO_ACTIVO) {
     referenciaModulo.estadoRegistro=constantes.ESTADO_INACTIVO;
   } else {
     referenciaModulo.estadoRegistro=constantes.ESTADO_ACTIVO;
