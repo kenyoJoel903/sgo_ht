@@ -57,7 +57,7 @@ $(document).ready(function() {
 	}	
   };
   
-  moduloActual.inicializarCampos= function(){	
+  moduloActual.inicializarCampos= function() {	
 	this.obj.nombreEstacion=$("#nombreEstacion");
 	this.obj.idEstacion=$("#idEstacion");
 	this.obj.idJornada=$("#idJornada");
@@ -73,6 +73,7 @@ $(document).ready(function() {
     this.obj.cmpTanqueDestino=$("#cmpTanqueDestino");
     this.obj.cmpVolumen=$("#cmpVolumen");
     this.obj.cmpComentario=$("#cmpComentario");
+    
     //Campos de vista
     this.obj.vistaId=$("#vistaId");
     this.obj.vistaOperacionCliente=$("#vistaOperacionCliente");
@@ -84,6 +85,7 @@ $(document).ready(function() {
     this.obj.vistaTanqueDestino=$("#vistaTanqueDestino");
     this.obj.vistaVolumen=$("#vistaVolumen");
     this.obj.vistaComentario=$("#vistaComentario");
+    
     //-auditoria
     this.obj.vistaCreadoEl=$("#vistaCreadoEl");
     this.obj.vistaCreadoPor=$("#vistaCreadoPor");
@@ -189,73 +191,72 @@ $(document).ready(function() {
     });
     
     //FILTRO TANQUE ORIGEN
-    this.obj.cmpTanqueOrigen=$("#cmpTanqueOrigen");
-    this.obj.cmpTanqueOrigen.tipoControl="select2";
-    this.obj.cmpSelect2TanqueOrigen=$("#cmpTanqueOrigen").select2({
-  	  ajax: {
-  		    url: "./tanque/listar",
-  		    dataType: 'json',
-  		    delay: 250,
-  		    data: function (parametros) {
-  		      return {
-  		    	valorBuscado: parametros.term, // search term
-  		        page: parametros.page,
-  		        paginacion:0,
-  		        filtroEstacion:moduloActual.obj.idEstacion
-  		      };
-  		    },
-  		    processResults: function (respuesta, pagina) {
-  		    	var resultados= respuesta.contenido.carga;
-  		      return { results: resultados};
-  		    },
-  		    cache: true
-	    },
-  		language: "es",
-  		escapeMarkup: function (markup) { return markup; },
-  		templateResult: function (registro) {
-  			if (registro.loading) {
-  				return "Buscando...";
-  			}		    	
-	        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
-	    },
-	    templateSelection: function (registro) {	    	
-	        return registro.descripcion || registro.text;
-	    },
+    this.obj.cmpTanqueOrigen = $("#cmpTanqueOrigen");
+    this.obj.cmpTanqueOrigen.tipoControl = "select2";
+    this.obj.cmpSelect2TanqueOrigen = $("#cmpTanqueOrigen").select2({
+        ajax: {
+            url: "./tanque/listar",
+            dataType: 'json',
+            delay: 250,
+            data: function (parametros) {
+	            return {
+		            valorBuscado: parametros.term,
+		            page: parametros.page,
+		            paginacion: 0,
+		            filtroEstacion: moduloActual.obj.idEstacion
+	            };
+            },
+            processResults: function (respuesta, pagina) {
+            	return { results: respuesta.contenido.carga };
+            },
+            cache: true
+        },
+        language: "es",
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: function (registro) {
+            if (registro.loading) {
+                return "Buscando...";
+            }		    	
+            return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
+        },
+        templateSelection: function (registro) {	    	
+            return registro.descripcion || registro.text;
+        },
     });
     
     //FILTRO TANQUE DESTINO
-    this.obj.cmpTanqueDestino=$("#cmpTanqueDestino");
-    this.obj.cmpTanqueDestino.tipoControl="select2";
-    this.obj.cmpSelect2TanqueDestino=$("#cmpTanqueDestino").select2({
-  	  ajax: {
-  		    url: "./tanque/listar",
-  		    dataType: 'json',
-  		    delay: 250,
-  		    data: function (parametros) {
-  		      return {
-  		    	valorBuscado: parametros.term, // search term
-  		        page: parametros.page,
-  		        paginacion:0,
-  		        filtroEstacion:moduloActual.obj.idEstacion
-  		      };
-  		    },
-  		    processResults: function (respuesta, pagina) {
-  		    	var resultados= respuesta.contenido.carga;
-  		      return { results: resultados};
-  		    },
-  		    cache: true
-	    },
-  		language: "es",
-  		escapeMarkup: function (markup) { return markup; },
-  		templateResult: function (registro) {
-  			if (registro.loading) {
-  				return "Buscando...";
-  			}		    	
-	        return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
-	    },
-	    templateSelection: function (registro) {    	
-	        return registro.descripcion || registro.text;
-	    },
+    this.obj.cmpTanqueDestino = $("#cmpTanqueDestino");
+    this.obj.cmpTanqueDestino.tipoControl = "select2";
+    this.obj.cmpSelect2TanqueDestino = $("#cmpTanqueDestino").select2({
+        ajax: {
+            url: "./tanque/listar",
+            dataType: 'json',
+            delay: 250,
+            data: function (parametros) {
+                return {
+                    valorBuscado: parametros.term,
+                    page: parametros.page,
+                    paginacion: 0,
+                    filtroEstacion: moduloActual.obj.idEstacion,
+                    idTanqueOrigen: parseInt(moduloActual.obj.cmpTanqueOrigen.val())
+                };
+            },
+            processResults: function (respuesta, pagina) {
+                return { results: respuesta.contenido.carga };
+            },
+            cache: true
+        },
+        language: "es",
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: function (registro) {
+            if (registro.loading) {
+            	return "Buscando...";
+            }         
+            return "<div class='select2-user-result'>" + registro.descripcion + "</div>";
+        },
+        templateSelection: function (registro) {      
+            return registro.descripcion || registro.text;
+        },
     });
 
     this.obj.btnAgregarOtroMovimiento=$("#btnAgregarOtroMovimiento");
@@ -435,7 +436,7 @@ $(document).ready(function() {
 		};
 	};
 	
-  moduloActual.llenarFormulario = function(registro){
+  moduloActual.llenarFormulario = function(registro) {
 	var referenciaModulo = this;  
     this.idRegistro= registro.id;
     
@@ -450,8 +451,8 @@ $(document).ready(function() {
     this.obj.cmpClasificacion.val(registro.clasificacion);  
     
     var elemento1=constantes.PLANTILLA_OPCION_SELECTBOX;
-    elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR,registro.idTanqueOrigen);
-    elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR,registro.tanqueOrigen.descripcion);
+    elemento1 = elemento1.replace(constantes.ID_OPCION_CONTENEDOR, registro.idTanqueOrigen);
+    elemento1 = elemento1.replace(constantes.VALOR_OPCION_CONTENEDOR, registro.tanqueOrigen.descripcion);
     referenciaModulo.obj.cmpTanqueOrigen.empty().append(elemento1).val(registro.idTanqueOrigen).trigger('change');
     
     var elemento2=constantes.PLANTILLA_OPCION_SELECTBOX;
@@ -488,8 +489,9 @@ $(document).ready(function() {
     this.obj.vistaIPCreacion.text(registro.ipCreacion);
     this.obj.vistaIPActualizacion.text(registro.ipActualizacion);    
   };
-//PARA REGISTRAR
-  moduloActual.recuperarValores = function(registro){    
+  
+  //PARA REGISTRAR
+  moduloActual.recuperarValores = function(registro) {
     var referenciaModulo=this;
     var eRegistro = {};
     try {

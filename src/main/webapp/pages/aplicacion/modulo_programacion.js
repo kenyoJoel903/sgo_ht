@@ -1803,12 +1803,11 @@ moduloProgramacion.prototype.generarRandomId = function(){
 
 
 //Fin Atenci�n Ticket 9000002608
-
-
-moduloProgramacion.prototype.validaPermisos= function(){
+moduloProgramacion.prototype.validaPermisos = function(){
   var referenciaModulo = this;
+  
   try{
-  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
+
   referenciaModulo.obj.ocultaContenedorTabla.show();
   referenciaModulo.obj.ocultaContenedorDetalleProgramacion.show();
   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);

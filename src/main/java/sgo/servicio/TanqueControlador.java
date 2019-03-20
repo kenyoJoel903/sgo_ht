@@ -172,42 +172,56 @@ public class TanqueControlador {
     		}
 			
 			//Recuperar parametros
-			 parametros = new ParametrosListar();
+			parametros = new ParametrosListar();
 			if (httpRequest.getParameter("paginacion") != null) {
-				parametros.setPaginacion(Integer.parseInt( httpRequest.getParameter("paginacion")));
+				parametros.setPaginacion(Utilidades.parseInt( httpRequest.getParameter("paginacion")));
 			}
       
 			if (httpRequest.getParameter("registrosxPagina") != null) {
-				parametros.setRegistrosxPagina(Integer.parseInt( httpRequest.getParameter("registrosxPagina")));
+				parametros.setRegistrosxPagina(Utilidades.parseInt( httpRequest.getParameter("registrosxPagina")));
 			}
 			
 			if (httpRequest.getParameter("inicioPagina") != null) {
-				parametros.setInicioPaginacion(Integer.parseInt( httpRequest.getParameter("inicioPagina")));
+				parametros.setInicioPaginacion(Utilidades.parseInt( httpRequest.getParameter("inicioPagina")));
 			}
 			
 			if (httpRequest.getParameter("campoOrdenamiento") != null) {
-				parametros.setCampoOrdenamiento(( httpRequest.getParameter("campoOrdenamiento")));
+				parametros.setCampoOrdenamiento(httpRequest.getParameter("campoOrdenamiento"));
 			}
 			
 			if (httpRequest.getParameter("sentidoOrdenamiento") != null) {
-				parametros.setSentidoOrdenamiento(( httpRequest.getParameter("sentidoOrdenamiento")));
+				parametros.setSentidoOrdenamiento(httpRequest.getParameter("sentidoOrdenamiento"));
 			}
 			
 			if (httpRequest.getParameter("valorBuscado") != null) {
-				parametros.setValorBuscado(( httpRequest.getParameter("valorBuscado")));
+				parametros.setValorBuscado(httpRequest.getParameter("valorBuscado"));
 			}
 			
 			parametros.setFiltroEstado(Constante.FILTRO_TODOS);
 			if (httpRequest.getParameter("filtroEstado") != null) {
-				parametros.setFiltroEstado(Integer.parseInt(httpRequest.getParameter("filtroEstado")));
+				parametros.setFiltroEstado(Utilidades.parseInt(httpRequest.getParameter("filtroEstado")));
 			}
 			
 			if (httpRequest.getParameter("filtroEstacion") != null) {
-				parametros.setFiltroEstacion(Integer.parseInt(httpRequest.getParameter("filtroEstacion")));
+				parametros.setFiltroEstacion(Utilidades.parseInt(httpRequest.getParameter("filtroEstacion")));
 			}
 			
 			if (httpRequest.getParameter("idTanque") != null) {
-				parametros.setIdTanque(Integer.parseInt(httpRequest.getParameter("idTanque")));
+				parametros.setIdTanque(Utilidades.parseInt(httpRequest.getParameter("idTanque")));
+			}
+			
+			if (httpRequest.getParameter("idTanqueOrigen") != null) {
+				
+				int idTanqueOrigen = Utilidades.parseInt(httpRequest.getParameter("idTanqueOrigen"));
+				RespuestaCompuesta respuestaTanque = dTanque.recuperarRegistro(idTanqueOrigen);
+				
+	            if (!respuestaTanque.estado) {        	
+	            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+	            }
+	            
+	            Tanque eTanque = (Tanque) respuestaTanque.getContenido().getCarga().get(0);
+				
+				parametros.setFiltroProducto(eTanque.getIdProducto());
 			}
 			
 			if (httpRequest.getParameter("txtFiltro") != null) {
@@ -216,7 +230,7 @@ public class TanqueControlador {
 			
 			//Recuperar registros
 			respuesta = dTanque.recuperarRegistros(parametros);
-			respuesta.mensaje= gestorDiccionario.getMessage("sgo.listarExitoso",null,locale);
+			respuesta.mensaje = gestorDiccionario.getMessage("sgo.listarExitoso",null,locale);
 		} catch(Exception e) {
 			e.printStackTrace();
 			respuesta.estado = false;
@@ -228,35 +242,40 @@ public class TanqueControlador {
 	}	
 
 	@RequestMapping(value = URL_RECUPERAR_RELATIVA ,method = RequestMethod.GET)
-	public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale){
+	public @ResponseBody RespuestaCompuesta recuperaRegistro(int ID,Locale locale) {
+		
 		RespuestaCompuesta respuesta = null;
 		AuthenticatedUserDetails principal = null;
+		
 		try {			
 			//Recupera el usuario actual
 			principal = this.getCurrentUser(); 
 			//Recuperar el enlace de la accion
 			respuesta = dEnlace.recuperarRegistro(URL_RECUPERAR_COMPLETA);
-			if (respuesta.estado==false){
-				throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
+			if (!respuesta.estado) {
+				throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
 			}
+			
 			Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 			//Verificar si cuenta con el permiso necesario			
 			if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
-					throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
+					throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso", null, locale));
     		}
+			
 			//Recuperar el registro
-        	respuesta= dTanque.recuperarRegistro(ID);
+        	respuesta = dTanque.recuperarRegistro(ID);
         	//Verifica el resultado de la accion
-            if (respuesta.estado==false){        	
-            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+            if (!respuesta.estado) {        	
+            	throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
             }
-         	respuesta.mensaje=gestorDiccionario.getMessage("sgo.recuperarExitoso",null,locale);
-		} catch (Exception ex){
-			ex.printStackTrace();
-			respuesta.estado=false;
+         	respuesta.mensaje = gestorDiccionario.getMessage("sgo.recuperarExitoso", null, locale);
+		} catch (Exception e) {
+			e.printStackTrace();
+			respuesta.estado = false;
 			respuesta.contenido = null;
-			respuesta.mensaje=ex.getMessage();
+			respuesta.mensaje = e.getMessage();
 		}
+		
 		return respuesta;
 	}
 	

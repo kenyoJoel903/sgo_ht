@@ -129,6 +129,10 @@ public class TanqueDao {
 		    if ((argumentosListar.getFiltroEstacion() != Constante.FILTRO_TODOS) && ((argumentosListar.getFiltroEstacion() != Constante.FILTRO_NINGUNO))) {
 		    	filtrosWhere.add(" t1."+NOMBRE_CAMPO_FILTRO_ESTACION + "=" + argumentosListar.getFiltroEstacion());
 		    }
+		    
+			if (argumentosListar.getFiltroProducto() > 0) {
+		        filtrosWhere.add(" t1.id_producto = " + argumentosListar.getFiltroProducto());
+		    }
 			
 			if (!filtrosWhere.isEmpty()) {
 				consultaSQL.setLength(0);

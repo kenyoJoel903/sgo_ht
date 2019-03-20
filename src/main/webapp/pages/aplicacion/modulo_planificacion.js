@@ -1256,12 +1256,14 @@ moduloPlanificacion.prototype.despuesListarRegistros=function(){
 //Implementar en cada caso
 };
 
-moduloPlanificacion.prototype.validaPermisos= function(){
+moduloPlanificacion.prototype.validaPermisos = function(){
   var referenciaModulo = this;
+  
   try{
-  console.log("Validando permiso para: " + referenciaModulo.descripcionPermiso);
+
   referenciaModulo.obj.ocultaContenedorTabla.show();
   referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.VERIFICANDO_PERMISOS);
+  
 	  $.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './validaPermisos/validar',
