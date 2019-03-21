@@ -61,6 +61,7 @@ public class TanqueJornadaDao {
 	}
 
 	public RespuestaCompuesta recuperarRegistros(ParametrosListar argumentosListar) {
+		
 		String sqlLimit = "";
 		String sqlOrderBy = "";
 		List<String> filtrosWhere = new ArrayList<String>();
@@ -70,6 +71,7 @@ public class TanqueJornadaDao {
 		Contenido<TanqueJornada> contenido = new Contenido<TanqueJornada>();
 		List<TanqueJornada> listaRegistros = new ArrayList<TanqueJornada>();
 		List<Object> parametros = new ArrayList<Object>();
+		
 		try {
 			if (argumentosListar.getPaginacion() == Constante.CON_PAGINACION) {
 				sqlLimit = Constante.SQL_LIMIT_CONFIGURADO;
@@ -77,7 +79,6 @@ public class TanqueJornadaDao {
 				parametros.add(argumentosListar.getRegistrosxPagina());
 			}
 
-//			sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " " + argumentosListar.getSentidoOrdenamiento();
 			sqlOrderBy = " ORDER BY hora_inicial, hora_final ASC";
 
 			StringBuilder consultaSQL = new StringBuilder();

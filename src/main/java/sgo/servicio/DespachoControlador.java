@@ -715,23 +715,23 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
     principal = this.getCurrentUser(); 
     //Recuperar el enlace de la accion
     respuesta = dEnlace.recuperarRegistro(URL_CARGAR_ARCHIVO_COMPLETA);
-    if (respuesta.estado==false) {
-      throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
+    if (!respuesta.estado) {
+      throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale));
     }
     
     Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
     //Verificar si cuenta con el permiso necesario      
-    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())){
+    if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
         throw new Exception(gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale));
     }
     
-    ParametrosListar argumentosListar=null;
+    ParametrosListar argumentosListar = null;
     //valido si existe una carga con el mismo archivo
     argumentosListar=new ParametrosListar();
     argumentosListar.setNombreArchivoDespacho(file.getOriginalFilename());
     argumentosListar.setIdJornada(Integer.parseInt(idJornada));
     respuesta=dDespachoCargaDao.recuperarRegistros(argumentosListar);
-    if (respuesta.estado==false){  
+    if (!respuesta.estado) {  
     	throw new Exception("Error al validar la existencia del archivo de carga");
     }
     
@@ -779,12 +779,12 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
     double factorCorreccionVolumen=0; 
     
     respuesta = dJornadaDao.recuperarRegistro(Integer.parseInt(idJornada));
-    if (respuesta.estado == false) {
+    if (!respuesta.estado) {
   	  throw new Exception("Error al obtener jornada");        	  
     }
     
-    if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
-    	jornada=(Jornada)respuesta.contenido.getCarga().get(0);  	 
+    if(respuesta.contenido.getCarga() != null && respuesta.contenido.getCarga().size() > 0) {
+    	jornada = (Jornada)respuesta.contenido.getCarga().get(0);  	 
     }
     
     //guardar cabecera
@@ -830,12 +830,11 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
           
           if (!respuesta.estado) {
         	  throw new Exception("Error al obtener el identificador del vehiculo :"+nombre_corto_vehiculo);        	  
-          }else{
-              if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0) {
+          } else {
+              if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size() > 0) {
             	  vehiculo=(Vehiculo)respuesta.contenido.getCarga().get(0);
             	  despacho.setIdVehiculo(vehiculo.getId());
-              }else{
-            	  //errorCSV.append("No se encontro el vehiculo con el nombre :"+nombre_corto_vehiculo);
+              } else {
             	  throw new Exception("No se encontro el vehiculo con el nombre :"+nombre_corto_vehiculo);            	 
               }
           }
@@ -857,18 +856,18 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
      
       sHoraInicio = columnas[3];      
       sHoraFin = columnas[4];  
-      String fechaOperativa=Utilidades.convierteDateAString(jornada.getFechaOperativa(), "yyyyMMdd");
+      String fechaOperativa = Utilidades.convierteDateAString(jornada.getFechaOperativa(), "yyyyMMdd");
       
       if (sHoraInicio!=null && !sHoraInicio.isEmpty()) {     	  
-          Date fechaInicio=Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");      
+          Date fechaInicio = Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampIni = new java.sql.Timestamp(fechaInicio.getTime());
           despacho.setFechaHoraInicio(currentTimestampIni);
       } else {
-    	throw new Exception("Hora de inicio es requerido. Fila:"+numeroLineas);    	
+    	  throw new Exception("Hora de inicio es requerido. Fila:"+numeroLineas);    	
       }
       
       if (sHoraFin!=null && !sHoraFin.isEmpty()) {
-    	  Date fechaFin=Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");      
+    	  Date fechaFin = Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampFin = new java.sql.Timestamp(fechaFin.getTime());
           despacho.setFechaHoraFin(currentTimestampFin);   	 
       } else {
@@ -876,7 +875,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
       }
       
       clasificacion= columnas[5];     
-      if(clasificacion!=null && !clasificacion.isEmpty()){
+      if(clasificacion!=null && !clasificacion.isEmpty()) {
     	  if(Despacho.CLASIFICACION_RECIRCULADO_TEXT.equals(clasificacion.trim().toUpperCase()) || 
     			  Despacho.CLASIFICACION_TRANSFERIDO_TEXT.equals(clasificacion.trim().toUpperCase())){
     		  if(Despacho.CLASIFICACION_RECIRCULADO_TEXT.equals(clasificacion.trim().toUpperCase())){
@@ -894,95 +893,100 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
       }
       
       abreviatura_producto=columnas[6];
-      if(abreviatura_producto!=null && !abreviatura_producto.isEmpty()){
+      if (abreviatura_producto!=null && !abreviatura_producto.isEmpty()) {
           argumentosListar=new ParametrosListar();
           argumentosListar.setAbreviaturaProducto(abreviatura_producto);
           argumentosListar.setFiltroEstacion(jornada.getEstacion().getId());
           respuesta=dToleranciaDao.recuperarRegistros(argumentosListar);
-          if (respuesta.estado == false) {
+          if (!respuesta.estado) {
         	  throw new Exception("Error al obtener el identificador del producto :"+abreviatura_producto);
-          }else{
-        	  if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
+          } else {
+        	  if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size() > 0) {
         		  tolerancia_producto=(Tolerancia)respuesta.contenido.getCarga().get(0); 
         		  despacho.setIdProducto(tolerancia_producto.getProducto().getId());
-              }else{            	  
+              } else {            	  
             	  throw new Exception("No se encontro en la estacion  " + jornada.getEstacion().getNombre()+" el Producto con la abreviatura "+abreviatura_producto);            	  
               } 
           }
-      }else{
+      } else {
     	  throw new Exception("Abreviatura Producto es requerido Fila:"+numeroLineas);
       }
       
       contrometro_alias=columnas[7];
-      if(contrometro_alias!=null && !contrometro_alias.isEmpty()){
+      if (contrometro_alias != null && !contrometro_alias.isEmpty()) {
           argumentosListar=new ParametrosListar();
           argumentosListar.setTxtFiltro(contrometro_alias);
           argumentosListar.setFiltroEstacion(jornada.getEstacion().getId());
-          respuesta=dContometroDao.recuperarRegistros(argumentosListar);
-          if (respuesta.estado == false) {
+          respuesta = dContometroDao.recuperarRegistros(argumentosListar);
+          if (!respuesta.estado) {
         	  throw new Exception("Error al obtener el identificador del contometros :"+contrometro_alias);
-          }else{
-        	  if(respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size()>0){
-        		  contometro=(Contometro)respuesta.contenido.getCarga().get(0);
+          } else {
+        	  if (respuesta.contenido.getCarga()!=null && respuesta.contenido.getCarga().size() > 0) {
+        		  contometro = (Contometro) respuesta.contenido.getCarga().get(0);
         		  despacho.setIdContometro(contometro.getId());
-              }else{
+              } else {
             	  throw new Exception("No se encontro en la estacion  " + jornada.getEstacion().getNombre()+" el Contometro con el alias "+contrometro_alias);            	 
               } 
           }
-      }else{
+      } else {
     	  throw new Exception("Alias contometro es requerido.Fila:"+numeroLineas);    	  
       }
       
       //tanque
-      Date fechaInicioImportacion=Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");
-      Date fechaFinImportacion=Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");  
+      Date fechaInicioImportacion = Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");
+      Date fechaFinImportacion = Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");  
       
       if(fechaInicioImportacion.after(fechaFinImportacion)){
     	  throw new Exception("la Hora de Inicio no puede ser posterior a la Hora Fin. Fila:"+numeroLineas); 
       }      
       
       if(sHoraInicio!=null && !sHoraInicio.isEmpty()){
-          Date fechaInicio=Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");      
+          Date fechaInicio = Utilidades.convierteStringADate(fechaOperativa+sHoraInicio, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampIni = new java.sql.Timestamp(fechaInicio.getTime());
           despacho.setFechaHoraInicio(currentTimestampIni);
-      }else{
+      } else {
     	throw new Exception("Hora de inicio es requerido. Fila:"+numeroLineas);    	
       }
       
       if(sHoraFin!=null && !sHoraFin.isEmpty()){
-    	  Date fechaFin=Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");      
+    	  Date fechaFin = Utilidades.convierteStringADate(fechaOperativa+sHoraFin, "yyyyMMddHH:mm");      
           java.sql.Timestamp currentTimestampFin = new java.sql.Timestamp(fechaFin.getTime());
           despacho.setFechaHoraFin(currentTimestampFin);   	 
-      }else{
-    	throw new Exception("Hora de Fin es requerido. Fila:"+numeroLineas);    	
+      } else {
+    	  throw new Exception("Hora de Fin es requerido. Fila:"+numeroLineas);    	
       }
       
       //buscamos el tanque que se encuentre despachando
-      descripcion_tanque=columnas[8];
+      descripcion_tanque = columnas[8];
       ParametrosListar parametros = new ParametrosListar();
       parametros.setIdJornada(despachoCarga.getIdJornada());
       parametros.setFiltroProducto(despacho.getIdProducto());
       // 9000003068 - Añadimos el nombre del tanque como valor de busqueda. Antes solo se consideraba 1 tanque por producto y no era necesario.
       parametros.setFiltroNombreTanque(descripcion_tanque);
-      String fecha =(fechaOperativa.substring(0, 4))+"-"+(fechaOperativa.substring(4,6))+"-"+(fechaOperativa.substring(6,8));
+      String fecha = (fechaOperativa.substring(0, 4))+"-"+(fechaOperativa.substring(4,6))+"-"+(fechaOperativa.substring(6,8));
       parametros.setFiltroInicioDespacho(fecha+" "+sHoraInicio);
       
       respuesta = dTanqueJornadaDao.recuperarRegistros(parametros);
-      if (respuesta.estado == false) {
+      if (!respuesta.estado) {
     	  throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
       } else {
-    	  if(respuesta.contenido.carga.size() > 0){
+    	  if(respuesta.contenido.carga.size() > 0) {
     		  TanqueJornada eTanque = (TanqueJornada) respuesta.contenido.carga.get(0);
     		  despacho.setIdTanque(eTanque.getIdTanque());
     	  } else {
     		  parametros.setFiltroInicioDespacho("");
     		  parametros.setEstadoDespachando(TanqueJornada.ESTADO_DESPACHANDO);
     		  respuesta = dTanqueJornadaDao.recuperarRegistros(parametros);
-    		  if (respuesta.estado == false) {
-    	    	  throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido",null,locale));
+    		  if (!respuesta.estado) {
+    	    	  throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
     	      } else {
-    	    		  TanqueJornada eTanque = (TanqueJornada) respuesta.contenido.carga.get(0);
-    	    		  despacho.setIdTanque(eTanque.getIdTanque());
+    	    	  
+    	    	  if (respuesta.contenido.carga.size() <= 0) {
+    	    		  throw new Exception(gestorDiccionario.getMessage("sgo.errorCampoTanque", null, locale));
+    	    	  }
+    	    	  
+	    		  TanqueJornada eTanque = (TanqueJornada) respuesta.contenido.carga.get(0);
+	    		  despacho.setIdTanque(eTanque.getIdTanque());
     	      }
     	  }
       }
@@ -1127,13 +1131,14 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
     }
     
     this.transaccion.commit(estadoTransaccion);
-  } catch (Exception ex){
+  } catch (Exception e) {
 	this.transaccion.rollback(estadoTransaccion);
-    ex.printStackTrace();
-    respuesta.estado=false;
+    e.printStackTrace();
+    respuesta.estado = false;
     respuesta.contenido = null;
-    respuesta.mensaje=ex.getMessage();
+    respuesta.mensaje = e.getMessage();
   }
+  
   return respuesta;
 }
 

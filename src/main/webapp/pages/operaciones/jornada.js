@@ -2408,7 +2408,7 @@ function trailingZeros(num) {
 	}
 	
 	if (num.toString().indexOf(".") < 0 || !num.toString().split(".").length >= 2) {
-		return num;
+		return num + ".000000".substring(0, (numeroDecimalesContometro + 1));
 	}
 	
 	var numArray = num.toString().split(".");
