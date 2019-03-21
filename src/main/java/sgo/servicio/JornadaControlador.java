@@ -1588,12 +1588,10 @@ public class JornadaControlador {
         Timestamp diaHoradeCierre = new Timestamp(date.getTime());
         
         if (!sameDate) {
-        	
         	Calendar cal = Calendar.getInstance();
             cal.setTime(date);
             cal.add(Calendar.DATE, 1);
             java.util.Date dateOneMoreDay = cal.getTime();
-        	
         	diaHoradeCierre = new Timestamp(dateOneMoreDay.getTime());
         }
 
@@ -1865,10 +1863,7 @@ public @ResponseBody RespuestaCompuesta registrarCambioTanqueJornada(@RequestBod
 	   		 if (respuesta.estado==false){     	
 	           throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido",null,locale));
 	         }
-    		   
     	   }
-    	   
-    	   
 		}
         respuesta.mensaje=gestorDiccionario.getMessage("sgo.actualizarExitoso",new Object[] {  eJornada.getFechaActualizacion().substring(0, 9),eJornada.getFechaActualizacion().substring(10),principal.getIdentidad() },locale);;
     	this.transaccion.commit(estadoTransaccion);

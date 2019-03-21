@@ -7,11 +7,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
@@ -52,6 +56,7 @@ import sgo.datos.EstacionDao;
 import sgo.datos.EventoDao;
 import sgo.datos.JornadaDao;
 import sgo.datos.OperacionDao;
+import sgo.datos.PerfilDetalleHorarioDao;
 import sgo.datos.PlanificacionDao;
 import sgo.datos.ProductoDao;
 import sgo.datos.PropietarioDao;
@@ -69,6 +74,7 @@ import sgo.entidad.Jornada;
 import sgo.entidad.MenuGestor;
 import sgo.entidad.Operacion;
 import sgo.entidad.ParametrosListar;
+import sgo.entidad.PerfilDetalleHorario;
 import sgo.entidad.Respuesta;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.entidad.Tanque;
@@ -143,6 +149,8 @@ private JornadaDao dJornadaDao;
 private ToleranciaDao dToleranciaDao;
 @Autowired
 private JornadaDao dJornada;
+@Autowired
+private PerfilDetalleHorarioDao dPerfilDetalleHorario;
 @Autowired
 ServletContext servletContext;
 //
@@ -447,6 +455,7 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		if (!respuesta.estado) {
 			throw new Exception(gestorDiccionario.getMessage("sgo.accionNoHabilitada",null,locale));
 		}
+		
 		Enlace eEnlace = (Enlace) respuesta.getContenido().getCarga().get(0);
 		//Verificar si cuenta con el permiso necesario			
 		if (!principal.getRol().searchPermiso(eEnlace.getPermiso())) {
@@ -465,7 +474,168 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		if(!Utilidades.esValido(eDespacho.getFechaHoraFin())){
 			throw new Exception(gestorDiccionario.getMessage("sgo.errorFechaFin",null,locale));
 		}
+		
+		RespuestaCompuesta respuestaPerfilDetalleHorario = dPerfilDetalleHorario.recuperarRegistro(eDespacho.getIdPerfilDetalleHorario());
+		if (!respuestaPerfilDetalleHorario.estado) {
+			throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		}
+		
+		PerfilDetalleHorario ePerfilDetalleHorario = (PerfilDetalleHorario) respuestaPerfilDetalleHorario.getContenido().getCarga().get(0);
+		
+		Timestamp timeStampDefault = new Timestamp(eDespacho.getFechaHoraFin().getTime());
+		
+		/**
+		 * Perfil Detalle Horario: inicio
+		 */
+		Calendar calPerfilDetalleHorarioInicio = Calendar.getInstance();
+		calPerfilDetalleHorarioInicio.setTime(timeStampDefault);
+		String perfilDetalleHorarioInicioArray[] = ePerfilDetalleHorario.getHoraInicioTurno().trim().split(":");
+		calPerfilDetalleHorarioInicio.set(Calendar.HOUR_OF_DAY, Integer.parseInt(perfilDetalleHorarioInicioArray[0]));  
+		calPerfilDetalleHorarioInicio.set(Calendar.MINUTE, Integer.parseInt(perfilDetalleHorarioInicioArray[1]));  
+		calPerfilDetalleHorarioInicio.set(Calendar.SECOND, 0);
+		
+		/**
+		 * Perfil Detalle Horario: fin
+		 */
+		Calendar calPerfilDetalleHorarioFin = Calendar.getInstance();
+		calPerfilDetalleHorarioFin.setTime(timeStampDefault);
+		String perfilDetalleHorarioFinArray[] = ePerfilDetalleHorario.getHoraFinTurno().trim().split(":");
+		calPerfilDetalleHorarioFin.set(Calendar.HOUR_OF_DAY, Integer.parseInt(perfilDetalleHorarioFinArray[0]));  
+		calPerfilDetalleHorarioFin.set(Calendar.MINUTE, Integer.parseInt(perfilDetalleHorarioFinArray[1]));  
+		calPerfilDetalleHorarioFin.set(Calendar.SECOND, 0);
+		
+		
+		/**
+		 * Aumenta un dia a la fecha si es que el rango de fechas varia en un dia
+		 */
+		boolean sameDate = calPerfilDetalleHorarioInicio.before(calPerfilDetalleHorarioFin);
+		Timestamp fechaHoraFinDia1 = new Timestamp(eDespacho.getFechaHoraFin().getTime());
+		Timestamp fechaHoraFinDia2 = new Timestamp(eDespacho.getFechaHoraFin().getTime());
+		
+        if (!sameDate) {
+        	Calendar cal = Calendar.getInstance();
+            cal.setTime(fechaHoraFinDia2);
+            cal.add(Calendar.DATE, 1);
+            java.util.Date dateOneMoreDay = cal.getTime();
+            fechaHoraFinDia2 = new Timestamp(dateOneMoreDay.getTime());
+        }
+        
+        if (!sameDate) {
+        	
+        	Timestamp timeStampDefaultDia1 = new Timestamp(fechaHoraFinDia1.getTime());
+    		Calendar calDia1 = Calendar.getInstance();
+    		calDia1.setTime(timeStampDefaultDia1);
+    		calDia1.set(Calendar.HOUR_OF_DAY, 0);  
+    		calDia1.set(Calendar.MINUTE, 0);
+    		calDia1.set(Calendar.SECOND, 0);
+    		
+        	Timestamp timeStampDefaultDia2 = new Timestamp(fechaHoraFinDia2.getTime());
+    		Calendar calDia2 = Calendar.getInstance();
+    		calDia2.setTime(timeStampDefaultDia2);
+    		calDia2.set(Calendar.HOUR_OF_DAY, 0);  
+    		calDia2.set(Calendar.MINUTE, 0);
+    		calDia2.set(Calendar.SECOND, 0);
+    		
+    		/**
+    		 * Despacho: inicio
+    		 */
+    		Timestamp despachoInicioTs = new Timestamp(eDespacho.getFechaHoraInicio().getTime());
+    		Calendar calDespachoInicio = Calendar.getInstance();
+    		calDespachoInicio.setTime(despachoInicioTs);
 
+
+    		/**
+    		 * Perfil Detalle Horario: inicio
+    		 */
+    		Calendar calPerfilDetalleHorarioInicio2 = Calendar.getInstance();
+    		calPerfilDetalleHorarioInicio2.setTime(calDia2.getTime());
+    		calPerfilDetalleHorarioInicio2.set(Calendar.HOUR_OF_DAY, 0);  
+    		calPerfilDetalleHorarioInicio2.set(Calendar.MINUTE, 0);  
+    		calPerfilDetalleHorarioInicio2.set(Calendar.SECOND, 0);
+
+    		/*
+    		 * Solo agrego un dia mas, si la hora inicio es mayor a las 12 media noche
+    		 */
+    		boolean esMayorAlasDoce = calDespachoInicio.before(calDia2);
+    		
+    		if (esMayorAlasDoce) {
+    			calDespachoInicio.add(Calendar.DATE, 1);
+    		}
+    		
+            java.util.Date dateOneMoreDay = calDespachoInicio.getTime();
+            Timestamp ts = new Timestamp(dateOneMoreDay.getTime());
+    		Calendar calDespachoInicio2 = Calendar.getInstance();
+    		calDespachoInicio2.setTime(ts);
+			
+    		boolean despachoValidacionInicio = calDespachoInicio2.before(calPerfilDetalleHorarioInicio2);
+    		
+    		if (despachoValidacionInicio) {
+    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraInicio24horas", null, locale));
+    		}
+
+    		/**
+    		 * Despacho: fin
+    		 */
+    		Timestamp despachoFinTs = new Timestamp(eDespacho.getFechaHoraFin().getTime());
+    		Calendar calDespachoFin = Calendar.getInstance();
+    		calDespachoFin.setTime(despachoFinTs);
+    		calDespachoFin.add(Calendar.DATE, 1);
+            java.util.Date dateOneMoreDay2 = calDespachoFin.getTime();
+            Timestamp ts2 = new Timestamp(dateOneMoreDay2.getTime());
+    		Calendar calDespachoFin2 = Calendar.getInstance();
+    		calDespachoFin2.setTime(ts2);
+    		
+    		/**
+    		 * Perfil Detalle Horario: fin
+    		 */
+    		Calendar calPerfilDetalleHorarioFin2 = Calendar.getInstance();
+    		calPerfilDetalleHorarioFin2.setTime(calDia2.getTime());
+    		String array2[] = ePerfilDetalleHorario.getHoraFinTurno().trim().split(":");
+    		calPerfilDetalleHorarioFin2.set(Calendar.HOUR_OF_DAY, Integer.parseInt(array2[0]));  
+    		calPerfilDetalleHorarioFin2.set(Calendar.MINUTE, Integer.parseInt(array2[1]));  
+    		calPerfilDetalleHorarioFin2.set(Calendar.SECOND, 0);
+    		
+    		boolean despachoValidacionFin = calDespachoFin2.after(calPerfilDetalleHorarioFin2);
+    		
+    		if (despachoValidacionFin) {
+    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraFin", null, locale));
+    		}
+
+        } else {
+
+			//Timestamp timeStampDefault2 = new Timestamp(fechaHoraFin.getTime());
+        	
+    		/**
+    		 * Despacho: inicio
+    		 */
+    		Timestamp despachoInicioTs = new Timestamp(eDespacho.getFechaHoraInicio().getTime());
+    		Calendar calDespachoInicio = Calendar.getInstance();
+    		calDespachoInicio.setTime(despachoInicioTs);
+			
+    		boolean despachoValidacionInicio = calDespachoInicio.before(calPerfilDetalleHorarioInicio);
+    		
+    		if (despachoValidacionInicio) {
+    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraInicio", null, locale));
+    		}
+
+    		/**
+    		 * Despacho: fin
+    		 */
+    		Timestamp despachoFinTs = new Timestamp(eDespacho.getFechaHoraFin().getTime());
+    		Calendar calDespachoFin = Calendar.getInstance();
+    		calDespachoFin.setTime(despachoFinTs);
+    		
+    		boolean despachoValidacionFin = calDespachoFin.after(calPerfilDetalleHorarioFin);
+    		
+    		if (despachoValidacionFin) {
+    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraFin", null, locale));
+    		}
+        }
+		
+        /**
+         * Set valores para guardar el despacho
+         */
+        eDespacho.setFechaHoraFin(fechaHoraFinDia2);
 		eDespacho.setVolumenCorregidoBigDecimal(
 			eDespacho.getVolumenCorregidoBigDecimal() != null ? eDespacho.getVolumenCorregidoBigDecimal() : new BigDecimal(0)
 		);

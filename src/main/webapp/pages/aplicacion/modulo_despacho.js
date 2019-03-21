@@ -416,40 +416,48 @@ moduloDespacho.prototype.validaImportar = function(accion){
 	});
 };
 
-moduloDespacho.prototype.recuperarTurno = function(accion){
+moduloDespacho.prototype.recuperarTurno = function(accion) {
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 	referenciaModulo.obj.ocultaContenedorDetalleDespacho.show();
+	
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './turno/listar', 
 	    contentType: referenciaModulo.TIPO_CONTENIDO, 
-	    data: {idJornada:referenciaModulo.obj.idJornadaSeleccionado,
-	    	   filtroFechaJornada:referenciaModulo.obj.fechaJornadaSeleccionado,
-	    	   filtroEstado:constantes.TIPO_TURNO_ABIERTO},	
+	    data: {
+	    	idJornada:referenciaModulo.obj.idJornadaSeleccionado,
+	    	filtroFechaJornada:referenciaModulo.obj.fechaJornadaSeleccionado,
+	    	filtroEstado:constantes.TIPO_TURNO_ABIERTO
+	    },	
 	    success: function(respuesta) {
 	    	if (!respuesta.estado) {
 	    		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	} else {
-	    		if(respuesta.contenido.carga==null || respuesta.contenido.carga.length==0){
+	    		if(respuesta.contenido.carga == null || respuesta.contenido.carga.length == 0) {
 	    			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "No existe un turno abierto.");
 	    		}else{
 	    			
 	    			var registro = respuesta.contenido.carga[0];
 	    			
-//	    		    se cambio .text por .val por req 9000003068===========================================================================================	    			
+	    			
+	    			console.log(" ****** recuperarTurno ******* ");
+	    			console.dir(registro.perfilHorario.lstDetalles[0].id);
+	    			console.dir("horaInicioTurno ::: " + registro.perfilHorario.lstDetalles[0].horaInicioTurno);
+	    			console.dir("horaFinTurno ::: " + registro.perfilHorario.lstDetalles[0].horaFinTurno);
+	    			
+	    			
+    				//se cambio .text por .val por req 9000003068===========================================================================================	    			
 	    			referenciaModulo.obj.cmpHoraAperturaTurno.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraApertura));
-//	    			  ======================================================================================================================================	
-//					REQ. 9000003068 - AGREGAR ID DEL TURNO ===============================================================================================
+	    			referenciaModulo.obj.idPerfilDetalleHorario = registro.perfilHorario.lstDetalles[0].id; 
 	    			referenciaModulo.obj.idTurno.val(registro.id);
-//					======================================================================================================================================
+	    			//======================================================================================================================================
 	    		}
-	    		
     		}
 	    	referenciaModulo.obj.ocultaContenedorDetalleDespacho.hide();
 	    },			    		    
 	    error: function(xhr,estado,error) {
-        referenciaModulo.mostrarErrorServidor(xhr,estado,error);        
+	    	referenciaModulo.mostrarErrorServidor(xhr,estado,error);        
         	referenciaModulo.obj.ocultaContenedorDetalleDespacho.hide();
 	   }
 	});
@@ -1041,45 +1049,69 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 		});
 	};
 
-moduloDespacho.prototype.inicializarFormularioPrincipal= function(){  
-  //Establecer validaciones del formulario    
-    var referenciaModulo=this;
-    this.obj.cmpLecturaInicial.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
-    this.obj.cmpLecturaFinal.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
-    this.obj.cmpVolumen60.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
-    this.obj.cmpVolObservado.inputmask('decimal', {digits: this.obj.nroDecimales.val(), groupSeparator:',',autoGroup:true,groupSize:3});
+moduloDespacho.prototype.inicializarFormularioPrincipal = function() {
+	
+	console.log(" *** inicializarFormularioPrincipal *** ");
+	console.dir(this.obj);
+	
+    var referenciaModulo = this;
+    this.obj.cmpLecturaInicial.inputmask('decimal', {
+    	digits: this.obj.nroDecimales.val(),
+    	groupSeparator:',',
+    	autoGroup:true,
+    	groupSize:3
+    });
+    this.obj.cmpLecturaFinal.inputmask('decimal', {
+    	digits: this.obj.nroDecimales.val(),
+    	groupSeparator:',',
+    	autoGroup:true,
+    	groupSize:3
+    });
+    this.obj.cmpVolumen60.inputmask('decimal', {
+    	digits: this.obj.nroDecimales.val(),
+    	groupSeparator:',',
+    	autoGroup:true,
+    	groupSize:3
+    });
+    this.obj.cmpVolObservado.inputmask('decimal', {
+    	digits: this.obj.nroDecimales.val(),
+    	groupSeparator:',',
+    	autoGroup:true,
+    	groupSize:3
+    });
+    
     referenciaModulo.obj.verificadorFormulario = referenciaModulo.obj.frmPrincipal.validate({
-      rules: referenciaModulo.reglasValidacionFormulario,
-      messages: referenciaModulo.mensajesValidacionFormulario,
-    highlight: function(element, errorClass, validClass) {
-      $("#cnt" + $(element).attr("id")).removeClass(validClass).addClass(errorClass);
-    },
-    unhighlight: function(element, errorClass, validClass) {
-      $("#cnt" + $(element).attr("id")).removeClass(errorClass).addClass(validClass);
-    },
-    errorPlacement: function(error, element) {
-      console.log(error);     
-    },
-    errorClass: "has-error",
-    validClass: "has-success",
-    showErrors: function(errorMap, errorList) {
+    	rules: referenciaModulo.reglasValidacionFormulario,
+    	messages: referenciaModulo.mensajesValidacionFormulario,
+    	highlight: function(element, errorClass, validClass) {
+    		$("#cnt" + $(element).attr("id")).removeClass(validClass).addClass(errorClass);
+    	},
+    	unhighlight: function(element, errorClass, validClass) {
+    		$("#cnt" + $(element).attr("id")).removeClass(errorClass).addClass(validClass);
+    	},
+    	errorPlacement: function(error, element) {
+    		//console.log(error.text());     
+    	},
+    	errorClass: "has-error",
+    	validClass: "has-success",
+    	showErrors: function(errorMap, errorList) {
 
-      this.checkForm();
-      this.defaultShowErrors();
+    		this.checkForm();
+    		this.defaultShowErrors();
 
-      var numeroErrores = this.errorList.length;
-      if (numeroErrores > 0) {
-        var mensaje = numeroErrores == 1 ? 'Existe un campo con error.' : 'Existen ' + numeroErrores + ' campos con errores';
-        for (var indice in this.errorMap){
-          mensaje+=". " + this.errorMap[indice];    
-        }        
-        referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,mensaje);
-      } else {
-        mensaje="Todos los campos son validos";
-        referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,mensaje);
-      }
-    }
-  });
+    		var numeroErrores = this.errorList.length;
+    		if (numeroErrores > 0) {
+    			var mensaje = numeroErrores == 1 ? 'Existe un campo con error.' : 'Existen ' + numeroErrores + ' campos con errores';
+    			for (var indice in this.errorMap){
+    				mensaje+=". " + this.errorMap[indice];    
+    			}        
+    			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, mensaje);
+    		} else {
+    			mensaje = "Todos los campos son validos";
+    			referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, mensaje);
+    		}
+    	}
+    });
 };
 
 moduloDespacho.prototype.activarBotones=function(){
@@ -1211,7 +1243,7 @@ moduloDespacho.prototype.guardarRegistro = function() {
 	if (!referenciaModulo.validaFormularioXSS("#frmPrincipal")) {
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, cadenas.ERROR_VALORES_FORMULARIO);
 	} else if (referenciaModulo.obj.frmPrincipal.valid()) {
-
+		
 		referenciaModulo.obj.ocultaContenedorFormulario.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();

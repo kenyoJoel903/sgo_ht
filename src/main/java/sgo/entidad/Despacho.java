@@ -29,6 +29,7 @@ public class Despacho extends EntidadBase {
 	private float volumen_corregido;
 	private BigDecimal volumenCorregidoBigDecimal;
 	private int id_tanque;
+	private int idPerfilDetalleHorario;
 	private int id_contometro;
 	private int codigo_archivo_origen;
 	private float volumen_observado;
@@ -337,6 +338,14 @@ public class Despacho extends EntidadBase {
 
 	public void setNroDecimales(int dNroDecimales) {
 		this.nro_decimales = dNroDecimales;
+	}
+
+	public int getIdPerfilDetalleHorario() {
+		return idPerfilDetalleHorario;
+	}
+
+	public void setIdPerfilDetalleHorario(int idPerfilDetalleHorario) {
+		this.idPerfilDetalleHorario = idPerfilDetalleHorario;
 	}
 
 }

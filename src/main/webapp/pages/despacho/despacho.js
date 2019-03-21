@@ -91,22 +91,22 @@ $(document).ready(function() {
   jQuery.validator.addMethod('selectcheck', function (value) {
       return (value != '0' && value != '');
   }, "year required");
-  moduloActual.reglasValidacionFormulario={
+  moduloActual.reglasValidacionFormulario = {
 	cmpIdVehiculo:			{selectcheck: true },
 	cmpIdClasificacion: 	{selectcheck: true },
 	cmpNumeroVale: 			{required: true },
-	cmpHoraInicio: 			{required: true },
+	cmpHoraInicio:          {required: true},
 	cmpHoraFin: 			{required: true },
 	cmpIdProducto: 			{selectcheck: true },
 	cmpIdContometro: 		{selectcheck: true },
 	cmpIdTanque: 			{selectcheck: true },
   };
 
-  moduloActual.mensajesValidacionFormulario={
+  moduloActual.mensajesValidacionFormulario = {
     cmpIdVehiculo:  		{selectcheck: "El campo 'Vehiculo' es obligatorio" },
     cmpIdClasificacion: 	{selectcheck: "El campo 'Clasificacion' es obligatorio" },
     cmpNumeroVale: 			{required: "El campo 'Nro Vale' es obligatorio" },
-    cmpHoraInicio: 			{required: "El campo 'Hora Inicio' es obligatorio" },
+    cmpHoraInicio: 			{required: "El campo 'Hora Inicio' es obligatorio",},
     cmpHoraFin: 			{required: "El campo 'Hora Fin' es obligatorio" },
 	cmpIdProducto: 			{selectcheck: "El campo 'Producto' es obligatorio" },
 	cmpIdContometro: 		{selectcheck: "El campo 'Contometro' es obligatorio" },
@@ -358,7 +358,7 @@ $(document).ready(function() {
     this.obj.cmpKmHorometro=$("#cmpKmHorometro");
     this.obj.cmpNumeroVale=$("#cmpNumeroVale");
 
-    this.obj.cmpHoraInicio=$("#cmpHoraInicio");
+    this.obj.cmpHoraInicio = $("#cmpHoraInicio");
     this.obj.cmpHoraInicio.inputmask("h:s:s");
     
     this.obj.cmpHoraFin=$("#cmpHoraFin");
@@ -903,6 +903,7 @@ $(document).ready(function() {
 	    eRegistro.fechaHoraInicio = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraInicio.val());
 	    eRegistro.fechaHoraFin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.val() + " " + referenciaModulo.obj.cmpHoraFin.val());
 	    eRegistro.idTurno = referenciaModulo.obj.idTurno.val();
+	    eRegistro.idPerfilDetalleHorario = referenciaModulo.obj.idPerfilDetalleHorario;
 //	    Fin modificado por req 9000003068
 
 	    eRegistro.factorCorreccion = parseFloat(referenciaModulo.obj.cmpFactor.val().replaceAll(moduloActual.SEPARADOR_MILES,""));
@@ -964,9 +965,6 @@ $(document).ready(function() {
 	this.obj.vistaFactor.text(registro.factorCorreccion);
 	this.obj.vistaAPI60.text(registro.apiCorregido);
 	this.obj.vistaTemperatura.text(registro.temperatura);
-	
-	console.log("registro.volumenCorregido::: " + registro.volumenCorregido);
-	
 	this.obj.vistaVolumen60.text(parseFloat(registro.volumenCorregido).toFixed(registro.nroDecimales));
 	this.obj.vistaCreadoEl.text(registro.fechaCreacion);
 	this.obj.vistaCreadoPor.text(registro.usuarioCreacion);
@@ -980,13 +978,14 @@ moduloActual.recuperaExtension = function(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
  
-  moduloActual.botonGuardarImportacion = function(){	  
+  moduloActual.botonGuardarImportacion = function() {	  
 		var ref=this;		
 		var nroDecimales = ref.obj.nroDecimales.val();
 		var idTurno =ref.obj.idTurno.val();
 		var idJornada =ref.obj.idJornadaSeleccionado;
 		var idOperario =ref.obj.cmpOperarioImportacion.val();
 		var comentario =ref.obj.cmpComentarioImportacion.val();
+		
 		try {	
 			if (ref.validarCargaArchivo()){
 				$("#ocultaContenedorImportacion").show();
@@ -1004,11 +1003,7 @@ moduloActual.recuperaExtension = function(str, suffix) {
 				    	$("#ocultaContenedorImportacion").hide();
 				    	if(!respuesta.estado){
 				    		ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR,respuesta.mensaje);				    		
-				    	}else{
-				    		
-				    		console.log("respuesta ***");
-				    		console.dir(respuesta);
-				    		
+				    	} else {				    		
 				    		ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO,"La importaci\u00f3n de registros fue exitosa");
 				    		moduloActual.actualizarDetalle();
 				    	}				    					    	
@@ -1066,12 +1061,14 @@ moduloActual.recuperaExtension = function(str, suffix) {
 			var fin = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraFin.val());
 			var turno = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraAperturaTurno.text());
 			
+			/*
 			if(fin.getTime() < inicio.getTime()){
 				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La hora Fin no puede ser menor a la Hora inicio. Favor verifique.");
 		    	referenciaModulo.obj.ocultaContenedorFormulario.hide();
 		    	retorno = false;
 		    	return retorno;
 			}
+			*/
 			
 			if(inicio.getTime() < turno.getTime()){
 				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La hora Inicio no puede ser menor a la Hora de apertura del turno. Favor verifique.");
