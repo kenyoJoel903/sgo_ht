@@ -19,6 +19,7 @@ public class ParametrosListar {
 	
 	//filtro estado
 	private int[] filtroEstados;
+	private int[] filtroFlagCalculoCorregido;
 	private int filtroEstado = Constante.FILTRO_TODOS;
 	private int idTanque=Constante.FILTRO_TODOS;
 	private int estadoServicio=Constante.FILTRO_TODOS;
@@ -1323,5 +1324,12 @@ public void setEstadoTanque(int estadoTanque) {
 }
 //Fin Agregado por req 9000003068
 
+public int[] getFiltroFlagCalculoCorregido() {
+	return filtroFlagCalculoCorregido;
+}
+
+public void setFiltroFlagCalculoCorregido(int[] filtroFlagCalculoCorregido) {
+	this.filtroFlagCalculoCorregido = filtroFlagCalculoCorregido;
+}
 
 }

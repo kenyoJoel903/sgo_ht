@@ -1111,19 +1111,25 @@ moduloJornada.prototype.actualizarRegistro = function() {
     var eRegistro = {};
 
     referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
-    if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA){
+    if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA) {
         referenciaModulo.obj.ocultaContenedorCierreJornada.show();
         eRegistro = referenciaModulo.recuperarValoresCierre();
     } else if (referenciaModulo.modoEdicion == constantes.MODO_MUESTREO_JORNADA){
         referenciaModulo.obj.ocultaContenedorMuestreoJornada.show();
         eRegistro = referenciaModulo.recuperarValoresMuestreo();
     }
+    
+    console.log(" *** moduloJornada.prototype.actualizarRegistro *** ");
+    console.dir(eRegistro);
 
     $.ajax({
         type: constantes.PETICION_TIPO_POST,
         url: referenciaModulo.URL_ACTUALIZAR, 
         contentType: referenciaModulo.TIPO_CONTENIDO,
-        data: JSON.stringify(eRegistro),	
+        data: JSON.stringify(eRegistro),
+        beforeSend: function() {
+    		referenciaModulo.obj.btnGuardarCierre.attr("disabled", true);
+        },
         success: function(respuesta) {
             if (!respuesta.estado) {
                 referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
@@ -1132,11 +1138,13 @@ moduloJornada.prototype.actualizarRegistro = function() {
             }
             referenciaModulo.obj.ocultaContenedorCierreJornada.hide();
             referenciaModulo.obj.ocultaContenedorMuestreoJornada.hide();
+            referenciaModulo.obj.btnGuardarCierre.attr("disabled", false);
         },			    		    
         error: function() {
             referenciaModulo.mostrarErrorServidor(xhr,estado,error); 
             referenciaModulo.obj.ocultaContenedorCierreJornada.hide();
             referenciaModulo.obj.ocultaContenedorMuestreoJornada.hide();
+            referenciaModulo.obj.btnGuardarCierre.attr("disabled", false);
         }
     });
 };

@@ -1247,6 +1247,9 @@ moduloDespacho.prototype.guardarRegistro = function() {
 		referenciaModulo.obj.ocultaContenedorFormulario.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
+		
+		console.log("*** moduloDespacho.prototype.guardarRegistro ***");
+		console.dir(eRegistro);
 
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,

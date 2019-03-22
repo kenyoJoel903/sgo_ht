@@ -2084,7 +2084,9 @@ public @ResponseBody RespuestaCompuesta registrarCambioTanqueJornada(@RequestBod
 	  RespuestaCompuesta respuesta;
 	  
 	  parametros  = new ParametrosListar();
-	  parametros.setIdJornada(idJornada);
+	  parametros.setIdJornada(idJornada); 
+	  parametros.setPaginacion(Constante.SIN_PAGINACION);
+	  parametros.setFiltroFlagCalculoCorregido(new int[] {Despacho.DESPACHO_SIN_CALCULO, Despacho.DESPACHO_CON_CALCULO});
 	  respuesta = dDespacho.recuperarRegistros(parametros);
 	  
 	  if (respuesta.estado == false){  
