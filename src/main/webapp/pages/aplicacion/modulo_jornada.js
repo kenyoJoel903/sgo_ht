@@ -1106,11 +1106,11 @@ moduloJornada.prototype.guardarRegistro = function() {
 };
 
 moduloJornada.prototype.actualizarRegistro = function() {
-    //Ocultar alertas de mensaje
+
     var referenciaModulo = this;
     var eRegistro = {};
-
     referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+    
     if (referenciaModulo.modoEdicion == constantes.MODO_CERRAR_JORNADA) {
         referenciaModulo.obj.ocultaContenedorCierreJornada.show();
         eRegistro = referenciaModulo.recuperarValoresCierre();
@@ -1118,9 +1118,6 @@ moduloJornada.prototype.actualizarRegistro = function() {
         referenciaModulo.obj.ocultaContenedorMuestreoJornada.show();
         eRegistro = referenciaModulo.recuperarValoresMuestreo();
     }
-    
-    console.log(" *** moduloJornada.prototype.actualizarRegistro *** ");
-    console.dir(eRegistro);
 
     $.ajax({
         type: constantes.PETICION_TIPO_POST,
