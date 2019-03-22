@@ -439,14 +439,7 @@ moduloDespacho.prototype.recuperarTurno = function(accion) {
 	    		}else{
 	    			
 	    			var registro = respuesta.contenido.carga[0];
-	    			
-	    			
-	    			console.log(" ****** recuperarTurno ******* ");
-	    			console.dir(registro.perfilHorario.lstDetalles[0].id);
-	    			console.dir("horaInicioTurno ::: " + registro.perfilHorario.lstDetalles[0].horaInicioTurno);
-	    			console.dir("horaFinTurno ::: " + registro.perfilHorario.lstDetalles[0].horaFinTurno);
-	    			
-	    			
+
     				//se cambio .text por .val por req 9000003068===========================================================================================	    			
 	    			referenciaModulo.obj.cmpHoraAperturaTurno.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraApertura));
 	    			referenciaModulo.obj.idPerfilDetalleHorario = registro.perfilHorario.lstDetalles[0].id; 

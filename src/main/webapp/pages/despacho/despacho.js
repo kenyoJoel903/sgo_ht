@@ -1062,6 +1062,7 @@ moduloActual.recuperaExtension = function(str, suffix) {
 			var turno = utilitario.formatearStringToDateHour(referenciaModulo.obj.cmpFormularioFechaJornada.text() + " " + referenciaModulo.obj.cmpHoraAperturaTurno.text());
 			
 			/*
+			// valida las fechas
 			if(fin.getTime() < inicio.getTime()){
 				referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, "La hora Fin no puede ser menor a la Hora inicio. Favor verifique.");
 		    	referenciaModulo.obj.ocultaContenedorFormulario.hide();
