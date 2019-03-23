@@ -1285,7 +1285,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
              * 2 de marzo
              */
 	  		if ( (y1 && y2) || y3 || y4 ) {
-	  			despacho.setFechaHoraFin(currentTimestampIni);
+	  			despacho.setFechaHoraFin(currentTimestampFin);
 	  		} else {
 	  			
 	  			/**
