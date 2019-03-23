@@ -979,26 +979,31 @@ moduloActual.recuperaExtension = function(str, suffix) {
 };
  
   moduloActual.botonGuardarImportacion = function() {	  
-		var ref=this;		
+		var ref = this;		
 		var nroDecimales = ref.obj.nroDecimales.val();
-		var idTurno =ref.obj.idTurno.val();
-		var idJornada =ref.obj.idJornadaSeleccionado;
-		var idOperario =ref.obj.cmpOperarioImportacion.val();
-		var comentario =ref.obj.cmpComentarioImportacion.val();
+		var idTurno = ref.obj.idTurno.val();
+		var idJornada = ref.obj.idJornadaSeleccionado;
+		var idOperario = ref.obj.cmpOperarioImportacion.val();
+		var comentario = ref.obj.cmpComentarioImportacion.val();
+		var idPerfilDetalleHorario = parseInt(ref.obj.idPerfilDetalleHorario);
 		
 		try {	
-			if (ref.validarCargaArchivo()){
+			if (ref.validarCargaArchivo()) {
 				$("#ocultaContenedorImportacion").show();
 			   	var formularioDatos = new FormData();  
-			   	formularioDatos.append('file',ref.archivosCargados[0]);		
+			   	formularioDatos.append('file',ref.archivosCargados[0]);
+			   	
 				$.ajax({
 				    type: "post",
 				    enctype: 'multipart/form-data',
-				    url: moduloActual.URL_CARGAR_ARCHIVO+"/"+idJornada+"/"+idOperario+"/"+idTurno+"/"+nroDecimales+"/"+comentario, 
+				    url: moduloActual.URL_CARGAR_ARCHIVO+"/"+idJornada+"/"+idOperario+"/"+idTurno+"/"+nroDecimales+"/"+comentario+"/"+idPerfilDetalleHorario, 
 		            data: formularioDatos,
 		            cache: false,
 		            contentType: false,
-		            processData: false,		                
+		            processData: false,
+		            beforeSend: function() {
+		            	ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, "Procesando...");
+		            },
 				    success: function(respuesta) {
 				    	$("#ocultaContenedorImportacion").hide();
 				    	if(!respuesta.estado){

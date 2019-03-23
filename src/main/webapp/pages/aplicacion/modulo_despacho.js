@@ -1,6 +1,6 @@
 function moduloDespacho () {
 	
-  this.obj={};
+  this.obj = {};
   this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA;
   this.TOPES_PAGINACION = constantes.TOPES_PAGINACION;
   this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
@@ -385,6 +385,7 @@ moduloDespacho.prototype.validaImportar = function(accion){
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 	referenciaModulo.obj.ocultaContenedorDetalleDespacho.show();
+	
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './turno/listar', 
@@ -1043,9 +1044,6 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 	};
 
 moduloDespacho.prototype.inicializarFormularioPrincipal = function() {
-	
-	console.log(" *** inicializarFormularioPrincipal *** ");
-	console.dir(this.obj);
 	
     var referenciaModulo = this;
     this.obj.cmpLecturaInicial.inputmask('decimal', {
