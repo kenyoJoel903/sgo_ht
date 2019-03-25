@@ -501,136 +501,136 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		calPerfilDetalleHorarioFin.set(Calendar.MINUTE, Integer.parseInt(perfilDetalleHorarioFinArray[1]));  
 		calPerfilDetalleHorarioFin.set(Calendar.SECOND, 0);
 		
+		/**
+		 * Lo ingresado por el usuario
+		 */
+		Timestamp currentTimestampIni = new Timestamp(eDespacho.getFechaHoraInicio().getTime());
+		Timestamp currentTimestampFin = new Timestamp(eDespacho.getFechaHoraFin().getTime());
 		
 		/**
-		 * Aumenta un dia a la fecha si es que el rango de fechas varia en un dia
-		 */
-		boolean sameDate = calPerfilDetalleHorarioInicio.before(calPerfilDetalleHorarioFin);
-		Timestamp fechaHoraFinDia1 = new Timestamp(eDespacho.getFechaHoraFin().getTime());
-		Timestamp fechaHoraFinDia2 = new Timestamp(eDespacho.getFechaHoraFin().getTime());
+  		 * Perfil Detalle HorarioInicio: 2 de marzo inicio
+  		 */
+  		// calPerfilDetalleHorarioInicio
+      
+  		/**
+  		 * MidNight: 2 de marzo
+  		 */
+		Calendar calfechaMidNight = Calendar.getInstance();
+		calfechaMidNight.setTime(currentTimestampIni);
+		calfechaMidNight.set(Calendar.HOUR_OF_DAY, 24);  
+		calfechaMidNight.set(Calendar.MINUTE, 0);
+		calfechaMidNight.set(Calendar.SECOND, 0);
+  		java.util.Date UUUUUUUU = calfechaMidNight.getTime();
+  		
+  		/**
+  		 * MidNight: 3 de marzo
+  		 */
+		Calendar calfechaMidNightNextDay = Calendar.getInstance();
+		calfechaMidNightNextDay.setTime(currentTimestampIni);
+		calfechaMidNightNextDay.add(Calendar.DATE, 1);
+		calfechaMidNightNextDay.set(Calendar.HOUR_OF_DAY, 0);  
+		calfechaMidNightNextDay.set(Calendar.MINUTE, 0);  
+		calfechaMidNightNextDay.set(Calendar.SECOND, 0);
+  		java.util.Date SFFFFF = calfechaMidNightNextDay.getTime();
+  		
+  		/**
+  		 * Perfil Detalle HorarioInicio: 3 de marzo fin
+  		 */
+	        Calendar calPerfilDetalleHorarioFin2 = Calendar.getInstance();
+	        Timestamp ts3 = new Timestamp(calPerfilDetalleHorarioFin.getTime().getTime());
+	        calPerfilDetalleHorarioFin2.setTime(ts3);
+	        calPerfilDetalleHorarioFin2.add(Calendar.DATE, 1);
+	        Timestamp ts4 = new Timestamp(calPerfilDetalleHorarioFin2.getTime().getTime());
+	        calPerfilDetalleHorarioFin2.setTime(ts4);
+	        java.util.Date UUCCBB = calPerfilDetalleHorarioFin2.getTime();
+  		
+	        /**
+	         * despacho excel: 02 marzo INICIO
+	         */
+		Calendar calfechaInicio = Calendar.getInstance();
+  		calfechaInicio.setTime(currentTimestampIni);
+  		java.util.Date XXXXXXXXX = calfechaInicio.getTime();
+	        
+	        /**
+	         * despacho excel: 02 marzo FIN
+	         */
+		Calendar calfechaFin = Calendar.getInstance();
+        calfechaFin.setTime(currentTimestampFin);
+        java.util.Date YYYYYYYY = calfechaFin.getTime();
 		
-        if (!sameDate) {
-        	Calendar cal = Calendar.getInstance();
-            cal.setTime(fechaHoraFinDia2);
-            cal.add(Calendar.DATE, 1);
-            java.util.Date dateOneMoreDay = cal.getTime();
-            fechaHoraFinDia2 = new Timestamp(dateOneMoreDay.getTime());
-        }
         
-        if (!sameDate) {
-        	
-        	Timestamp timeStampDefaultDia1 = new Timestamp(fechaHoraFinDia1.getTime());
-    		Calendar calDia1 = Calendar.getInstance();
-    		calDia1.setTime(timeStampDefaultDia1);
-    		calDia1.set(Calendar.HOUR_OF_DAY, 0);  
-    		calDia1.set(Calendar.MINUTE, 0);
-    		calDia1.set(Calendar.SECOND, 0);
-    		
-        	Timestamp timeStampDefaultDia2 = new Timestamp(fechaHoraFinDia2.getTime());
-    		Calendar calDia2 = Calendar.getInstance();
-    		calDia2.setTime(timeStampDefaultDia2);
-    		calDia2.set(Calendar.HOUR_OF_DAY, 0);  
-    		calDia2.set(Calendar.MINUTE, 0);
-    		calDia2.set(Calendar.SECOND, 0);
-    		
-    		/**
-    		 * Despacho: inicio
-    		 */
-    		Timestamp despachoInicioTs = new Timestamp(eDespacho.getFechaHoraInicio().getTime());
-    		Calendar calDespachoInicio = Calendar.getInstance();
-    		calDespachoInicio.setTime(despachoInicioTs);
+        boolean x1 = calfechaInicio.after(calPerfilDetalleHorarioInicio);
+        boolean x2 = calfechaInicio.before(calfechaMidNight);
+        boolean x3 = calfechaInicio.equals(calPerfilDetalleHorarioInicio);
+        boolean x4 = calfechaInicio.equals(calfechaMidNight);
+		
+        /**
+         * 2 de marzo
+         */
+  		if ( (x1 && x2) || x3 || x4 ) {
+  			eDespacho.setFechaHoraInicio(currentTimestampIni);
+  		} else {
+  			
+  			/**
+  			 * 3 de marzo
+  			 */
+	  			Calendar calfechaInicioOneMoreDay = Calendar.getInstance();
+	  			calfechaInicioOneMoreDay.setTime(currentTimestampIni);
+	  			calfechaInicioOneMoreDay.add(Calendar.DATE, 1);
+  	        Timestamp tsOneMOreDay = new Timestamp(calfechaInicioOneMoreDay.getTime().getTime());
+  	        calfechaInicioOneMoreDay.setTime(tsOneMOreDay);
+  	        java.util.Date SSSW3WW = calfechaInicioOneMoreDay.getTime();
+  			
+            boolean x5 = calfechaInicioOneMoreDay.after(calfechaMidNightNextDay);
+            boolean x6 = calfechaInicioOneMoreDay.before(calPerfilDetalleHorarioFin2);
+            boolean x7 = calfechaInicioOneMoreDay.equals(calfechaMidNightNextDay);
+            boolean x8 = calfechaInicioOneMoreDay.equals(calPerfilDetalleHorarioFin2);
+  			
+            if ( (x5 && x6) || x7 || x8 ) {
+            	eDespacho.setFechaHoraInicio(tsOneMOreDay);
+            } else {
+            	throw new Exception("la Hora de Inicio esta fuera del rango predefinido de este Turno. Por favor verifique.");
+            }
+  		}
 
-
-    		/**
-    		 * Perfil Detalle Horario: inicio
-    		 */
-    		Calendar calPerfilDetalleHorarioInicio2 = Calendar.getInstance();
-    		calPerfilDetalleHorarioInicio2.setTime(calDia2.getTime());
-    		calPerfilDetalleHorarioInicio2.set(Calendar.HOUR_OF_DAY, 0);  
-    		calPerfilDetalleHorarioInicio2.set(Calendar.MINUTE, 0);  
-    		calPerfilDetalleHorarioInicio2.set(Calendar.SECOND, 0);
-
-    		/*
-    		 * Solo agrego un dia mas, si la hora inicio es mayor a las 12 media noche
-    		 */
-    		boolean esMayorAlasDoce = calDespachoInicio.before(calDia2);
-    		
-    		if (esMayorAlasDoce) {
-    			calDespachoInicio.add(Calendar.DATE, 1);
-    		}
-    		
-            java.util.Date dateOneMoreDay = calDespachoInicio.getTime();
-            Timestamp ts = new Timestamp(dateOneMoreDay.getTime());
-    		Calendar calDespachoInicio2 = Calendar.getInstance();
-    		calDespachoInicio2.setTime(ts);
-			
-    		boolean despachoValidacionInicio = calDespachoInicio2.before(calPerfilDetalleHorarioInicio2);
-    		
-    		if (despachoValidacionInicio) {
-    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraInicio24horas", null, locale));
-    		}
-
-    		/**
-    		 * Despacho: fin
-    		 */
-    		Timestamp despachoFinTs = new Timestamp(eDespacho.getFechaHoraFin().getTime());
-    		Calendar calDespachoFin = Calendar.getInstance();
-    		calDespachoFin.setTime(despachoFinTs);
-    		calDespachoFin.add(Calendar.DATE, 1);
-            java.util.Date dateOneMoreDay2 = calDespachoFin.getTime();
-            Timestamp ts2 = new Timestamp(dateOneMoreDay2.getTime());
-    		Calendar calDespachoFin2 = Calendar.getInstance();
-    		calDespachoFin2.setTime(ts2);
-    		
-    		/**
-    		 * Perfil Detalle Horario: fin
-    		 */
-    		Calendar calPerfilDetalleHorarioFin2 = Calendar.getInstance();
-    		calPerfilDetalleHorarioFin2.setTime(calDia2.getTime());
-    		String array2[] = ePerfilDetalleHorario.getHoraFinTurno().trim().split(":");
-    		calPerfilDetalleHorarioFin2.set(Calendar.HOUR_OF_DAY, Integer.parseInt(array2[0]));  
-    		calPerfilDetalleHorarioFin2.set(Calendar.MINUTE, Integer.parseInt(array2[1]));  
-    		calPerfilDetalleHorarioFin2.set(Calendar.SECOND, 0);
-    		
-    		boolean despachoValidacionFin = calDespachoFin2.after(calPerfilDetalleHorarioFin2);
-    		
-    		if (despachoValidacionFin) {
-    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraFin", null, locale));
-    		}
-
-        } else {
-        	
-    		/**
-    		 * Despacho: inicio
-    		 */
-    		Timestamp despachoInicioTs = new Timestamp(eDespacho.getFechaHoraInicio().getTime());
-    		Calendar calDespachoInicio = Calendar.getInstance();
-    		calDespachoInicio.setTime(despachoInicioTs);
-			
-    		boolean despachoValidacionInicio = calDespachoInicio.before(calPerfilDetalleHorarioInicio);
-    		
-    		if (despachoValidacionInicio) {
-    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraInicio", null, locale));
-    		}
-
-    		/**
-    		 * Despacho: fin
-    		 */
-    		Timestamp despachoFinTs = new Timestamp(eDespacho.getFechaHoraFin().getTime());
-    		Calendar calDespachoFin = Calendar.getInstance();
-    		calDespachoFin.setTime(despachoFinTs);
-    		
-    		boolean despachoValidacionFin = calDespachoFin.after(calPerfilDetalleHorarioFin);
-    		
-    		if (despachoValidacionFin) {
-    			throw new Exception(gestorDiccionario.getMessage("sgo.errorHoraFin", null, locale));
-    		}
-        }
+        boolean y1 = calfechaFin.after(calPerfilDetalleHorarioInicio);
+        boolean y2 = calfechaFin.before(calfechaMidNight);
+        boolean y3 = calfechaFin.equals(calPerfilDetalleHorarioInicio);
+        boolean y4 = calfechaFin.equals(calfechaMidNight);
+	        
+        /**
+         * 2 de marzo
+         */
+  		if ( (y1 && y2) || y3 || y4 ) {
+  			eDespacho.setFechaHoraFin(currentTimestampFin);
+  		} else {
+  			
+  			/**
+  			 * 3 de marzo
+  			 */
+	  			Calendar calfechaFinOneMoreDay = Calendar.getInstance();
+				calfechaFinOneMoreDay.setTime(currentTimestampFin);
+			calfechaFinOneMoreDay.add(Calendar.DATE, 1);
+  	        Timestamp tsOneMOreDay = new Timestamp(calfechaFinOneMoreDay.getTime().getTime());
+  	        calfechaFinOneMoreDay.setTime(tsOneMOreDay);
+  	        java.util.Date SSSW3WW2 = calfechaFinOneMoreDay.getTime();
+  			
+            boolean y5 = calfechaFinOneMoreDay.after(calfechaMidNightNextDay);
+            boolean y6 = calfechaFinOneMoreDay.before(calPerfilDetalleHorarioFin2);
+            boolean y7 = calfechaFinOneMoreDay.equals(calfechaMidNightNextDay);
+            boolean y8 = calfechaFinOneMoreDay.equals(calPerfilDetalleHorarioFin2);
+  			
+            if ( (y5 && y6) || y7 || y8 ) {
+            	eDespacho.setFechaHoraFin(tsOneMOreDay);
+            } else {
+            	throw new Exception("la Hora de fin esta fuera del rango predefinido de este Turno. Por favor verifique.");
+            }
+  		}
+		
 		
         /**
          * Set valores para guardar el despacho
          */
-        eDespacho.setFechaHoraFin(fechaHoraFinDia2);
 		eDespacho.setVolumenCorregidoBigDecimal(
 			eDespacho.getVolumenCorregidoBigDecimal() != null ? eDespacho.getVolumenCorregidoBigDecimal() : new BigDecimal(0)
 		);
