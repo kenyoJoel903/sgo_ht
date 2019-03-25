@@ -150,7 +150,7 @@ private JornadaDao dJornada;
 private PerfilDetalleHorarioDao dPerfilDetalleHorario;
 @Autowired
 ServletContext servletContext;
-//
+
 private DataSourceTransactionManager transaccion;// Gestor de la transaccion
 // urls generales
 private static final String URL_GESTION_COMPLETA = "/admin/despacho";
@@ -599,8 +599,6 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
     		}
 
         } else {
-
-			//Timestamp timeStampDefault2 = new Timestamp(fechaHoraFin.getTime());
         	
     		/**
     		 * Despacho: inicio
@@ -636,6 +634,21 @@ RespuestaCompuesta guardarRegistro(@RequestBody Despacho eDespacho, HttpServletR
 		eDespacho.setVolumenCorregidoBigDecimal(
 			eDespacho.getVolumenCorregidoBigDecimal() != null ? eDespacho.getVolumenCorregidoBigDecimal() : new BigDecimal(0)
 		);
+		
+		/**
+		 * Calcular si el "Flag Calculo Corregido" debe ser 1.
+		 */
+		double factorCorreccion = 0;
+		if (eDespacho.getApiCorregido() > 0 && eDespacho.getTemperatura() > 0) {
+			factorCorreccion = Formula.calcularFactorCorreccion(eDespacho.getApiCorregido(), eDespacho.getTemperatura());
+		}
+		
+		if ((eDespacho.getVolumenCorregidoBigDecimal() != null && eDespacho.getVolumenCorregidoBigDecimal().floatValue() > 0)
+			&& factorCorreccion > 0) {
+			eDespacho.setFlagCalculoCorregido(1);
+		}
+		//fin
+		
 		eDespacho.setIdContometro(eDespacho.getIdContometro());
     	eDespacho.setActualizadoEl(Calendar.getInstance().getTime().getTime());
         eDespacho.setActualizadoPor(principal.getID()); 
@@ -1270,11 +1283,7 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
 	            } else {
 	            	throw new Exception("la Hora de Inicio esta fuera del rango predefinido de este Turno. Por favor verifique. Fila:" + numeroLineas);
 	            }
-
 	  		}
-	  		
-	  		
-	  		
 
             boolean y1 = calfechaFin.after(calPerfilDetalleHorarioInicio);
             boolean y2 = calfechaFin.before(calfechaMidNight);
@@ -1309,9 +1318,8 @@ public @ResponseBody RespuestaCompuesta cargarArchivo(
 	            	throw new Exception("la Hora de fin esta fuera del rango predefinido de este Turno. Por favor verifique. Fila:" + numeroLineas);
 	            }
 	  		}
-	  		
       }
-
+      
       
       //buscamos el tanque que se encuentre despachando
       descripcion_tanque = columnas[8];
