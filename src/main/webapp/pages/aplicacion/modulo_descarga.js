@@ -1324,12 +1324,12 @@ moduloDescarga.prototype.reload_tabla_adjunto_descarga = function(mensaje){
 		    	}},
 		    	{'data': 'usuarioCreacion', title: 'Usuario', defaultContent: ''},
 		    	{'data': 'id_adj_descarga_cisterna', title: 'Eliminar', defaultContent: '', render: function(data, type, full){
-		    		/*if(ref.estadoDiaOperativo == constantes.ESTADO_CERRADO){
+		    		if(ref.estadoDiaOperativo == constantes.ESTADO_CERRADO){
 		    			return "<button class='btn btn-danger btn-sm' type='button' disabled> X </button>";
 		    		}else{
 		    			return "<button class='btn btn-danger btn-sm' type='button' data-row_id='"+full.id_adj_descarga_cisterna+"'> X </button>";
-		    		}*/
-		    		return "<button class='btn btn-danger btn-sm' type='button' data-row_id='"+full.id_adj_descarga_cisterna+"'> X </button>";
+		    		}
+		    		//return "<button class='btn btn-danger btn-sm' type='button' data-row_id='"+full.id_adj_descarga_cisterna+"'> X </button>";
 		    		
 		    	}}
 		    ]
