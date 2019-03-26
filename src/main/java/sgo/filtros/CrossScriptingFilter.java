@@ -10,8 +10,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 public class CrossScriptingFilter implements Filter {
-	//private static Logger logger = Logger.getLogger(CrossScriptingFilter.class);
+	private static Logger logger = Logger.getLogger(CrossScriptingFilter.class);
     private FilterConfig filterConfig;
 
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -25,7 +27,17 @@ public class CrossScriptingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException {
     	//logger.info("Inlter CrossScriptingFilter  ...............");
-        chain.doFilter(new RequestWrapper((HttpServletRequest) request), response);
+         logger.info(">>> " + request.getServletContext());
+         String path = ((HttpServletRequest) request).getRequestURI();
+         System.out.println("PATH: " + path);
+         logger.info("path: " + path);
+         //if (!path.startsWith("/sgov2a-vp/admin/vigencia/cargar-archivo/")){
+         if (path.contains("/descarga/adjuntar_archivo") ){
+        	 chain.doFilter(request, response);	 
+         } else {
+        	 // nothing
+        	 chain.doFilter(new RequestWrapper((HttpServletRequest) request), response);	 
+         }
         //logger.info("Outlter CrossScriptingFilter ...............");
     }
 

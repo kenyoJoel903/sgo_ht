@@ -64,6 +64,9 @@ public class Constante {
  public static final String PREFIJO_ARCHIVO_PROGRAMACION="prog";
  public static final String TIPO_RESP_ERROR = "E";
  public static final String TIPO_REGISTRO_PROFORMA = "X";
+ public static final String DIRECTORIO_SGO_PARAMETRO = "DIRECTORIO_SGO";
+ public static final String TAMANIO_ARCHIVO_DCISTERNA = "TAMANIO_ARCHIVO";
+ public static final String EXTENSIONES_ARCHIVOS_DCISTERNA [] = {"pdf", "png", "bmp", "jpg", "jpeg"};
 	/*
 	#Administrador del Directorio
 	SECURITY_PRINCIPAL=Directory Manager

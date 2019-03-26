@@ -11,6 +11,9 @@ public class DescargaResumen {
  private float recibido;
  private float variacion;
  private int estado;
+ 
+ private long adjuntos;
+ 
  public int getId() {
   return id_dcisterna;
  }
@@ -77,4 +80,13 @@ public class DescargaResumen {
  public void setEstado(int estado) {
   this.estado = estado;
  }
+public long getAdjuntos() {
+	return adjuntos;
+}
+public void setAdjuntos(long adjuntos) {
+	this.adjuntos = adjuntos;
+}
+
+ 
+ 
 }

@@ -129,6 +129,10 @@ public class ParametrosListar {
 	// 9000002608 - jmatos
 	private int filtroCodigoCliente = 0;
 	
+	
+	//adjuntar archivos descarga cisterna
+	
+	
 	public int getFiltroCodigoCliente() {
 		return filtroCodigoCliente;
 	}

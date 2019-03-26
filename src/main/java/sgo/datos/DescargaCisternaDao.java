@@ -160,7 +160,8 @@ public class DescargaCisternaDao {
 			consultaSQL.append("t1.despachado,");
 			consultaSQL.append("t1.volumen_total_descargado_corregido as recibido,");
 			consultaSQL.append("t1.variacion_volumen as variacion,");
-			consultaSQL.append("t1.estado");
+			consultaSQL.append("t1.estado, ");
+			consultaSQL.append("t1.adjuntos ");
 			consultaSQL.append(" FROM ");
 			consultaSQL.append(NOMBRE_VISTA_RESUMEN);
 			consultaSQL.append(" t1 ");

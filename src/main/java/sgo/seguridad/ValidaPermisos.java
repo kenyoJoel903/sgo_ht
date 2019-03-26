@@ -80,6 +80,8 @@ public class ValidaPermisos {
  private static final String ACTUALIZAR_DESCARGA = "/admin/descarga/actualizar";
  private static final String CREAR_EVENTO_DESCARGA = "/admin/evento/crear";
  private static final String RECUPERAR_DESCARGA = "/admin/descarga/recuperar-carga";
+ 
+ private static final String LEER_ADJUNTOS_DESCARGA = "/admin/descarga/listar_archivo_adjuntos";
  //DESCONCHE
  private static final String CREAR_DESCONCHE = "/admin/desconche/crear";
  private static final String ACTUALIZAR_DESCONCHE = "/admin/desconche/actualizar";
@@ -279,6 +281,8 @@ public class ValidaPermisos {
 		  else if(permiso.equals("LEER_REPORTE_LIQ_CISTERNA")) 		{ return url_completa = LEER_REPORTE_LIQ_CISTERNA; }
 		  else if(permiso.equals("LEER_REPORTE_CONC_VOLUMETRICA")) 	{ return url_completa = LEER_REPORTE_CONC_VOLUMETRICA; }
 		  else if(permiso.equals("LEER_REPORTE_CONC_VOL_ESTACION")) { return url_completa = LEER_REPORTE_CONC_VOL_ESTACION; }
+		  
+		  else if(permiso.equals("VER_ADJUNTOS_DESCARGA")) 			{ return url_completa = LEER_ADJUNTOS_DESCARGA;}
 
 		  //MANTENIMIENTOS
 		  //AFORO CISTERNA

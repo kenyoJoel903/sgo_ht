@@ -194,6 +194,7 @@ var cacheDescarga={
           <a id="btnModificarDescarga" class="btn btn-sm btn-default disabled espaciado"><i class="fa fa-edit"></i>  Modificar</a>
           <a id="btnAgregarEvento" class="btn btn-sm btn-default disabled espaciado"><i class="fa fa-eye"></i>  Evento</a>
           <a id="btnVerDescarga" class="btn btn-sm btn-default disabled espaciado"><i class="fa fa-search"></i>  Ver</a>
+          <a id="btnAdjuntos" class="btn btn-sm btn-default disabled espaciado"><i class="fa fa-search"></i>  Adjuntos</a>
           </div>
         </div>
 <!-- 			  se agrego style="background-color:#DBF3DF" por req 9000003068 -->
@@ -207,6 +208,7 @@ var cacheDescarga={
               <th>Cisterna</th>
               <th>Tracto</th>
               <th>N# Guia</th>
+              <th>No. Adjuntos</th>
               <th>Despachado (60F)</th>
               <th>Recibido (60F)</th>
               <th>Variacion (60F)</th>
@@ -1179,6 +1181,80 @@ var cacheDescarga={
 		        </div>
 			</div>
 		</div>
+	</div>
+	
+	<div class="row" id="cntAdjuntosDescarga" style="display: none;">
+		 <div class="col-md-12">
+        	<div class="box box-default">
+          		<div class="box-header">
+          			<form id="formAdjuntosDescarga" name="formAdjuntosDescarga" class="form" enctype="multipart/form-data">
+          				<input type="hidden" id="txtAdjuntoIdDescargaCisterna" name="idDescargaCisterna">
+          				<input type="hidden" id="txtAdjuntoIdOperacion" name="idOperacion">
+          				<div class="row">
+          					<div class="form-group  col-sm-6">
+								<label for="txtAdjuntoOperacionEstacion" class="col-sm-4 col-form-label">Operación / Estación:</label>
+								<div class="col-sm-6">
+									<input id="txtAdjuntoOperacionEstacion" name="operacionEstacion" type="text" class="form-control input-sm" value="" readonly />
+						        </div>
+							</div>
+							<div class="form-group  col-sm-6">
+								<label for="txtAdjuntoFPlanificacion" class="col-sm-4 col-form-label">F. Planificación:</label>
+								<div class="col-sm-6">
+									<input id="txtAdjuntoFPlanificacion" name="fPlanificacion" type="text" class="form-control input-sm" value="" readonly />
+						        </div>
+							</div>
+          				</div>
+          				<div class="row">
+          					<div class="form-group  col-sm-6">
+								<label for="txtAdjuntoTractoCisterna" class="col-sm-4 col-form-label">Tracto / Cisterna:</label>
+								<div class="col-sm-6">
+									<input id="txtAdjuntoTractoCisterna" name="tractoCisterna" type="text" class="form-control input-sm" value="" readonly />
+						        </div>
+							</div>
+							<div class="form-group  col-sm-6">
+								<label for="txtAdjuntoTanque" class="col-sm-4 col-form-label">Tanque:</label>
+								<div class="col-sm-6">
+									<input id="txtAdjuntoTanque" name="tanque" type="text" class="form-control input-sm" value="" readonly />
+						        </div>
+							</div>
+          				</div>
+          				<div class="row">
+          					<div class="form-group  col-sm-12">
+								<label for="txtAdjuntoReferencia" class="col-sm-2 col-form-label">Referencia:</label>
+								<div class="col-sm-8">
+									<textarea class="form-control text-uppercase" required id="txtAdjuntoRefeencia" name="referencia"  placeholder="Ingrese Comentarios..." rows="3" ></textarea>
+								</div>
+							</div>
+          				</div>
+          				<div class="row">
+          					<div class="form-group  col-sm-12">
+								<label for="txtAdjuntoArchivo" class="col-sm-2 col-form-label">Archivo:</label>
+								<div class="col-sm-6">
+									<input id="txtAdjuntoArchivo" name="archivo" type="file" class="form-control" />
+						        </div>
+						        <div class="col-sm-3">
+						        	<button type="submit" id="btnAdjuntosAdjuntar" name="btnAdjuntosAdjuntar" class="btn btn-primary"> <i class="fa fa-save"></i> Adjuntar</button>
+						        </div>
+							</div>
+          				</div>
+          			</form>
+          		</div>
+          		<div class="box-body"> 
+          			 <button type="button" id="btnAdjuntosRetornar" name="btnAdjuntosRetornar" class="btn btn-danger"><i class="fa fa-close"></i>Retornar</button>
+          			 <table id="tablaDescargaCisternaAdjuntos" class="sgo-table table table-striped" style="width:100%;">
+			            <thead>
+			              <tr>
+				              <th>Archivo</th>
+				              <th>Referencia</th>
+				              <th>Fecha</th>
+				              <th>Usuario</th>
+				              <th>Eliminar</th>
+			              </tr>
+			            </thead>
+			          </table>
+          		</div>
+          	</div>
+         </div>
 	</div>
 	
 			<!-- Inicio: Atención Ticket Ticket 9000002841 - Modal -->

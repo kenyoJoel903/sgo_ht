@@ -1,5 +1,8 @@
 package sgo.utilidades;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -22,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
 import sgo.entidad.GuiaCombustible;
 import sgo.entidad.Respuesta;
 
@@ -878,6 +883,23 @@ public static int numberOfDecimals(double d) {
     }
 
     return out;
+}
+
+public static boolean transferirArchivo(MultipartFile file, String directorio, String nombreArchivo) {
+	try {
+		java.io.File _directorio = new java.io.File(directorio);
+		if(!_directorio.exists()) {
+			_directorio.mkdirs();
+		}
+		System.out.println(file.getSize());
+		java.io.File adjunto = new File(directorio + "/" + nombreArchivo);
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(adjunto));
+		stream.write(file.getBytes());
+		stream.close();
+		return true;
+	} catch (Exception e) {
+		return false;
+	}
 }
 
 

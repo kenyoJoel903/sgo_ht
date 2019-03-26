@@ -5,6 +5,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,6 +26,9 @@ import sgo.utilidades.Constante;
 
 @Repository
 public class EnlaceDao {
+	private static Logger LOGGER = Logger.getLogger(EnlaceDao.class);
+	
+	
 	private JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
 	public static final String NOMBRE_TABLA = Constante.ESQUEMA_APLICACION	+ "enlace";
@@ -269,6 +273,7 @@ public class EnlaceDao {
 	}
 	
 	public RespuestaCompuesta recuperarRegistro(String  urlCompleta){
+		LOGGER.info("recuperarRegistro: " + urlCompleta);
 		StringBuilder consultaSQL= new StringBuilder();		
 		List<Enlace> listaRegistros=new ArrayList<Enlace>();
 		Contenido<Enlace> contenido = new Contenido<Enlace>();

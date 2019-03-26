@@ -68,6 +68,7 @@ $(document).ready(function(){
   moduloActual.columnasGrillaDescarga.push({ "data": 'placaCisterna'});
   moduloActual.columnasGrillaDescarga.push({ "data": 'placaTracto'});
   moduloActual.columnasGrillaDescarga.push({ "data": 'numeroGuia'});
+  moduloActual.columnasGrillaDescarga.push({ "data": 'adjuntos'});
   moduloActual.columnasGrillaDescarga.push({ "data": 'despachado'});
   moduloActual.columnasGrillaDescarga.push({ "data": 'recibido'});
   moduloActual.columnasGrillaDescarga.push({ "data": 'variacion'});
@@ -79,10 +80,11 @@ $(document).ready(function(){
   moduloActual.definicionGrillaDescarga.push({"targets" : 2,"searchable" : false, "orderable" : false, "visible" : true,"className": "text-center"});	// se cambio text-left a text-center por req 9000003068
   moduloActual.definicionGrillaDescarga.push({"targets" : 3,"searchable" : true, "orderable" : false, "visible" : true ,"className": "text-center"});	// se cambio text-left a text-center por req 9000003068
   moduloActual.definicionGrillaDescarga.push({"targets" : 4,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-center"});	// se cambio text-left a text-center por req 9000003068
-  moduloActual.definicionGrillaDescarga.push({"targets" : 5,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-right" });
+  moduloActual.definicionGrillaDescarga.push({"targets" : 5,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-center" });
   moduloActual.definicionGrillaDescarga.push({"targets" : 6,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-right" });
   moduloActual.definicionGrillaDescarga.push({"targets" : 7,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-right" });
-  moduloActual.definicionGrillaDescarga.push({"targets" : 8,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-left",  "render": function ( datos, tipo, fila, meta ) {
+  moduloActual.definicionGrillaDescarga.push({"targets" : 8,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-right" });
+  moduloActual.definicionGrillaDescarga.push({"targets" : 9,"searchable" : true, "orderable" : false, "visible" : true, "className": "text-left",  "render": function ( datos, tipo, fila, meta ) {
       return utilitario.formatearValorEstadoDescarga(datos);
   	}
   });

@@ -22,6 +22,7 @@ public class DescargaResumenMapper implements RowMapper<DescargaResumen>{
       eDescarga.setRecibido(rs.getFloat("recibido"));
       eDescarga.setVariacion(rs.getFloat("variacion"));
       eDescarga.setEstado(rs.getInt("estado"));
+      eDescarga.setAdjuntos(rs.getLong("adjuntos"));
     } catch(Exception ex){
       ex.printStackTrace();
     }

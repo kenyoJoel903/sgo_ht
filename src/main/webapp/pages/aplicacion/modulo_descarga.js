@@ -201,6 +201,7 @@ moduloDescarga.prototype.inicializarControles=function(){
   this.obj.btnVerDescarga=$("#btnVerDescarga");
   this.obj.btnAgregarEvento=$("#btnAgregarEvento");
   this.obj.tablaDescargaCisterna=$("#tablaDescargaCisterna");
+  this.obj.btnAdjuntos=$("#btnAdjuntos");
   //Seccion Agregar Carga Tanque
   this.obj.cntFormularioCargaTanque=$("#cntFormularioCargaTanque");
   this.obj.frmAgregarCargaTanque=$("#frmAgregarCargaTanque");
@@ -433,6 +434,21 @@ moduloDescarga.prototype.inicializarControles=function(){
   this.obj.btnCancelarValidarAutorizacion=$("#btnCancelarValidarAutorizacion");
   this.obj.cmpJustificacion = $("#cmpJustificacion");
   
+  //archivos adjuntos
+  this.obj.cntAdjuntosDescarga=$("#cntAdjuntosDescarga");
+  this.obj.formAdjuntosDescarga=$("#formAdjuntosDescarga");
+  this.obj.txtAdjuntoOperacionEstacion=$("#txtAdjuntoOperacionEstacion");
+  this.obj.txtAdjuntoFPlanificacion=$("#txtAdjuntoFPlanificacion");
+  this.obj.txtAdjuntoTractoCisterna=$("#txtAdjuntoTractoCisterna");
+  this.obj.txtAdjuntoTanque=$("#txtAdjuntoTanque");
+  this.obj.txtAdjuntoIdDescargaCisterna=$("#txtAdjuntoIdDescargaCisterna");
+  this.obj.txtAdjuntoIdOperacion=$("#txtAdjuntoIdOperacion");
+  this.obj.btnAdjuntosAdjuntar=$("#btnAdjuntosAdjuntar");
+  this.obj.btnAdjuntosRetornar=$("#btnAdjuntosRetornar");
+  this.obj.tablaAdjuntosDescarga=$("#tablaDescargaCisternaAdjuntos");
+  this.obj.tablaAdjuntosDescargaAPI=null;
+  
+  
   this.obj.btnDetalleDiaOperativo.on(ref.NOMBRE_EVENTO_CLICK,function(){
 	  ref.descripcionPermiso = 'LEER_DESCARGA';
 	  ref.validaPermisos();
@@ -467,6 +483,11 @@ moduloDescarga.prototype.inicializarControles=function(){
 	  ref.descripcionPermiso = 'CREAR_EVENTO_DESCARGA';
 	  ref.validaPermisos(); 
 	  //ref.iniciarAgregarEvento();
+  });
+  
+  this.obj.btnAdjuntos.on(ref.NOMBRE_EVENTO_CLICK,function(){
+	  ref.descripcionPermiso = 'VER_ADJUNTOS_DESCARGA';
+	  ref.validaPermisos(); 
   });
   
   this.obj.btnVerDescarga.on("click",function(){
@@ -613,6 +634,22 @@ moduloDescarga.prototype.inicializarControles=function(){
     var seleccion = $("option:selected", this);
     var fecha =seleccion.attr("data-fin-vigencia");
     $("#cmpVigenciaHastaValidacion").val(utilitario.formatearFecha(fecha));
+  });
+  
+  this.obj.btnAdjuntosRetornar.on(ref.NOMBRE_EVENTO_CLICK,function(){
+	  ref.obj.cntDetalleDiaOperativo.show();
+	  ref.obj.cntAdjuntosDescarga.hide();
+	  ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,'Se cerró formulario de archivos adjuntos de descarga.');
+  });
+  
+  this.obj.formAdjuntosDescarga.submit(function(e) {
+	  e.preventDefault();
+	  var r = confirm("¿Está seguro de que desea adjuntar este archivo?");
+	  if(r == true){
+		  var formData = new FormData( ref.obj.formAdjuntosDescarga[0]);
+		  ref.adjuntar_archivo_adjunto_descarga(formData);
+	  }
+	  return false;
   });
 };
 
@@ -1209,6 +1246,156 @@ moduloDescarga.prototype.iniciarVerDescarga =  function(){
     }
   });  
 };
+
+moduloDescarga.prototype.iniciarVerAdjuntos = function(){
+	var ref = this;
+	ref.obj.tituloSeccion.text("Formulario de Registro / Eliminación de Adjuntos");
+	ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
+	
+	ref.obj.cntDetalleDiaOperativo.hide();
+	ref.obj.cntAdjuntosDescarga.show();
+	
+	//llenar formulario
+	var listaEstaciones = cacheDescarga.estaciones[ref.idOperacionSeleccionada];
+	for(var idxEsta in listaEstaciones){
+		var _estacion = listaEstaciones[idxEsta];
+		if(ref.idEstacionSeleccionada == _estacion.id ){
+			ref.obj.txtAdjuntoOperacionEstacion.val(ref.nombreOperacionSeleccionada + "   " +  _estacion.nombre);
+			break;
+		}
+	}
+	
+	ref.obj.txtAdjuntoFPlanificacion.val(ref.fechaDiaOperativoSeleccionado);
+	ref.obj.txtAdjuntoTractoCisterna.val(ref.placaTractoSeleccionada + " / " + ref.placaCisternaSeleccionada);
+	ref.obj.txtAdjuntoIdDescargaCisterna.val(ref.idDescargaCisterna);
+	ref.obj.txtAdjuntoIdOperacion.val(ref.idOperacionSeleccionada);
+	ref.obj.txtAdjuntoTanque.val(ref.nombreTanqueSeleccionado);
+	
+	
+	ref.reload_tabla_adjunto_descarga('Lista de adjuntos recuperados.');
+	console.log('estado', ref.estadoDiaOperativo);
+	
+	
+};
+
+moduloDescarga.prototype.reload_tabla_adjunto_descarga = function(mensaje){
+	var ref = this;
+	//actualizando tabla
+	if(ref.obj.tablaAdjuntosDescargaAPI){
+		ref.obj.tablaAdjuntosDescargaAPI.ajax.reload();
+	}else{
+		ref.obj.tablaAdjuntosDescargaAPI = ref.obj.tablaAdjuntosDescarga.DataTable({
+			deferLoading: 0,
+		    responsive: true,
+		    dom: constantes.DT_ESTRUCTURA,
+		    iDisplayLength: ref.NUMERO_REGISTROS_PAGINA,
+		    lengthMenu:ref.TOPES_PAGINACION,
+		    language: {
+		      url: ref.URL_LENGUAJE_GRILLA
+		    },
+		    ajax: {
+		      url: './descarga/listar_archivo_adjuntos/' + ref.idDescargaCisterna,
+		      type:constantes.PETICION_TIPO_GET,
+		      dataFilter : function(result){
+		    	var response = JSON.parse(result);
+	      		var dtFilter = {};
+	      		if(response.estado == true){
+	      			 dtFilter = {
+			        				"draw": 0,
+			        				"recordsFiltered": Number(response.contenido.totalEncontrados),
+			        				"recordsTotal": Number(response.contenido.totalRegistros),
+			        				"data": response.contenido.carga || []	
+	      			 };
+	      		}
+				ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, mensaje);
+				console.log(dtFilter);
+				return JSON.stringify( dtFilter );
+		      }
+		    },
+		    columns : [
+		    	{'data': 'nombre_archivo_original', title: 'Archivo', defaultContent: '', render: function(data, type, full){
+		    		return "<a href='descarga/descargar_archivo_adjunto/"+ full.id_adj_descarga_cisterna +"' target='_blank'>"+full.nombre_archivo_original+"</a>"
+		    	}},
+		    	{'data': 'adjunto_referencia', title: 'Referencia', defaultContent: ''},
+		    	{'data': 'creadoEl', title: 'Fecha', defaultContent: '', render: function(data, type, full){
+		    		var _date = new Date(Number(full['creadoEl']));
+	    			var _creacion = _date.getDate() + "/" + _date.getMonth() + "/" + _date.getFullYear() + "  " + _date.getHours()+ ":" + _date.getMinutes();
+	    			return _creacion;
+		    	}},
+		    	{'data': 'usuarioCreacion', title: 'Usuario', defaultContent: ''},
+		    	{'data': 'id_adj_descarga_cisterna', title: 'Eliminar', defaultContent: '', render: function(data, type, full){
+		    		/*if(ref.estadoDiaOperativo == constantes.ESTADO_CERRADO){
+		    			return "<button class='btn btn-danger btn-sm' type='button' disabled> X </button>";
+		    		}else{
+		    			return "<button class='btn btn-danger btn-sm' type='button' data-row_id='"+full.id_adj_descarga_cisterna+"'> X </button>";
+		    		}*/
+		    		return "<button class='btn btn-danger btn-sm' type='button' data-row_id='"+full.id_adj_descarga_cisterna+"'> X </button>";
+		    		
+		    	}}
+		    ]
+		});
+		
+		$("#tablaDescargaCisternaAdjuntos tbody").on('click','button',function (event) {
+			event.stopImmediatePropagation();
+			var $btn = $(event.target).is('button') ? $(event.target) : $(event.target).parent();
+			var idArchivoAdjunto = $btn.data('row_id');
+			if(idArchivoAdjunto){
+				var r = confirm("¿Está seguro de que desea eliminar este registro?");
+				if(r==true){
+					ref.eliminar_archivo_adjunto_descarga(idArchivoAdjunto);
+				}
+				
+			}
+		});
+	}
+	
+};
+
+moduloDescarga.prototype.adjuntar_archivo_adjunto_descarga = function(formulario){
+	var ref = this;
+	console.log(formulario);
+	var urlAccion = './descarga/adjuntar_archivo';
+	$.ajax({
+	      type: constantes.PETICION_TIPO_POST,
+	      url: urlAccion, 
+	      enctype: 'multipart/form-data',
+          processData: false,
+          contentType: false,
+          cache: false,
+	      data: formulario,  
+	      success: function(respuesta) {
+	    	  if(respuesta.mensaje == 'OK'){
+	    		  ref.reload_tabla_adjunto_descarga('Archivo cargado correctamente.');
+	    		  ref.obj.formAdjuntosDescarga[0].reset();
+	    	  }else{
+	    		  ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+	    	  }     
+	      },                  
+	      error: function(xhr,estado,error) {
+	        ref.mostrarErrorServidor(xhr,estado,error); 
+	      }
+	    });
+};
+
+moduloDescarga.prototype.eliminar_archivo_adjunto_descarga = function(idArchivoAdjunto){
+	var ref = this;
+	var urlAccion = './descarga/eliminar_archivo_adjunto/' + idArchivoAdjunto;
+	$.ajax({
+		 type: constantes.PETICION_TIPO_GET,
+	      url: urlAccion, 
+	      success: function(respuesta) {
+	    	  if(respuesta.mensaje == 'OK'){
+	    		  ref.reload_tabla_adjunto_descarga('Archivo eliminado correctamente.');
+	    		  ref.obj.formAdjuntosDescarga[0].reset();
+	    	  }else{
+	    		  ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
+	    	  }
+	      },
+	      error: function(xhr,estado,error) {
+		        ref.mostrarErrorServidor(xhr,estado,error); 
+		  }
+	})
+}
 
 moduloDescarga.prototype.llenarVistaDescarga=function(registro){
   var ref= this;
@@ -2914,6 +3101,7 @@ moduloDescarga.prototype.inicializarGrillaDescarga=function(){
 
 moduloDescarga.prototype.activarBotones=function(grilla){ 
   var ref=this;
+  ref.obj.btnAdjuntos.addClass(constantes.CSS_CLASE_DESHABILITADA);
   if (grilla===ref.GRILLA_DIA_OPERATIVO) {
     ref.obj.btnDetalleDiaOperativo.removeClass(constantes.CSS_CLASE_DESHABILITADA);
   }
@@ -2952,6 +3140,7 @@ moduloDescarga.prototype.activarBotones=function(grilla){
       break;
     default:
   }
+  ref.obj.btnAdjuntos.removeClass(constantes.CSS_CLASE_DESHABILITADA);
   }
 };
 
@@ -3558,6 +3747,8 @@ moduloDescarga.prototype.validaPermisos= function(){
 		    	  referenciaModulo.iniciarAgregarEvento();
 		      } else if (referenciaModulo.descripcionPermiso == 'RECUPERAR_DESCARGA'){
 		    	  referenciaModulo.iniciarVerDescarga();
+		      } else if(referenciaModulo.descripcionPermiso  == 'VER_ADJUNTOS_DESCARGA'){
+		    	  referenciaModulo.iniciarVerAdjuntos();
 		      }
 	      }
 	      referenciaModulo.obj.ocultaContenedorTablaDiaOperativo.hide();

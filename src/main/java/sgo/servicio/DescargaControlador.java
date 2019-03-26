@@ -1,12 +1,18 @@
 package sgo.servicio;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -15,12 +21,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import sgo.datos.ArchivoAdjuntoDescargaCisternaDao;
 import sgo.datos.AutorizacionDao;
 import sgo.datos.AutorizacionEjecutadaDao;
 import sgo.datos.BitacoraDao;
@@ -35,11 +45,13 @@ import sgo.datos.EstacionDao;
 import sgo.datos.EventoDao;
 import sgo.datos.JornadaDao;
 import sgo.datos.OperacionDao;
+import sgo.datos.ParametroDao;
 import sgo.datos.PlanificacionDao;
 import sgo.datos.ProductoDao;
 import sgo.datos.TanqueDao;
 import sgo.datos.TanqueJornadaDao;
 import sgo.datos.TransporteDao;
+import sgo.entidad.ArchivoAdjuntoDescargaCisterna;
 import sgo.entidad.Autorizacion;
 import sgo.entidad.AutorizacionEjecutada;
 import sgo.entidad.Bitacora;
@@ -55,6 +67,7 @@ import sgo.entidad.Estacion;
 import sgo.entidad.Evento;
 import sgo.entidad.Jornada;
 import sgo.entidad.MenuGestor;
+import sgo.entidad.Parametro;
 import sgo.entidad.ParametrosListar;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.entidad.Tanque;
@@ -63,12 +76,15 @@ import sgo.entidad.Tolerancia;
 import sgo.entidad.Transporte;
 import sgo.seguridad.AuthenticatedUserDetails;
 import sgo.utilidades.Constante;
+import sgo.utilidades.FormularioAdjuntoDescarga;
 import sgo.utilidades.Utilidades;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class DescargaControlador {
+	private static Logger LOGGER = Logger.getLogger(ArchivoAdjuntoDescargaCisternaDao.class);
+	
  @Autowired
  private MessageSource gestorDiccionario;
  @Autowired
@@ -113,11 +129,17 @@ private AutorizacionEjecutadaDao dAutorizacionEjecutada;
  private TanqueJornadaDao dTanqueJornadaDao;
  @Autowired
  private JornadaDao dJornadaDao;
+ @Autowired
+ private ParametroDao dParametroDao;
+ @Autowired
+ private ArchivoAdjuntoDescargaCisternaDao dArchivoAdjuntoDao;
  /** Nombre de la clase. */
  private static final String sNombreClase = "DescargaControlador";
  //
  private DataSourceTransactionManager transaccion;// Gestor de la transaccion
  // urls generales
+ 
+ private static final String DIRECTORIO_DESCARGA_CISTERNAS = "boletas_recepcion_descarga";
  private static final String URL_GESTION_COMPLETA = "/admin/descarga";
  private static final String URL_GESTION_RELATIVA = "/descarga";
 
@@ -144,6 +166,18 @@ private AutorizacionEjecutadaDao dAutorizacionEjecutada;
  
  private static final String URL_RECUPERAR_DESCARGA_COMPLETA = "/admin/descarga/recuperar-descarga";
  private static final String URL_RECUPERAR_DESCARGA_RELATIVA = "/descarga/recuperar-descarga";
+ 
+ private static final String URL_ADJUNTAR_ARCHIVO_COMPLETA = "/admin/descarga/adjuntar_archivo";
+ private static final String URL_ADJUNTAR_ARCHIVO_RELATIVA= "/descarga/adjuntar_archivo";
+ 
+ private static final String URL_LISTAR_ARCHIVO_ADJUNTO_COMPLETA = "/admin/descarga/listar_archivo_adjuntos";
+ private static final String URL_LISTAR_ARCHIVO_ADJUNTO_RELATIVA = "/descarga/listar_archivo_adjuntos/{idDCisterna}";
+ 
+ private static final String URL_ELIMINAR_ARCHIVO_ADJUNTO_COMPLETA = "/admin/descarga/eliminar_archivo_adjunto";
+ private static final String URL_ELIMINAR_ARCHIVO_ADJUNTO_RELATIVA = "/descarga/eliminar_archivo_adjunto/{idArchivo}";
+ 
+ private static final String URL_DESCARGAR_ARCHIVO_ADJUNTO_COMPLETA = "/admin/descarga/descargar_archivo_adjunto";
+ private static final String URL_DESCARGAR_ARCHIVO_ADJUNTO_RELATIVA	 = "/descarga/descargar_archivo_adjunto/{idArchivo}";
 
  private HashMap<String, String> recuperarMapaValores(Locale locale) {
   HashMap<String, String> mapaValores = new HashMap<String, String>();
@@ -1085,5 +1119,275 @@ private AutorizacionEjecutadaDao dAutorizacionEjecutada;
  private AuthenticatedUserDetails getCurrentUser() {
   return (AuthenticatedUserDetails) SecurityContextHolder.getContext()
     .getAuthentication().getPrincipal();
+ }
+ 
+ @RequestMapping(value = URL_ADJUNTAR_ARCHIVO_RELATIVA, method = RequestMethod.POST)
+ @ResponseBody
+ public RespuestaCompuesta adjuntarArchivo(@ModelAttribute FormularioAdjuntoDescarga formulario, Locale locale) {
+	 LOGGER.info("[INICIO] adjuntarArchivo");
+	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	 AuthenticatedUserDetails principal = null;
+	 String mensajeRespuesta="";
+	 Bitacora eBitacora = null;
+	 String contenidoAuditoria = "";
+	 try {
+		 principal = this.getCurrentUser();
+		 respuesta = dEnlace.recuperarRegistro(URL_ADJUNTAR_ARCHIVO_COMPLETA);
+		 if (respuesta.estado==false){
+				mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+				throw new Exception(mensajeRespuesta);
+		 }
+		 Enlace enlace = (Enlace) respuesta.contenido.carga.get(0);
+		 if (!principal.getRol().searchPermiso(enlace.getPermiso())){
+			 mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale);
+			 throw new Exception(mensajeRespuesta);
+		 }
+		 ParametrosListar parametrosListar = new ParametrosListar();
+		 parametrosListar.setFiltroParametro(Constante.TAMANIO_ARCHIVO_DCISTERNA);
+		 respuesta = dParametroDao.recuperarRegistros(parametrosListar);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 Parametro tamanioArchivo = (Parametro) respuesta.contenido.carga.get(0);
+		 if(formulario.getArchivo().getSize() > (Integer.parseInt(tamanioArchivo.getValor()) * 1024) && formulario.getArchivo().getSize() == 0) {
+			 throw new Exception("Archivo excede el tamaño permitido.");
+		 }
+		 String nombreOriginalArchivo = formulario.getArchivo().getOriginalFilename();
+		 String extensionArchivo = FilenameUtils.getExtension(formulario.getArchivo().getOriginalFilename());
+		 String nombreSistemaArchivo = String.valueOf(Calendar.getInstance().getTime().getTime()) + "." + extensionArchivo ; 
+		 boolean extensionPermitida = false;
+		 for(int i = 0; i < Constante.EXTENSIONES_ARCHIVOS_DCISTERNA.length; i ++) {
+			 if(extensionArchivo.toLowerCase().equals(Constante.EXTENSIONES_ARCHIVOS_DCISTERNA[i])) {
+				 extensionPermitida = true;
+				 break;
+			 }
+		 }
+		 if(!extensionPermitida) {
+			 throw new Exception("Solo se permite subir archivos pdf o imágenes.");
+		 }
+		 parametrosListar = new ParametrosListar();
+		 parametrosListar.setFiltroParametro(Constante.DIRECTORIO_SGO_PARAMETRO);
+		 respuesta = dParametroDao.recuperarRegistros(parametrosListar);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 Parametro directorioSGO = (Parametro) respuesta.contenido.carga.get(0);
+		 boolean tranferir = Utilidades.transferirArchivo(formulario.getArchivo(), directorioSGO.getValor() +  DIRECTORIO_DESCARGA_CISTERNAS , nombreSistemaArchivo);
+		 if(tranferir == false) {
+			 throw new Exception("Ocurrió un error al guardar el archivo.");
+		 }
+		 
+		 ArchivoAdjuntoDescargaCisterna adjunto = new ArchivoAdjuntoDescargaCisterna(
+				 0, 
+				 1, 
+				 formulario.getIdDescargaCisterna(), 
+				 nombreOriginalArchivo, 
+				 nombreSistemaArchivo, 
+				 formulario.getReferencia());
+		 adjunto.setCreadoEl(Calendar.getInstance().getTime().getTime());
+		 adjunto.setCreadoPor(principal.getID());
+		 respuesta = dArchivoAdjuntoDao.registrarArchivoAdjunto(adjunto);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
+		 }
+		 ObjectMapper mapper = new ObjectMapper();
+		 contenidoAuditoria = mapper.writeValueAsString(adjunto);
+		 eBitacora = new Bitacora();
+		 eBitacora.setUsuario(principal.getNombre());
+		 eBitacora.setAccion(URL_GUARDAR_CARGA_COMPLETA);
+		 eBitacora.setTabla(ArchivoAdjuntoDescargaCisternaDao.NOMBRE_TABLA);
+		 eBitacora.setIdentificador(respuesta.valor);
+		 eBitacora.setContenido(contenidoAuditoria);
+		 eBitacora.setRealizadoEl(adjunto.getCreadoEl());
+		 eBitacora.setRealizadoPor(adjunto.getCreadoPor());
+		 respuesta = dBitacora.guardarRegistro(eBitacora);
+		 if (respuesta.estado == false) {
+			    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+		 }
+	 } catch (Exception ex) {
+		respuesta.estado = false;
+		respuesta.contenido = null;
+		respuesta.mensaje = ex.getMessage();
+		LOGGER.error("[ERROR] adjuntarArchivo", ex);
+	 } 
+	 LOGGER.info("[ERROR] adjuntarArchivo");
+	 return respuesta;
+ }
+ 
+ 
+ @RequestMapping(value = URL_LISTAR_ARCHIVO_ADJUNTO_RELATIVA, method = RequestMethod.GET)
+ @ResponseBody
+ public RespuestaCompuesta listarArchivosAdjuntos(@PathVariable("idDCisterna") int id, Locale locale) {
+	 LOGGER.info("[INICIO] listarArchivosAdjuntos");
+	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	 AuthenticatedUserDetails principal = null;
+	 String mensajeRespuesta = "";
+	 try {
+		 principal = this.getCurrentUser();
+		 respuesta = dEnlace.recuperarRegistro(URL_LISTAR_ARCHIVO_ADJUNTO_COMPLETA);
+		 if (respuesta.estado==false){
+				mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+				throw new Exception(mensajeRespuesta);
+		 }
+		 Enlace enlace = (Enlace) respuesta.contenido.carga.get(0);
+		 if (!principal.getRol().searchPermiso(enlace.getPermiso())){
+			 mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale);
+			 throw new Exception(mensajeRespuesta);
+		 }
+		 respuesta = dArchivoAdjuntoDao.recuperarRegistros(1, id);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 Bitacora eBitacora = new Bitacora();
+		 eBitacora.setUsuario(principal.getNombre());
+		 eBitacora.setAccion(URL_LISTAR_ARCHIVO_ADJUNTO_COMPLETA);
+		 eBitacora.setTabla(ArchivoAdjuntoDescargaCisternaDao.NOMBRE_TABLA);
+		 eBitacora.setIdentificador(respuesta.valor);
+		 eBitacora.setContenido("LISTAR ARCHIVOS ADJUNTOS");
+		 eBitacora.setRealizadoEl(Calendar.getInstance().getTime().getTime());
+		 eBitacora.setRealizadoPor(principal.getID());
+		 RespuestaCompuesta respuestaBitacora = dBitacora.guardarRegistro(eBitacora);
+		 if (respuestaBitacora.estado == false) {
+			    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+		 }
+		 
+	} catch (Exception ex) {
+		respuesta.estado = false;
+		respuesta.contenido = null;
+		respuesta.mensaje = ex.getMessage();
+		LOGGER.error("[ERROR] listarArchivosAdjuntos", ex);
+	 } 
+	 LOGGER.info("[ERROR] listarArchivosAdjuntos");
+	 return respuesta;
+ }
+ 
+ @RequestMapping(value = URL_DESCARGAR_ARCHIVO_ADJUNTO_RELATIVA, method = RequestMethod.GET)
+ @ResponseBody
+ public RespuestaCompuesta descargarArchivoAdjunto(@PathVariable("idArchivo") int id, Locale locale, HttpServletRequest peticionHttp, HttpServletResponse response) {
+	 LOGGER.info("[INICIO] descargarArchivoAdjunto");
+	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	 AuthenticatedUserDetails principal = null;
+	 String mensajeRespuesta = "";
+	 OutputStream resOutputStream;
+	 FileInputStream fileInputStream;
+	 try {
+		 principal = this.getCurrentUser();
+		 respuesta = dEnlace.recuperarRegistro(URL_DESCARGAR_ARCHIVO_ADJUNTO_COMPLETA);
+		 if (respuesta.estado==false){
+				mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+				throw new Exception(mensajeRespuesta);
+		 }
+		 Enlace enlace = (Enlace) respuesta.contenido.carga.get(0);
+		 if (!principal.getRol().searchPermiso(enlace.getPermiso())){
+			 mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale);
+			 throw new Exception(mensajeRespuesta);
+		 }
+		 respuesta = dArchivoAdjuntoDao.recuperarRegistros(id);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 ArchivoAdjuntoDescargaCisterna archivo = (ArchivoAdjuntoDescargaCisterna) respuesta.contenido.carga.get(0);
+		 ParametrosListar  parametrosListar = new ParametrosListar();
+		 parametrosListar.setFiltroParametro(Constante.DIRECTORIO_SGO_PARAMETRO);
+		 respuesta = dParametroDao.recuperarRegistros(parametrosListar);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 Parametro parametroDirectorio = (Parametro) respuesta.contenido.carga.get(0);
+		 String pathAdjunto = parametroDirectorio.getValor() + DIRECTORIO_DESCARGA_CISTERNAS + "/" + archivo.getNombre_archivo_adjunto();
+		 File adjunto = new File(pathAdjunto);
+		 if(!adjunto.exists()) {
+			 throw new Exception("No existe el archivo adjunto.");
+		 }
+		 
+		 //response.setContentType("application/pdf");
+		 response.addHeader("Content-Disposition", "attachment; filename=" + archivo.getNombre_archivo_original());
+		 response.setContentLength((int) adjunto.length());
+			//res.setHeader("X-Frame-Options","DENY");
+		 response.addHeader("X-Content-Type-Options","nosniff");
+		 fileInputStream = new FileInputStream(adjunto);
+	     OutputStream responseOutputStream = response.getOutputStream();
+	     int bytes;
+		 while ((bytes = fileInputStream.read()) != -1) {
+		 	responseOutputStream.write(bytes);
+		 }
+	    responseOutputStream.flush();
+		responseOutputStream.close();
+	 } catch (Exception ex) {
+			respuesta.estado = false;
+			respuesta.contenido = null;
+			respuesta.mensaje = ex.getMessage();
+			LOGGER.error("[ERROR] descargarArchivoAdjunto", ex);
+	} 
+	 LOGGER.info("[ERROR] descargarArchivoAdjunto");
+	 return respuesta;
+ }
+ 
+ 
+ @RequestMapping(value = URL_ELIMINAR_ARCHIVO_ADJUNTO_RELATIVA, method = RequestMethod.GET)
+ @ResponseBody
+ public RespuestaCompuesta eliminarArchivoAdjunto(@PathVariable("idArchivo") int id, Locale locale) {
+	 RespuestaCompuesta respuesta = new RespuestaCompuesta();
+	 AuthenticatedUserDetails principal = null;
+	 String mensajeRespuesta = "";
+	 try {
+		 principal = this.getCurrentUser();
+		 respuesta = dEnlace.recuperarRegistro(URL_ELIMINAR_ARCHIVO_ADJUNTO_COMPLETA);
+		 if (respuesta.estado==false){
+				mensajeRespuesta = gestorDiccionario.getMessage("sgo.accionNoHabilitada", null, locale);
+				throw new Exception(mensajeRespuesta);
+		 }
+		 Enlace enlace = (Enlace) respuesta.contenido.carga.get(0);
+		 if (!principal.getRol().searchPermiso(enlace.getPermiso())){
+			 mensajeRespuesta = gestorDiccionario.getMessage("sgo.faltaPermiso",null,locale);
+			 throw new Exception(mensajeRespuesta);
+		 }
+		 
+		 respuesta = dArchivoAdjuntoDao.recuperarRegistros(id);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 ArchivoAdjuntoDescargaCisterna archivo = (ArchivoAdjuntoDescargaCisterna) respuesta.contenido.carga.get(0);
+		 
+		 ParametrosListar  parametrosListar = new ParametrosListar();
+		 parametrosListar.setFiltroParametro(Constante.DIRECTORIO_SGO_PARAMETRO);
+		 respuesta = dParametroDao.recuperarRegistros(parametrosListar);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.recuperarFallido", null, locale));
+		 }
+		 Parametro parametroDirectorio = (Parametro) respuesta.contenido.carga.get(0);
+		 String pathAdjunto =  parametroDirectorio.getValor() + DIRECTORIO_DESCARGA_CISTERNAS + "/" + archivo.getNombre_archivo_adjunto();
+		 File adjunto = new File(pathAdjunto);
+		 if(!adjunto.exists()) {
+			 throw new Exception("No existe directorio " + pathAdjunto);
+		 }
+		 adjunto.delete();
+		 
+		 respuesta = dArchivoAdjuntoDao.eliminarRegistro(id);
+		 if(respuesta.estado == false) {
+			 throw new Exception(gestorDiccionario.getMessage("sgo.guardarFallido", null, locale));
+		 }
+		 
+		 
+		 Bitacora eBitacora = new Bitacora();
+		 eBitacora.setUsuario(principal.getNombre());
+		 eBitacora.setAccion(URL_ELIMINAR_ARCHIVO_ADJUNTO_COMPLETA);
+		 eBitacora.setTabla(ArchivoAdjuntoDescargaCisternaDao.NOMBRE_TABLA);
+		 eBitacora.setIdentificador(respuesta.valor);
+		 eBitacora.setContenido("ELIMINAR ARCHIVO ADJUNTO");
+		 eBitacora.setRealizadoEl(Calendar.getInstance().getTime().getTime());
+		 eBitacora.setRealizadoPor(principal.getID());
+		 respuesta = dBitacora.guardarRegistro(eBitacora);
+		 if (respuesta.estado == false) {
+			    throw new Exception(gestorDiccionario.getMessage("sgo.guardarBitacoraFallido", null, locale));
+		 }
+	} catch (Exception ex) {
+		respuesta.estado = false;
+		respuesta.contenido = null;
+		respuesta.mensaje = ex.getMessage();
+		LOGGER.error("[ERROR] descargarArchivoAdjunto", ex);
+	} 
+	 LOGGER.info("[ERROR] descargarArchivoAdjunto");
+	 return respuesta;
  }
 }
