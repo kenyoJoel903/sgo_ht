@@ -189,6 +189,33 @@ $(document).ready(function(){
   moduloActual.definicionColumnasDetalleProgramacion.push({ "targets" : 5, "searchable" : true, "orderable" : false, "visible" : true });
   moduloActual.definicionColumnasDetalleProgramacion.push({ "targets" : 6, "searchable" : true, "orderable" : false, "visible" : true, "render" : utilitario.formatearEstadoDiaOperativo, "data-align":"left" });
   moduloActual.definicionColumnasDetalleProgramacion.push({ "targets" : 7, "searchable" : true, "orderable" : false, "visible" : false });
+  
+  //Inicio agregado por req 9000002857
+  
+  moduloActual.ordenGrilla=[[ 2, 'asc' ]];
+  moduloActual.columnasGrillaAforo.push({ "data": 'id'}); 
+  moduloActual.columnasGrillaAforo.push({ "data": 'milimetros'});
+  moduloActual.columnasGrillaAforo.push({ "data": 'volumen'});
+  moduloActual.columnasGrillaAforo.push({ "data": 'variacionMilimetros'});
+  moduloActual.columnasGrillaAforo.push({ "data": 'variacionVolumen'});
+  
+  moduloActual.definicionColumnasAforo.push({"targets": 1,"searchable": false, "orderable": false, "className": "text-right","visible":false });
+  moduloActual.definicionColumnasAforo.push({"targets": 2,"searchable": false, "orderable": true,"className": "text-right", "visible":true });
+  moduloActual.definicionColumnasAforo.push({"targets": 3,"searchable": true, "orderable": true,"className": "text-right", "visible":true, 
+  "render": function ( datos, tipo, fila, meta ) {
+      var configuracion = meta.settings;
+      return datos.toFixed(2);
+  } 
+  });
+  moduloActual.definicionColumnasAforo.push({"targets": 4,"searchable": true, "orderable": true,"className": "text-right", "visible":true });
+  moduloActual.definicionColumnasAforo.push({"targets": 5,"searchable": true, "orderable": true,"className": "text-right", "visible":true,
+    "render": function ( datos, tipo, fila, meta ) {
+      var configuracion = meta.settings;
+      return datos.toFixed(2);
+  } 
+  });
+
+  //Fin agregado por req 9000002857
 
   //data source combo producto
   
@@ -374,6 +401,10 @@ $(document).ready(function(){
     this.obj.notificarFechaDescarga=$("#notificarFechaDescarga");
     //
     
+    //Inicio agregado por req 9000002857
+    this.obj.cmbCompartimento=$("#cmbCompartimento");
+    //Fin agregado por req 9000002857
+    
     //Campos de Formulario Principal     
     
     this.obj.cmpCisternasPlanificado=$("#cmpCisternasPlanificado");    
@@ -499,6 +530,24 @@ $(document).ready(function(){
 		        return  registro.nombreCompleto || registro.text;
   	    },
     });
+    
+    // Inicio Atención Ticket 9000002857
+    $('#btnCancelarAforo').on('click', function(e){    	
+    	$('#frmVerAforo').modal('hide');
+    });
+    
+    this.obj.cmbCompartimento.on("change",function(){
+    	var idCompartimento 		= 	$(this).val();
+        var idTracto 				=	$(this).find("option:selected").attr('data-id-tracto');
+        var idCisterna 				=	$(this).find("option:selected").attr('data-id-cisterna');
+        var alturaFlecha			=	$(this).find("option:selected").attr('data-altura-flecha');
+        var capacidadVolumetrica 	=	$(this).find("option:selected").attr('data-capacidad-volumetrica');
+        
+        moduloActual.seleccionarCompartimento(idCompartimento, idTracto, idCisterna, capacidadVolumetrica, alturaFlecha);
+        
+      });
+    
+    // Fin Atención Ticket 9000002857
     
     // Inicio Atención Ticket 9000002608
     
@@ -908,6 +957,69 @@ $(document).ready(function(){
           
          // Fin Atención Ticket 9000002608
           
+          //Inicio ticket 9000002857
+          var btnAforo = $(formularioNuevo).find("[elemento-grupo='botonAforo']");
+          btnAforo.on("click", function(){
+        	  
+        	  moduloActual.inicializarGrillaDetalleAforo();
+        	  
+        	  var indiceFormulario = ($(formularioNuevo).attr('id')).substring(26);
+        	  console.log(indiceFormulario);
+        	  
+        	  var fila = moduloActual.obj.grupoProgramacion.getForm(indiceFormulario);
+        	  
+        	  $("#txtTractoCisterna").val(fila.find("input[elemento-grupo='tracto']").val());
+        	  $("#txtCodCubicacion").val(fila.find("input[elemento-grupo='tarjetaCub']").val());
+        	  $("#txtVigencia").val(fila.find("input[elemento-grupo='fechaIniTC']").val() + ' - ' + fila.find("input[elemento-grupo='fechaFinTC']").val());
+        	  
+        	  var idCisterna = fila.find("input[elemento-grupo='tracto-id']").val();
+        	  
+      	    $.ajax({
+      	      type: constantes.PETICION_TIPO_GET,
+      	      url: '../admin/cisterna/recuperar', 
+      	      contentType: constantes.TIPO_CONTENIDO_JSON, 
+      	      data: {ID:idCisterna},	
+      	      success: function(respuesta) {
+      	          var cisterna = respuesta.contenido.carga[0];
+      	          registros = cisterna.compartimentos;      	          
+      	          
+      	          var numeroRegistros = registros.length;
+      	          console.log('numeroRegistros: ' + numeroRegistros);
+      	          
+      	          if(numeroRegistros > 0){
+      	        	
+      	        	$("#cmbCompartimento").children().remove();      	        	
+      	        	
+      	        	for(var contador = 0;contador < numeroRegistros;contador++){
+      		          var item = registros[contador];
+      		          var etiqueta = item.identificador;
+      		          $("#cmbCompartimento").append($('<option>', { 
+      		          value: item.id,
+      		          "data-altura-flecha":item.alturaFlecha,
+      		          "data-capacidad-volumetrica":item.capacidadVolumetrica,
+      		          "data-id-tracto":item.idTracto,
+      		          "data-id-cisterna":item.idCisterna,
+      		          text : etiqueta
+      		          })); 
+      	        	}
+      	        	
+      	        	var primerCompartimento = registros[0];
+      	        	moduloActual.seleccionarCompartimento(primerCompartimento.id, primerCompartimento.idTracto, primerCompartimento.idCisterna, primerCompartimento.capacidadVolumetrica, primerCompartimento.alturaFlecha);
+
+      	          }else{
+        	    	$("#txtCapVolumetrica").val('');
+          		   	$("#txtAltFlecha").val('');
+          		  }
+      	      },			    		    
+      	      error: function(xhr,estado,error) {
+      	    	moduloActual.mostrarErrorServidor(xhr,estado,error);       	              
+      	      }
+      	    });
+ 
+        	  $('#frmVerAforo').modal("show");
+          });
+          //Fin ticket 9000002857          
+          
           var cmpElimina=$(formularioNuevo).find("[elemento-grupo='botonElimina']");
           cmpElimina.on("click", function(){
         	  
@@ -1077,6 +1189,30 @@ $(document).ready(function(){
     });
     this.obj.cmpEventoDescripcion=$("#cmpEventoDescripcion");
   };
+  
+  //Inicio agregado por req 9000002857
+  moduloActual.seleccionarCompartimento = function(idCompartimento, idTracto, idCisterna, capacidadVolumetrica, alturaFlecha){
+	  
+	  var referenciaModulo = this;	
+	  
+    	$("#cmbCompartimento").val(idCompartimento);
+	    $("#txtCapVolumetrica").val(capacidadVolumetrica);
+	    $("#txtAltFlecha").val(alturaFlecha);
+	    
+	    moduloActual.idTracto 			= 	idTracto;
+	    moduloActual.idCisterna			=	idCisterna;
+	    moduloActual.idCompartimento	=	idCompartimento;
+	    
+	    console.log('3 datatable');	    
+	    referenciaModulo.obj.datDetalleAforoApi.ajax.reload(moduloActual.despuesListarRegistros,true);
+	    	
+  };
+  
+  moduloActual.despuesListarRegistros=function(){
+	
+  };
+	
+  //Fin agregado por req 9000002857
 
   moduloActual.verificaBotonCisterna = function(){	  
 	  var moduloActual=this;	 
@@ -1801,9 +1937,7 @@ $(document).ready(function(){
 		  
 	    }
 	  }
-  };   
-  
-  
+  };     
   
   moduloActual.llenarDetalles = function(registro){
 		//var referenciaModulo=this;
@@ -2039,13 +2173,10 @@ moduloActual.validarFechaEmision = function(retorno){
         
       };
     };
-  
-    
-    
+
     $('#cmbCisterna').on('click', function(e){
     	console.log('Iniciando carga de datos....');
     });
-    
     
   moduloActual.validarFechaEmision = function(retorno){
     referenciaModulo = this;
@@ -2069,6 +2200,7 @@ moduloActual.validarFechaEmision = function(retorno){
           console.log(error.message);
     }
   };  
+  
   moduloActual.inicializar();
 });
 

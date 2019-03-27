@@ -524,7 +524,7 @@ if(idCompartimento == 0 || idCompartimento == null){
 
   this.obj.tablaPrincipal.on(constantes.DT_EVENTO_ORDENACION, function () {
   });
-
+ 
   this.obj.datClienteApi= this.obj.tablaPrincipal.DataTable({
     processing: true,
     deferLoading: 0,
@@ -538,6 +538,8 @@ if(idCompartimento == 0 || idCompartimento == null){
       url: referenciaModulo.URL_LISTAR,
       type:constantes.PETICION_TIPO_GET,
       data: function (d) {
+    	  console.log('aforo');
+    	  console.dir(d);
     	  referenciaModulo.llamadaAjax(d);
       }
     },
