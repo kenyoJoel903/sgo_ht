@@ -222,7 +222,7 @@ public class AutorizacionControlador {
  @RequestMapping(value = URL_VALIDAR_AUTORIZACION_RELATIVA, method = RequestMethod.GET)
  public @ResponseBody
  RespuestaCompuesta validarAutorizacion(HttpServletRequest httpRequest, Locale locale) {
-  RespuestaCompuesta respuesta = null;
+  RespuestaCompuesta respuesta = new RespuestaCompuesta();
   ParametrosListar parametros = null;
   AuthenticatedUserDetails principal = null;
   String mensajeRespuesta = "";
@@ -318,7 +318,7 @@ public class AutorizacionControlador {
    }
    
    respuesta.estado=true;
-   respuesta.mensaje=gestorDiccionario.getMessage("sgo.autorizacionValida", null, locale);   
+   //respuesta.mensaje=gestorDiccionario.getMessage("sgo.autorizacionValida", null, locale);   
    
   } catch (Exception ex) {
    respuesta.estado = false;

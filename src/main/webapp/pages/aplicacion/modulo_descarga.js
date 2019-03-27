@@ -442,6 +442,8 @@ moduloDescarga.prototype.inicializarControles=function(){
   this.obj.txtAdjuntoTractoCisterna=$("#txtAdjuntoTractoCisterna");
   this.obj.txtAdjuntoTanque=$("#txtAdjuntoTanque");
   this.obj.txtAdjuntoIdDescargaCisterna=$("#txtAdjuntoIdDescargaCisterna");
+  this.obj.txtAdjuntoReferencia=$("#txtAdjuntoReferencia");
+  this.obj.txtAdjuntoArchivo=$("#txtAdjuntoArchivo");
   this.obj.txtAdjuntoIdOperacion=$("#txtAdjuntoIdOperacion");
   this.obj.btnAdjuntosAdjuntar=$("#btnAdjuntosAdjuntar");
   this.obj.btnAdjuntosRetornar=$("#btnAdjuntosRetornar");
@@ -1252,6 +1254,14 @@ moduloDescarga.prototype.iniciarVerAdjuntos = function(){
 	ref.obj.tituloSeccion.text("Formulario de Registro / Eliminación de Adjuntos");
 	ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO,cadenas.PROCESANDO_PETICION);
 	
+	try {
+		ref.obj.tablaAdjuntosDescargaAPI.clear();
+		ref.obj.tablaAdjuntosDescargaAPI.destroy();
+		ref.obj.tablaAdjuntosDescargaAPI  = null;
+	} catch (e) {
+		console.log(e);
+	}
+	
 	ref.obj.cntDetalleDiaOperativo.hide();
 	ref.obj.cntAdjuntosDescarga.show();
 	
@@ -1283,6 +1293,10 @@ moduloDescarga.prototype.reload_tabla_adjunto_descarga = function(mensaje){
 	//actualizando tabla
 	if(ref.obj.tablaAdjuntosDescargaAPI){
 		ref.obj.tablaAdjuntosDescargaAPI.ajax.reload();
+		setTimeout(function() {
+			ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_EXITO, mensaje);
+		}, 2000);
+		
 	}else{
 		ref.obj.tablaAdjuntosDescargaAPI = ref.obj.tablaAdjuntosDescarga.DataTable({
 			deferLoading: 0,
@@ -1365,8 +1379,9 @@ moduloDescarga.prototype.adjuntar_archivo_adjunto_descarga = function(formulario
 	      data: formulario,  
 	      success: function(respuesta) {
 	    	  if(respuesta.mensaje == 'OK'){
-	    		  ref.reload_tabla_adjunto_descarga('Archivo cargado correctamente.');
-	    		  ref.obj.formAdjuntosDescarga[0].reset();
+	    		  ref.reload_tabla_adjunto_descarga('Archivo fue adjuntado exitosamente.');
+	    		  ref.obj.txtAdjuntoReferencia.val('');
+	    		  ref.obj.txtAdjuntoArchivo.val('');
 	    	  }else{
 	    		  ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);
 	    	  }     
@@ -1385,7 +1400,7 @@ moduloDescarga.prototype.eliminar_archivo_adjunto_descarga = function(idArchivoA
 	      url: urlAccion, 
 	      success: function(respuesta) {
 	    	  if(respuesta.mensaje == 'OK'){
-	    		  ref.reload_tabla_adjunto_descarga('Archivo eliminado correctamente.');
+	    		  ref.reload_tabla_adjunto_descarga('Archivo fue eliminado exitosamente.');
 	    		  ref.obj.formAdjuntosDescarga[0].reset();
 	    	  }else{
 	    		  ref.actualizarBandaInformacion(constantes.TIPO_MENSAJE_ERROR, respuesta.mensaje);

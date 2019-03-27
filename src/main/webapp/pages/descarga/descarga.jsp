@@ -1222,7 +1222,7 @@ var cacheDescarga={
           					<div class="form-group  col-sm-12">
 								<label for="txtAdjuntoReferencia" class="col-sm-2 col-form-label">Referencia:</label>
 								<div class="col-sm-8">
-									<textarea class="form-control text-uppercase" required id="txtAdjuntoRefeencia" name="referencia"  placeholder="Ingrese Comentarios..." rows="3" ></textarea>
+									<textarea class="form-control text-uppercase" required id="txtAdjuntoReferencia" name="referencia"  placeholder="Ingrese Comentarios..." rows="3" ></textarea>
 								</div>
 							</div>
           				</div>
