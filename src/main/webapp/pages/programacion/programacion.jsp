@@ -413,6 +413,11 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
 					<!-- Fin: Atención Agregado Ticket 9000002841 -->
 					
 					<td><label class="text-center">Compartimento</label></td>
+					
+					<!-- Inicio Atencion Ticket 9000002857 -->
+					<td><label class="text-center">Aforo</label></td>
+					<!-- Fin Atencion Ticket 9000002857 -->
+					
 					<td><label class="text-center">Volumen</label></td>
       				<td><label class="text-center">Producto</label></td>
       				<td></td>
@@ -469,6 +474,13 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
       														 name="programacion[detalle][#index#][compartimentos]"
       														 readonly="readonly" />
       					</td>
+      					
+      					<!-- Inicio Atencion Ticket 9000002857 -->
+	      				<td class="celda-detalle">
+      					 <a elemento-grupo="botonAforo" id="GrupoProgramacion_#index#_aforo" class="btn btn-default btn-sm" style="width:100%;display:inline-block"><i class="fa fa-edit"></i></a>
+      					</td>      					
+      					<!-- Fin Atencion Ticket 9000002857 -->
+      					
       					<td class="celda-detalle" style="width:10%;">
       						<input elemento-grupo="volumen" style="width: 100%" 
       														 class="form-control input-sm text-uppercase text-right" 
@@ -755,6 +767,86 @@ HashMap<?,?> mapaValores = (HashMap<?,?>) request.getAttribute("mapaValores");
     	</div>
     </div>
   </div>
+  
+  <!-- Inicio Atencion Ticket 9000002857 -->
+  <div id="frmVerAforo" class="modal" data-keyboard="false" data-backdrop="static">
+  	<div class="modal-dialog" style="width:1200px">
+  		<div class="modal-content">
+  			<div class="modal-header">
+   				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Ver Aforo</h4>
+        	</div>
+        	<div class="modal-body">
+        		<form id="frmAforo" >
+       				<table align="center">
+       					<tr>
+       						<td width="17%">
+       							<b>Tracto / Cisterna:</b>
+       						</td>
+       						<td width="18%">
+       							<input type="text" class="form-control col-sm-1 text-center" id="txtTractoCisterna" name = "txtTractoCisterna" readonly="readonly"  >
+       						</td>
+       						<td width="15%">
+       							&nbsp;&nbsp;&nbsp;&nbsp;<b>Cod. Cubicación:</b>
+       						</td>
+       						<td width="12%">
+       							<input type="text" class="form-control col-sm-1 text-center" id="txtCodCubicacion" name = "txtCodCubicacion" readonly="readonly"  >
+       						</td>
+       						<td width="10%">
+       							&nbsp;&nbsp;&nbsp;&nbsp;<b>Vigencia:</b>
+       						</td>
+       						<td>
+       							<input type="text" class="form-control col-sm-1 text-center" id="txtVigencia" name = "txtVigencia" readonly="readonly"  >
+       						</td>
+       					</tr>
+       					<tr>
+       						<td>
+       							<b>Nro. Compartimento:</b>
+       						</td>
+       						<td>
+						        <select tipo-control="select2" id="cmbCompartimento" name="cmbCompartimento" class="form-control input-sm" style="width: 35%;">									
+								</select>
+								
+       						</td>
+       						<td>
+       							&nbsp;&nbsp;&nbsp;&nbsp;<b>Cap. Volumétrica:</b>
+       						</td>
+       						<td>
+       							<input type="text" class="form-control col-sm-1 text-center" id="txtCapVolumetrica" name = "txtCapVolumetrica" readonly="readonly"  >
+       						</td>
+       						<td>
+       							&nbsp;&nbsp;&nbsp;&nbsp;<b>Alt. Flecha:</b>
+       						</td>
+       						<td>
+       							<input type="text" class="form-control col-sm-1 text-center" id="txtAltFlecha" name = "txtAltFlecha" readonly="readonly"  >
+       						</td>
+       					</tr>
+       				</table> 
+       				
+       				<table id="tablaDetalleAforo" class="sgo-table table table-striped" style="width:100%;">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>ID</th>
+									<th>Altura</th>
+									<th>Volumen</th>
+									<th>Variacion (mm)</th>
+									<th>Variacion (gal)</th>
+								</tr>
+							</thead>
+						</table>
+										        			
+        		</form>
+        	</div>
+	        <div class="modal-footer">
+				<button id="btnCancelarAforo" type="button" class="btn btn-default" ><%=mapaValores.get("ETIQUETA_BOTON_CANCELAR")%></button>			
+			</div>
+  		</div>
+  	</div>
+  </div>
+  <!-- Fin Atencion Ticket 9000002857 -->
 	
 	<!-- Inicio: Atención Ticket Ticket 9000002608 - Modal -->
             <div id="frmAddCisterna" class="modal" data-keyboard="false" data-backdrop="static">

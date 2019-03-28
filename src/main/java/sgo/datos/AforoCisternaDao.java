@@ -94,6 +94,14 @@ public class AforoCisternaDao {
         parametros.add(argumentosListar.getInicioPaginacion());
         parametros.add(argumentosListar.getRegistrosxPagina());
       }
+     
+     //Inicio Agregado por req 9000002857
+		StringBuilder consultaSQL = new StringBuilder();
+		consultaSQL.setLength(0);
+		consultaSQL.append("SELECT count(id_acisterna) as total FROM " + NOMBRE_VISTA);
+		totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
+		totalEncontrados=totalRegistros;
+	 //Fin Agregado por req 9000002857
       
      if (argumentosListar.getFiltroTracto() > 0){
        filtrosWhere.add(" "+CAMPO_ID_TRACTO+" = '"+ argumentosListar.getFiltroTracto() +"' ");
@@ -117,8 +125,18 @@ public class AforoCisternaDao {
      }
      
      sqlOrderBy= " ORDER BY " + this.mapearCampoOrdenamiento(argumentosListar.getCampoOrdenamiento()) + " "  + argumentosListar.getSentidoOrdenamiento();
+     
+     //Inicio Agregado por req 9000002857
+		if(!filtrosWhere.isEmpty()){
+			consultaSQL.setLength(0);
+			sqlWhere = "WHERE " + StringUtils.join(filtrosWhere, Constante.SQL_Y);
+			consultaSQL.append("SELECT count(t1.id_acisterna) as total FROM " + NOMBRE_VISTA + " t1 " + sqlWhere);
+			totalEncontrados = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
+		}
+	//Fin Agregado por req 9000002857
 
-      StringBuilder consultaSQL = new StringBuilder();
+     //Se quita StringBuilder (inicializacion de consultaSQL) pq se creo arriba por req 9000002857
+      consultaSQL = new StringBuilder();
       //consultaSQL.append("SELECT count(" + NOMBRE_CAMPO_CLAVE+ ") as total FROM " + NOMBRE_TABLA);
       //totalRegistros = jdbcTemplate.queryForObject(consultaSQL.toString(), null, Integer.class);
       consultaSQL.setLength(0);
@@ -153,8 +171,10 @@ public class AforoCisternaDao {
       consultaSQL.append(sqlOrderBy);
       consultaSQL.append(sqlLimit);
       listaRegistros = jdbcTemplate.query(consultaSQL.toString(),parametros.toArray(), new AforoCisternaMapper());
-      totalRegistros = listaRegistros.size();
-      totalEncontrados = totalRegistros;
+      //Inicio Se comenta por req 9000002857
+//      totalRegistros = listaRegistros.size();
+//      totalEncontrados = totalRegistros;
+      //Fin Se comenta por req 9000002857
       contenido.carga = listaRegistros;
       respuesta.estado = true;
       respuesta.contenido = contenido;

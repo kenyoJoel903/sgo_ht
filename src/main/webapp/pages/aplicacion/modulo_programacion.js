@@ -38,6 +38,24 @@ function moduloProgramacion (){
           return configuracion._iDisplayStart + meta.row + 1;
       }
   }];  
+  
+  //Inicio agregado por req 9000002857
+  this.columnasGrillaAforo={};
+  this.definicionColumnasAforo=[];
+  this.columnasGrillaAforo=[{ "data": null} ];
+  this.definicionColumnasAforo=[{
+	  "targets": 0,
+	  "searchable": false, 
+	  "orderable": false, 
+	  "visible":false, 
+	  "render": function ( datos, tipo, fila, meta ) {
+		  var configuracion =meta.settings;
+		  return configuracion._iDisplayStart + meta.row + 1;
+	  }
+  }];
+  
+  //Fin agregado por req 9000002857
+  
   this.columnasGrillaDetalleProgramacion={};
   this.definicionColumnasDetalleProgramacion=[];
   this.ordenGrillaDetalleProgramacion=[[ 1, 'asc' ]];
@@ -79,6 +97,11 @@ moduloProgramacion.prototype.inicializar=function(){
   this.inicializarControlesGenericos();
   this.inicializarGrilla();
   this.inicializarGrillaDetalleProgramacion();
+  
+  //Inicio agregado por req 9000002857
+  this.inicializarGrillaDetalleAforo();
+  //Fin agregado por req 9000002857
+  
 //  this.inicializarDetalleDiaOperativo();
 //  this.inicializarFormularioPrincipal();
 //  this.inicializarFormularioEvento();
@@ -154,6 +177,11 @@ moduloProgramacion.prototype.inicializarControlesGenericos=function(){
   //dataTables
   this.obj.tablaPrincipal=$('#tablaPrincipal');
   this.obj.tablaDetalleProgramacion=$('#tablaDetalleProgramacion');
+  
+  //Inicio Agregado por req 9000002857
+  this.obj.tablaDetalleAforo=$('#tablaDetalleAforo');
+  //Fin Agregado por req 9000002857
+  
   //botones
   this.obj.btnFiltrar=$("#btnFiltrar");
   this.obj.btnDetalle=$("#btnDetalle");
@@ -816,6 +844,62 @@ moduloProgramacion.prototype.botonCerrarVista= function(){
   };
 };
 
+//Inicio agregado por req 9000002857
+moduloProgramacion.prototype.inicializarGrillaDetalleAforo = function(){
+	var referenciaModulo=this;
+	
+  this.obj.tablaDetalleAforo.on(constantes.DT_EVENTO_AJAX, function (e,configuracion,json) {
+	  referenciaModulo.llamadaAjaxGrillaDetalleAforo(e,configuracion,json);
+ });
+
+	this.obj.datDetalleAforoApi= this.obj.tablaDetalleAforo.DataTable({
+		retrieve: true,	    
+		processing: true,
+        deferLoading: 0,
+        responsive: true,
+        dom: constantes.DT_ESTRUCTURA,
+        iDisplayLength: referenciaModulo.NUMERO_REGISTROS_PAGINA,
+        lengthMenu: referenciaModulo.TOPES_PAGINACION,
+        language: { "url": referenciaModulo.URL_LENGUAJE_GRILLA },
+        serverSide: true,
+        ajax: {
+          url: './aforo-cisterna/listar',
+          type:constantes.PETICION_TIPO_GET,
+          data: function (d) {
+          		console.dir(d);
+        	  	   var indiceOrdenamiento = d.order[0].column;
+    	           d.registrosxPagina =  d.length; 
+    	           d.inicioPagina = d.start; 
+    	           d.campoOrdenamiento= d.columns[indiceOrdenamiento].data;
+    	           d.sentidoOrdenamiento=d.order[0].dir;
+    	           d.filtroTracto = referenciaModulo.idTracto;
+    			   d.filtroCisterna = referenciaModulo.idCisterna;
+    			   d.filtroCompartimento = referenciaModulo.idCompartimento;
+          }
+        },
+        columns: referenciaModulo.columnasGrillaAforo,
+        columnDefs: referenciaModulo.definicionColumnasAforo
+    });	
+	
+};
+
+moduloProgramacion.prototype.llamadaAjaxGrillaDetalleAforo=function(e,configuracion,json){
+	    var referenciaModulo=this;
+	    
+	    if (json.estado==true){
+	      json.recordsTotal=json.contenido.totalRegistros;
+	      json.recordsFiltered=json.contenido.totalEncontrados;
+	      json.data= json.contenido.carga;
+	      
+	    } else {
+	      json.recordsTotal=0;
+	      json.recordsFiltered=0;
+	      json.data= {};
+	    }
+	   
+	  };
+//Fin agregado por req 9000002857
+
 
 
 moduloProgramacion.prototype.inicializarGrilla=function(){
@@ -881,6 +965,7 @@ moduloProgramacion.prototype.inicializarGrilla=function(){
           "url": referenciaModulo.URL_LISTAR,
           "type":constantes.PETICION_TIPO_GET,
           "data": function (d) {
+        	  console.dir(d);
             var indiceOrdenamiento = d.order[0].column;
             d.registrosxPagina =  d.length; 
             d.inicioPagina = d.start; 
@@ -1078,8 +1163,6 @@ moduloProgramacion.prototype.inicializarGrillaDetalleProgramacion = function(){
       console.log(error.message);
   }
 };
-
-
 
 moduloProgramacion.prototype.inicializarFormularioPrincipal= function(){  
   //Establecer validaciones del formulario
