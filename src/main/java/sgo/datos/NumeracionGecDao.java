@@ -1,5 +1,4 @@
 package sgo.datos;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,25 +13,24 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+//Agregado por req 9000002857
 import org.springframework.stereotype.Repository;
 
 import sgo.entidad.Contenido;
+import sgo.entidad.NumeracionGec;
 import sgo.entidad.ParametrosListar;
-import sgo.entidad.PerfilHorario;
 import sgo.entidad.RespuestaCompuesta;
 import sgo.utilidades.Constante;
 
-//Agregado por req 9000003068
-
 @Repository
-public class PerfilHorarioDao {
-	
+public class NumeracionGecDao {
+
 	private JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
-	public static final String NOMBRE_TABLA = Constante.ESQUEMA_APLICACION	+ "perfil_horario";
-	public static final String NOMBRE_VISTA = Constante.ESQUEMA_APLICACION	+ "v_perfil_horario";
-	public final static String NOMBRE_CAMPO_CLAVE = "id_perfil_horario";
-	public final static String NOMBRE_CAMPO_ORDENAMIENTO = "nombre_perfil";
+	public static final String NOMBRE_TABLA = Constante.ESQUEMA_APLICACION	+ "configuracion_gec";
+	public static final String NOMBRE_VISTA = Constante.ESQUEMA_APLICACION	+ "v_configuracion_gec";
+	public final static String NOMBRE_CAMPO_CLAVE = "id_configuracion_gec";
+	public final static String NOMBRE_CAMPO_ORDENAMIENTO = "nombre_cliente";
 	
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -46,16 +44,19 @@ public class PerfilHorarioDao {
 	
 	public RespuestaCompuesta recuperarRegistro(int ID) {
 		StringBuilder consultaSQL = new StringBuilder();
-		List<PerfilHorario> listaRegistros = new ArrayList<PerfilHorario>();
-		Contenido<PerfilHorario> contenido = new Contenido<PerfilHorario>();
+		List<NumeracionGec> listaRegistros = new ArrayList<NumeracionGec>();
+		Contenido<NumeracionGec> contenido = new Contenido<NumeracionGec>();
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		try {
 			consultaSQL.append("SELECT ");
-			consultaSQL.append("t1.id_perfil_horario, ");
-			consultaSQL.append("t1.nombre_perfil, ");
-			consultaSQL.append("t1.numero_turnos, ");
+			consultaSQL.append("t1.id_configuracion_gec, ");
+			consultaSQL.append("t1.id_operacion, ");
+			consultaSQL.append("t1.correlativo, ");
 			consultaSQL.append("t1.estado, ");
-			consultaSQL.append("t1.estaciones_asociadas, ");
+			consultaSQL.append("t1.anio, ");
+			consultaSQL.append("t1.alias_operacion, ");
+			consultaSQL.append("t1.nombre_operacion, ");
+			consultaSQL.append("t1.nombre_cliente, ");
 			consultaSQL.append("t1.creado_el, ");
 			consultaSQL.append("t1.creado_por, ");
 			consultaSQL.append("t1.actualizado_por, ");
@@ -70,7 +71,7 @@ public class PerfilHorarioDao {
 			consultaSQL.append(" WHERE ");
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=?");
-			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	new Object[] { ID }, new PerfilHorarioMapper());
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	new Object[] { ID }, new NumeracionGecMapper());
 			contenido.totalRegistros = listaRegistros.size();
 			contenido.totalEncontrados = listaRegistros.size();
 			contenido.carga = listaRegistros;
@@ -93,8 +94,8 @@ public class PerfilHorarioDao {
 		int totalRegistros = 0, totalEncontrados = 0;
 		List<Object> parametros = new ArrayList<Object>();
 		
-		Contenido<PerfilHorario> contenido = new Contenido<PerfilHorario>();
-		List<PerfilHorario> listaRegistros = new ArrayList<PerfilHorario>();
+		Contenido<NumeracionGec> contenido = new Contenido<NumeracionGec>();
+		List<NumeracionGec> listaRegistros = new ArrayList<NumeracionGec>();
 		
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		
@@ -116,16 +117,19 @@ public class PerfilHorarioDao {
 		
 			consultaSQL.setLength(0);
 			consultaSQL.append("SELECT ");
-			consultaSQL.append("t1.id_perfil_horario, ");
-			consultaSQL.append("t1.nombre_perfil, ");
-			consultaSQL.append("t1.numero_turnos, ");
+			consultaSQL.append("t1.id_configuracion_gec, ");
+			consultaSQL.append("t1.id_operacion, ");
+			consultaSQL.append("t1.correlativo, ");
 			consultaSQL.append("t1.estado, ");
-			consultaSQL.append("t1.estaciones_asociadas, ");
+			consultaSQL.append("t1.anio, ");
+			consultaSQL.append("t1.alias_operacion, ");
+			consultaSQL.append("t1.nombre_operacion, ");
+			consultaSQL.append("t1.nombre_cliente, ");
 			consultaSQL.append("t1.creado_el, ");
 			consultaSQL.append("t1.creado_por, ");
 			consultaSQL.append("t1.actualizado_por, ");
 			consultaSQL.append("t1.actualizado_el, ");
-			consultaSQL.append("t1.ip_creacion, ");
+			consultaSQL.append("t1.ip_creacion, ");			
 			consultaSQL.append("t1.ip_actualizacion, ");
 			consultaSQL.append(" t1.usuario_creacion, "); 
 			consultaSQL.append(" t1.usuario_actualizacion ");
@@ -135,7 +139,7 @@ public class PerfilHorarioDao {
 			consultaSQL.append(sqlOrderBy);
 			consultaSQL.append(sqlLimit);
 			
-			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	parametros.toArray(), new PerfilHorarioMapper());
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	parametros.toArray(), new NumeracionGecMapper());
 			
 			contenido.carga = listaRegistros;
 			respuesta.estado = true;
@@ -156,7 +160,7 @@ public class PerfilHorarioDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta guardarRegistro(PerfilHorario perfilHorario) {
+	public RespuestaCompuesta guardarRegistro(NumeracionGec numeracionGec) {
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		StringBuilder consultaSQL = new StringBuilder();
 		KeyHolder claveGenerada = null;
@@ -165,18 +169,21 @@ public class PerfilHorarioDao {
 		try {
 			consultaSQL.append("INSERT INTO ");
 			consultaSQL.append(NOMBRE_TABLA);
-			consultaSQL.append(" (nombre_perfil,numero_turnos,estado,creado_el,creado_por,actualizado_por,actualizado_el,ip_creacion,ip_actualizacion) ");
-			consultaSQL.append(" VALUES (:NombrePerfil,:NumeroTurnos,:Estado,:CreadoEl,:CreadoPor,:ActualizadoPor,:ActualizadoEl,:IpCreacion,:IpActualizacion) ");
+			consultaSQL.append(" (numero_serie, estado, id_operacion, alias_operacion, anio , correlativo, creado_el ,creado_por ,actualizado_por ,actualizado_el ,ip_creacion ,ip_actualizacion) ");
+			consultaSQL.append(" VALUES (:NumeroSerie, :Estado, :IdOperacion, :AliasOperacion, :Anio, :Correlativo, :CreadoEl, :CreadoPor, :ActualizadoPor, :ActualizadoEl, :IpCreacion, :IpActualizacion) ");
 			MapSqlParameterSource listaParametros = new MapSqlParameterSource();
-			listaParametros.addValue("NombrePerfil", perfilHorario.getNombrePerfil());
-			listaParametros.addValue("NumeroTurnos", perfilHorario.getNumeroTurnos());
-			listaParametros.addValue("Estado",	perfilHorario.getEstado());
-			listaParametros.addValue("CreadoEl", perfilHorario.getCreadoEl());
-			listaParametros.addValue("CreadoPor", perfilHorario.getCreadoPor());
-			listaParametros.addValue("ActualizadoPor", perfilHorario.getActualizadoPor());
-			listaParametros.addValue("ActualizadoEl", perfilHorario.getActualizadoEl());
-			listaParametros.addValue("IpCreacion", perfilHorario.getIpCreacion());
-			listaParametros.addValue("IpActualizacion", perfilHorario.getIpActualizacion());
+			listaParametros.addValue("IdOperacion", numeracionGec.getIdOperacion());
+			listaParametros.addValue("AliasOperacion", numeracionGec.getAliasOperacion());
+			listaParametros.addValue("Anio",	numeracionGec.getAnio());
+			listaParametros.addValue("Correlativo",	numeracionGec.getCorrelativo());
+			listaParametros.addValue("NumeroSerie",	"00");			//Este campo ya no se va a usar (solo sirve para historico), se inserta 00 pq es NOT NULL en bd		
+			listaParametros.addValue("Estado",	numeracionGec.getEstado());
+			listaParametros.addValue("CreadoEl", numeracionGec.getCreadoEl());
+			listaParametros.addValue("CreadoPor", numeracionGec.getCreadoPor());
+			listaParametros.addValue("ActualizadoPor", numeracionGec.getActualizadoPor());
+			listaParametros.addValue("ActualizadoEl", numeracionGec.getActualizadoEl());
+			listaParametros.addValue("IpCreacion", numeracionGec.getIpCreacion());
+			listaParametros.addValue("IpActualizacion", numeracionGec.getIpActualizacion());
 
 			SqlParameterSource namedParameters = listaParametros;
 			/* Ejecuta la consulta y retorna las filas afectadas */
@@ -202,7 +209,7 @@ public class PerfilHorarioDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta actualizarRegistro(PerfilHorario perfilHorario) {
+	public RespuestaCompuesta actualizarRegistro(NumeracionGec numeracionGec) {
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		StringBuilder consultaSQL = new StringBuilder();
 		int cantidadFilasAfectadas = 0;
@@ -210,8 +217,8 @@ public class PerfilHorarioDao {
 			consultaSQL.append("UPDATE ");
 			consultaSQL.append(NOMBRE_TABLA);
 			consultaSQL.append(" SET ");
-			consultaSQL.append("nombre_perfil=:NombrePerfil,");
-			consultaSQL.append("numero_turnos=:NumeroTurnos,");
+			consultaSQL.append("alias_operacion = :AliasOperacion,");
+			consultaSQL.append("correlativo = :Correlativo,");
 			consultaSQL.append("actualizado_por=:ActualizadoPor,");
 			consultaSQL.append("actualizado_el=:ActualizadoEl,");
 			consultaSQL.append("ip_actualizacion=:IpActualizacion");
@@ -220,14 +227,14 @@ public class PerfilHorarioDao {
 			consultaSQL.append("=:Id");
 			
 			MapSqlParameterSource listaParametros = new MapSqlParameterSource();
-			listaParametros.addValue("NombrePerfil", perfilHorario.getNombrePerfil());
-			listaParametros.addValue("NumeroTurnos", perfilHorario.getNumeroTurnos());			
+			listaParametros.addValue("AliasOperacion", numeracionGec.getAliasOperacion());
+			listaParametros.addValue("Correlativo", numeracionGec.getCorrelativo());			
 			
 			// Valores Auditoria
-			listaParametros.addValue("ActualizadoEl", perfilHorario.getActualizadoEl());
-			listaParametros.addValue("ActualizadoPor", perfilHorario.getActualizadoPor());
-			listaParametros.addValue("IpActualizacion", perfilHorario.getIpActualizacion());
-			listaParametros.addValue("Id", perfilHorario.getId());
+			listaParametros.addValue("ActualizadoEl", numeracionGec.getActualizadoEl());
+			listaParametros.addValue("ActualizadoPor", numeracionGec.getActualizadoPor());
+			listaParametros.addValue("IpActualizacion", numeracionGec.getIpActualizacion());
+			listaParametros.addValue("Id", numeracionGec.getId());
 			
 			SqlParameterSource namedParameters = listaParametros;
 			/* Ejecuta la consulta y retorna las filas afectadas */
@@ -251,10 +258,10 @@ public class PerfilHorarioDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta validaRegistro(String nombrePerfil) {
+	public RespuestaCompuesta validaRegistro(String aliasOperacion) {
 		StringBuilder consultaSQL = new StringBuilder();
-		List<PerfilHorario> listaRegistros = new ArrayList<PerfilHorario>();
-		Contenido<PerfilHorario> contenido = new Contenido<PerfilHorario>();
+		List<NumeracionGec> listaRegistros = new ArrayList<NumeracionGec>();
+		Contenido<NumeracionGec> contenido = new Contenido<NumeracionGec>();
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		List<Object> parametros = new ArrayList<Object>();
 
@@ -262,11 +269,14 @@ public class PerfilHorarioDao {
 
 			consultaSQL.setLength(0);
 			consultaSQL.append("SELECT ");
-			consultaSQL.append("t1.id_perfil_horario, ");
-			consultaSQL.append("t1.nombre_perfil, ");
-			consultaSQL.append("t1.numero_turnos, ");
+			consultaSQL.append("t1.id_configuracion_gec, ");
+			consultaSQL.append("t1.id_operacion, ");
+			consultaSQL.append("t1.correlativo, ");
 			consultaSQL.append("t1.estado, ");
-			consultaSQL.append("t1.estaciones_asociadas, ");
+			consultaSQL.append("t1.anio, ");
+			consultaSQL.append("t1.alias_operacion, ");
+			consultaSQL.append("t1.nombre_operacion, ");
+			consultaSQL.append("t1.nombre_cliente, ");
 			consultaSQL.append("t1.creado_el, ");
 			consultaSQL.append("t1.creado_por, ");
 			consultaSQL.append("t1.actualizado_por, ");
@@ -278,9 +288,9 @@ public class PerfilHorarioDao {
 			consultaSQL.append("FROM ");
 			consultaSQL.append(NOMBRE_VISTA);
 			consultaSQL.append(" t1 ");		
-			consultaSQL.append("WHERE t1.estado = 1 AND lower(t1.nombre_perfil) = lower('" + nombrePerfil + "')");
+			consultaSQL.append("WHERE t1.estado = 1 AND lower(t1.alias_operacion) = lower('" + aliasOperacion + "')");
 			
-			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	parametros.toArray(), new PerfilHorarioMapper());
+			listaRegistros = jdbcTemplate.query(consultaSQL.toString(),	parametros.toArray(), new NumeracionGecMapper());
 			contenido.totalRegistros = listaRegistros.size();
 			contenido.totalEncontrados = listaRegistros.size();
 			contenido.carga = listaRegistros;
@@ -296,7 +306,7 @@ public class PerfilHorarioDao {
 		return respuesta;
 	}
 	
-	public RespuestaCompuesta actualizarEstadoRegistro(PerfilHorario perfilHorario) {
+	public RespuestaCompuesta actualizarEstadoRegistro(NumeracionGec numeracionGec) {
 		RespuestaCompuesta respuesta = new RespuestaCompuesta();
 		StringBuilder consultaSQL = new StringBuilder();
 		int cantidadFilasAfectadas = 0;
@@ -313,12 +323,12 @@ public class PerfilHorarioDao {
 			consultaSQL.append(NOMBRE_CAMPO_CLAVE);
 			consultaSQL.append("=:Id");
 			MapSqlParameterSource listaParametros = new MapSqlParameterSource();
-			listaParametros.addValue("Estado", perfilHorario.getEstado());
+			listaParametros.addValue("Estado", numeracionGec.getEstado());
 			// Valores Auditoria
-			listaParametros.addValue("ActualizadoEl", perfilHorario.getActualizadoEl());
-			listaParametros.addValue("ActualizadoPor", perfilHorario.getActualizadoPor());
-			listaParametros.addValue("IpActualizacion", perfilHorario.getIpActualizacion());
-			listaParametros.addValue("Id", perfilHorario.getId());
+			listaParametros.addValue("ActualizadoEl", numeracionGec.getActualizadoEl());
+			listaParametros.addValue("ActualizadoPor", numeracionGec.getActualizadoPor());
+			listaParametros.addValue("IpActualizacion", numeracionGec.getIpActualizacion());
+			listaParametros.addValue("Id", numeracionGec.getId());
 			SqlParameterSource namedParameters = listaParametros;
 			/* Ejecuta la consulta y retorna las filas afectadas */
 			cantidadFilasAfectadas = namedJdbcTemplate.update(consultaSQL.toString(), namedParameters);
@@ -339,5 +349,4 @@ public class PerfilHorarioDao {
 		}
 		return respuesta;
 	}
-
 }
