@@ -1,5 +1,6 @@
 package sgo.servicio;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -2084,62 +2085,49 @@ public @ResponseBody RespuestaCompuesta registrarCambioTanqueJornada(@RequestBod
 	  RespuestaCompuesta respuesta;
 	  
 	  parametros  = new ParametrosListar();
-	  parametros.setIdJornada(idJornada);
+	  parametros.setIdJornada(idJornada); 
+	  parametros.setPaginacion(Constante.SIN_PAGINACION);
+	  parametros.setFiltroFlagCalculoCorregido(new int[] {Despacho.DESPACHO_SIN_CALCULO, Despacho.DESPACHO_CON_CALCULO});
 	  respuesta = dDespacho.recuperarRegistros(parametros);
 	  
-	  if (respuesta.estado == false){  
+	  if (!respuesta.estado) {  
 		  throw new Exception("Error al recuperar despachos de la jornada");
 	  }
 	  
 	  List<Despacho> lstDespacho = (List<Despacho>) respuesta.contenido.carga;
 	  
-	  for(Despacho desp : lstDespacho){
+	  for (Despacho desp : lstDespacho) {
+
+		  Muestreo mues = obtenerMuestreoMasProximo(lstMuestreo, desp.getFechaHoraFin(), desp.getIdProducto());
 		  
-		  float apiDesp = desp.getApiCorregido();
-		  float tempDesp = desp.getTemperatura();
-		  
-		  if( (apiDesp == 0 && tempDesp == 0 && desp.getFlagCalculoCorregido() == 0) 
-				  || (apiDesp != 0 && tempDesp != 0 && desp.getFlagCalculoCorregido() == 2)){
+		  if (mues != null) {
+			  float apiCorregido = mues.getApiMuestreo();
+			  float temperaturaCentro = mues.getTemperaturaMuestreo();
+			  float factorCorreccion = (float) Formula.calcularFactorCorreccion(apiCorregido, temperaturaCentro);
+			  float volCorregido = desp.getVolumenObservado() * factorCorreccion;
+			  BigDecimal volCorregidoBd = Utilidades.floatToBigDecimal(volCorregido);
 			  
-			  System.out.println("desp.id: " + desp.getId());
-			  Muestreo mues = obtenerMuestreoMasProximo(lstMuestreo, desp.getFechaHoraFin(), desp.getIdProducto());
+			  desp.setApiCorregido(apiCorregido);
+			  desp.setTemperatura(temperaturaCentro);
+			  desp.setFactorCorreccion(factorCorreccion);
+			  desp.setVolumenCorregidoBigDecimal(volCorregidoBd);
+			  desp.setFlagCalculoCorregido(2);
 			  
-			  if(mues != null){
-				  float apiCorregido = mues.getApiMuestreo();
-				  float temperaturaCentro = mues.getTemperaturaMuestreo();
-				  
-				  float factorCorreccion = (float) Formula.calcularFactorCorreccion(apiCorregido, temperaturaCentro);
-				  
-				  float volCorregido = desp.getVolumenObservado() * factorCorreccion;
-				  
-				  desp.setApiCorregido(apiCorregido);
-				  desp.setTemperatura(temperaturaCentro);
-				  desp.setFactorCorreccion(factorCorreccion);
-				  desp.setVolumenCorregido(volCorregido);
-				  desp.setFlagCalculoCorregido(2);
-				  
-				  respuesta = dDespacho.actualizarRegistro(desp);
-		          if (respuesta.estado==false){     	
-		        	  throw new Exception(gestorDiccionario.getMessage("Error al actualizar los despachos",null,locale));
-		          }
-				  
-			  }
-			  
+			  respuesta = dDespacho.actualizarRegistro(desp);
+	          if (respuesta.estado==false){     	
+	        	  throw new Exception(gestorDiccionario.getMessage("Error al actualizar los despachos",null,locale));
+	          }
 		  }
-		  
 	  }
-	    
   }
   
   private Muestreo obtenerMuestreoMasProximo(List<Muestreo> lstMuestreo, Timestamp fechaDespacho, int idProducto){
 	  
 	  for(Muestreo mues : lstMuestreo){
-		  
 		  if(mues.getProductoMuestreado() == idProducto && !fechaDespacho.after(mues.getHoraMuestreo())){
 			  System.out.println("mues.id: " + mues.getId());
 			  return mues;
 		  }
-		  
 	  }
 	  
 	  return null;

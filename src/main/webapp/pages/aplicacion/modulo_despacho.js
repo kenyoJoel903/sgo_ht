@@ -1,6 +1,6 @@
 function moduloDespacho () {
 	
-  this.obj={};
+  this.obj = {};
   this.NUMERO_REGISTROS_PAGINA = constantes.NUMERO_REGISTROS_PAGINA;
   this.TOPES_PAGINACION = constantes.TOPES_PAGINACION;
   this.URL_LENGUAJE_GRILLA = "tema/datatable/language/es-ES.json";
@@ -385,6 +385,7 @@ moduloDespacho.prototype.validaImportar = function(accion){
 	var referenciaModulo = this;
 	referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 	referenciaModulo.obj.ocultaContenedorDetalleDespacho.show();
+	
 	$.ajax({
 	    type: constantes.PETICION_TIPO_GET,
 	    url: './turno/listar', 
@@ -439,14 +440,7 @@ moduloDespacho.prototype.recuperarTurno = function(accion) {
 	    		}else{
 	    			
 	    			var registro = respuesta.contenido.carga[0];
-	    			
-	    			
-	    			console.log(" ****** recuperarTurno ******* ");
-	    			console.dir(registro.perfilHorario.lstDetalles[0].id);
-	    			console.dir("horaInicioTurno ::: " + registro.perfilHorario.lstDetalles[0].horaInicioTurno);
-	    			console.dir("horaFinTurno ::: " + registro.perfilHorario.lstDetalles[0].horaFinTurno);
-	    			
-	    			
+
     				//se cambio .text por .val por req 9000003068===========================================================================================	    			
 	    			referenciaModulo.obj.cmpHoraAperturaTurno.val(utilitario.formatearTimestampToStringSoloHora(registro.fechaHoraApertura));
 	    			referenciaModulo.obj.idPerfilDetalleHorario = registro.perfilHorario.lstDetalles[0].id; 
@@ -1051,9 +1045,6 @@ moduloDespacho.prototype.llamadaAjaxGrillaDespacho=function(e,configuracion,json
 
 moduloDespacho.prototype.inicializarFormularioPrincipal = function() {
 	
-	console.log(" *** inicializarFormularioPrincipal *** ");
-	console.dir(this.obj);
-	
     var referenciaModulo = this;
     this.obj.cmpLecturaInicial.inputmask('decimal', {
     	digits: this.obj.nroDecimales.val(),
@@ -1247,6 +1238,9 @@ moduloDespacho.prototype.guardarRegistro = function() {
 		referenciaModulo.obj.ocultaContenedorFormulario.show();
 		referenciaModulo.actualizarBandaInformacion(constantes.TIPO_MENSAJE_INFO, cadenas.PROCESANDO_PETICION);
 		var eRegistro = referenciaModulo.recuperarValores();
+		
+		console.log("*** moduloDespacho.prototype.guardarRegistro ***");
+		console.dir(eRegistro);
 
 		$.ajax({
 			type: constantes.PETICION_TIPO_POST,

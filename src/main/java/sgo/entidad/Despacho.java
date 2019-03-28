@@ -58,6 +58,9 @@ public class Despacho extends EntidadBase {
 	private int id_turno;
 	private int nro_decimales;
 	
+	public final static int DESPACHO_SIN_CALCULO = 0;
+	public final static int DESPACHO_CALCULADO = 1;
+	public final static int DESPACHO_CON_CALCULO = 2;
 
 	public final static int ESTADO_ACTIVO=1;
 	public final static int ESTADO_INACTIVO=2;

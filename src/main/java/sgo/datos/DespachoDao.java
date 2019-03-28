@@ -150,6 +150,18 @@ public class DespachoDao {
 			if(argumentosListar.getIdJornada() != Constante.FILTRO_TODOS){
 				filtrosWhere.add(" t1.id_jornada = " + argumentosListar.getIdJornada() +" ");
 			}
+
+			if (argumentosListar.getFiltroFlagCalculoCorregido() != null) {
+			    String calculos = "";
+
+			    for (int e:argumentosListar.getFiltroFlagCalculoCorregido()) {
+			    	calculos = calculos + String.valueOf(e) + ",";
+			    }
+
+			    if(calculos.length() > 0) calculos = calculos.substring(0, calculos.length() - 1);
+			    filtrosWhere.add(" t1.flag_calculo_corregido IN(" + calculos +")");
+			}
+			
 			
 			if(!filtrosWhere.isEmpty()){
 				consultaSQL.setLength(0);
