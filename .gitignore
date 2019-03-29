@@ -7,4 +7,4 @@ bin/*
 src/main/resources/jdbc.properties
 src/main/webapp/WEB-INF/jdbc.properties
 */.copyarea.db
-/bin/
+.project
